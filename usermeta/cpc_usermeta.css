@@ -1,0 +1,121 @@
+.cpc_usermeta_change_item {
+	clear: both;
+	margin-top:20px;
+}
+#s2id_cpccom_country,
+#s2id_cpccom_home,
+.cpc_usermeta_change_item input[type=text],
+.cpc_usermeta_change_item input[type=password]{
+	min-width: 300px;
+	width: 300px;
+}
+
+#cpc_usermeta_change_submit {
+	margin-top: 10px;
+}
+
+.cpc_usermeta_change_label {
+	font-weight: bold;
+}
+
+#cpc_required_msg {
+    clear: both;
+    margin-top:25px;
+}
+
+#cpc_user_not_found {
+    font-size: 2em;
+}
+
+#cpc_no_map_available {
+    background-color: #efefef;
+}
+
+#cpc_password_strength_result {
+    margin-top: 12px;
+    height: 30px;
+    line-height: 30px;
+    width: 300px;
+    border: 0;
+    font-size: 0.8em;
+    text-align: center;
+}
+.cpc_score_1 { background-color: red; color: white; }
+.cpc_score_2 { background-color: orangered; color: white; }
+.cpc_score_3 { background-color: orange; color: black; }
+.cpc_score_4 { background-color: lawngreen; color: black; }
+.cpc_score_5 { background-color: red; color: white; }
+
+/*----- Tabs -----*/
+.cpc-tabs {
+    width:100%;
+    display:inline-block;
+}
+ 
+/*----- Tab Links -----*/
+.cpc-tab-links {
+    margin-bottom: 0 !important;
+}
+/* Clearfix */
+.cpc-tab-links:after {
+    display:block;
+    clear:both;
+    content:'';
+}
+
+.cpc-tab-links li {
+    margin:0px 5px;
+    float:left;
+    list-style:none;
+}
+
+    .cpc-tab-links a {
+        padding:9px 15px;
+        display:inline-block;
+        border-radius:3px 3px 0px 0px;
+        font-size:16px;
+        font-weight:600;
+        color:#4c4c4c;
+        transition:all linear 0.15s;
+        text-decoration: none;
+    }
+    .cpc-tab-links a:visited {
+    }
+    .cpc-tab-links a:hover {
+        text-decoration:none;
+    }
+
+/*----- Content of Tabs -----*/
+.cpc-tab-content {
+    padding:15px !important;
+    border-radius:3px;
+    margin-top: -1px;
+}
+.cpc-tab-content-inner {
+    width:98%;
+    overflow: auto;
+}
+
+.cpc-tab {
+    display:none;
+}
+
+.cpc-tab.active {
+    display:block;
+}
+
+/* [cpc-is-friend-content] */
+
+#cpc_friendship_request_made,
+#cpc_is_friend_content {
+    margin-bottom: 15px;
+}
+
+/* Tabs (responsive) */
+@media all and (max-width: 800px) {
+
+    .cpc-tab-links { display:none; }
+    .cpc-tab-content { border: 0 !important; padding: 0 !important;}
+    .cpc-tab { display: block !important; }
+    
+}

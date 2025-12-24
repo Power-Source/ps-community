@@ -1,0 +1,97 @@
+/* Material Style für BBCode Toolbar */
+.cpc_bbcode_toolbar {
+    display: flex;
+    gap: 8px;
+    background: #fff;
+    border-radius: 6px;
+    box-shadow: 0 2px 8px rgba(60,60,60,0.08), 0 1.5px 4px rgba(60,60,60,0.06);
+    padding: 10px 12px;
+    margin-bottom: 12px;
+    align-items: center;
+}
+
+.cpc_bbcode_toolbar button {
+    background: #f5f5f5;
+    border: none;
+    border-radius: 4px;
+    color: #333;
+    font-size: 1em;
+    padding: 7px 12px;
+    margin: 0;
+    cursor: pointer;
+    box-shadow: 0 1px 2px rgba(60,60,60,0.04);
+    transition: background 0.2s, box-shadow 0.2s;
+    outline: none;
+    position: relative;
+}
+
+.cpc_bbcode_toolbar button:hover,
+.cpc_bbcode_toolbar button:focus {
+    background: #e0e0e0;
+    box-shadow: 0 2px 6px rgba(60,60,60,0.10);
+}
+
+.cpc_bbcode_toolbar button:active {
+    background: #d1cfcf;
+}
+
+.cpc_bbcode_toolbar button b,
+.cpc_bbcode_toolbar button i,
+.cpc_bbcode_toolbar button u {
+    font-weight: bold;
+    font-style: normal;
+    text-decoration: none;
+}
+
+.cpc_bbcode_toolbar button[data-tag="b"] b { font-weight: bold; }
+.cpc_bbcode_toolbar button[data-tag="i"] i { font-style: italic; }
+.cpc_bbcode_toolbar button[data-tag="u"] u { text-decoration: underline; }
+
+/* Material Style für das Editor-Textarea */
+#cpc_forum_comment_edit_textarea,
+textarea.cpc_forum_post_textarea {
+    width: 100%;
+    min-height: 120px;
+    border: 1.5px solid #e0e0e0;
+    border-radius: 6px;
+    padding: 14px 16px;
+    font-size: 1.1em;
+    background: #fafbfc;
+    color: #222;
+    box-shadow: 0 1px 4px rgba(60,60,60,0.04);
+    transition: border 0.2s, box-shadow 0.2s;
+    resize: vertical;
+}
+
+#cpc_forum_comment_edit_textarea:focus,
+textarea.cpc_forum_post_textarea:focus {
+    border-color: #1976d2;
+    background: #fff;
+    box-shadow: 0 2px 8px rgba(25,118,210,0.08);
+    outline: none;
+}
+
+/* Material Style für Buttons */
+.cpc_button {
+    background: #1976d2;
+    color: #fff;
+    border: none;
+    border-radius: 4px;
+    padding: 8px 18px;
+    font-size: 1em;
+    font-weight: 500;
+    cursor: pointer;
+    margin-right: 8px;
+    box-shadow: 0 1px 2px rgba(25,118,210,0.08);
+    transition: background 0.2s, box-shadow 0.2s;
+}
+
+.cpc_button:hover,
+.cpc_button:focus {
+    background: #1565c0;
+    box-shadow: 0 2px 6px rgba(25,118,210,0.12);
+}
+
+.cpc_button:active {
+    background: #0d47a1;
+}

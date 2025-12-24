@@ -1,0 +1,58 @@
+#cpc_friends {
+	overflow:auto;
+}
+.cpc_friends_friend {
+	clear: both;
+	margin-bottom: 10px;
+	overflow: hidden;
+}
+.cpc_friends_friend_avatar {
+	float: left;
+	padding-top:4px;
+}
+
+.cpc_friends_add_button {
+	clear:both;
+}
+
+.cpc_pending_friends {
+	overflow:auto;
+    min-width: 310px;
+}
+.cpc_pending_friends_friend {
+	clear: both;
+	margin-bottom: 10px;
+	overflow: auto;
+}
+.cpc_pending_friends_friend input[type=submit] {
+	float: left;
+	margin-right: 5px;
+}
+.cpc_pending_friends_friend_avatar {
+	float: left;
+	margin-right: 6px;
+}
+.cpc_friends_friend_avatar_display_name {
+	font-size: 1.2em;
+}
+.cpc_friends_friend_avatar_last_active {
+	font-size: 0.8em;
+}
+.cpc_pending_friends_accept_reject {
+	overflow:auto;
+    margin-top: 6px;
+}
+.cpc_pending_friends_accept {
+	margin-right: 6px;
+}
+#cpc_alerts_friends_flag {
+    position: relative;
+}
+#cpc_alerts_friends_flag_unread {
+    text-align: center;
+    color: #fff;
+    background-color: #f00;
+}
+#cpc_friends_none_msg {
+    margin-bottom: 10px;
+}

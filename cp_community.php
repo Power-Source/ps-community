@@ -1,0 +1,621 @@
+<?php
+/*
+Plugin Name: PS Community
+Plugin URI: https://cp-psource.github.io/cp-community/
+Description: Füge Deiner WordPress-Webseite schnell und einfach ein soziales Netzwerk hinzu!
+Version: 1.0.5
+Author: DerN3rd (PSOURCE)
+Author URI: https://github.com/Power-Source
+License: GPLv2 or later
+Text Domain: cp-community
+Domain Path: /languages
+*/
+// PS Update Manager - Hinweis wenn nicht installiert
+add_action( 'admin_notices', function() {
+    // Prüfe ob Update Manager aktiv ist
+    if ( ! function_exists( 'ps_register_product' ) && current_user_can( 'install_plugins' ) ) {
+        $screen = get_current_screen();
+        if ( $screen && in_array( $screen->id, array( 'plugins', 'plugins-network' ) ) ) {
+            // Prüfe ob bereits installiert aber inaktiv
+            $plugin_file = 'ps-update-manager/ps-update-manager.php';
+            $all_plugins = get_plugins();
+            $is_installed = isset( $all_plugins[ $plugin_file ] );
+            
+            echo '<div class="notice notice-warning is-dismissible"><p>';
+            echo '<strong>PS Chat:</strong> ';
+            
+            if ( $is_installed ) {
+                // Installiert aber inaktiv - Aktivierungs-Link
+                $activate_url = wp_nonce_url(
+                    admin_url( 'plugins.php?action=activate&plugin=' . urlencode( $plugin_file ) ),
+                    'activate-plugin_' . $plugin_file
+                );
+                echo sprintf(
+                    __( 'Aktiviere den <a href="%s">PS Update Manager</a> für automatische Updates von GitHub.', 'psource-chat' ),
+                    esc_url( $activate_url )
+                );
+            } else {
+                // Nicht installiert - Download-Link
+                echo sprintf(
+                    __( 'Installiere den <a href="%s" target="_blank">PS Update Manager</a> für automatische Updates aller PSource Plugins & Themes.', 'psource-chat' ),
+                    'https://github.com/Power-Source/ps-update-manager/releases/latest'
+                );
+            }
+            
+            echo '</p></div>';
+        }
+    }
+});
+
+if ( !defined('CPC2_TEXT_DOMAIN') ) define('CPC2_TEXT_DOMAIN', 'cp-community');
+if ( !defined('CPC_PREFIX') ) define('CPC_PREFIX', 'cpc');
+
+// Emoji Styles entfernen im Admin
+add_action('admin_init', function() {
+    remove_action('admin_print_styles', 'print_emoji_styles');
+});
+
+// Re-write rules
+add_filter( 'rewrite_rules_array','cpc_forum_insert_rewrite_rules' );
+add_action( 'wp_loaded','cpc_forum_flush_rewrite_rules' );
+add_filter( 'query_vars','cpc_forum_insert_query_vars' );
+add_filter('rewrite_rules_array', 'cpc_profile_rewrite_rules');
+function cpc_profile_rewrite_rules($rules) {
+    $new_rules = array(
+        'profile/([^/]+)/?$' => 'index.php?pagename=profile&user=$matches[1]',
+    );
+    return $new_rules + $rules;
+}
+add_filter('rewrite_rules_array', 'cpc_profile_rewrite_rules');
+
+// Language
+add_action('plugins_loaded', 'cpc_languages');
+// Get core plugin features enabled
+if (!$core_plugins = get_option('cpc_default_core')):
+    update_option('cpc_default_core', 'core-profile,core-activity,core-avatar,core-friendships,core-groups,core-alerts,core-forums');
+    $core_plugins = 'core-profile,core-activity,core-avatar,core-friendships,core-groups,core-alerts,core-forums';
+endif;
+if (!defined('CPC_CORE_PLUGINS')) define ('CPC_CORE_PLUGINS', $core_plugins);
+// Permalink re-writes
+function cpc_show_rewrite() {
+	global $wp_rewrite;
+    echo cpc_display_array($wp_rewrite->rewrite_rules());
+}
+// Uncomment following line to view what is in WordPress re-write rules (debugging only)
+//add_action('wp_head', 'cpc_show_rewrite', 10);
+function cpc_flush_rewrite_rules()
+{
+	global $wp_rewrite;
+	$wp_rewrite->flush_rules();
+}
+// Uncomment the following line to force a re-write flush (debugging only)
+//add_action( 'init', 'cpc_flush_rewrite_rules');
+// Add PS Community re-write rules
+function cpc_forum_insert_rewrite_rules( $rules ) {
+	global $wp_rewrite;
+    
+	$newrules = array();
+	// Protection
+    if (strpos(CPC_CORE_PLUGINS, 'core-alerts') !== false)
+	   $newrules['cpc_alerts/?'] = '/';
+    if (strpos(CPC_CORE_PLUGINS, 'core-forums') !== false)
+	   $newrules['cpc_forum_post/?'] = '/';
+    if (strpos(CPC_CORE_PLUGINS, 'core-friendships') !== false)
+	   $newrules['cpc_friendship/?'] = '/';
+	if (is_multisite()) {
+        $current_blog = get_current_blog_id();
+        if ($current_blog > 1):
+			$blog_details = get_blog_details($current_blog);
+			// Usernames ---------------------
+			if (strpos(CPC_CORE_PLUGINS, 'core-profile') !== false && $page_id = get_option('cpccom_profile_page')):
+				$profile_page = get_post($page_id);
+				$profile_page_slug = $profile_page->post_name;
+				$newrules[$profile_page_slug.'/([^/]+)/?'] = ltrim($blog_details->path,'/').'?pagename='.$profile_page_slug.'&user=$matches[1]';
+			endif;
+			// Forum slugs -------------------
+			if (strpos(CPC_CORE_PLUGINS, 'core-forums') !== false):
+                $terms = get_terms( "cpc_forum", array( ) );
+                if ( count($terms) > 0 ):	
+                    foreach ( $terms as $term ):
+                        // Add re-write for Forum slug
+                        $post = get_post( cpc_get_term_meta($term->term_id, 'cpc_forum_cat_page', true) );
+                        if ($post):
+                            $newrules[$term->slug.'/([^/]+)(.*)'] = ltrim($blog_details->path,'/').'?pagename='.$post->post_name.'&topic=$matches[1]&fpage=$matches[2]';
+                        endif;
+                    endforeach;
+                endif;
+            endif;
+		endif;
+	} else {	
+		// Usernames ---------------------
+		if (strpos(CPC_CORE_PLUGINS, 'core-profile') !== false && $page_id = get_option('cpccom_profile_page')):
+			if ($profile_page = get_post($page_id)):
+				$profile_page_slug = $profile_page->post_name;
+				$newrules[$profile_page_slug.'/([^/]+)/?'] = 'index.php?pagename='.$profile_page_slug.'&user=$matches[1]';
+			endif;
+		endif;
+		// Forum slugs -------------------
+        if (strpos(CPC_CORE_PLUGINS, 'core-forums') !== false):
+            $terms = get_terms( "cpc_forum", array( ) );
+            if ( count($terms) > 0 ):	
+                foreach ( $terms as $term ):
+                    $post = get_post( cpc_get_term_meta($term->term_id, 'cpc_forum_cat_page', true) );
+                    if ($post):
+                        $newrules[$term->slug.'/([^/]+)(.*)'] = 'index.php?pagename='.$post->post_name.'&topic=$matches[1]&fpage=$matches[2]';
+                    endif;
+                endforeach;
+            endif;
+        endif;
+	}	
+	return $newrules + $rules;
+}
+// Flush re-write rules if need be
+function cpc_forum_flush_rewrite_rules(){
+	
+	$rules = get_option( 'rewrite_rules' );
+	$flush = false;
+	// Protection
+    if (strpos(CPC_CORE_PLUGINS, 'core-alerts') !== false)
+	   if ( ! isset( $rules['cpc_alerts/?'] ) ) $flush = true;		
+    if (strpos(CPC_CORE_PLUGINS, 'core-friendships') !== false)
+	   if ( ! isset( $rules['cpc_forum_post/?'] ) ) $flush = true;		
+    if (strpos(CPC_CORE_PLUGINS, 'core-forums') !== false)
+	   if ( ! isset( $rules['cpc_friendship/?'] ) ) $flush = true;		
+	if (is_multisite()) {
+        
+        $current_blog = get_current_blog_id();
+		$blog_details = get_blog_details($current_blog);
+		// Usernames ---------------------
+		if (strpos(CPC_CORE_PLUGINS, 'core-profile') !== false && $page_id = get_option('cpccom_profile_page')):
+			$profile_page = get_post($page_id);
+            if ($profile_page) {
+                $profile_page_slug = $profile_page->post_name;
+			    if ( ! isset( $rules[$profile_page_slug.'/([^/]+)/?'] ) ) $flush = true;		
+            }
+		endif;
+		// Forum slugs -------------------
+        if (strpos(CPC_CORE_PLUGINS, 'core-forums') !== false):
+            $terms = get_terms( "cpc_forum", array( ) );
+            if ( count($terms) > 0 ):	
+                foreach ( $terms as $term ):
+                    // Add re-write for Forum slug
+                    $post = get_post( cpc_get_term_meta($term->term_id, 'cpc_forum_cat_page', true) );
+                    if ($post):
+                        if ( ! isset( $rules[$term->slug.'/([^/]+)/?'] ) ) $flush = true;		
+                    endif;
+                endforeach;
+            endif;
+        endif;
+	} else {	
+		// Usernames ---------------------
+		if (strpos(CPC_CORE_PLUGINS, 'core-profile') !== false && $page_id = get_option('cpccom_profile_page')):
+			$profile_page = get_post($page_id);
+			if ($profile_page):
+				$profile_page_slug = $profile_page->post_name;
+				if ( ! isset( $rules[$profile_page_slug.'/([^/]+)/?'] ) ) $flush = true;		
+			endif;
+		endif;
+		// Forum slugs -------------------
+        if (strpos(CPC_CORE_PLUGINS, 'core-forums') !== false):
+            $terms = get_terms( "cpc_forum", array( ) );
+            if ( count($terms) > 0 ):	
+                foreach ( $terms as $term ):
+                    $post = get_post( cpc_get_term_meta($term->term_id, 'cpc_forum_cat_page', true) );
+                    if ($post):
+                        if ( ! isset( $rules[$term->slug.'/([^/]+)/?'] ) ) $flush = true;		
+                    endif;
+                endforeach;
+            endif;
+        endif;
+	}	
+	// If required, flush re-write rules
+	if ($flush) {
+		global $wp_rewrite;
+		$wp_rewrite->flush_rules();			
+	}
+}
+// Make re-write parameters available as query parameter
+function cpc_forum_insert_query_vars( $vars ){
+    
+    array_push($vars, 'topic');
+    array_push($vars, 'fpage');
+    array_push($vars, 'user');
+    return $vars;
+}
+// After plugin activation, reset alerts schedule to ensure it is running
+register_activation_hook(__FILE__, 'cpc_community_activate');
+function cpc_community_activate() {
+    if (strpos(CPC_CORE_PLUGINS, 'core-alerts') !== false):
+        // Clear existing schedule
+        wp_clear_scheduled_hook( 'cpc_community_alerts_hook' );
+        // Re-add as new schedule, schedule the event for right now, then to repeat using the hook 'cpc_community_alerts_hook'
+        wp_schedule_event( time(), 'cpc_community_alerts_schedule', 'cpc_community_alerts_hook' );
+    endif;
+}
+// Core functions
+require_once('cpc_core.php');
+// Profile (User meta)
+if (strpos(CPC_CORE_PLUGINS, 'core-profile') !== false):
+    require_once('usermeta/cpc_usermeta.php');
+    require_once('usermeta/cpc_usermeta_help.php');
+    require_once('usermeta/cpc_usermeta_ajax.php');
+    require_once('usermeta/cpc_usermeta_shortcodes.php');
+endif;
+// Avatar
+if (strpos(CPC_CORE_PLUGINS, 'core-avatar') !== false)
+    require_once('avatar/cpc_avatar.php');
+// Activity (requires Profile)
+if (strpos(CPC_CORE_PLUGINS, 'core-activity') !== false):
+    require_once('activity/cpc_custom_post_activity.php');
+    require_once('activity/cpc_activity_hooks_and_filters.php');
+    require_once('activity/ajax_activity.php');
+    require_once('activity/cpc_activity_shortcodes.php');
+endif;
+// Friendships (requires Profile)
+if (strpos(CPC_CORE_PLUGINS, 'core-friendships') !== false):
+    require_once('friendships/cpc_friendships_core.php');
+    require_once('friendships/cpc_custom_post_friendships.php');
+    require_once('friendships/cpc_friendships_shortcodes.php');
+    require_once('friendships/cpc_friendships_help.php');
+endif;
+// Alerts
+if (strpos(CPC_CORE_PLUGINS, 'core-alerts') !== false):
+    require_once('alerts/cpc_custom_post_alerts.php');
+    require_once('alerts/cpc_alerts_admin.php');
+    require_once('alerts/cpc_alerts_shortcodes.php');
+    require_once('alerts/ajax_alerts.php');
+endif;
+// Forums
+if (strpos(CPC_CORE_PLUGINS, 'core-forums') !== false):
+    require_once('forums/cpc_custom_post_forum.php');
+    require_once('forums/cpc_custom_taxonomy_forum.php');
+    require_once('forums/cpc_forum_shortcodes.php');
+    require_once('forums/ajax_forum.php');
+    require_once('forums/taxonomy-metadata.php');
+    require_once('forums/cpc_forum_hooks_and_filters.php');
+    $taxonomy_metadata = new cpc_Taxonomy_Metadata;
+    register_activation_hook( __FILE__, array($taxonomy_metadata, 'activate') );
+endif;
+// Admin
+if (is_admin()):
+	require_once('cpc_admin.php');
+	require_once('cpc_setup_admin.php');
+    require_once('ajax_admin.php');
+    if (strpos(CPC_CORE_PLUGINS, 'core-forums') !== false):
+        require_once('forums/cpc_forum_admin.php');
+        require_once('forums/cpc_forum_help.php');
+    endif;
+endif;
+// Enable shortcodes in text widgets.
+add_filter('widget_text', 'do_shortcode');
+// Init
+add_action('init', 'cpc_init');
+add_action('init', 'cpc_update_routine');
+add_action('admin_menu', 'cpc_menu', 9); // Located in cpc_admin.php
+add_action( 'wp_head', 'cpc_add_custom_css' );
+add_action( 'wp_footer', 'cpc_add_wait_modal_box' );
+// Handle update
+function cpc_update_routine() {
+		
+	global $wpdb;
+	$new_version = '1.0.5';
+//echo get_option('cp_community_ver').'<br />';
+//echo $new_version.'<br />';
+	$do_update = (is_blog_admin() && current_user_can('manage_options') && get_option('cp_community_ver') != $new_version);
+if ($do_update) {
+//echo 'yes<br />';
+} else {
+//echo 'no<br />';
+}
+	if ($do_update):
+        // Re-establish admin tips
+        delete_option('dismiss_cpc_migrate_bbpress_check');
+    
+		// Update groups last active flag
+		// Placed here as this routine is the only place that is definitely run after update
+		// Get all groups, and for each add a flag for active (set to 1, not date, specific value)
+		// As can't set all as active with a date (that is unknown). Flag of 1 is recognised
+		$args=array(
+			'post_type' => 'cpc_group',
+			'posts_per_page' => -1,
+			'post_status' => 'publish',
+		);
+		$groups = get_posts( $args );	
+		if ($groups):
+			foreach ($groups as $group):
+				$group_updated = get_post_meta($group->ID, 'cpc_group_updated', true);
+				if (!$group_updated) update_post_meta( $group->ID, 'cpc_group_updated', 1 );
+			endforeach;
+		endif;
+		
+//echo 'Update version...'.'<br />';
+	
+		// Show promo again
+		delete_option('cpc_commo_hide');
+		// Update to latest version
+		update_option('cp_community_ver', $new_version);
+		
+//die('done');
+		
+	endif;	
+	// When first installed, set an installation date for the record
+	if (!($installed = get_option('cpc_installed'))):
+		// doesn't exist, so set it
+		update_option('cpc_installed', time());
+	endif;
+}
+function cpc_init() {
+    // CSS
+    wp_enqueue_style('cpc-css', plugins_url('css/cp_community.css', __FILE__), 'css');
+    if (is_admin()):
+    	// Alerts admin
+        if (strpos(CPC_CORE_PLUGINS, 'core-alerts') !== false):
+            wp_enqueue_script('cpc-alerts-js', plugins_url('alerts/cpc_alerts.js', __FILE__), array('jquery'));	
+            wp_localize_script('cpc-alerts-js', 'cpc_alerts', array( 'ajaxurl' => admin_url( 'admin-ajax.php' ) ));    	
+        endif;
+    	// Activity admin
+        if (strpos(CPC_CORE_PLUGINS, 'core-activity') !== false):
+		    wp_enqueue_script('cpc-activity-js', plugins_url('activity/cpc_activity.js', __FILE__), array('jquery'));	
+		    wp_localize_script( 'cpc-activity-js', 'cpc_ajax', array( 'ajaxurl' => admin_url( 'admin-ajax.php' ) ) );		
+        endif;
+		// Forums admin
+        if (strpos(CPC_CORE_PLUGINS, 'core-forums') !== false):
+            wp_enqueue_script('cpc-forum-js', plugins_url('forums/cpc_forum.js', __FILE__), array('jquery'));	
+            wp_localize_script( 'cpc-forum-js', 'cpc_ajax', array( 'ajaxurl' => admin_url( 'admin-ajax.php' ) ) );		
+        endif;
+		// Friendships
+        if (strpos(CPC_CORE_PLUGINS, 'core-friendships') !== false):
+            wp_enqueue_script('cpc-friendship-js', plugins_url('friendships/cpc_friends.js', __FILE__), array('jquery'));
+            wp_localize_script( 'cpc-friendship-js', 'cpc_ajax', array( 'ajaxurl' => admin_url( 'admin-ajax.php' ) ) );		
+        endif;
+	    wp_enqueue_script('cpc-admin-js', plugins_url('js/cpc.admin.js', __FILE__), array('jquery'));
+		wp_localize_script( 'cpc-admin-js', 'cpc_ajax', array( 'ajaxurl' => admin_url( 'admin-ajax.php' ) ) );		
+		wp_enqueue_style('cpc-admin-css', plugins_url('css/cpc_admin.css', __FILE__), 'css');		
+    else:
+        // Core CPC JS
+		wp_enqueue_script('cpc-js', plugins_url('js/cp_community.js', __FILE__), array('jquery'));	
+    endif;
+}
+// ****************** ALERTS ******************
+if (strpos(CPC_CORE_PLUGINS, 'core-alerts') !== false):
+    // On plugin activation schedule our regular notifications for alerts
+    register_activation_hook( __FILE__, 'cpc_create_alerts_schedule' );
+    function cpc_create_alerts_schedule() {
+      // Use wp_next_scheduled to check if the event is already scheduled
+      $timestamp = wp_next_scheduled( 'cpc_community_alerts_schedule' );
+      // If $timestamp == false schedule since it hasn't been done previously
+      if( $timestamp == false ){
+        // Schedule the event for right now, then to repeat using the hook 'cpc_community_alerts_hook'
+        wp_schedule_event( time(), 'cpc_community_alerts_schedule', 'cpc_community_alerts_hook' );
+      }
+    }
+    add_filter( 'cron_schedules', 'cpc_add_alerts_schedule' ); 
+    function cpc_add_alerts_schedule( $schedules ) {
+        $seconds = ($value = get_option('cpc_alerts_cron_schedule')) ? $value : 3600; // Defaults to every hour
+        $schedules['cpc_community_alerts_schedule'] = array(
+            'interval' => $seconds, // in seconds
+            'display' => __( 'PS Community alerts schedule', CPC2_TEXT_DOMAIN )
+        );
+        return $schedules;
+    }
+endif;
+// ****************** ACTIVITY ******************
+if (strpos(CPC_CORE_PLUGINS, 'core-activity') !== false):
+    // Over-ride profile title and canonical URL
+    //add_filter( 'wp_title', 'cpc_activity_post_title', 100 );
+    function cpc_activity_post_title($title) {
+        $parts = explode('/', $_SERVER["REQUEST_URI"]);
+        $p = get_page_by_path($parts[1],OBJECT,'page');
+        if (cpc_is_profile_page($p->ID)):
+            global $current_user;
+            if (isset($parts[2])):
+                return $parts[2].':'.$current_user->display_name;
+            else:
+                return $parts[2].':'.$current_user->display_name;
+            endif;
+        else:
+            return $title;
+        endif;
+    }
+endif;
+    
+// ****************** SEO/etc ******************
+if (cpc_using_permalinks()):
+    // Over-ride title and canonical URL
+    add_filter( 'pre_get_document_title', 'cpc_seo_post_title', 100, 1 );
+    // Over-ride Yoast og:title with forum title
+    add_filter( 'cpceo_opengraph_title', 'cpc_seo_post_title', 100, 1 );
+    // Over-ride Yoast twitter:title with forum title
+    add_filter( 'cpceo_twitter_title', 'cpc_seo_post_title', 100, 1 );
+    // Over-ride Yoast og:description with forum post
+    add_filter( 'cpceo_metadesc', 'cpc_cpceo_metadesc', 100, 1 );
+endif;
+function cpc_seo_post_title($title) {
+    $parts = explode('/', $_SERVER["REQUEST_URI"]);
+    if ($parts && isset($parts[2]) && $parts[2]):
+        $p = false;
+        // ... is it a forum page?
+        if (strpos(CPC_CORE_PLUGINS, 'core-forums') !== false && cpc_is_forum_page(get_the_ID())):
+            $p = get_page_by_path($parts[2],OBJECT,'cpc_forum_post');
+            if ($p):
+                $post_terms = get_the_terms( $p->ID, 'cpc_forum' );
+                if ($post_terms):
+                    $return = '';
+                    foreach( $post_terms as $term ):
+                        $return = $p->post_title.' - '.$term->name.' - '.get_bloginfo('name');
+                        remove_action( 'wp_head', 'rel_canonical' ); // Remove WordPress canonical URL
+                        if (function_exists('__return_false')) add_filter( 'cpceo_canonical', '__return_false' ); // Disable Yoast SEO canonical URL
+                        add_action( 'wp_head', 'cpc_rel_canonical_override' ); // Replace with forum URL					
+                    endforeach;
+                    return $return ? $return : $title;
+                else:
+                    return $title;
+                endif;
+            else:
+                return $title;
+            endif;
+        endif;
+        // ... if not, is it the profile page?
+        if (strpos(CPC_CORE_PLUGINS, 'core-profile') !== false && cpc_is_profile_page(get_the_ID())):
+            $p = get_post(get_option('cpccom_profile_page'));
+            if( $p ):
+                if (!isset($_GET['user_id'])):
+                    $the_username = $parts[2];
+                    if (strpos($the_username, '+')):
+                        global $wpdb;
+                        $the_username = str_replace('+', ' ', $the_username);
+                        $sql = 'SELECT display_name FROM '.$wpdb->base_prefix.'users WHERE user_login = "'.$the_username.'"';
+                        $username = $wpdb->get_var($sql);
+                        $return = $username.' - '.$p->post_title.' - '.get_bloginfo('name');
+                    else:
+                        $u = get_user_by('login', $parts[2]);
+                        @$return = $u->display_name.' - '.$p->post_title.' - '.get_bloginfo('name'); //TWC - Changed as per Simon
+                    endif;
+                else:
+                    $u = get_user_by('id', $_GET['user_id']);
+                    $return = $u->display_name.' - '.$p->post_title.' - '.get_bloginfo('name');
+                endif;
+                remove_action( 'wp_head', 'rel_canonical' ); // Remove WordPress canonical URL
+                if (function_exists('__return_false')) add_filter( 'cpceo_canonical', '__return_false' ); // Disable Yoast SEO canonical URL
+                add_action( 'wp_head', 'cpc_rel_canonical_override' ); // Replace with forum URL					        
+                return $return ? $return : $title;
+            else:
+                return $title;
+            endif;
+        else:
+            return $title;
+        endif;
+    else:
+        return $title;
+    endif;
+}
+function cpc_rel_canonical_override()
+{
+    $link = get_bloginfo('url').$_SERVER["REQUEST_URI"];
+    echo "<link rel='canonical' href='" . esc_url( $link ) . "' />\n";
+}
+function cpc_cpceo_metadesc( $title ) {
+    
+    global $current_user;
+    $parts = explode('/', $_SERVER["REQUEST_URI"]);
+    if ($parts && isset($parts[2]) && $parts[2]):
+        $p = get_page_by_path($parts[2],OBJECT,'cpc_forum_post');
+        if( $p ):
+            $post_terms = get_the_terms( $p->ID, 'cpc_forum' );
+            if ($post_terms):
+                $return = '';
+				$user_can_see = false;    
+                foreach( $post_terms as $term ):
+					if (user_can_see_forum($current_user->ID, $term->term_id) || current_user_can('manage_options')) $user_can_see = true;
+                    if (cpc_get_term_meta($term->term_id, 'cpc_forum_closed', true)) $locked = true;
+                    if ($user_can_see) {
+                        $return = strip_tags(htmlspecialchars_decode($p->post_content, ENT_QUOTES));
+                        if (strlen($return) > 300) $return = substr($return, 0, 300);
+                    } else {
+                        
+                        // Shortcode parameter for [cpc-forum], set via options
+                        $values = cpc_get_shortcode_options('cpc_forum');    
+                        extract( shortcode_atts( array(
+                            'secure_post_msg' => cpc_get_shortcode_value($values, 'cpc_forum-secure_post_msg', __('You do not have permission to view this post.', CPC2_TEXT_DOMAIN)),
+                        ), $atts, 'cpc_forum' ) );
+                        
+                        $return = $secure_post_msg;
+                    }
+                endforeach;
+                return $return ? $return : $title;
+            else:
+                return $title;
+            endif;
+        else:
+            return $title;
+        endif;
+    else:
+        return $title;
+    endif;
+}
+// ****************** LANGUAGE FILES ******************
+/* .mo files should be placed in wp-content/languages/plugins/cp-community */
+function cpc_languages() {
+	$path = WP_PLUGIN_DIR.'/../languages/plugins/cp-community/';
+	if (is_admin() && !file_exists($path)) {
+		// ... make folder for translation files
+    	@mkdir($path, 0777, true);	
+	}
+    // Get locale - needs WordPress 4.0 or higher
+	$locale = get_locale();
+	if (@is_user_logged_in()):
+		if ($user_locale = get_user_meta(get_current_user_id(), 'cpccom_lang', true))
+            $locale = $user_locale;    
+	endif;
+	$deprecated = false;
+	$domain = CPC2_TEXT_DOMAIN;
+	// Load the textdomain according to the plugin first
+	$mofile = $domain . '-' . $locale . '.mo';
+	if ( $loaded = load_textdomain( $domain, $mofile ) )
+		return $loaded;
+	// Otherwise, load from the languages directory
+	$mofile = $path . $mofile;
+	$loaded_file = load_textdomain( $domain, $mofile );
+}
+// Filter Wordpress locale based on user selected language
+add_filter( 'locale', 'cpc_get_new_locale',20 );
+function cpc_get_new_locale($locale=false){
+    
+    if (get_option('cpc_com_lang_site')) {
+        $new_locale = false;
+        if (@is_user_logged_in()):
+            if ($user_locale = get_user_meta(get_current_user_id(), 'cpccom_lang', true))
+                $new_locale = $user_locale;    
+        endif;
+        if($new_locale)
+            return $new_locale;
+    }
+    
+    return $locale;
+}
+// *************************** FEEDS ***************************
+// Filter to remove CPC comments (activity, mail, forums, etc) from feeds
+function cpc_custom_comment_feed_where($where) {
+	global $wpdb;
+    if (!get_option('cpc_filter_feed_comments')) {
+        $where .= " AND comment_type NOT IN (
+            'cpc_forum_comment',
+            'cpc_activity_comment',
+            'cpc_calendar_comment',
+            'cpc_gallery_comment',
+            'cpc_mail_comment'
+            )";
+    }
+    
+	return $where;
+}
+add_filter('comment_feed_where', 'cpc_custom_comment_feed_where');
+// ****************** MISCELLANEOUS FUNCTIONS ******************
+// Check for applicable forum shortcodes in page
+function cpc_is_forum_page($id) {
+    
+    $ret = false;
+    $p = get_post($id);
+    if ($p):
+        if ( has_shortcode( $p->post_content, CPC_PREFIX.'-forum-page' ) ) $ret = true;
+        if ( has_shortcode( $p->post_content, CPC_PREFIX.'-forum-post' ) ) $ret = true;
+        if ( has_shortcode( $p->post_content, CPC_PREFIX.'-forum-reply' ) ) $ret = true;
+        if ( has_shortcode( $p->post_content, CPC_PREFIX.'-forum-comment' ) ) $ret = true;
+        if ( has_shortcode( $p->post_content, CPC_PREFIX.'-forum' ) ) $ret = true;
+    endif;
+    
+    return $ret;
+}
+// Check for applicable profile shortcodes in page
+function cpc_is_profile_page($id) {
+    
+    $ret = false;
+    $p = get_post($id);
+    if ($p):
+        if ( has_shortcode( $p->post_content, CPC_PREFIX.'-activity-page' ) ) $ret = true;
+        if ( has_shortcode( $p->post_content, CPC_PREFIX.'-activity' ) ) $ret = true;
+    endif;
+    
+    return $ret;
+}
+?>

@@ -1,0 +1,147 @@
+/* Posts */
+
+#cpc_activity_items {
+	clear: both;
+	-webkit-box-sizing: border-box; /* Safari/Chrome, other WebKit */
+	-moz-box-sizing: border-box;    /* Firefox, other Gecko */
+	box-sizing: border-box;         /* Opera/IE 8+ */	
+    overflow:hidden;
+}
+#cpc_activity_post_div {
+	margin-bottom:20px;
+}
+#cpc_activity_post {
+	width:100%;
+	margin-bottom:10px;
+	-webkit-box-sizing: border-box; /* Safari/Chrome, other WebKit */
+	-moz-box-sizing: border-box;    /* Firefox, other Gecko */
+	box-sizing: border-box;         /* Opera/IE 8+ */	
+}
+.cpc_background_edit_icon {
+	background-image: url('images/edit.png') !important;
+	background-repeat: no-repeat !important;
+    background-size: 16px 16px;
+    background-position: 5px 5px;
+    padding-top: 4px;
+    padding-left: 28px;	
+}
+#cpc_activity_post_button {
+	margin-bottom:10px;
+	margin-right:10px;
+	float:left;
+}
+.cpc_activity_item {
+	margin-bottom:10px;
+    overflow:hidden;
+}
+.cpc_activity_item_avatar {
+	padding-top:4px;
+}
+
+.cpc_p_content {
+}
+.cpc_p_content a {
+}
+.cpc_quoted_content {
+    border: 1px solid #efefef;
+    font-size: 0.8em;
+    font-style: italic;
+    padding: 6px;
+    margin-top: 1em;
+    margin-bottom: 1em;
+}
+
+.activity_item_more {
+    text-decoration: underline;
+    cursor: pointer;
+}
+
+.cpc_activity_item_attachments {
+    margin: 12px 0 12px 0;
+}
+
+#cpc_activity_load_more_div {
+	text-align:center;
+}
+
+#cpc_activity_load_more {
+	width:33%;
+}
+
+/* Comments */
+
+.cpc_activity_content {
+}
+.cpc_activity_comments {
+	margin-top: 10px;
+}
+.cpc_activity_comment {
+	clear: both;
+	position:relative;
+}
+.cpc_activity_comment p {
+	margin-bottom: 6px !important;
+}
+.cpc_activity_post_comment_div {
+	margin-top:6px;
+	margin-bottom:20px;
+}
+.cpc_activity_post_comment {
+	width:100%;
+	margin-bottom:10px;
+	-webkit-box-sizing: border-box; /* Safari/Chrome, other WebKit */
+	-moz-box-sizing: border-box;    /* Firefox, other Gecko */
+	box-sizing: border-box;         /* Opera/IE 8+ */	
+}
+.cpc_activity_post_comment_avatar {
+	padding-top:4px;
+}
+
+.cpc_activity_post_comment_button {
+	margin-bottom:10px;
+}
+
+.cpc_activity_hidden_comments {
+	font-style: italic;
+	cursor: pointer;
+}
+
+/* Activity Settings */
+
+.cpc_activity_settings, .cpc_comment_settings {
+	z-index: 100;
+	cursor:pointer;
+	position:absolute;
+	top:0px;
+	right:0px;
+}
+
+.cpc_activity_settings_options, .cpc_comment_settings_options {
+	z-index: 101;
+	display:none;
+	position:absolute;
+	top:0px;
+	right:0px;
+	font-size: 10px;
+	padding: 5px 10px 5px 5px;
+	text-align:center;
+	border:1px solid #666;
+	background-color:#fff;
+	color: #666;
+}
+.cpc_activity_settings_options a, .cpc_comment_settings_options a {
+	color: #666 !important;
+	margin-left: 5px;
+}
+.cpc_activity_settings_options a:hover, .cpc_comment_settings_options a:hover {
+	color: #000 !important;
+}
+
+/* Responsive */
+
+
+@media all and (max-width: 1104px) {
+  .cpc_activity_settings {
+      display: block !important;
+  }
+}
