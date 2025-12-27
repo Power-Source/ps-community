@@ -1,10 +1,10 @@
 <?php
 /*
 Plugin Name: PS Community
-Plugin URI: https://cp-psource.github.io/cp-community/
-Description: Füge Deiner WordPress-Webseite schnell und einfach ein soziales Netzwerk hinzu!
+Plugin URI: https://power-source.github.io/ps-community/
+Description: Füge Deiner ClassicPress-Webseite schnell und einfach ein soziales Netzwerk hinzu!
 Version: 1.0.5
-Author: DerN3rd (PSOURCE)
+Author: PSOURCE
 Author URI: https://github.com/Power-Source
 License: GPLv2 or later
 Text Domain: cp-community
@@ -81,7 +81,7 @@ function cpc_show_rewrite() {
 	global $wp_rewrite;
     echo cpc_display_array($wp_rewrite->rewrite_rules());
 }
-// Uncomment following line to view what is in WordPress re-write rules (debugging only)
+// Uncomment following line to view what is in ClassicPress re-write rules (debugging only)
 //add_action('wp_head', 'cpc_show_rewrite', 10);
 function cpc_flush_rewrite_rules()
 {
@@ -443,7 +443,7 @@ function cpc_seo_post_title($title) {
                     $return = '';
                     foreach( $post_terms as $term ):
                         $return = $p->post_title.' - '.$term->name.' - '.get_bloginfo('name');
-                        remove_action( 'wp_head', 'rel_canonical' ); // Remove WordPress canonical URL
+                        remove_action( 'wp_head', 'rel_canonical' ); // Remove ClassicPress canonical URL
                         if (function_exists('__return_false')) add_filter( 'cpceo_canonical', '__return_false' ); // Disable Yoast SEO canonical URL
                         add_action( 'wp_head', 'cpc_rel_canonical_override' ); // Replace with forum URL					
                     endforeach;
@@ -475,7 +475,7 @@ function cpc_seo_post_title($title) {
                     $u = get_user_by('id', $_GET['user_id']);
                     $return = $u->display_name.' - '.$p->post_title.' - '.get_bloginfo('name');
                 endif;
-                remove_action( 'wp_head', 'rel_canonical' ); // Remove WordPress canonical URL
+                remove_action( 'wp_head', 'rel_canonical' ); // Remove ClassicPress canonical URL
                 if (function_exists('__return_false')) add_filter( 'cpceo_canonical', '__return_false' ); // Disable Yoast SEO canonical URL
                 add_action( 'wp_head', 'cpc_rel_canonical_override' ); // Replace with forum URL					        
                 return $return ? $return : $title;
@@ -541,7 +541,7 @@ function cpc_languages() {
 		// ... make folder for translation files
     	@mkdir($path, 0777, true);	
 	}
-    // Get locale - needs WordPress 4.0 or higher
+    // Get locale - needs ClassicPress 4.0 or higher
 	$locale = get_locale();
 	if (@is_user_logged_in()):
 		if ($user_locale = get_user_meta(get_current_user_id(), 'cpccom_lang', true))

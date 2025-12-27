@@ -16,7 +16,7 @@ function add_cpc_forum_custom_taxonomies() {
         'hierarchical'               => true,
 		// Hierarchical taxonomy (like categories)
 		'hierarchical' => true,
-		// This array of options controls the labels displayed in the WordPress Admin UI
+		// This array of options controls the labels displayed in the ClassicPress Admin UI
 		'labels' => array(
 			'name' 				=> __( 'Foren', CPC2_TEXT_DOMAIN ),
 			'singular_name' 	=> __( 'Forum', CPC2_TEXT_DOMAIN ),
@@ -60,7 +60,7 @@ function cpc_taxonomy_metadata_add( $tag ) {
 
 
 	<div class="form-field">
-		<label for="cpc_forum_cat_page"><?php _e('WordPress-Seite', CPC2_TEXT_DOMAIN); ?></label>
+		<label for="cpc_forum_cat_page"><?php _e('ClassicPress-Seite', CPC2_TEXT_DOMAIN); ?></label>
 		<select name="cpc_forum_cat_page" name="cpc_forum_cat_page">
 		 <?php 
 		  echo '<option value="0">'.__('Seite auswählen...', CPC2_TEXT_DOMAIN).'</option>';
@@ -73,7 +73,7 @@ function cpc_taxonomy_metadata_add( $tag ) {
 		  }
 		 ?>						
 		</select>
-		<div class="description"><?php echo sprintf(__('WordPress-Seite, auf der die Shortcodes dieses Forums verfügbar sind.<br />Weitere Informationen findest Du unter <a href="%s">Erste Schritte</a>.', CPC2_TEXT_DOMAIN), 'admin.php?page=cpc_com'); ?></div>
+		<div class="description"><?php echo sprintf(__('ClassicPress-Seite, auf der die Shortcodes dieses Forums verfügbar sind.<br />Weitere Informationen findest Du unter <a href="%s">Erste Schritte</a>.', CPC2_TEXT_DOMAIN), 'admin.php?page=cpc_com'); ?></div>
 		<div class="description"><br /><strong><?php _e('Stelle sicher, dass Dein Forum-Slug mit Deinem Forum-Seiten-Slug übereinstimmt.', CPC2_TEXT_DOMAIN); ?></strong><br />
 		<strong><?php _e('Deine Forumseite sollte keine übergeordnete Seite haben.', CPC2_TEXT_DOMAIN); ?></strong></div>    
     </div> 
@@ -186,7 +186,7 @@ function cpc_taxonomy_metadata_edit( $tag ) {
 
 	<tr class="form-field">
 		<th scope="row" valign="top">
-			<label for="cpc_forum_cat_page"><?php _e('WordPress-Seite', CPC2_TEXT_DOMAIN); ?></label>
+			<label for="cpc_forum_cat_page"><?php _e('ClassicPress-Seite', CPC2_TEXT_DOMAIN); ?></label>
 		</th>
 		<td>
 			<?php 
@@ -208,7 +208,7 @@ function cpc_taxonomy_metadata_edit( $tag ) {
 			echo '</select>';
 			 ?>						
 			<br />
-			<span class="description"><?php _e('WordPress-Seite, auf der die Shortcodes dieses Forums verfügbar sind.', CPC2_TEXT_DOMAIN); ?>
+			<span class="description"><?php _e('ClassicPress-Seite, auf der die Shortcodes dieses Forums verfügbar sind.', CPC2_TEXT_DOMAIN); ?>
 			<?php if ($forum_page) { ?> [<a href="post.php?post=<?php echo $forum_page; ?>&action=edit"><?php _e('Bearbeiten', CPC2_TEXT_DOMAIN); ?></a>]<?php } ?></span><br />
 			<div class="description"><br /><strong><?php _e('Stelle sicher, dass Dein Forum-Slug mit Deinem Forum-Seiten-Slug übereinstimmt.', CPC2_TEXT_DOMAIN); ?></strong><br />
 			<strong><?php _e('Deine Forumseite sollte keine übergeordnete Seite haben.', CPC2_TEXT_DOMAIN); ?></strong></div>

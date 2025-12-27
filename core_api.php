@@ -5,7 +5,7 @@
  *
  * @since 14.12.2
  *
- * @param   int     $user_id       The WordPress user ID
+ * @param   int     $user_id       The ClassicPress user ID
  * @param   mixed   $format        Set to false to return date/time value, or a string for formatting, eg: "Last active: %s ago"
  *
  * @return  mixed   Date/time value, formatted string, or false if no last active value available
@@ -25,17 +25,17 @@ function cpc_api_user_last_active($user_id, $format=false) {
 
 
 /**
- * Fügt einen WordPress-Beitrag des Typs cpc_activity ein
+ * Fügt einen ClassicPress-Beitrag des Typs cpc_activity ein
  *
  * @since 14.12.2
  *
  * @param   string  $activity_post Der Aktivitätspost, der eingefügt werden soll
- * @param   int     $the_author_id ID eines WordPress-Mitglieds als Autor des Aktivitätsposts
- * @param   int     $the_target_id ID eines WordPress-Mitglieds als Ziel des Aktivitätsposts (verwende $the_author_id für Post an sich selbst/Freunde)
+ * @param   int     $the_author_id ID eines ClassicPress-Mitglieds als Autor des Aktivitätsposts
+ * @param   int     $the_target_id ID eines ClassicPress-Mitglieds als Ziel des Aktivitätsposts (verwende $the_author_id für Post an sich selbst/Freunde)
  * @param   array   $the_post      Optional $_POST zur weiteren Verarbeitung durch cpc_activity_post_add_hook
  * @param   array   $the_files     Optional $_FILES zur weiteren Verarbeitung durch cpc_activity_post_add_hook
  *
- * @return  int     ID des neuen WordPress-Beitrags oder false, wenn das Einfügen fehlgeschlagen ist
+ * @return  int     ID des neuen ClassicPress-Beitrags oder false, wenn das Einfügen fehlgeschlagen ist
  *
  * Hinweis: Dies beinhaltet den Hook cpc_activity_post_add_hook, sodass Benachrichtigungen generiert werden können
  */

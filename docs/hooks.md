@@ -14,7 +14,7 @@ title: "PS Community Hooks"
 
 ### Hook: cpc_activity_post_add_hook
 
-**Beschreibung**: Wird ausgelöst, nachdem ein neuer WordPress-Beitrag des Typs `cpc_activity` eingefügt wurde. 
+**Beschreibung**: Wird ausgelöst, nachdem ein neuer ClassicPress-Beitrag des Typs `cpc_activity` eingefügt wurde. 
 Ermöglicht es, zusätzliche Aktionen oder Benachrichtigungen zu generieren.
 
 **Seit**: 14.12.2
@@ -25,7 +25,7 @@ Ermöglicht es, zusätzliche Aktionen oder Benachrichtigungen zu generieren.
 |--------------|--------|-----------------------------------------------------------------------------|
 | `$the_post`  | array  | Optional. Weitere zu verarbeitende Daten aus `$_POST`.                      |
 | `$the_files` | array  | Optional. Weitere zu verarbeitende Daten aus `$_FILES`.                     |
-| `$new_id`    | int    | Die ID des neu erstellten WordPress-Beitrags.                               |
+| `$new_id`    | int    | Die ID des neu erstellten ClassicPress-Beitrags.                               |
 
 ### Beispiel
 
@@ -536,7 +536,7 @@ Dieser Hook ist nützlich, um nach der Erstellung einer neuen Benachrichtigung w
 ### Hook: `cpc_admin_getting_started_alerts`
 
 **Beschreibung**: 
-Diese Funktion zeigt die Einstellungsseite für Benachrichtigungen im Admin-Bereich von WordPress an. Sie bietet Optionen zur Konfiguration von E-Mail-Benachrichtigungen und zeigt Hilfetexte und Links zu nützlichen Plugins an.
+Diese Funktion zeigt die Einstellungsseite für Benachrichtigungen im Admin-Bereich von ClassicPress an. Sie bietet Optionen zur Konfiguration von E-Mail-Benachrichtigungen und zeigt Hilfetexte und Links zu nützlichen Plugins an.
 
 **Seit**: 0.0.1
 
@@ -583,7 +583,7 @@ function my_custom_admin_alerts_setup() {
 
 **Verwendung**:
 
-Die Funktion wird verwendet, um die Admin-Benutzeroberfläche für die Benachrichtigungseinstellungen zu erstellen und anzupassen. Sie sollte innerhalb des WordPress-Adminbereichs aufgerufen werden.
+Die Funktion wird verwendet, um die Admin-Benutzeroberfläche für die Benachrichtigungseinstellungen zu erstellen und anzupassen. Sie sollte innerhalb des ClassicPress-Adminbereichs aufgerufen werden.
 
 ## cpc_alerts_shortcodes.php
 
@@ -608,7 +608,7 @@ function my_custom_initialization() {
 
 ### Hook: cpc_activity_comment_add_hook
 
-**Beschreibung**: Wird ausgelöst, nachdem ein neuer Kommentar im WordPress-Beitrag des Typs `cpc_activity_comment` eingefügt wurde. Dies ermöglicht es Entwicklern, zusätzliche Aktionen nach dem Hinzufügen eines Kommentars durchzuführen, z.B. das Aktualisieren von Caches oder das Senden von Benachrichtigungen.
+**Beschreibung**: Wird ausgelöst, nachdem ein neuer Kommentar im ClassicPress-Beitrag des Typs `cpc_activity_comment` eingefügt wurde. Dies ermöglicht es Entwicklern, zusätzliche Aktionen nach dem Hinzufügen eines Kommentars durchzuführen, z.B. das Aktualisieren von Caches oder das Senden von Benachrichtigungen.
 
 **Seit**: Unbekannt
 

@@ -21,7 +21,7 @@ function cpc_admin_getting_started_options() {
             echo '<div id="cpc_welcome_bar" style="margin-top: 20px;">';
                 echo '<img id="cpc_welcome_logo" style="width:56px; height:56px; float:left;" src="'.plugins_url('../cp-community/css/images/cpc_logo.png', __FILE__).'" title="'.__('help', CPC2_TEXT_DOMAIN).'" />';
                 echo '<div style="font-size:2em; line-height:1em; font-weight:100; color:#fff;">'.__('Willkommen bei CP-Community', CPC2_TEXT_DOMAIN).'</div>';
-                echo '<p style="color:#fff;"><em>'.__('Das ultimative Plugin für soziale Netzwerke für WordPress', CPC2_TEXT_DOMAIN).'</em></p>';
+                echo '<p style="color:#fff;"><em>'.__('Das ultimative Plugin für soziale Netzwerke für ClassicPress', CPC2_TEXT_DOMAIN).'</em></p>';
             echo '</div>';
 
             $css = 'cpc_admin_getting_started_menu_item_remove_icon ';    
@@ -45,8 +45,8 @@ function cpc_admin_getting_started_options() {
                     } else {
             
                         echo '<div id="cpc_admin_getting_started_options_help" style="margin-bottom:20px;'.(true || !isset($_POST['cpc_expand_shortcode']) ? '' : 'display:none;').'">';
-                        echo __('Dieser Abschnitt bietet eine schnelle und einfache Möglichkeit, alle Shortcodes der CP-Community anzuzeigen und anzupassen, die jeweils zu jeder WordPress-Seite, jedem Beitrag oder jedem Text-Widget hinzugefügt werden können.', CPC2_TEXT_DOMAIN).'<br />';
-                        echo sprintf(__('Wenn Du nicht sicher bist, welcher Shortcode auf einer WordPress-Seite verwendet wird, <a href="%s">bearbeite die Seite</a> und schaue im Seiteninhaltseditor nach.', CPC2_TEXT_DOMAIN), admin_url( 'edit.php?post_type=page' )).'</p>';
+                        echo __('Dieser Abschnitt bietet eine schnelle und einfache Möglichkeit, alle Shortcodes der CP-Community anzuzeigen und anzupassen, die jeweils zu jeder ClassicPress-Seite, jedem Beitrag oder jedem Text-Widget hinzugefügt werden können.', CPC2_TEXT_DOMAIN).'<br />';
+                        echo sprintf(__('Wenn Du nicht sicher bist, welcher Shortcode auf einer ClassicPress-Seite verwendet wird, <a href="%s">bearbeite die Seite</a> und schaue im Seiteninhaltseditor nach.', CPC2_TEXT_DOMAIN), admin_url( 'edit.php?post_type=page' )).'</p>';
                         echo '<p style="margin-top:-8px">'.sprintf(__('Wähle in der linken Spalte einen allgemeinen Bereich und dann einen angezeigten Shortcode aus. Du kannst dann die Standardwerte sehen und festlegen und weitere Hilfe für diesen Shortcode erhalten. Um einen Wert zurückzusetzen, entferne den Wert und speichere ihn, oder <a onclick="return confirm(\''.__('Bist Du Dir sicher, dass dies nicht rückgängig gemacht werden kann?', CPC2_TEXT_DOMAIN).'\')" href="% s">Alle Shortcode-Optionen zurücksetzen</a>.', CPC2_TEXT_DOMAIN), admin_url( 'admin.php?page=cpc_com_shortcodes&cpc_reset_options=1' )).' ';
                         echo __('Du kannst jedem Shortcode auch Optionen hinzufügen, wenn Du eine Seite/einen Beitrag/ein Widget bearbeitest, indem Du Shortcode-Optionen verwendest.', CPC2_TEXT_DOMAIN).'</p>';
                         echo '<div style="width:100%;text-align:center;"><div style="margin-left:auto;margin-right:auto;width:25%;padding:6px;background-color:#cfcfcf">'.sprintf('%s','<a href="javascript:void(0);" id="cpc_show_shortcodes_show">Beispiele zeigen</a><a href="javascript:void(0);" id="cpc_show_shortcodes_hide" style="display:none">Beispiele ausblenden</a>').'&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;';
@@ -162,7 +162,7 @@ function cpc_admin_getting_started_options() {
                             $values = get_option('cpc_shortcode_options_'.'cpc_conditional') ? get_option('cpc_shortcode_options_'.'cpc_conditional') : array();   
                             echo cpc_show_options($cpc_expand_shortcode, 'cpc_user_id_tab');
                                 echo '<strong>'.__('Zweck:', CPC2_TEXT_DOMAIN).'</strong> '.__("Gibt die Benutzer-ID des aktuellen Benutzers aus, oder, wenn auf einer Profilseite, diese Benutzer-ID.", CPC2_TEXT_DOMAIN).'<br />';
-                                echo '<strong>'.__('Wie benutzen:', CPC2_TEXT_DOMAIN).'</strong> '.__('Füge [cpc-user-id] zu einer WordPress-Seite, einem Beitrag oder einem Text-Widget hinzu.', CPC2_TEXT_DOMAIN);
+                                echo '<strong>'.__('Wie benutzen:', CPC2_TEXT_DOMAIN).'</strong> '.__('Füge [cpc-user-id] zu einer ClassicPress-Seite, einem Beitrag oder einem Text-Widget hinzu.', CPC2_TEXT_DOMAIN);
                                 echo cpc_codex_link('https://cp-community.n3rds.work/cpc_codex/cpc-user-id/');
                                 echo '<p><strong>'.__('Optionen', CPC2_TEXT_DOMAIN).'</strong><br />';
                                 echo '<table cellpadding="0" cellspacing="0"  class="cpc_shortcode_value_row">';
@@ -175,7 +175,7 @@ function cpc_admin_getting_started_options() {
                             $values = get_option('cpc_shortcode_options_'.'cpc_conditional') ? get_option('cpc_shortcode_options_'.'cpc_conditional') : array();   
                             echo cpc_show_options($cpc_expand_shortcode, 'cpc_is_logged_in_tab');
                                 echo '<strong>'.__('Zweck:', CPC2_TEXT_DOMAIN).'</strong> '.__("Zeigt Inhalte nur an, wenn der Browser (Benutzer) angemeldet ist.", CPC2_TEXT_DOMAIN).'<br />';
-                                echo '<strong>'.__('Wie benutzen:', CPC2_TEXT_DOMAIN).'</strong> '.__('Füge [cpc-is-logged-in]INHALT[/cpc-is-logged-in] zu einer WordPress-Seite, einem Beitrag oder einem Text-Widget hinzu.', CPC2_TEXT_DOMAIN);
+                                echo '<strong>'.__('Wie benutzen:', CPC2_TEXT_DOMAIN).'</strong> '.__('Füge [cpc-is-logged-in]INHALT[/cpc-is-logged-in] zu einer ClassicPress-Seite, einem Beitrag oder einem Text-Widget hinzu.', CPC2_TEXT_DOMAIN);
                                 echo cpc_codex_link('https://cp-community.n3rds.work/cpc_codex/cpc-is-logged-in/');
                                 echo '<p><strong>'.__('Optionen', CPC2_TEXT_DOMAIN).'</strong><br />';
                                 echo '<table cellpadding="0" cellspacing="0"  class="cpc_shortcode_value_row">';
@@ -189,7 +189,7 @@ function cpc_admin_getting_started_options() {
                             $values = get_option('cpc_shortcode_options_'.'cpc_conditional') ? get_option('cpc_shortcode_options_'.'cpc_conditional') : array();   
                             echo cpc_show_options($cpc_expand_shortcode, 'cpc_not_logged_in_tab');
                                 echo '<strong>'.__('Zweck:', CPC2_TEXT_DOMAIN).'</strong> '.__("Zeigt Inhalte nur an, wenn der Browser (Benutzer) <strong>nicht</strong> angemeldet ist.", CPC2_TEXT_DOMAIN).'<br />';
-                                echo '<strong>'.__('Wie benutzen:', CPC2_TEXT_DOMAIN).'</strong> '.__('Füge [cpc-not-logged-in]INHALT[/cpc-not-logged-in] zu einer WordPress-Seite, einem Beitrag oder einem Text-Widget hinzu.', CPC2_TEXT_DOMAIN);
+                                echo '<strong>'.__('Wie benutzen:', CPC2_TEXT_DOMAIN).'</strong> '.__('Füge [cpc-not-logged-in]INHALT[/cpc-not-logged-in] zu einer ClassicPress-Seite, einem Beitrag oder einem Text-Widget hinzu.', CPC2_TEXT_DOMAIN);
                                 echo cpc_codex_link('https://cp-community.n3rds.work/cpc_codex/cpc-not-logged-in/');
                                 echo '<p><strong>'.__('Optionen', CPC2_TEXT_DOMAIN).'</strong><br />';
                                 echo '<table cellpadding="0" cellspacing="0"  class="cpc_shortcode_value_row">';
@@ -203,7 +203,7 @@ function cpc_admin_getting_started_options() {
                             $values = get_option('cpc_shortcode_options_'.'cpc_conditional') ? get_option('cpc_shortcode_options_'.'cpc_conditional') : array();   
                             echo cpc_show_options($cpc_expand_shortcode, 'cpc_is_forum_posts_list_tab');
                                 echo '<strong>'.__('Zweck:', CPC2_TEXT_DOMAIN).'</strong> '.__("Zeigt nur Inhalte an, wenn eine Liste von Forenbeiträgen angezeigt wird.", CPC2_TEXT_DOMAIN).'<br />';
-                                echo '<strong>'.__('Wie benutzen:', CPC2_TEXT_DOMAIN).'</strong> '.__('Füge [cpc-is-forum-posts-list]INHALT[/cpc-is-forum-posts-list] zu einer WordPress-Seite, einem Beitrag oder einem Text-Widget hinzu.', CPC2_TEXT_DOMAIN);
+                                echo '<strong>'.__('Wie benutzen:', CPC2_TEXT_DOMAIN).'</strong> '.__('Füge [cpc-is-forum-posts-list]INHALT[/cpc-is-forum-posts-list] zu einer ClassicPress-Seite, einem Beitrag oder einem Text-Widget hinzu.', CPC2_TEXT_DOMAIN);
                                 echo cpc_codex_link('https://cp-community.n3rds.work/cpc_codex/cpc-is-forum-posts-list');
                                 echo '<p><strong>'.__('Optionen', CPC2_TEXT_DOMAIN).'</strong><br />';
                                 echo '<table cellpadding="0" cellspacing="0"  class="cpc_shortcode_value_row">';
@@ -217,7 +217,7 @@ function cpc_admin_getting_started_options() {
                             $values = get_option('cpc_shortcode_options_'.'cpc_conditional') ? get_option('cpc_shortcode_options_'.'cpc_conditional') : array();   
                             echo cpc_show_options($cpc_expand_shortcode, 'cpc_is_forum_single_post_tab');
                                 echo '<strong>'.__('Zweck:', CPC2_TEXT_DOMAIN).'</strong> '.__("Zeigt Inhalte nur an, wenn ein einzelner Forumsbeitrag mit Antworten/Kommentaren angezeigt wird.", CPC2_TEXT_DOMAIN).'<br />';
-                                echo '<strong>'.__('Wie benutzen:', CPC2_TEXT_DOMAIN).'</strong> '.__('Füge [cpc_is_forum_single_post]INHALT[/cpc_is_forum_single_post] zu einer WordPress-Seite, einem Beitrag oder einem Text-Widget hinzu.', CPC2_TEXT_DOMAIN);
+                                echo '<strong>'.__('Wie benutzen:', CPC2_TEXT_DOMAIN).'</strong> '.__('Füge [cpc_is_forum_single_post]INHALT[/cpc_is_forum_single_post] zu einer ClassicPress-Seite, einem Beitrag oder einem Text-Widget hinzu.', CPC2_TEXT_DOMAIN);
                                 echo cpc_codex_link('https://cp-community.n3rds.work/cpc_codex/cpc-is-forum-single-post');
                                 echo '<p><strong>'.__('Optionen', CPC2_TEXT_DOMAIN).'</strong><br />';
                                 echo '<table cellpadding="0" cellspacing="0"  class="cpc_shortcode_value_row">';
@@ -234,7 +234,7 @@ function cpc_admin_getting_started_options() {
                             $values = get_option('cpc_shortcode_options_'.'cpc_activity') ? get_option('cpc_shortcode_options_'.'cpc_activity') : array();   
                             echo cpc_show_options($cpc_expand_shortcode, 'cpc_activity_tab');
                                 echo '<strong>'.__('Zweck:', CPC2_TEXT_DOMAIN).'</strong> '.__("Zeigt den Aktivitätsfeed des Benutzers an.", CPC2_TEXT_DOMAIN).'<br />';
-                                echo '<strong>'.__('Wie benutzen:', CPC2_TEXT_DOMAIN).'</strong> '.__('Füge [cpc-activity] zu einer WordPress-Seite, einem Beitrag oder einem Text-Widget hinzu.', CPC2_TEXT_DOMAIN);
+                                echo '<strong>'.__('Wie benutzen:', CPC2_TEXT_DOMAIN).'</strong> '.__('Füge [cpc-activity] zu einer ClassicPress-Seite, einem Beitrag oder einem Text-Widget hinzu.', CPC2_TEXT_DOMAIN);
                                 echo cpc_codex_link('https://cp-community.n3rds.work/cpc_codex/cpc-activity/');
                                 echo '<p><strong>'.__('Optionen', CPC2_TEXT_DOMAIN).'</strong><br />';
                                 echo '<table cellpadding="0" cellspacing="0"  class="cpc_shortcode_value_row">';
@@ -434,7 +434,7 @@ function cpc_admin_getting_started_options() {
                             $values = get_option('cpc_shortcode_options_'.'cpc_activity_page') ? get_option('cpc_shortcode_options_'.'cpc_activity_page') : array();   
                             echo cpc_show_options($cpc_expand_shortcode, 'cpc_activity_page_tab');
                                 echo '<strong>'.__('Zweck:', CPC2_TEXT_DOMAIN).'</strong> '.__('Zeigt eine Standardprofilseite mit allen eingerichteten allgemeinen Elementen an.', CPC2_TEXT_DOMAIN).'<br />';
-                                echo '<strong>'.__('Wie benutzen:', CPC2_TEXT_DOMAIN).'</strong> '.__('Füge [cpc-activity-page] zu einer WordPress-Seite, einem Beitrag oder einem Text-Widget hinzu.', CPC2_TEXT_DOMAIN);
+                                echo '<strong>'.__('Wie benutzen:', CPC2_TEXT_DOMAIN).'</strong> '.__('Füge [cpc-activity-page] zu einer ClassicPress-Seite, einem Beitrag oder einem Text-Widget hinzu.', CPC2_TEXT_DOMAIN);
                                 echo cpc_codex_link('https://cp-community.n3rds.work/cpc_codex/cpc-activity-page');
                                 echo '<p><strong>'.__('Optionen', CPC2_TEXT_DOMAIN).'</strong></p>';
                                 echo '<table cellpadding="0" cellspacing="0"  class="cpc_shortcode_value_row">';
@@ -493,7 +493,7 @@ function cpc_admin_getting_started_options() {
                             $values = get_option('cpc_shortcode_options_'.'cpc_activity_post') ? get_option('cpc_shortcode_options_'.'cpc_activity_post') : array();   
                             echo cpc_show_options($cpc_expand_shortcode, 'cpc_activity_post_tab');
                                 echo '<strong>'.__('Zweck:', CPC2_TEXT_DOMAIN).'</strong> '.__("Zeigt einen Textbereich zum Hinzufügen eines Aktivitätsbeitrags an.", CPC2_TEXT_DOMAIN).'<br />';
-                                echo '<strong>'.__('Wie benutzen:', CPC2_TEXT_DOMAIN).'</strong> '.__('Füge [cpc-activity-post] zu einer WordPress-Seite, einem Beitrag oder einem Text-Widget hinzu.', CPC2_TEXT_DOMAIN);
+                                echo '<strong>'.__('Wie benutzen:', CPC2_TEXT_DOMAIN).'</strong> '.__('Füge [cpc-activity-post] zu einer ClassicPress-Seite, einem Beitrag oder einem Text-Widget hinzu.', CPC2_TEXT_DOMAIN);
                                 echo cpc_codex_link('https://cp-community.n3rds.work/cpc_codex/cpc-activity-post/');
                                 echo '<p><strong>'.__('Optionen', CPC2_TEXT_DOMAIN).'</strong><br />';
                                 echo '<table cellpadding="0" cellspacing="0"  class="cpc_shortcode_value_row">';
@@ -537,7 +537,7 @@ function cpc_admin_getting_started_options() {
                             $values = get_option('cpc_shortcode_options_'.'cpc_display_name') ? get_option('cpc_shortcode_options_'.'cpc_display_name') : array();   
                             echo cpc_show_options($cpc_expand_shortcode, 'cpc_display_name_tab');
                                 echo '<strong>'.__('Zweck:', CPC2_TEXT_DOMAIN).'</strong> '.__("Zeigt den Anzeigenamen eines Benutzers an.", CPC2_TEXT_DOMAIN).'<br />';
-                                echo '<strong>'.__('Wie benutzen:', CPC2_TEXT_DOMAIN).'</strong> '.__('Füge [cpc-display-name] zu einer WordPress-Seite, einem Beitrag oder einem Text-Widget hinzu.', CPC2_TEXT_DOMAIN);
+                                echo '<strong>'.__('Wie benutzen:', CPC2_TEXT_DOMAIN).'</strong> '.__('Füge [cpc-display-name] zu einer ClassicPress-Seite, einem Beitrag oder einem Text-Widget hinzu.', CPC2_TEXT_DOMAIN);
                                 echo cpc_codex_link('https://cp-community.n3rds.work/cpc_codex/cpc-display-name/');
                                 echo '<p><strong>'.__('Optionen', CPC2_TEXT_DOMAIN).'</strong><br />';
                                 echo '<table cellpadding="0" cellspacing="0"  class="cpc_shortcode_value_row">';
@@ -573,7 +573,7 @@ function cpc_admin_getting_started_options() {
                             $values = get_option('cpc_shortcode_options_'.'cpc_last_logged_in') ? get_option('cpc_shortcode_options_'.'cpc_last_logged_in') : array();   
                             echo cpc_show_options($cpc_expand_shortcode, 'cpc_last_logged_in_tab');
                                 echo '<strong>'.__('Zweck:', CPC2_TEXT_DOMAIN).'</strong> '.__("Zeigt an, wann sich ein Benutzer zuletzt angemeldet hat.", CPC2_TEXT_DOMAIN).'<br />';
-                                echo '<strong>'.__('Wie benutzen:', CPC2_TEXT_DOMAIN).'</strong> '.__('Füge [cpc-last-logged-in] zu einer WordPress-Seite, einem Beitrag oder einem Text-Widget hinzu.', CPC2_TEXT_DOMAIN);
+                                echo '<strong>'.__('Wie benutzen:', CPC2_TEXT_DOMAIN).'</strong> '.__('Füge [cpc-last-logged-in] zu einer ClassicPress-Seite, einem Beitrag oder einem Text-Widget hinzu.', CPC2_TEXT_DOMAIN);
                                 echo cpc_codex_link('https://cp-community.n3rds.work/cpc_codex/cpc-last-logged-in/');
                                 echo '<p><strong>'.__('Optionen', CPC2_TEXT_DOMAIN).'</strong><br />';
                                 echo '<table cellpadding="0" cellspacing="0"  class="cpc_shortcode_value_row">';
@@ -600,7 +600,7 @@ function cpc_admin_getting_started_options() {
                             $values = get_option('cpc_shortcode_options_'.'cpc_last_active') ? get_option('cpc_shortcode_options_'.'cpc_last_active') : array();   
                             echo cpc_show_options($cpc_expand_shortcode, 'cpc_last_active_tab');
                                 echo '<strong>'.__('Zweck:', CPC2_TEXT_DOMAIN).'</strong> '.__("Zeigt an, wann ein Benutzer zuletzt aktiv war.", CPC2_TEXT_DOMAIN).'<br />';
-                                echo '<strong>'.__('Wie benutzen:', CPC2_TEXT_DOMAIN).'</strong> '.__('Füge [cpc-last-active] zu einer WordPress-Seite, einem Beitrag oder einem Text-Widget hinzu.', CPC2_TEXT_DOMAIN);
+                                echo '<strong>'.__('Wie benutzen:', CPC2_TEXT_DOMAIN).'</strong> '.__('Füge [cpc-last-active] zu einer ClassicPress-Seite, einem Beitrag oder einem Text-Widget hinzu.', CPC2_TEXT_DOMAIN);
                                 echo cpc_codex_link('https://cp-community.n3rds.work/cpc_codex/cpc-last-active/');
                                 echo '<p><strong>'.__('Optionen', CPC2_TEXT_DOMAIN).'</strong><br />';
                                 echo '<table cellpadding="0" cellspacing="0"  class="cpc_shortcode_value_row">';
@@ -630,7 +630,7 @@ function cpc_admin_getting_started_options() {
                             $values = get_option('cpc_shortcode_options_'.'cpc_alerts_activity') ? get_option('cpc_shortcode_options_'.'cpc_alerts_activity') : array();   
                             echo cpc_show_options($cpc_expand_shortcode, 'cpc_alerts_activity_tab');
                                 echo '<strong>'.__('Zweck:', CPC2_TEXT_DOMAIN).'</strong> '.__("Zeigt eine Dropdown-Liste mit Benachrichtigungen für den Benutzer an.", CPC2_TEXT_DOMAIN).'<br />';
-                                echo '<strong>'.__('Wie benutzen:', CPC2_TEXT_DOMAIN).'</strong> '.__('Füge [cpc-alerts-activity] zu einer WordPress-Seite, einem Beitrag oder einem Text-Widget hinzu.', CPC2_TEXT_DOMAIN);
+                                echo '<strong>'.__('Wie benutzen:', CPC2_TEXT_DOMAIN).'</strong> '.__('Füge [cpc-alerts-activity] zu einer ClassicPress-Seite, einem Beitrag oder einem Text-Widget hinzu.', CPC2_TEXT_DOMAIN);
                                 echo cpc_codex_link('https://cp-community.n3rds.work/cpc_codex/cpc-alerts-activity');
                                 echo '<p><strong>'.__('Optionen', CPC2_TEXT_DOMAIN).'</strong><br />';
                                 echo '<table cellpadding="0" cellspacing="0"  class="cpc_shortcode_value_row">';
@@ -740,7 +740,7 @@ function cpc_admin_getting_started_options() {
                             $values = get_option('cpc_shortcode_options_'.'cpc_avatar') ? get_option('cpc_shortcode_options_'.'cpc_avatar') : array();   
                             echo cpc_show_options($cpc_expand_shortcode, 'cpc_avatar_tab');
                                 echo '<strong>'.__('Zweck:', CPC2_TEXT_DOMAIN).'</strong> '.__("Zeigt den Avatar eines Benutzers an.", CPC2_TEXT_DOMAIN).'<br />';
-                                echo '<strong>'.__('Wie benutzen:', CPC2_TEXT_DOMAIN).'</strong> '.__('Füge [cpc-avatar] zu einer WordPress-Seite, einem Beitrag oder einem Text-Widget hinzu.', CPC2_TEXT_DOMAIN);
+                                echo '<strong>'.__('Wie benutzen:', CPC2_TEXT_DOMAIN).'</strong> '.__('Füge [cpc-avatar] zu einer ClassicPress-Seite, einem Beitrag oder einem Text-Widget hinzu.', CPC2_TEXT_DOMAIN);
                                 echo cpc_codex_link('https://cp-community.n3rds.work/cpc_codex/cpc-avatar');
                                 echo '<p><strong>'.__('Optionen', CPC2_TEXT_DOMAIN).'</strong><br />';
                                 echo '<table cellpadding="0" cellspacing="0"  class="cpc_shortcode_value_row">';
@@ -811,7 +811,7 @@ function cpc_admin_getting_started_options() {
                                         echo '<option value="user"'.($user_id == 'user' ? ' SELECTED' : '').'>'.__('Aktueller Benutzer', CPC2_TEXT_DOMAIN).'</option>';
                                     echo '</select> '.__('oder im Shortcode auf eine Benutzer-ID setzen', CPC2_TEXT_DOMAIN).'</td><td>(user_id="'.$user_id.'")</td></tr>';    
                                     echo '<tr class="cpc_desc"><td colspan="3">';
-                                        echo __("Ob der Seitenkontext wiedergegeben werden soll (wie auf einer Profilseite) oder auf den aktuell angemeldeten Benutzer festgelegt werden soll. Kann auch auf eine bestimmte WordPress-Benutzer-ID eingestellt werden.", CPC2_TEXT_DOMAIN);
+                                        echo __("Ob der Seitenkontext wiedergegeben werden soll (wie auf einer Profilseite) oder auf den aktuell angemeldeten Benutzer festgelegt werden soll. Kann auch auf eine bestimmte ClassicPress-Benutzer-ID eingestellt werden.", CPC2_TEXT_DOMAIN);
                                         echo '</td></tr>';
 
                         
@@ -824,7 +824,7 @@ function cpc_admin_getting_started_options() {
                             $values = get_option('cpc_shortcode_options_'.'cpc_avatar_change') ? get_option('cpc_shortcode_options_'.'cpc_avatar_change') : array();   
                             echo cpc_show_options($cpc_expand_shortcode, 'cpc_avatar_change_tab');
                                 echo '<strong>'.__('Zweck:', CPC2_TEXT_DOMAIN).'</strong> '.__("Zeigt das Formular an, mit dem Benutzer einen Avatar hochladen können.", CPC2_TEXT_DOMAIN).'<br />';
-                                echo '<strong>'.__('Wie benutzen:', CPC2_TEXT_DOMAIN).'</strong> '.__('Füge [cpc-avatar-change] zu einer WordPress-Seite, einem Beitrag oder einem Text-Widget hinzu.', CPC2_TEXT_DOMAIN);
+                                echo '<strong>'.__('Wie benutzen:', CPC2_TEXT_DOMAIN).'</strong> '.__('Füge [cpc-avatar-change] zu einer ClassicPress-Seite, einem Beitrag oder einem Text-Widget hinzu.', CPC2_TEXT_DOMAIN);
                                 echo cpc_codex_link('https://cp-community.n3rds.work/cpc_codex/cpc-avatar-change');
                                 echo '<p><strong>'.__('Optionen', CPC2_TEXT_DOMAIN).'</strong><br />';
                                 echo '<table cellpadding="0" cellspacing="0"  class="cpc_shortcode_value_row">';
@@ -958,7 +958,7 @@ function cpc_admin_getting_started_options() {
                             $values = get_option('cpc_shortcode_options_'.'cpc_avatar_change_link') ? get_option('cpc_shortcode_options_'.'cpc_avatar_change_link') : array();   
                             echo cpc_show_options($cpc_expand_shortcode, 'cpc_avatar_change_link_tab');
                                 echo '<strong>'.__('Zweck:', CPC2_TEXT_DOMAIN).'</strong> '.__("Zeigt einen Link an, über den ein Benutzer seinen Avatar ändern kann.", CPC2_TEXT_DOMAIN).'<br />';
-                                echo '<strong>'.__('Wie benutzen:', CPC2_TEXT_DOMAIN).'</strong> '.__('Füge [cpc-avatar-change-link] zu einer WordPress-Seite, einem Beitrag oder einem Text-Widget hinzu.', CPC2_TEXT_DOMAIN);
+                                echo '<strong>'.__('Wie benutzen:', CPC2_TEXT_DOMAIN).'</strong> '.__('Füge [cpc-avatar-change-link] zu einer ClassicPress-Seite, einem Beitrag oder einem Text-Widget hinzu.', CPC2_TEXT_DOMAIN);
                                 echo cpc_codex_link('https://cp-community.n3rds.work/cpc_codex/cpc-avatar-change-link');
                                 echo '<p><strong>'.__('Optionen', CPC2_TEXT_DOMAIN).'</strong><br />';
                                 echo '<table cellpadding="0" cellspacing="0"  class="cpc_shortcode_value_row">';
@@ -995,7 +995,7 @@ function cpc_admin_getting_started_options() {
                             $values = get_option('cpc_shortcode_options_'.'cpc_forum') ? get_option('cpc_shortcode_options_'.'cpc_forum') : array();   
                             echo cpc_show_options($cpc_expand_shortcode, 'cpc_forum_tab');
                                 echo '<strong>'.__('Zweck:', CPC2_TEXT_DOMAIN).'</strong> '.__("Zeigt Themen (und Antworten, wenn der Stil auf klassisch eingestellt ist) eines Forums an.", CPC2_TEXT_DOMAIN).'<br />';
-                                echo '<strong>'.__('Wie benutzen:', CPC2_TEXT_DOMAIN).'</strong> '.sprintf(__('Füge [cpc-forum slug="xxx"] zu einer WordPress-Seite hinzu, wobei xxx der <a href="%s">Slug Deines Forums</a> ist.', CPC2_TEXT_DOMAIN), admin_url( 'edit-tags.php?taxonomy=cpc_forum&post_type=cpc_forum_post' ));
+                                echo '<strong>'.__('Wie benutzen:', CPC2_TEXT_DOMAIN).'</strong> '.sprintf(__('Füge [cpc-forum slug="xxx"] zu einer ClassicPress-Seite hinzu, wobei xxx der <a href="%s">Slug Deines Forums</a> ist.', CPC2_TEXT_DOMAIN), admin_url( 'edit-tags.php?taxonomy=cpc_forum&post_type=cpc_forum_post' ));
                                 echo cpc_codex_link('https://cp-community.n3rds.work/cpc_codex/cpc-forum');
                                 echo '<p><strong>'.__('Optionen', CPC2_TEXT_DOMAIN).'</strong><br />';
                                 echo '<table cellpadding="0" cellspacing="0"  class="cpc_shortcode_value_row">';
@@ -1326,7 +1326,7 @@ function cpc_admin_getting_started_options() {
                             $values = get_option('cpc_shortcode_options_'.'cpc_forum_backto') ? get_option('cpc_shortcode_options_'.'cpc_forum_backto') : array();   
                             echo cpc_show_options($cpc_expand_shortcode, 'cpc_forum_backto_tab');
                                 echo '<strong>'.__('Zweck:', CPC2_TEXT_DOMAIN).'</strong> '.__("Zeigt einen Link zurück zu den Forumsthemen an. Wird nur angezeigt, wenn ein einzelnes Thema angezeigt wird.", CPC2_TEXT_DOMAIN).'<br />';
-                                echo '<strong>'.__('Wie benutzen:', CPC2_TEXT_DOMAIN).'</strong> '.sprintf(__('Füge [cpc-forum-backto slug="xxx"] zur WordPress-Seite Deines Forums hinzu (klicke <a href="%s">hier</a> auf den Link zur <strong>Seite</strong>), wobei xxx der <a href="%s">Slug Deines Forums</a> ist.', CPC2_TEXT_DOMAIN), admin_url( 'admin.php?page=cpccom_forum_setup' ), admin_url( 'edit-tags.php?taxonomy=cpc_forum&post_type=cpc_forum_post' ));
+                                echo '<strong>'.__('Wie benutzen:', CPC2_TEXT_DOMAIN).'</strong> '.sprintf(__('Füge [cpc-forum-backto slug="xxx"] zur ClassicPress-Seite Deines Forums hinzu (klicke <a href="%s">hier</a> auf den Link zur <strong>Seite</strong>), wobei xxx der <a href="%s">Slug Deines Forums</a> ist.', CPC2_TEXT_DOMAIN), admin_url( 'admin.php?page=cpccom_forum_setup' ), admin_url( 'edit-tags.php?taxonomy=cpc_forum&post_type=cpc_forum_post' ));
                                 echo cpc_codex_link('https://cp-community.n3rds.work/cpc_codex/cpc-forum-backto');
                                 echo '<p><strong>'.__('Optionen', CPC2_TEXT_DOMAIN).'</strong><br />';
                                 echo '<table cellpadding="0" cellspacing="0"  class="cpc_shortcode_value_row">';
@@ -1343,7 +1343,7 @@ function cpc_admin_getting_started_options() {
                             $values = get_option('cpc_shortcode_options_'.'cpc_forum_comment') ? get_option('cpc_shortcode_options_'.'cpc_forum_comment') : array();   
                             echo cpc_show_options($cpc_expand_shortcode, 'cpc_forum_comment_tab');
                                 echo '<strong>'.__('Zweck:', CPC2_TEXT_DOMAIN).'</strong> '.__("Zeigt einen Textbereich zum Hinzufügen einer Antwort zu einem Forumsthema an. Wird nur angezeigt, wenn ein einzelnes Thema angezeigt wird.", CPC2_TEXT_DOMAIN).'<br />';
-                                echo '<strong>'.__('Wie benutzen:', CPC2_TEXT_DOMAIN).'</strong> '.sprintf(__('Füge [cpc-forum-reply slug="xxx"] zur WordPress-Seite Deines Forums hinzu (klicke <a href="%s">hier</a> auf den Link zur <strong>Seite</strong>), wobei xxx der <a href="%s">Slug Deines Forums</a> ist.', CPC2_TEXT_DOMAIN), admin_url( 'admin.php?page=cpccom_forum_setup' ), admin_url( 'edit-tags.php?taxonomy=cpc_forum&post_type=cpc_forum_post' ));
+                                echo '<strong>'.__('Wie benutzen:', CPC2_TEXT_DOMAIN).'</strong> '.sprintf(__('Füge [cpc-forum-reply slug="xxx"] zur ClassicPress-Seite Deines Forums hinzu (klicke <a href="%s">hier</a> auf den Link zur <strong>Seite</strong>), wobei xxx der <a href="%s">Slug Deines Forums</a> ist.', CPC2_TEXT_DOMAIN), admin_url( 'admin.php?page=cpccom_forum_setup' ), admin_url( 'edit-tags.php?taxonomy=cpc_forum&post_type=cpc_forum_post' ));
                                 echo cpc_codex_link('https://cp-community.n3rds.work/cpc_codex/cpc-forum-reply');
                                 echo '<p><strong>'.__('Optionen', CPC2_TEXT_DOMAIN).'</strong><br />';
                                 echo '<table cellpadding="0" cellspacing="0"  class="cpc_shortcode_value_row">';
@@ -1415,7 +1415,7 @@ function cpc_admin_getting_started_options() {
                             $values = get_option('cpc_shortcode_options_'.'cpc_forum_page') ? get_option('cpc_shortcode_options_'.'cpc_forum_page') : array();   
                             echo cpc_show_options($cpc_expand_shortcode, 'cpc_forum_page_tab');
                                 echo '<strong>'.__('Zweck:', CPC2_TEXT_DOMAIN).'</strong> '.__("Zeigt eine vorgefertigte Seite für ein Forum an.", CPC2_TEXT_DOMAIN).'<br />';
-                                echo '<strong>'.__('Wie benutzen:', CPC2_TEXT_DOMAIN).'</strong> '.sprintf(__('Füge [cpc-forum-page slug="xxx"] zu einer WordPress-Seite hinzu, wobei xxx der <a href="%s">Slug Deines Forums</a> ist.', CPC2_TEXT_DOMAIN), admin_url( 'edit-tags.php?taxonomy=cpc_forum&post_type=cpc_forum_post' ));
+                                echo '<strong>'.__('Wie benutzen:', CPC2_TEXT_DOMAIN).'</strong> '.sprintf(__('Füge [cpc-forum-page slug="xxx"] zu einer ClassicPress-Seite hinzu, wobei xxx der <a href="%s">Slug Deines Forums</a> ist.', CPC2_TEXT_DOMAIN), admin_url( 'edit-tags.php?taxonomy=cpc_forum&post_type=cpc_forum_post' ));
                                 echo cpc_codex_link('https://cp-community.n3rds.work/cpc_codex/cpc-forum-page');
                                 echo '<p><strong>'.__('Optionen', CPC2_TEXT_DOMAIN).'</strong><br />';
                                 echo '<table cellpadding="0" cellspacing="0"  class="cpc_shortcode_value_row">';
@@ -1453,7 +1453,7 @@ function cpc_admin_getting_started_options() {
                             $values = get_option('cpc_shortcode_options_'.'cpc_forum_post') ? get_option('cpc_shortcode_options_'.'cpc_forum_post') : array();   
                             echo cpc_show_options($cpc_expand_shortcode, 'cpc_forum_post_tab');
                                 echo '<strong>'.__('Zweck:', CPC2_TEXT_DOMAIN).'</strong> '.__("Zeigt einen Textbereich zum Hinzufügen eines Forumsthemas an.", CPC2_TEXT_DOMAIN).'<br />';
-                                echo '<strong>'.__('Wie benutzen:', CPC2_TEXT_DOMAIN).'</strong> '.sprintf(__('Füge [cpc-forum-post slug="xxx"] zu einer WordPress-Seite hinzu, wobei xxx der <a href="%s">Slug Deines Forums</a> oder slug="choose" ist, um Benutzern dies zu ermöglichen.', CPC2_TEXT_DOMAIN), admin_url( 'edit-tags.php?taxonomy=cpc_forum&post_type=cpc_forum_post' ));
+                                echo '<strong>'.__('Wie benutzen:', CPC2_TEXT_DOMAIN).'</strong> '.sprintf(__('Füge [cpc-forum-post slug="xxx"] zu einer ClassicPress-Seite hinzu, wobei xxx der <a href="%s">Slug Deines Forums</a> oder slug="choose" ist, um Benutzern dies zu ermöglichen.', CPC2_TEXT_DOMAIN), admin_url( 'edit-tags.php?taxonomy=cpc_forum&post_type=cpc_forum_post' ));
                                 echo cpc_codex_link('https://cp-community.n3rds.work/cpc_codex/cpc-forum-post');
                                 echo '<p><strong>'.__('Optionen', CPC2_TEXT_DOMAIN).'</strong><br />';
                                 echo '<table cellpadding="0" cellspacing="0"  class="cpc_shortcode_value_row">';
@@ -1511,7 +1511,7 @@ function cpc_admin_getting_started_options() {
                             $values = get_option('cpc_shortcode_options_'.'cpc_forums') ? get_option('cpc_shortcode_options_'.'cpc_forums') : array();   
                             echo cpc_show_options($cpc_expand_shortcode, 'cpc_forums_tab');
                                 echo '<strong>'.__('Zweck:', CPC2_TEXT_DOMAIN).'</strong> '.__("Zeigt eine oberste Ebene aller Foren an.", CPC2_TEXT_DOMAIN).'<br />';
-                                echo '<strong>'.__('Wie benutzen:', CPC2_TEXT_DOMAIN).'</strong> '.__('Füge [cpc-forums] zu einer WordPress-Seite, einem Beitrag oder einem Text-Widget hinzu.', CPC2_TEXT_DOMAIN);
+                                echo '<strong>'.__('Wie benutzen:', CPC2_TEXT_DOMAIN).'</strong> '.__('Füge [cpc-forums] zu einer ClassicPress-Seite, einem Beitrag oder einem Text-Widget hinzu.', CPC2_TEXT_DOMAIN);
                                 echo cpc_codex_link('https://cp-community.n3rds.work/cpc_codex/cpc-forums');
                                 echo '<p><strong>'.__('Optionen', CPC2_TEXT_DOMAIN).'</strong><br />';
                                 echo '<table cellpadding="0" cellspacing="0"  class="cpc_shortcode_value_row">';
@@ -1610,7 +1610,7 @@ function cpc_admin_getting_started_options() {
                             $values = get_option('cpc_shortcode_options_'.'cpc_forum_show_posts') ? get_option('cpc_shortcode_options_'.'cpc_forum_show_posts') : array();   
                             echo cpc_show_options($cpc_expand_shortcode, 'cpc_forum_show_posts_tab');
                                 echo '<strong>'.__('Zweck:', CPC2_TEXT_DOMAIN).'</strong> '.__("Flexible Möglichkeit, Forenbeiträge anzuzeigen.", CPC2_TEXT_DOMAIN).'<br />';
-                                echo '<strong>'.__('Wie benutzen:', CPC2_TEXT_DOMAIN).'</strong> '.sprintf(__('Füge [cpc-forum-show-posts slug="xxx"] zur WordPress-Seite Deines Forums hinzu (klicke <a href="%s">hier</a> auf den Link zur Seite). Dabei ist xxx der <a href="%s">Slug Deines Forums</a>.', CPC2_TEXT_DOMAIN), admin_url( 'admin.php?page=cpccom_forum_setup' ), admin_url( 'edit-tags.php?taxonomy=cpc_forum&post_type=cpc_forum_post' ));    
+                                echo '<strong>'.__('Wie benutzen:', CPC2_TEXT_DOMAIN).'</strong> '.sprintf(__('Füge [cpc-forum-show-posts slug="xxx"] zur ClassicPress-Seite Deines Forums hinzu (klicke <a href="%s">hier</a> auf den Link zur Seite). Dabei ist xxx der <a href="%s">Slug Deines Forums</a>.', CPC2_TEXT_DOMAIN), admin_url( 'admin.php?page=cpccom_forum_setup' ), admin_url( 'edit-tags.php?taxonomy=cpc_forum&post_type=cpc_forum_post' ));    
                                 echo cpc_codex_link('https://cp-community.n3rds.work/cpc_codex/cpc-forum-show-posts');
                                 echo '<p><strong>'.__('Optionen', CPC2_TEXT_DOMAIN).'</strong><br />';
                                 echo '<table cellpadding="0" cellspacing="0"  class="cpc_shortcode_value_row">';
@@ -1724,7 +1724,7 @@ function cpc_admin_getting_started_options() {
                             $values = get_option('cpc_shortcode_options_'.'cpc_forum_children') ? get_option('cpc_shortcode_options_'.'cpc_forum_children') : array();   
                             echo cpc_show_options($cpc_expand_shortcode, 'cpc_forum_children_tab');
                                 echo '<strong>'.__('Zweck:', CPC2_TEXT_DOMAIN).'</strong> '.__("Zeigt untergeordnete Foren als Einrichtung in Forum bearbeiten an.", CPC2_TEXT_DOMAIN).'<br />';
-                                echo '<strong>'.__('Wie benutzen:', CPC2_TEXT_DOMAIN).'</strong> '.sprintf(__('Füge [cpc-forum-children slug="xxx"] zur WordPress-Seite Deines Forums hinzu (klicke <a href="%s">hier</a> auf den Link zur <strong>Seite</strong>), wobei xxx der <a href="%s">Slug des übergeordneten Forums</a> ist.', CPC2_TEXT_DOMAIN), admin_url( 'admin.php?page=cpccom_forum_setup' ), admin_url( 'edit-tags.php?taxonomy=cpc_forum&post_type=cpc_forum_post' ));    
+                                echo '<strong>'.__('Wie benutzen:', CPC2_TEXT_DOMAIN).'</strong> '.sprintf(__('Füge [cpc-forum-children slug="xxx"] zur ClassicPress-Seite Deines Forums hinzu (klicke <a href="%s">hier</a> auf den Link zur <strong>Seite</strong>), wobei xxx der <a href="%s">Slug des übergeordneten Forums</a> ist.', CPC2_TEXT_DOMAIN), admin_url( 'admin.php?page=cpccom_forum_setup' ), admin_url( 'edit-tags.php?taxonomy=cpc_forum&post_type=cpc_forum_post' ));    
                                 echo cpc_codex_link('https://cp-community.n3rds.work/cpc_codex/cpc-forum-children');
                                 echo '<p><strong>'.__('Optionen', CPC2_TEXT_DOMAIN).'</strong><br />';
                                 echo '<table cellpadding="0" cellspacing="0"  class="cpc_shortcode_value_row">';
@@ -1791,7 +1791,7 @@ function cpc_admin_getting_started_options() {
                             // [cpc-forum-sharethis]
                             echo cpc_show_options($cpc_expand_shortcode, 'cpc_forum_sharethis_insert_tab');
                                 echo '<strong>'.__('Zweck:', CPC2_TEXT_DOMAIN).'</strong> '.sprintf(__("Fügt ShareThis-Code ein, der <em>jedem</em> Forum <a href='%s'>hier</a> hinzugefügt wird.", CPC2_TEXT_DOMAIN), admin_url( 'admin.php?page=cpccom_forum_setup' )).'<br />';
-                                echo '<strong>'.__('Wie benutzen:', CPC2_TEXT_DOMAIN).'</strong> '.sprintf(__('Füge [cpc-forum-sharethis slug="xxx"] zu einer WordPress-Seite hinzu, wobei xxx der <a href="%s">Slug Deines Forums</a> ist.', CPC2_TEXT_DOMAIN), admin_url( 'admin.php?page=cpccom_forum_setup' ));
+                                echo '<strong>'.__('Wie benutzen:', CPC2_TEXT_DOMAIN).'</strong> '.sprintf(__('Füge [cpc-forum-sharethis slug="xxx"] zu einer ClassicPress-Seite hinzu, wobei xxx der <a href="%s">Slug Deines Forums</a> ist.', CPC2_TEXT_DOMAIN), admin_url( 'admin.php?page=cpccom_forum_setup' ));
                                 echo cpc_codex_link('https://cp-community.n3rds.work/cpc_codex/cpc-forum-sharethis');
                                 echo '<p><strong>'.__('Optionen', CPC2_TEXT_DOMAIN).'</strong><br />';
                                 echo '<table cellpadding="0" cellspacing="0"  class="cpc_shortcode_value_row">';
@@ -1806,7 +1806,7 @@ function cpc_admin_getting_started_options() {
                             $values = get_option('cpc_shortcode_options_'.'cpc_friends') ? get_option('cpc_shortcode_options_'.'cpc_friends') : array();   
                             echo cpc_show_options($cpc_expand_shortcode, 'cpc_friends_tab');
                                 echo '<strong>'.__('Zweck:', CPC2_TEXT_DOMAIN).'</strong> '.__("Zeigt die Freunde eines Benutzers an.", CPC2_TEXT_DOMAIN).'<br />';
-                                echo '<strong>'.__('Wie benutzen:', CPC2_TEXT_DOMAIN).'</strong> '.__('Füge [cpc-friends] zu einer WordPress-Seite, einem Beitrag oder einem Text-Widget hinzu.', CPC2_TEXT_DOMAIN);
+                                echo '<strong>'.__('Wie benutzen:', CPC2_TEXT_DOMAIN).'</strong> '.__('Füge [cpc-friends] zu einer ClassicPress-Seite, einem Beitrag oder einem Text-Widget hinzu.', CPC2_TEXT_DOMAIN);
                                 echo cpc_codex_link('https://cp-community.n3rds.work/cpc_codex/cpc-friends');
                                 echo '<p><strong>'.__('Optionen', CPC2_TEXT_DOMAIN).'</strong><br />';
                                 echo '<table cellpadding="0" cellspacing="0"  class="cpc_shortcode_value_row">';
@@ -1865,7 +1865,7 @@ function cpc_admin_getting_started_options() {
                             $values = get_option('cpc_shortcode_options_'.'cpc_friends_status') ? get_option('cpc_shortcode_options_'.'cpc_friends_status') : array();   
                             echo cpc_show_options($cpc_expand_shortcode, 'cpc_friends_status_tab');
                                 echo '<strong>'.__('Zweck:', CPC2_TEXT_DOMAIN).'</strong> '.__("Zeigt den Freundschaftsstatus eines Benutzers mit dem aktuellen Benutzer an.", CPC2_TEXT_DOMAIN).'<br />';
-                                echo '<strong>'.__('Wie benutzen:', CPC2_TEXT_DOMAIN).'</strong> '.__('Füge [cpc-friends-status] zur WordPress-Seite hinzu, die als Profilseite verwendet wird.', CPC2_TEXT_DOMAIN);
+                                echo '<strong>'.__('Wie benutzen:', CPC2_TEXT_DOMAIN).'</strong> '.__('Füge [cpc-friends-status] zur ClassicPress-Seite hinzu, die als Profilseite verwendet wird.', CPC2_TEXT_DOMAIN);
                                 echo cpc_codex_link('https://cp-community.n3rds.work/cpc_codex/cpc-friends-status');
                                 echo '<p><strong>'.__('Optionen', CPC2_TEXT_DOMAIN).'</strong><br />';
                                 echo '<table cellpadding="0" cellspacing="0"  class="cpc_shortcode_value_row">';
@@ -1891,7 +1891,7 @@ function cpc_admin_getting_started_options() {
                             $values = get_option('cpc_shortcode_options_'.'cpc_friends_pending') ? get_option('cpc_shortcode_options_'.'cpc_friends_pending') : array();   
                             echo cpc_show_options($cpc_expand_shortcode, 'cpc_friends_pending_tab');
                                 echo '<strong>'.__('Zweck:', CPC2_TEXT_DOMAIN).'</strong> '.__("Zeigt ausstehende Freundschaftsanfragen für den aktuellen Benutzer an.", CPC2_TEXT_DOMAIN).'<br />';
-                                echo '<strong>'.__('Wie benutzen:', CPC2_TEXT_DOMAIN).'</strong> '.__('Füge [cpc-friends-pending] zur WordPress-Seite hinzu, die als Profilseite verwendet wird.', CPC2_TEXT_DOMAIN);
+                                echo '<strong>'.__('Wie benutzen:', CPC2_TEXT_DOMAIN).'</strong> '.__('Füge [cpc-friends-pending] zur ClassicPress-Seite hinzu, die als Profilseite verwendet wird.', CPC2_TEXT_DOMAIN);
                                 echo cpc_codex_link('https://cp-community.n3rds.work/cpc_codex/cpc-friends-pending');
                                 echo '<p><strong>'.__('Optionen', CPC2_TEXT_DOMAIN).'</strong><br />';
                                 echo '<table cellpadding="0" cellspacing="0"  class="cpc_shortcode_value_row">';
@@ -1926,7 +1926,7 @@ function cpc_admin_getting_started_options() {
                             $values = get_option('cpc_shortcode_options_'.'cpc_friends_add_button') ? get_option('cpc_shortcode_options_'.'cpc_friends_add_button') : array();   
                             echo cpc_show_options($cpc_expand_shortcode, 'cpc_friends_add_button_tab');
                                 echo '<strong>'.__('Zweck:', CPC2_TEXT_DOMAIN).'</strong> '.__("Zeigt eine Schaltfläche an, um eine Anfrage an einen anderen Benutzer als Freund zu richten.", CPC2_TEXT_DOMAIN).'<br />';
-                                echo '<strong>'.__('Wie benutzen:', CPC2_TEXT_DOMAIN).'</strong> '.__('Füge [cpc-friends-add-button] zur WordPress-Seite hinzu, die als Profilseite verwendet wird.', CPC2_TEXT_DOMAIN);
+                                echo '<strong>'.__('Wie benutzen:', CPC2_TEXT_DOMAIN).'</strong> '.__('Füge [cpc-friends-add-button] zur ClassicPress-Seite hinzu, die als Profilseite verwendet wird.', CPC2_TEXT_DOMAIN);
                                 echo cpc_codex_link('https://cp-community.n3rds.work/cpc_codex/cpc-friends-add-button');
                                 echo '<p><strong>'.__('Optionen', CPC2_TEXT_DOMAIN).'</strong><br />';
                                 echo '<table cellpadding="0" cellspacing="0"  class="cpc_shortcode_value_row">';
@@ -1952,7 +1952,7 @@ function cpc_admin_getting_started_options() {
                             $values = get_option('cpc_shortcode_options_'.'cpc_friends_count') ? get_option('cpc_shortcode_options_'.'cpc_friends_count') : array();   
                             echo cpc_show_options($cpc_expand_shortcode, 'cpc_friends_count_tab');
                                 echo '<strong>'.__('Zweck:', CPC2_TEXT_DOMAIN).'</strong> '.__("Zeigt die Anzahl der Freunde (akzeptiert oder ausstehend) eines Benutzers an.", CPC2_TEXT_DOMAIN).'<br />';
-                                echo '<strong>'.__('Wie benutzen:', CPC2_TEXT_DOMAIN).'</strong> '.__('Füge [cpc-friends-count] zur WordPress-Seite hinzu, die als Profilseite verwendet wird.', CPC2_TEXT_DOMAIN);
+                                echo '<strong>'.__('Wie benutzen:', CPC2_TEXT_DOMAIN).'</strong> '.__('Füge [cpc-friends-count] zur ClassicPress-Seite hinzu, die als Profilseite verwendet wird.', CPC2_TEXT_DOMAIN);
                                 echo cpc_codex_link('https://cp-community.n3rds.work/cpc_codex/cpc-friends-count');
                                 echo '<p><strong>'.__('Optionen', CPC2_TEXT_DOMAIN).'</strong><br />';
                                 echo '<table cellpadding="0" cellspacing="0"  class="cpc_shortcode_value_row">';
@@ -1982,7 +1982,7 @@ function cpc_admin_getting_started_options() {
                             $values = get_option('cpc_shortcode_options_'.'cpc_alerts_friends') ? get_option('cpc_shortcode_options_'.'cpc_alerts_friends') : array();   
                             echo cpc_show_options($cpc_expand_shortcode, 'cpc_alerts_friends_tab');
                                 echo '<strong>'.__('Zweck:', CPC2_TEXT_DOMAIN).'</strong> '.__("Zeigt ein Symbol für ausstehende Freundschaftsanfragen an.", CPC2_TEXT_DOMAIN).'<br />';
-                                echo '<strong>'.__('Wie benutzen:', CPC2_TEXT_DOMAIN).'</strong> '.__('Füge [cpc-alerts-friends] zu einer WordPress-Seite oder Text-Widget hinzu.', CPC2_TEXT_DOMAIN);
+                                echo '<strong>'.__('Wie benutzen:', CPC2_TEXT_DOMAIN).'</strong> '.__('Füge [cpc-alerts-friends] zu einer ClassicPress-Seite oder Text-Widget hinzu.', CPC2_TEXT_DOMAIN);
                                 echo cpc_codex_link('https://cp-community.n3rds.work/cpc_codex/cpc-alerts-friends');
                                 echo '<p><strong>'.__('Optionen', CPC2_TEXT_DOMAIN).'</strong><br />';
                                 echo '<table cellpadding="0" cellspacing="0"  class="cpc_shortcode_value_row">';
@@ -2038,7 +2038,7 @@ function cpc_admin_getting_started_options() {
                             $values = get_option('cpc_shortcode_options_'.'cpc_favourite_friend') ? get_option('cpc_shortcode_options_'.'cpc_favourite_friend') : array();   
                             echo cpc_show_options($cpc_expand_shortcode, 'cpc_favourite_friend_tab');
                                 echo '<strong>'.__('Zweck:', CPC2_TEXT_DOMAIN).'</strong> '.__("Zeigt Schaltfläche/Link zum Hinzufügen/Entfernen eines Benutzers als Favorit an. Außerdem Optionen für die Seite Freunde (die oben die Lieblingsprofile anzeigt).", CPC2_TEXT_DOMAIN).'<br />';
-                                echo '<strong>'.__('Wie benutzen:', CPC2_TEXT_DOMAIN).'</strong> '.__('Add [cpc-favourite-friend] to the WordPress Page being used as the profile page.', CPC2_TEXT_DOMAIN);
+                                echo '<strong>'.__('Wie benutzen:', CPC2_TEXT_DOMAIN).'</strong> '.__('Add [cpc-favourite-friend] to the ClassicPress Page being used as the profile page.', CPC2_TEXT_DOMAIN);
                                 echo cpc_codex_link('https://cp-community.n3rds.work/cpc_codex/cpc-favourite-friend');
                                 echo '<p><strong>'.__('Optionen', CPC2_TEXT_DOMAIN).'</strong><br />';
                                 echo '<table cellpadding="0" cellspacing="0"  class="cpc_shortcode_value_row">';
@@ -2080,7 +2080,7 @@ function cpc_admin_getting_started_options() {
                             $values = get_option('cpc_shortcode_options_'.'cpc_usermeta') ? get_option('cpc_shortcode_options_'.'cpc_usermeta') : array();   
                             echo cpc_show_options($cpc_expand_shortcode, 'cpc_usermeta_tab');
                                 echo '<strong>'.__('Zweck:', CPC2_TEXT_DOMAIN).'</strong> '.__("Zeigt einen Profilwert (Meta) eines Benutzers an, einschließlich Standard-Metawerten wie display_name.", CPC2_TEXT_DOMAIN).'<br />';
-                                echo '<strong>'.__('Wie benutzen:', CPC2_TEXT_DOMAIN).'</strong> '.__('Füge [cpc-usermeta] zu einer WordPress-Seite und einem Post-of-Text-Widget hinzu. Kann mehrmals hinzugefügt werden.', CPC2_TEXT_DOMAIN).'<br />';
+                                echo '<strong>'.__('Wie benutzen:', CPC2_TEXT_DOMAIN).'</strong> '.__('Füge [cpc-usermeta] zu einer ClassicPress-Seite und einem Post-of-Text-Widget hinzu. Kann mehrmals hinzugefügt werden.', CPC2_TEXT_DOMAIN).'<br />';
                                 echo '<strong>'.__('Tip:', CPC2_TEXT_DOMAIN).'</strong> '.__('Wähle unten die Optionen aus (und speichere sie), um zu sehen, wie Du [cpc-usermeta meta="<em>value</em>"] hinzufügen kannst, um Deine Profilseite aufzubauen.', CPC2_TEXT_DOMAIN);
                                 echo cpc_codex_link('https://cp-community.n3rds.work/cpc_codex/cpc-usermeta');
                                 echo '<p><strong>'.__('Optionen', CPC2_TEXT_DOMAIN).'</strong><br />';
@@ -2153,7 +2153,7 @@ function cpc_admin_getting_started_options() {
                             $values = get_option('cpc_shortcode_options_'.'cpc_usermeta_button') ? get_option('cpc_shortcode_options_'.'cpc_usermeta_button') : array();   
                             echo cpc_show_options($cpc_expand_shortcode, 'cpc_usermeta_button_tab');
                                 echo '<strong>'.__('Zweck:', CPC2_TEXT_DOMAIN).'</strong> '.__("Zeigt eine Schaltfläche zum Verknüpfen mit einer URL an und übergibt die Benutzer-ID als Parameter.", CPC2_TEXT_DOMAIN).'<br />';
-                                echo '<strong>'.__('Wie benutzen:', CPC2_TEXT_DOMAIN).'</strong> '.__('Füge [cpc-usermeta-button] zu einer WordPress-Seite hinzu.', CPC2_TEXT_DOMAIN);
+                                echo '<strong>'.__('Wie benutzen:', CPC2_TEXT_DOMAIN).'</strong> '.__('Füge [cpc-usermeta-button] zu einer ClassicPress-Seite hinzu.', CPC2_TEXT_DOMAIN);
                                 echo cpc_codex_link('https://cp-community.n3rds.work/cpc_codex/cpc-usermeta-button');
                                 echo '<p><strong>'.__('Optionen', CPC2_TEXT_DOMAIN).'</strong><br />';
                                 echo '<table cellpadding="0" cellspacing="0"  class="cpc_shortcode_value_row">';
@@ -2176,7 +2176,7 @@ function cpc_admin_getting_started_options() {
                             $values = get_option('cpc_shortcode_options_'.'cpc_usermeta_change') ? get_option('cpc_shortcode_options_'.'cpc_usermeta_change') : array();   
                             echo cpc_show_options($cpc_expand_shortcode, 'cpc_usermeta_change_tab');
                                 echo '<strong>'.__('Zweck:', CPC2_TEXT_DOMAIN).'</strong> '.__("Zeigt Profilfelder für den Benutzer an, die er bearbeiten kann. Dies ist die Seite Profil bearbeiten.", CPC2_TEXT_DOMAIN).'<br />';
-                                echo '<strong>'.__('Wie benutzen:', CPC2_TEXT_DOMAIN).'</strong> '.__('Füge [cpc-usermeta-change] zu einer WordPress-Seite hinzu.', CPC2_TEXT_DOMAIN).'<br />';
+                                echo '<strong>'.__('Wie benutzen:', CPC2_TEXT_DOMAIN).'</strong> '.__('Füge [cpc-usermeta-change] zu einer ClassicPress-Seite hinzu.', CPC2_TEXT_DOMAIN).'<br />';
                                 echo '<strong>'.__('Tip:', CPC2_TEXT_DOMAIN).'</strong> '.__('Verwende die unten stehende Einrichtung Profil bearbeiten, um Tabs zu Deiner Profilbearbeitungsseite hinzuzufügen.', CPC2_TEXT_DOMAIN);
                                 echo cpc_codex_link('https://cp-community.n3rds.work/cpc_codex/cpc-usermeta-change');
                                 echo '<p><strong>'.__('Optionen', CPC2_TEXT_DOMAIN).'</strong><br />';
@@ -2254,7 +2254,7 @@ function cpc_admin_getting_started_options() {
                             $values = get_option('cpc_shortcode_options_'.'cpc_usermeta_change_link') ? get_option('cpc_shortcode_options_'.'cpc_usermeta_change_link') : array();   
                             echo cpc_show_options($cpc_expand_shortcode, 'cpc_usermeta_change_link_tab');
                                 echo '<strong>'.__('Zweck:', CPC2_TEXT_DOMAIN).'</strong> '.__("Zeigt einen Link zur Seite Profil bearbeiten an.", CPC2_TEXT_DOMAIN).'<br />';
-                                echo '<strong>'.__('Wie benutzen:', CPC2_TEXT_DOMAIN).'</strong> '.__('Füge [cpc-usermeta-change-link] zu einer WordPress-Seite, einem Beitrag oder einem Text-Widget hinzu.', CPC2_TEXT_DOMAIN);
+                                echo '<strong>'.__('Wie benutzen:', CPC2_TEXT_DOMAIN).'</strong> '.__('Füge [cpc-usermeta-change-link] zu einer ClassicPress-Seite, einem Beitrag oder einem Text-Widget hinzu.', CPC2_TEXT_DOMAIN);
                                 echo cpc_codex_link('https://cp-community.n3rds.work/cpc_codex/cpc-usermeta-change-link');
                                 echo '<p><strong>'.__('Optionen', CPC2_TEXT_DOMAIN).'</strong><br />';
                                 echo '<table cellpadding="0" cellspacing="0"  class="cpc_shortcode_value_row">';
@@ -2269,7 +2269,7 @@ function cpc_admin_getting_started_options() {
                             $values = get_option('cpc_shortcode_options_'.'cpc_close_account') ? get_option('cpc_shortcode_options_'.'cpc_close_account') : array();   
                             echo cpc_show_options($cpc_expand_shortcode, 'cpc_close_account_tab');
                                 echo '<strong>'.__('Zweck:', CPC2_TEXT_DOMAIN).'</strong> '.__("Zeigt eine Schaltfläche an, mit der Benutzer ihr Konto schließen können.", CPC2_TEXT_DOMAIN).'<br />';
-                                echo '<strong>'.__('Wie benutzen:', CPC2_TEXT_DOMAIN).'</strong> '.__('Füge [cpc-close-account] zu einer WordPress-Seite, einem Beitrag oder einem Text-Widget hinzu.', CPC2_TEXT_DOMAIN);
+                                echo '<strong>'.__('Wie benutzen:', CPC2_TEXT_DOMAIN).'</strong> '.__('Füge [cpc-close-account] zu einer ClassicPress-Seite, einem Beitrag oder einem Text-Widget hinzu.', CPC2_TEXT_DOMAIN);
                                 echo cpc_codex_link('https://cp-community.n3rds.work/cpc_codex/cpc-close-account');
                                 echo '<p><strong>'.__('Optionen', CPC2_TEXT_DOMAIN).'</strong><br />';
                                 echo '<table cellpadding="0" cellspacing="0"  class="cpc_shortcode_value_row">';
@@ -2298,7 +2298,7 @@ function cpc_admin_getting_started_options() {
                             $values = get_option('cpc_shortcode_options_'.'cpc_join_site') ? get_option('cpc_shortcode_options_'.'cpc_join_site') : array();   
                             echo cpc_show_options($cpc_expand_shortcode, 'cpc_join_site_tab');
                                 echo '<strong>'.__('Zweck:', CPC2_TEXT_DOMAIN).'</strong> '.__("Zeigt einen Link oder eine Schaltfläche zum Beitritt zu einer Webseite an (nur Multisite).", CPC2_TEXT_DOMAIN).'<br />';
-                                echo '<strong>'.__('Wie benutzen:', CPC2_TEXT_DOMAIN).'</strong> '.__('Füge [cpc-join-site] zu einer WordPress-Seite, einem Beitrag oder einem Text-Widget hinzu.', CPC2_TEXT_DOMAIN);
+                                echo '<strong>'.__('Wie benutzen:', CPC2_TEXT_DOMAIN).'</strong> '.__('Füge [cpc-join-site] zu einer ClassicPress-Seite, einem Beitrag oder einem Text-Widget hinzu.', CPC2_TEXT_DOMAIN);
                                 echo cpc_codex_link('https://cp-community.n3rds.work/cpc_codex/cpc-join-site');
                                 echo '<p><strong>'.__('Optionen', CPC2_TEXT_DOMAIN).'</strong><br />';
                                 echo '<table cellpadding="0" cellspacing="0"  class="cpc_shortcode_value_row">';
@@ -2324,7 +2324,7 @@ function cpc_admin_getting_started_options() {
                             $values = get_option('cpc_shortcode_options_'.'cpc_no_user_check') ? get_option('cpc_shortcode_options_'.'cpc_no_user_check') : array();   
                             echo cpc_show_options($cpc_expand_shortcode, 'cpc_no_user_check');
                                 echo '<strong>'.__('Zweck:', CPC2_TEXT_DOMAIN).'</strong> '.__("Sucht nach einem gültigen Benutzer und zeigt eine Optionsmeldung an.", CPC2_TEXT_DOMAIN).'<br />';
-                                echo '<strong>'.__('Wie benutzen:', CPC2_TEXT_DOMAIN).'</strong> '.__('Füge [cpc-no-user-check] zu einer WordPress-Seite, einem Beitrag oder einem Text-Widget hinzu.', CPC2_TEXT_DOMAIN);
+                                echo '<strong>'.__('Wie benutzen:', CPC2_TEXT_DOMAIN).'</strong> '.__('Füge [cpc-no-user-check] zu einer ClassicPress-Seite, einem Beitrag oder einem Text-Widget hinzu.', CPC2_TEXT_DOMAIN);
                                 echo cpc_codex_link('https://cp-community.n3rds.work/cpc_codex/cpc-no-user-check');
                                 echo '<p><strong>'.__('Optionen', CPC2_TEXT_DOMAIN).'</strong><br />';
                                 echo '<table cellpadding="0" cellspacing="0"  class="cpc_shortcode_value_row">';
@@ -2816,7 +2816,7 @@ function cpc_admin_getting_started_styles() {
             echo '<div id="cpc_welcome_bar" style="margin-top: 20px;">';
                 echo '<img id="cpc_welcome_logo" style="width:56px; height:56px; float:left;" src="'.plugins_url('../cp-community/css/images/cpc_logo.png', __FILE__).'" title="'.__('Hilfe', CPC2_TEXT_DOMAIN).'" />';
                 echo '<div style="font-size:2em; line-height:1em; font-weight:100; color:#fff;">'.__('Willkommen bei CP-Community', CPC2_TEXT_DOMAIN).'</div>';
-                echo '<p style="color:#fff;"><em>'.__('Das ultimative Plugin für soziale Netzwerke für WordPress', CPC2_TEXT_DOMAIN).'</em></p>';
+                echo '<p style="color:#fff;"><em>'.__('Das ultimative Plugin für soziale Netzwerke für ClassicPress', CPC2_TEXT_DOMAIN).'</em></p>';
             echo '</div>';
 
             $css = 'cpc_admin_getting_started_menu_item_remove_icon ';    

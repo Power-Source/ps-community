@@ -505,7 +505,7 @@ function user_can_see_post($user_id, $post_id) {
 
 }
 
-// See if WordPress using permalinks (or using root of multisite)
+// See if ClassicPress using permalinks (or using root of multisite)
 function cpc_using_permalinks() {
 
 	if (!get_option( 'permalink_structure' ))

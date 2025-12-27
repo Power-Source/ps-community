@@ -75,7 +75,7 @@ function cpc_admin_quick_start_forum_save($the_post) {
 
 			echo '<div class="cpc_success">';
 				echo sprintf(__('Forumseite (%s) hinzugefügt. [<a href="%s">view</a>]', CPC2_TEXT_DOMAIN), urldecode(get_permalink($new_id)), urldecode(get_permalink($new_id))).'<br /><br />';
-				echo sprintf(__('Vielleicht möchtest Du es zu Deinem <a href="%s">WordPress-Menü</a> hinzufügen.', CPC2_TEXT_DOMAIN), "nav-menus.php");
+				echo sprintf(__('Vielleicht möchtest Du es zu Deinem <a href="%s">ClassicPress-Menü</a> hinzufügen.', CPC2_TEXT_DOMAIN), "nav-menus.php");
 			echo '</div>';
 
 		endif;

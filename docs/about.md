@@ -9,9 +9,9 @@ title: "PSOURCE"
   <a href="https://github.com/Power-Source" style="color:#38c2bb;">📝 GitHub</a>
 </div>
 
-## PSOURCE ist eine Sammlung von Plugins und Themes für Classic/WordPress, die kostenlos nutzbar sind. Es gibt keine Premium-Features, Abo-Kosten oder ähnliches. Alles ist komplett kostenlos in vollem Umfang nutzbar. Die Community ist eingeladen, zu ihren Favoriten beizutragen und diese gemeinsam weiterzuentwickeln
+## PSOURCE ist eine Sammlung von Plugins und Themes für Classic/ClassicPress, die kostenlos nutzbar sind. Es gibt keine Premium-Features, Abo-Kosten oder ähnliches. Alles ist komplett kostenlos in vollem Umfang nutzbar. Die Community ist eingeladen, zu ihren Favoriten beizutragen und diese gemeinsam weiterzuentwickeln
 
-Wir haben eine große Auswahl an Plugins und Themes für WordPress. Insbesondere sind viele unserer Plugins/Themes für den Einsatz in einer Multisite-Umgebung und für den professionellen Einsatz konzipiert.
+Wir haben eine große Auswahl an Plugins und Themes für ClassicPress. Insbesondere sind viele unserer Plugins/Themes für den Einsatz in einer Multisite-Umgebung und für den professionellen Einsatz konzipiert.
 
 Erkunde unser Repository und probiere unsere Plugins/Themes aus.
 

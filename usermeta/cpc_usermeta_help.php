@@ -83,7 +83,7 @@ function cpc_admin_quick_start_profile_save($the_post) {
 		echo sprintf(__('Avatar ändern-Seite (%s) hinzugefügt. [<a href="%s">view</a>]', CPC2_TEXT_DOMAIN), get_permalink($new_change_avatar_id), get_permalink($new_change_avatar_id)).'<br />';
 		echo sprintf(__('Freundesseite (%s) hinzugefügt. [<a href="%s">view</a>]', CPC2_TEXT_DOMAIN), get_permalink($new_friends_id), get_permalink($new_friends_id)).'<br /><br />';
 
-		echo sprintf(__('Vielleicht möchtest Du sie zu Deinem <a href="%s">WordPress-Menü</a> hinzufügen.', CPC2_TEXT_DOMAIN), "nav-menus.php").'</div>';
+		echo sprintf(__('Vielleicht möchtest Du sie zu Deinem <a href="%s">ClassicPress-Menü</a> hinzufügen.', CPC2_TEXT_DOMAIN), "nav-menus.php").'</div>';
 
 	endif;
 
@@ -123,7 +123,7 @@ function cpc_admin_getting_started_profile() {
 				  }
 				 ?>						
 				</select>
-				<span class="description"><?php echo __('WordPress-Seite, zu der Profillinks führen.', CPC2_TEXT_DOMAIN); ?>
+				<span class="description"><?php echo __('ClassicPress-Seite, zu der Profillinks führen.', CPC2_TEXT_DOMAIN); ?>
 				<?php if ($profile_page) {
 					echo ' [<a href="post.php?post='.$profile_page.'&action=edit">'.__('bearbeiten', CPC2_TEXT_DOMAIN).'</a>';
 					echo '|<a href="'.get_permalink($profile_page).'">'.__('ansehen', CPC2_TEXT_DOMAIN).'</a>]';
@@ -151,7 +151,7 @@ function cpc_admin_getting_started_profile() {
 				  }
 				 ?>						
 				</select>
-				<span class="description"><?php echo __('WordPress-Seite, auf der Benutzer ihr Profil bearbeiten können.', CPC2_TEXT_DOMAIN); ?>
+				<span class="description"><?php echo __('ClassicPress-Seite, auf der Benutzer ihr Profil bearbeiten können.', CPC2_TEXT_DOMAIN); ?>
 				<?php if ($profile_page) {
 					echo ' [<a href="post.php?post='.$profile_page.'&action=edit">'.__('bearbeiten', CPC2_TEXT_DOMAIN).'</a>';
 					echo '|<a href="'.get_permalink($profile_page).'">'.__('ansehen', CPC2_TEXT_DOMAIN).'</a>]';
@@ -178,7 +178,7 @@ function cpc_admin_getting_started_profile() {
 				  }
 				 ?>						
 				</select>
-				<span class="description"><?php echo __('WordPress-Seite, auf der Benutzer ihren Avatar ändern können.', CPC2_TEXT_DOMAIN); ?>
+				<span class="description"><?php echo __('ClassicPress-Seite, auf der Benutzer ihren Avatar ändern können.', CPC2_TEXT_DOMAIN); ?>
 				<?php if ($profile_page) {
 					echo ' [<a href="post.php?post='.$profile_page.'&action=edit">'.__('bearbeiten', CPC2_TEXT_DOMAIN).'</a>';
 					echo '|<a href="'.get_permalink($profile_page).'">'.__('ansehen', CPC2_TEXT_DOMAIN).'</a>]';
@@ -227,7 +227,7 @@ function cpc_admin_getting_started_profile() {
 		  	echo '<h3>'.__('Profilseite', CPC2_TEXT_DOMAIN).'</h3>';
 
 		  	if (!$profile_page = get_option('cpccom_profile_page')):
-			  	echo '<p>'.sprintf(__('<a href="%s">Erstelle eine WordPress-Seite</a>, wähle dann oben aus und speichere sie. Wenn Du das getan hast, werden hier einige Beispiel-Shortcodes angezeigt, die Du auf diese Seite kopieren kannst.', CPC2_TEXT_DOMAIN), 'post-new.php?post_type=page').'</p>';
+			  	echo '<p>'.sprintf(__('<a href="%s">Erstelle eine ClassicPress-Seite</a>, wähle dann oben aus und speichere sie. Wenn Du das getan hast, werden hier einige Beispiel-Shortcodes angezeigt, die Du auf diese Seite kopieren kannst.', CPC2_TEXT_DOMAIN), 'post-new.php?post_type=page').'</p>';
 		  	else:
 		  		echo '<p>'.__('Kopiere den folgenden Shortcode', CPC2_TEXT_DOMAIN).', <a href="post.php?post='.$profile_page.'&action=edit">'.__('Bearbeite Deine Profil-Seite', CPC2_TEXT_DOMAIN).'</a> '.__('und füge die Shortcodes ein, um loszulegen.', CPC2_TEXT_DOMAIN).'</p>';
 		  		echo '<p>';
@@ -239,7 +239,7 @@ function cpc_admin_getting_started_profile() {
 		  	echo '<h3>'.__('Profilseite bearbeiten', CPC2_TEXT_DOMAIN).'</h3>';
 
 		  	if (!$profile_page = get_option('cpccom_edit_profile_page')):
-			  	echo '<p>'.sprintf(__('<a href="%s">Erstelle eine WordPress-Seite</a>, wähle dann oben aus und speichere sie. Wenn Du das getan hast, werden hier einige Beispiel-Shortcodes angezeigt, die Du auf diese Seite kopieren kannst.', CPC2_TEXT_DOMAIN), 'post-new.php?post_type=page').'</p>';
+			  	echo '<p>'.sprintf(__('<a href="%s">Erstelle eine ClassicPress-Seite</a>, wähle dann oben aus und speichere sie. Wenn Du das getan hast, werden hier einige Beispiel-Shortcodes angezeigt, die Du auf diese Seite kopieren kannst.', CPC2_TEXT_DOMAIN), 'post-new.php?post_type=page').'</p>';
 		  	else:
 		  		echo '<p>'.__('Kopiere die folgenden Shortcodes', CPC2_TEXT_DOMAIN).', <a href="post.php?post='.$profile_page.'&action=edit">'.__('Bearbeite Deine Seite Profil bearbeiten.', CPC2_TEXT_DOMAIN).'</a> '.__('und füge die Shortcodes ein, um loszulegen.', CPC2_TEXT_DOMAIN).'</p>';
 		  		echo '<p>';
@@ -251,7 +251,7 @@ function cpc_admin_getting_started_profile() {
 		  	echo '<h3>'.__('Avatar-Seite ändern', CPC2_TEXT_DOMAIN).'</h3>';
 
 		  	if (!$profile_page = get_option('cpccom_change_avatar_page')):
-			  	echo '<p>'.sprintf(__('<a href="%s">Erstelle eine WordPress-Seite</a>, wähle dann oben aus und speichere sie. Wenn Du das getan hast, werden hier einige Beispiel-Shortcodes angezeigt, die Du auf diese Seite kopieren kannst.', CPC2_TEXT_DOMAIN), 'post-new.php?post_type=page').'</p>';
+			  	echo '<p>'.sprintf(__('<a href="%s">Erstelle eine ClassicPress-Seite</a>, wähle dann oben aus und speichere sie. Wenn Du das getan hast, werden hier einige Beispiel-Shortcodes angezeigt, die Du auf diese Seite kopieren kannst.', CPC2_TEXT_DOMAIN), 'post-new.php?post_type=page').'</p>';
 		  	else:
 		  		echo '<p>'.__('Kopiere die folgenden Shortcodes', CPC2_TEXT_DOMAIN).', <a href="post.php?post='.$profile_page.'&action=edit">'.__('Bearbeite Deine Seite Avatar ändern.', CPC2_TEXT_DOMAIN).'</a> '.__('und füge die Shortcodes ein, um loszulegen.', CPC2_TEXT_DOMAIN).'</p>';
 		  		echo '<p>';
@@ -660,7 +660,7 @@ function cpc_options_shortcode_options_hook_user_exists_content($cpc_expand_shor
     $values = get_option('cpc_shortcode_options_'.'cpc_user_exists_content') ? get_option('cpc_shortcode_options_'.'cpc_user_exists_content') : array();
     echo cpc_show_options($cpc_expand_shortcode, 'cpc_user_exists_content_tab');
         echo '<strong>'.__('Zweck:', CPC2_TEXT_DOMAIN).'</strong> '.__("Versteckt Inhalte, wenn kein Benutzer gefunden wird.", CPC2_TEXT_DOMAIN).'<br />';
-        echo '<strong>'.__('Wie benutzen:', CPC2_TEXT_DOMAIN).'</strong> '.__('Füge [cpc-user-exists-content]INHALT[/cpc-user-exists-content] zu einer WordPress-Seite, einem Beitrag oder einem Text-Widget hinzu. INHALT wird nur angezeigt, wenn ein Benutzer gefunden wurde.', CPC2_TEXT_DOMAIN);
+        echo '<strong>'.__('Wie benutzen:', CPC2_TEXT_DOMAIN).'</strong> '.__('Füge [cpc-user-exists-content]INHALT[/cpc-user-exists-content] zu einer ClassicPress-Seite, einem Beitrag oder einem Text-Widget hinzu. INHALT wird nur angezeigt, wenn ein Benutzer gefunden wurde.', CPC2_TEXT_DOMAIN);
         echo cpc_codex_link('http://www.cpccom.com/cpc-user-exists-content');
         echo '<p><strong>'.__('Optionen', CPC2_TEXT_DOMAIN).'</strong><br />';
         echo '<table cellpadding="0" cellspacing="0"  class="cpc_shortcode_value_row">';
@@ -694,7 +694,7 @@ function cpc_options_shortcode_options_hook_is_friend_content($cpc_expand_shortc
     $values = get_option('cpc_shortcode_options_'.'cpc_is_friend_content') ? get_option('cpc_shortcode_options_'.'cpc_is_friend_content') : array();
     echo cpc_show_options($cpc_expand_shortcode, 'cpc_is_friend_content_tab');
         echo '<strong>'.__('Zweck:', CPC2_TEXT_DOMAIN).'</strong> '.__("Versteckt Inhalte, wenn Benutzer keine Freunde sind.", CPC2_TEXT_DOMAIN).'<br />';
-        echo '<strong>'.__('Wie benutzen:', CPC2_TEXT_DOMAIN).'</strong> '.__('Füge [cpc-is-friend-content]INHALT[/cpc-is-friend-content] zu einer WordPress-Seite, einem Beitrag oder einem Text-Widget hinzu. INHALT wird nur angezeigt, wenn Benutzer Freunde sind.', CPC2_TEXT_DOMAIN);
+        echo '<strong>'.__('Wie benutzen:', CPC2_TEXT_DOMAIN).'</strong> '.__('Füge [cpc-is-friend-content]INHALT[/cpc-is-friend-content] zu einer ClassicPress-Seite, einem Beitrag oder einem Text-Widget hinzu. INHALT wird nur angezeigt, wenn Benutzer Freunde sind.', CPC2_TEXT_DOMAIN);
         echo cpc_codex_link('http://www.cpccom.com/cpc-is-friend-content');
         echo '<p><strong>'.__('Optionen', CPC2_TEXT_DOMAIN).'</strong><br />';
         echo '<table cellpadding="0" cellspacing="0"  class="cpc_shortcode_value_row">';

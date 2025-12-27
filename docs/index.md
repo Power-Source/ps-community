@@ -9,7 +9,7 @@ title: "PS Community"
   <a href="https://github.com/Power-Source/cp-community/releases" style="color:#38c2bb;">📝 Download</a>
 </div>
 
-## Baue Dein WordPress Soziales Netzwerk – Auf Deine Weise!
+## Baue Dein ClassicPress Soziales Netzwerk – Auf Deine Weise!
 
 Um zu sehen, wie Dein soziales Netzwerk aussehen könnte (Du kannst es so gestalten, wie Du möchtest!), tritt dieser Seite bei, um viele der Funktionen in Aktion zu sehen.
 
@@ -25,11 +25,11 @@ Unbegrenzte Foren mit Anhängen, YouTube, Abonnements, Auswahl an Layouts und za
 
 ### Einfach zu bedienen
 
-Füge einfach WordPress-Shortcodes zu jeder Seite, jedem Beitrag oder Widget hinzu und gestalte, wenn Du möchtest, das Layout nach Deinen Vorstellungen. Setze Optionen für alles – sogar für Sprachen!
+Füge einfach ClassicPress-Shortcodes zu jeder Seite, jedem Beitrag oder Widget hinzu und gestalte, wenn Du möchtest, das Layout nach Deinen Vorstellungen. Setze Optionen für alles – sogar für Sprachen!
 
-### Und entwickelt auf WordPress-Art
+### Und entwickelt auf ClassicPress-Art
 
-Alles wurde mit WordPress im Hinterkopf geschrieben. Keine benutzerdefinierten Tabellen, keine unnötigen Stile (damit es zu Deiner Seite passt) und damit kein Risiko von Inkompatibilität!
+Alles wurde mit ClassicPress im Hinterkopf geschrieben. Keine benutzerdefinierten Tabellen, keine unnötigen Stile (damit es zu Deiner Seite passt) und damit kein Risiko von Inkompatibilität!
 
 ### Mit großartigem Support für Dich und Deine Seite!
 

@@ -1,6 +1,6 @@
 <?php 
 
-/* If this file is moved, the followed path needs to be altered to point at root of WordPress installation */
+/* If this file is moved, the followed path needs to be altered to point at root of ClassicPress installation */
 include_once('../../../wp-load.php');
 global $wpdb;
 

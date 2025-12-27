@@ -8,7 +8,7 @@ License URI: https://www.gnu.org/licenses/gpl-2.0.html
 
 == Description ==
 
-**Dies ist das ultimative Plugin für soziale Netzwerke für WordPress.** Du kannst auf Deiner WordPress-Webseite Dein eigenes soziales Netzwerk erstellen.
+**Dies ist das ultimative Plugin für soziale Netzwerke für ClassicPress.** Du kannst auf Deiner ClassicPress-Webseite Dein eigenes soziales Netzwerk erstellen.
 
 Mit Profilen, Aktivitäten (Pinnwand), unbegrenzten Foren, Freunden, E-Mail-Benachrichtigungen und vielem mehr ist es perfekt für Vereine, Schulen, Interessengruppen, die Interaktion mit Kunden, Support-Seiten, Spieleseiten, Dating-Seiten – nur durch Deine Vorstellungskraft begrenzt!
 

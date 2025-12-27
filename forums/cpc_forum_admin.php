@@ -81,7 +81,7 @@ function cpccom_forum_setup() {
 
 				endif;
 
-        		// delete WordPress page
+        		// delete ClassicPress page
         		$forum_page = cpc_get_term_meta($term_id, 'cpc_forum_cat_page', true);
         		if ($forum_page) wp_delete_post( $forum_page, true ); // permanently
 				// finally, delete forum
@@ -184,7 +184,7 @@ function cpccom_forum_setup() {
 							echo '<a style="text-decoration:none" href="post.php?post='.$page_id.'&action=edit">'.__('Seite', CPC2_TEXT_DOMAIN).'</a> | ';
 							if ($url) echo '<a style="text-decoration:none" href="'.$url.'">'.__('Ansehen', CPC2_TEXT_DOMAIN).'</a>';
 						} else {
-							echo '<a href="edit-tags.php?action=edit&taxonomy=cpc_forum&tag_ID='.$term->term_id.'&post_type=cpc_forum_post">'.__('WordPress-Seite auswählen...', CPC2_TEXT_DOMAIN).'</a>';
+							echo '<a href="edit-tags.php?action=edit&taxonomy=cpc_forum&tag_ID='.$term->term_id.'&post_type=cpc_forum_post">'.__('ClassicPress-Seite auswählen...', CPC2_TEXT_DOMAIN).'</a>';
 						}
 						echo ' | <a style="text-decoration:none;color:#f00;" onclick="if (!confirm(\'Are you sure, this cannot be reversed?\')) return false;" href="admin.php?page=cpccom_forum_setup&action=cpc_forum_delete&term_ID='.$term->term_id.'">'.__('Löschen', CPC2_TEXT_DOMAIN).'</a>';
 						echo '</td>';

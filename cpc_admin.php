@@ -278,7 +278,7 @@ function cpccom_release_notes() {
 	  		echo '<div id="cpc_welcome_bar" style="margin-top: 20px;">';
 		  		echo '<img id="cpc_welcome_logo" style="width:56px; height:56px; float:left;" src="'.plugins_url('../cp-community/css/images/cpc_logo.png', __FILE__).'" title="'.__('help', CPC2_TEXT_DOMAIN).'" />';
 		  		echo '<div style="font-size:2em; line-height:1em; font-weight:100; color:#fff;">'.__('Willkommen bei PS Community', CPC2_TEXT_DOMAIN).'</div>';
-		  		echo '<p style="color:#fff;"><em>'.__('Das ultimative Plugin für soziale Netzwerke für WordPress', CPC2_TEXT_DOMAIN).'</em></p>';
+		  		echo '<p style="color:#fff;"><em>'.__('Das ultimative Plugin für soziale Netzwerke für ClassicPress', CPC2_TEXT_DOMAIN).'</em></p>';
 	  		echo '</div>';
 
 	  		echo '<div style="font-size:1.4em; margin-top:20px">'.__('Vielen Dank, dass Du PS Community installiert hast!', CPC2_TEXT_DOMAIN).'</div>';
@@ -375,12 +375,12 @@ function cpccom_setup() {
 			echo '<div id="cpc_welcome_bar">';
 				echo '<img id="cpc_welcome_logo" style="width:56px; height:56px; float:left;" src="'.plugins_url('../cp-community/css/images/cpc_logo.png', __FILE__).'" title="'.__('Hilfe', CPC2_TEXT_DOMAIN).'" />';
 				echo '<div style="font-size:2em; line-height:1em; font-weight:100; color:#fff;">'.__('Willkommen bei CP-Community', CPC2_TEXT_DOMAIN).'</div>';
-				echo '<p style="color:#fff;"><em>'.__('Das ultimative Plugin für soziale Netzwerke für WordPress', CPC2_TEXT_DOMAIN).'</em></p>';
+				echo '<p style="color:#fff;"><em>'.__('Das ultimative Plugin für soziale Netzwerke für ClassicPress', CPC2_TEXT_DOMAIN).'</em></p>';
 			echo '</div>';
 			echo '<div style="width:30%; min-width:200px; margin-right:10px; float: left;">';
 				echo '<p style="font-size:1.4em; font-weight:100;">'.__('Erste Schritte...', CPC2_TEXT_DOMAIN).'</p>';
 				echo '<p style="font-weight:100;">'.__('Verwende die Schnellstart-Schaltflächen unten,', CPC2_TEXT_DOMAIN).'<br />';
-				echo sprintf(__('füge dann Deine neuen Seiten zu Deinem <a href="%s">WordPress-Menü</a> hinzu.', CPC2_TEXT_DOMAIN), 'nav-menus.php').'<br />';
+				echo sprintf(__('füge dann Deine neuen Seiten zu Deinem <a href="%s">ClassicPress-Menü</a> hinzu.', CPC2_TEXT_DOMAIN), 'nav-menus.php').'<br />';
 				echo sprintf(__('Anpassen über <a href="%s">Shortcodes</a> (über das Menü).', CPC2_TEXT_DOMAIN), admin_url( 'admin.php?page=cpc_com_shortcodes' )).'</p>';
 				echo '<p style="font-size:1.4em; font-weight:100;">'.__('So erhältst Du Unterstützung', CPC2_TEXT_DOMAIN).'</p>';
 				echo '<p style="font-weight:100;">'.sprintf(__('Support gibt es unter <a target="_blank" href="%s">cp-community.n3rds.work</a>', CPC2_TEXT_DOMAIN), 'https://cp-community.n3rds.work/').'<br />';
@@ -593,10 +593,10 @@ function cpc_com_translations() {
         endif;
 
 		echo '<h3>'.__('Ändern der Sprache der gesamten Webseite', CPC2_TEXT_DOMAIN).'</h3>';
-	  	echo '<p>'.sprintf(__('Wenn Du die entsprechende Webseiten-Sprache für WordPress installiert hast (siehe <a target="_blank" href="%s">hier</a>), kann diese optional auch für den Benutzer verwendet werden, wenn er eine Sprache auswählt!', CPC2_TEXT_DOMAIN ), "https://codex.wordpress.org/Installing_WordPress_in_Your_Language").'</p>';
+	  	echo '<p>'.sprintf(__('Wenn Du die entsprechende Webseiten-Sprache für ClassicPress installiert hast (siehe <a target="_blank" href="%s">hier</a>), kann diese optional auch für den Benutzer verwendet werden, wenn er eine Sprache auswählt!', CPC2_TEXT_DOMAIN ), "https://codex.wordpress.org/Installing_ClassicPress_in_Your_Language").'</p>';
         echo '<p><input type="checkbox" ';
         if (get_option('cpc_com_lang_site')) echo 'CHECKED ';
-            echo 'name="cpc_com_lang_site" />'.__('Aktiviere dieses Kontrollkästchen, um den automatischen Sprach-/Gebietsschemawechsel für die WordPress-Installation zu bestätigen.', CPC2_TEXT_DOMAIN).'</p>';
+            echo 'name="cpc_com_lang_site" />'.__('Aktiviere dieses Kontrollkästchen, um den automatischen Sprach-/Gebietsschemawechsel für die ClassicPress-Installation zu bestätigen.', CPC2_TEXT_DOMAIN).'</p>';
         echo '<input type="submit" class="button-primary" value="'.__('Speichern', CPC2_TEXT_DOMAIN).'" />';			
 		echo '</form>';
         
@@ -615,7 +615,7 @@ function cpc_com_reset() {
   		echo '<div id="cpc_welcome_bar" style="margin-top: 20px;">';
 	  		echo '<img id="cpc_welcome_logo" style="width:56px; height:56px; float:left;" src="'.plugins_url('../cp-community/css/images/cpc_logo.png', __FILE__).'" title="'.__('Hilfe', CPC2_TEXT_DOMAIN).'" />';
 	  		echo '<div style="font-size:2em; line-height:1em; font-weight:100; color:#fff;">'.__('Willkommen bei CP-Community', CPC2_TEXT_DOMAIN).'</div>';
-	  		echo '<p style="color:#fff;"><em>'.__('Das ultimative Plugin für soziale Netzwerke für WordPress', CPC2_TEXT_DOMAIN).'</em></p>';
+	  		echo '<p style="color:#fff;"><em>'.__('Das ultimative Plugin für soziale Netzwerke für ClassicPress', CPC2_TEXT_DOMAIN).'</em></p>';
   		echo '</div>';
 
   		echo '<div style="font-size:1.4em; margin-top:20px">'.__('CP-Community-Datenentfernung (Zurücksetzen)', CPC2_TEXT_DOMAIN).'</div>';
@@ -641,7 +641,7 @@ function cpc_com_reset() {
                                     echo __('Lokale Dateien entfernen', CPC2_TEXT_DOMAIN).'... ';
                                     __cpc_com_uninstall_rrmdir(WP_CONTENT_DIR.'/cpc-pro-content');
                                     echo __('ok', CPC2_TEXT_DOMAIN).'<br />';
-                                    echo __('WordPress spülen', CPC2_TEXT_DOMAIN).'... ';                        
+                                    echo __('ClassicPress spülen', CPC2_TEXT_DOMAIN).'... ';                        
                         			$wp_rewrite->flush_rules();
                         			echo __('ok', CPC2_TEXT_DOMAIN).'<br />';
 									echo '</div><div class="cpc_success">'.__('Vollständig', CPC2_TEXT_DOMAIN).'</div>';
@@ -655,7 +655,7 @@ function cpc_com_reset() {
 						echo __('Lokale Dateien entfernen', CPC2_TEXT_DOMAIN).'... ';                        
                         __cpc_com_uninstall_rrmdir(WP_CONTENT_DIR.'/cpc-pro-content');
 						echo __('ok', CPC2_TEXT_DOMAIN).'<br />';
-						echo __('WordPress spülen', CPC2_TEXT_DOMAIN).'... ';                        
+						echo __('ClassicPress spülen', CPC2_TEXT_DOMAIN).'... ';                        
                         $wp_rewrite->flush_rules();
 						echo __('ok', CPC2_TEXT_DOMAIN).'<br />';
 						echo '</div><div class="cpc_success">'.__('Vollständig', CPC2_TEXT_DOMAIN).'</div>';
@@ -770,7 +770,7 @@ function __cpc_com_uninstall_delete () {
     $wpdb->query($sql);
 	echo __('ok', CPC2_TEXT_DOMAIN).'<br />';
     // clear schedules
-    echo __('Removing WordPress schedule', CPC2_TEXT_DOMAIN).'... ';    
+    echo __('Removing ClassicPress schedule', CPC2_TEXT_DOMAIN).'... ';    
     wp_clear_scheduled_hook( 'cpc_community_alerts_hook' );
 	echo __('ok', CPC2_TEXT_DOMAIN).'<br />';
 }

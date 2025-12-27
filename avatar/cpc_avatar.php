@@ -147,7 +147,7 @@ function user_avatar_add_photo() {
             <html xmlns="http://www.w3.org/1999/xhtml" <?php do_action('admin_xml_ns'); ?> <?php language_attributes(); ?>>
             <head>
             <meta http-equiv="Content-Type" content="<?php bloginfo('html_type'); ?>; charset=<?php echo get_option('blog_charset'); ?>" />
-            <title><?php bloginfo('name') ?> &rsaquo; <?php _e('Uploads'); ?> &#8212; <?php _e('WordPress'); ?></title>
+            <title><?php bloginfo('name') ?> &rsaquo; <?php _e('Uploads'); ?> &#8212; <?php _e('ClassicPress'); ?></title>
             <?php do_action('user_avatar_iframe_head'); ?>
             </head>
             <body>
@@ -760,7 +760,7 @@ function user_avatar_get_avatar($id,$width,$link=0,$type='full') {
 				$ret = '<img id="user-avatar-display-image" src="'.USER_AVATAR_DEFAULT.'" width="'.$width.' !important;" height="'.$width.' !important;" class="avatar" />';
 			endif;
 		else:
-			// WordPress default avatar
+			// ClassicPress default avatar
 			$ret = get_avatar($id, $width);
 		endif;
 

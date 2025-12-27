@@ -1,7 +1,7 @@
 <?php
 while(!is_file('wp-config.php')){
 	if(is_dir('../')) chdir('../');
-	else die('Could not find WordPress config file.');
+	else die('Could not find ClassicPress config file.');
 }
 include_once( 'wp-config.php' );
 

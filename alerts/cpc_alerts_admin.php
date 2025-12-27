@@ -211,11 +211,11 @@ function cpc_admin_getting_started_alerts() {
   	echo '<div class="cpc_admin_getting_started_content" id="cpc_admin_getting_started_alerts" style="display:'.$display.';">';
 	?>
 
-	<?php echo __('PS Community-Benachrichtigungen verwenden die interne WordPress-Funktion wp_mail().', CPC2_TEXT_DOMAIN).' '; ?>
+	<?php echo __('PS Community-Benachrichtigungen verwenden die interne ClassicPress-Funktion wp_mail().', CPC2_TEXT_DOMAIN).' '; ?>
 	<?php echo __('Wenn Du abhängig von Deinem Host ein hohes Volumen hast, solltest Du die Verwendung eines externen Mailservers in Betracht ziehen.', CPC2_TEXT_DOMAIN).' '; ?>
-	<?php echo sprintf(__('Es stehen mehrere WordPress-Plugins zur Verfügung, die dies unterstützen, z. B. <a href="%s">Postman SMTP Mailer/Email Log</a>.', CPC2_TEXT_DOMAIN), "https://wordpress.org/plugins/postman-smtp/"); ?>
+	<?php echo sprintf(__('Es stehen mehrere ClassicPress-Plugins zur Verfügung, die dies unterstützen, z. B. <a href="%s">Postman SMTP Mailer/Email Log</a>.', CPC2_TEXT_DOMAIN), "https://wordpress.org/plugins/postman-smtp/"); ?>
 
-    <?php echo '<p>'.sprintf(__('Um Deinen Zeitplan im WordPress-Cron-Zeitplan anzuzeigen, empfehlen wir das Plugin <a href="%s">WP Crontrol</a>.', CPC2_TEXT_DOMAIN), 'https://wordpress.org/plugins/wp-crontrol/').'</p>'; ?>
+    <?php echo '<p>'.sprintf(__('Um Deinen Zeitplan im ClassicPress-Cron-Zeitplan anzuzeigen, empfehlen wir das Plugin <a href="%s">WP Crontrol</a>.', CPC2_TEXT_DOMAIN), 'https://wordpress.org/plugins/wp-crontrol/').'</p>'; ?>
 
 
 		<table class="form-table">
@@ -241,7 +241,7 @@ function cpc_admin_getting_started_alerts() {
 			<span class="description">
 				<?php 
 				echo __('Die Häufigkeit in Sekunden, mit der Benachrichtigungen per E-Mail gesendet werden, ist standardmäßig 3600 (alle 1 Stunde).', CPC2_TEXT_DOMAIN).'<br />';
-				echo __('Denke daran, dass geplante WordPress-Aufgaben durch Besuche auf Deiner Webseite ausgelöst werden.', CPC2_TEXT_DOMAIN).'<br />';
+				echo __('Denke daran, dass geplante ClassicPress-Aufgaben durch Besuche auf Deiner Webseite ausgelöst werden.', CPC2_TEXT_DOMAIN).'<br />';
 				echo '<strong>'.__('Führe dies nicht zu häufig durch, da sich sonst die Serverleistung erheblich verschlechtern kann.', CPC2_TEXT_DOMAIN).'</strong><br />';
 				echo __('Wenn Du diese Seite speicherst, wird der nächste Zyklus ausgelöst.', CPC2_TEXT_DOMAIN).'<br />';
 				?>
@@ -316,7 +316,7 @@ function cpc_admin_getting_started_alerts() {
 		<td>
 			<input type="checkbox" name="cpc_alerts_check" />
 			<span class="description">
-				<?php echo sprintf(__('Aktiviere diese Option, um mit WordPress direkt eine Test-E-Mail an %s zu senden.', CPC2_TEXT_DOMAIN), get_bloginfo('admin_email')); ?>
+				<?php echo sprintf(__('Aktiviere diese Option, um mit ClassicPress direkt eine Test-E-Mail an %s zu senden.', CPC2_TEXT_DOMAIN), get_bloginfo('admin_email')); ?>
 			</span></td> 
 		</tr> 	
 
@@ -572,7 +572,7 @@ function cpc_alerts_scheduled_job() {
                             $filtered_content = apply_filters('cpc_alerts_scheduled_job_content_filter', $content, $pending->ID);
                             if (wp_mail($user->user_email, $subject, $filtered_content, $headers)) {
 
-                                if ($send_report) $report .= __('WordPress meldet, dass der Versand erfolgreich war.', CPC2_TEXT_DOMAIN).'<br />';
+                                if ($send_report) $report .= __('ClassicPress meldet, dass der Versand erfolgreich war.', CPC2_TEXT_DOMAIN).'<br />';
 
                                 $admin_content .= '<strong>'.$pending->post_title.'</strong><br />';
                                 $admin_content .= sprintf(__('Gesendet an: %s', CPC2_TEXT_DOMAIN), $user->user_email).'<br /><br />';
@@ -593,7 +593,7 @@ function cpc_alerts_scheduled_job() {
 
                             } else {
 
-                                if ($send_report) $report .= __('WordPress reports as FAILED to send.', CPC2_TEXT_DOMAIN).'<br />';
+                                if ($send_report) $report .= __('ClassicPress reports as FAILED to send.', CPC2_TEXT_DOMAIN).'<br />';
 
                                 update_post_meta( $pending->ID, 'cpc_alert_failed_datetime', current_time('mysql', 1) );
 
