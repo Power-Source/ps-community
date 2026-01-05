@@ -255,8 +255,39 @@ function cpc_render_group_tab_forum($group_id, $atts = array()) {
 
 	// Call forum function directly with show=true to display the form immediately
 	$html = $html_assets;
-	
-	$html .= cpc_forum_page(array('slug' => $forum_slug, 'show' => true));
+
+	// Keep form hidden until the user explicitly opens it for better UX
+	$html .= '<style>
+		#cpc_forum_post_form{display:none;position:static;left:auto;top:auto;}
+		.cpc-forum-post-open #cpc_forum_post_form{display:block;}
+	</style>';
+
+	$html .= cpc_forum_page(array('slug' => $forum_slug, 'show' => false));
+
+	// Inject group_id into the add-topic form so redirects stay in group context
+	$html = preg_replace(
+		'/<form([^>]*)id="cpc_forum_post_theuploadform"([^>]*)>/',
+		'<form$1id="cpc_forum_post_theuploadform"$2><input type="hidden" name="cpc_group_id" value="'.$group_id.'" />',
+		$html,
+		1
+	);
+
+	$html .= '<script>(function(){
+		var form = document.getElementById("cpc_forum_post_form");
+		var btn = document.getElementById("cpc_forum_post_button");
+		if(!form || !btn){return;}
+		var container = document.getElementById("cpc_forum_post_div");
+		var opened = false;
+		btn.addEventListener("click", function(ev){
+			if(opened){return;}
+			ev.preventDefault();
+			opened = true;
+			if(container){container.classList.add("cpc-forum-post-open");}
+			var title = document.getElementById("cpc_forum_post_title");
+			if(title){title.focus();}
+			btn.textContent = btn.textContent.trim() || "Add Topic";
+		});
+	})();</script>';
 
 	// Rewrite topic links to stay in group tab context
 	$group_tab_url = add_query_arg('tab', 'forum', cpc_get_group_link($group_id));

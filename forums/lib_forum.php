@@ -17,6 +17,7 @@ if ($action) {
 		if ($action == 'cpc_forum_post_add') {
 
 			$the_post = $_POST;
+            $group_id = isset($the_post['cpc_group_id']) ? intval($the_post['cpc_group_id']) : 0;
 			$status = $the_post['cpc_forum_moderate'] == '1' ? 'pending' : 'publish';
             
             $the_title = esc_html($the_post['cpc_forum_post_title']);
@@ -50,8 +51,24 @@ if ($action) {
             $new_post = get_post($new_id);
             if (true || $the_post['cpc_forum_choose']): // everybody can choose
 
-                // IMMER Query-Variante bauen!
-                $url = get_bloginfo('url').'/'.$the_post['cpc_forum_slug'].'/?topic='.$new_post->post_name;
+                // Build redirect URL. If a group context is provided, go to its forum tab with topic param.
+                if ($group_id) {
+                    $group_link = function_exists('cpc_get_group_link') ? cpc_get_group_link($group_id) : '';
+                    if ($group_link) {
+                        $url = add_query_arg(
+                            array(
+                                'tab' => 'forum',
+                                'topic' => $new_post->post_name,
+                            ),
+                            $group_link
+                        );
+                    } else {
+                        $url = get_bloginfo('url').'/'.$the_post['cpc_forum_slug'].'/?topic='.$new_post->post_name;
+                    }
+                } else {
+                    // IMMER Query-Variante bauen!
+                    $url = get_bloginfo('url').'/'.$the_post['cpc_forum_slug'].'/?topic='.$new_post->post_name;
+                }
 
                 // set meta for this post at the forum level
                 $the_forum_term = get_term_by('slug', $the_post['cpc_forum_slug'], 'cpc_forum');
