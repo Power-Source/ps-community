@@ -11,8 +11,10 @@ function cpc_activity_add_username($items){
         $url = get_page_link(get_option('cpccom_profile_page'));
         if (!get_option('cpccom_profile_permalinks')):
             $profile_page = get_post(get_option('cpccom_profile_page'));
-            $slug = '/'.$profile_page->post_name.'/';
-            $items = str_replace($slug, $slug.$current_user->user_login, $items);
+            if ($profile_page && isset($profile_page->post_name)):
+                $slug = '/'.$profile_page->post_name.'/';
+                $items = str_replace($slug, $slug.$current_user->user_login, $items);
+            endif;
         else:
             $items = str_replace($url, $url.cpc_query_mark($url).'user_id='.$current_user->ID, $items);
         endif;

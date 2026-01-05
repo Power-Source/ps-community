@@ -276,6 +276,17 @@ if (strpos(CPC_CORE_PLUGINS, 'core-forums') !== false):
     $taxonomy_metadata = new cpc_Taxonomy_Metadata;
     register_activation_hook( __FILE__, array($taxonomy_metadata, 'activate') );
 endif;
+// Groups
+if (strpos(CPC_CORE_PLUGINS, 'core-groups') !== false):
+    require_once('groups/lib_groups.php');
+    require_once('groups/cpc_custom_post_group.php');
+    require_once('groups/cpc_custom_post_group_members.php');
+    require_once('groups/cpc_groups_shortcodes.php');
+    require_once('groups/cpc_groups_hooks_and_filters.php');
+    if ( defined('DOING_AJAX') && DOING_AJAX ):
+        require_once('groups/ajax_groups.php');
+    endif;
+endif;
 // Admin
 if (is_admin()):
 	require_once('cpc_admin.php');
@@ -284,6 +295,9 @@ if (is_admin()):
     if (strpos(CPC_CORE_PLUGINS, 'core-forums') !== false):
         require_once('forums/cpc_forum_admin.php');
         require_once('forums/cpc_forum_help.php');
+    endif;
+    if (strpos(CPC_CORE_PLUGINS, 'core-groups') !== false):
+        require_once('groups/cpc_groups_admin.php');
     endif;
 endif;
 // Enable shortcodes in text widgets.

@@ -19,7 +19,7 @@ function cpc_admin_getting_started_options() {
         echo '</style>';
         echo '<div id="cpc_release_notes">';
             echo '<div id="cpc_welcome_bar" style="margin-top: 20px;">';
-                echo '<img id="cpc_welcome_logo" style="width:56px; height:56px; float:left;" src="'.plugins_url('../cp-community/css/images/cpc_logo.png', __FILE__).'" title="'.__('help', CPC2_TEXT_DOMAIN).'" />';
+                echo '<img id="cpc_welcome_logo" style="width:56px; height:56px; float:left;" src="'.plugins_url('../ps-community/css/images/cpc_logo.png', __FILE__).'" title="'.__('help', CPC2_TEXT_DOMAIN).'" />';
                 echo '<div style="font-size:2em; line-height:1em; font-weight:100; color:#fff;">'.__('Willkommen bei CP-Community', CPC2_TEXT_DOMAIN).'</div>';
                 echo '<p style="color:#fff;"><em>'.__('Das ultimative Plugin für soziale Netzwerke für ClassicPress', CPC2_TEXT_DOMAIN).'</em></p>';
             echo '</div>';
@@ -66,6 +66,7 @@ function cpc_admin_getting_started_options() {
                                 array_push($tabs, array('tab' => 'cpc_option_alerts',       'option' => 'alerts',       'title' => __('Benachrichtigungen', CPC2_TEXT_DOMAIN)));
                                 array_push($tabs, array('tab' => 'cpc_option_avatar',       'option' => 'avatar',       'title' => __('Avatar', CPC2_TEXT_DOMAIN)));
                                 array_push($tabs, array('tab' => 'cpc_option_forums',       'option' => 'forums',       'title' => __('Forum', CPC2_TEXT_DOMAIN)));
+                                array_push($tabs, array('tab' => 'cpc_option_groups',       'option' => 'groups',       'title' => __('Gruppen', CPC2_TEXT_DOMAIN)));
                                 array_push($tabs, array('tab' => 'cpc_option_friends',      'option' => 'friends',      'title' => __('Freunde', CPC2_TEXT_DOMAIN)));
                                 array_push($tabs, array('tab' => 'cpc_option_conditional',  'option' => 'conditional',  'title' => __('Bedingt', CPC2_TEXT_DOMAIN)));
                                 array_push($tabs, array('tab' => 'cpc_option_profile',      'option' => 'profile',      'title' => __('Profil', CPC2_TEXT_DOMAIN)));
@@ -117,6 +118,14 @@ function cpc_admin_getting_started_options() {
                                 echo cpc_show_shortcode($cpc_expand_tab, $cpc_expand_shortcode, 'forums', 'cpc_forum_show_posts_tab', CPC_PREFIX.'-forum-show-posts');
                                 echo cpc_show_shortcode($cpc_expand_tab, $cpc_expand_shortcode, 'forums', 'cpc_forum_children_tab', CPC_PREFIX.'-forum-children');
                         
+                                // Groups
+                                echo cpc_show_shortcode($cpc_expand_tab, $cpc_expand_shortcode, 'groups', 'cpc_groups_list_tab', CPC_PREFIX.'-groups');
+                                echo cpc_show_shortcode($cpc_expand_tab, $cpc_expand_shortcode, 'groups', 'cpc_group_single_tab', CPC_PREFIX.'-group-single');
+                                echo cpc_show_shortcode($cpc_expand_tab, $cpc_expand_shortcode, 'groups', 'cpc_group_members_tab', CPC_PREFIX.'-group-members');
+                                echo cpc_show_shortcode($cpc_expand_tab, $cpc_expand_shortcode, 'groups', 'cpc_my_groups_tab', CPC_PREFIX.'-my-groups');
+                                echo cpc_show_shortcode($cpc_expand_tab, $cpc_expand_shortcode, 'groups', 'cpc_group_create_tab', CPC_PREFIX.'-group-create');
+                                echo cpc_show_shortcode($cpc_expand_tab, $cpc_expand_shortcode, 'groups', 'cpc_group_join_button_tab', CPC_PREFIX.'-group-join-button');
+                        
                                 // Conditional Tab
                                 echo cpc_show_shortcode($cpc_expand_tab, $cpc_expand_shortcode, 'conditional', 'cpc_user_id_tab', CPC_PREFIX.'-user-id');
                                 echo cpc_show_shortcode($cpc_expand_tab, $cpc_expand_shortcode, 'conditional', 'cpc_is_logged_in_tab', CPC_PREFIX.'-is-logged-in');
@@ -155,6 +164,175 @@ function cpc_admin_getting_started_options() {
                         echo '</div>';    
 
                         echo '<div id="cpc_admin_getting_started_options_right" style="display: none;">';
+
+                            /* ----------------------- GROUPS TAB ----------------------- */
+
+                            // [cpc-groups]
+                            $values = get_option('cpc_shortcode_options_'.'cpc_groups_list') ? get_option('cpc_shortcode_options_'.'cpc_groups_list') : array();   
+                            echo cpc_show_options($cpc_expand_shortcode, 'cpc_groups_list_tab');
+                                echo '<strong>'.__('Zweck:', CPC2_TEXT_DOMAIN).'</strong> '.__("Zeigt eine Liste aller Gruppen an.", CPC2_TEXT_DOMAIN).'<br />';
+                                echo '<strong>'.__('Wie benutzen:', CPC2_TEXT_DOMAIN).'</strong> '.__('Füge [cpc-groups] zu einer ClassicPress-Seite hinzu.', CPC2_TEXT_DOMAIN);
+                                echo '<p><strong>'.__('Optionen', CPC2_TEXT_DOMAIN).'</strong><br />';
+                                echo '<table cellpadding="0" cellspacing="0" class="cpc_shortcode_value_row">';
+                                    echo '<tr><td>'.__('Gruppentyp', CPC2_TEXT_DOMAIN).'</td><td>';
+                                        $type = cpc_get_shortcode_default($values, 'cpc_groups_list-type', 'all');
+                                        echo '<select name="cpc_groups_list-type">';
+                                            echo '<option value="all"'.($type == 'all' ? ' SELECTED' : '').'>'.__('Alle', CPC2_TEXT_DOMAIN).'</option>';
+                                            echo '<option value="public"'.($type == 'public' ? ' SELECTED' : '').'>'.__('Öffentlich', CPC2_TEXT_DOMAIN).'</option>';
+                                            echo '<option value="private"'.($type == 'private' ? ' SELECTED' : '').'>'.__('Privat', CPC2_TEXT_DOMAIN).'</option>';
+                                            echo '<option value="hidden"'.($type == 'hidden' ? ' SELECTED' : '').'>'.__('Versteckt', CPC2_TEXT_DOMAIN).'</option>';
+                                        echo '</select></td><td>(type="'.$type.'")</td></tr>';
+                                    echo '<tr><td>'.__('Spalten', CPC2_TEXT_DOMAIN).'</td><td>';
+                                        $columns = cpc_get_shortcode_default($values, 'cpc_groups_list-columns', '2');
+                                        echo '<input type="text" name="cpc_groups_list-columns" value="'.$columns.'" style="width:50px"></td><td>(columns="'.$columns.'")</td></tr>';
+                                    echo '<tr><td>'.__('Avatar anzeigen', CPC2_TEXT_DOMAIN).'</td><td>';
+                                        $show_avatar = cpc_get_shortcode_default($values, 'cpc_groups_list-show_avatar', true);
+                                        echo '<input type="checkbox" name="cpc_groups_list-show_avatar"'.($show_avatar ? ' CHECKED' : '').'></td><td>(show_avatar="'.($show_avatar ? '1' : '0').'")</td></tr>';
+                                    echo '<tr><td>'.__('Avatar-Größe', CPC2_TEXT_DOMAIN).'</td><td>';
+                                        $avatar_size = cpc_get_shortcode_default($values, 'cpc_groups_list-avatar_size', '50');
+                                        echo '<input type="text" name="cpc_groups_list-avatar_size" value="'.$avatar_size.'" style="width:50px"></td><td>(avatar_size="'.$avatar_size.'")</td></tr>';
+                                    echo '<tr><td>'.__('Beschreibung anzeigen', CPC2_TEXT_DOMAIN).'</td><td>';
+                                        $show_description = cpc_get_shortcode_default($values, 'cpc_groups_list-show_description', true);
+                                        echo '<input type="checkbox" name="cpc_groups_list-show_description"'.($show_description ? ' CHECKED' : '').'></td><td>(show_description="'.($show_description ? '1' : '0').'")</td></tr>';
+                                    echo '<tr><td>'.__('Beschreibungslänge', CPC2_TEXT_DOMAIN).'</td><td>';
+                                        $description_length = cpc_get_shortcode_default($values, 'cpc_groups_list-description_length', '150');
+                                        echo '<input type="text" name="cpc_groups_list-description_length" value="'.$description_length.'" style="width:50px"></td><td>(description_length="'.$description_length.'")</td></tr>';
+                                    echo '<tr><td>'.__('Mitgliederzahl anzeigen', CPC2_TEXT_DOMAIN).'</td><td>';
+                                        $show_member_count = cpc_get_shortcode_default($values, 'cpc_groups_list-show_member_count', true);
+                                        echo '<input type="checkbox" name="cpc_groups_list-show_member_count"'.($show_member_count ? ' CHECKED' : '').'></td><td>(show_member_count="'.($show_member_count ? '1' : '0').'")</td></tr>';
+                                    echo '<tr><td>'.__('Beitrittsbutton anzeigen', CPC2_TEXT_DOMAIN).'</td><td>';
+                                        $show_join_button = cpc_get_shortcode_default($values, 'cpc_groups_list-show_join_button', true);
+                                        echo '<input type="checkbox" name="cpc_groups_list-show_join_button"'.($show_join_button ? ' CHECKED' : '').'></td><td>(show_join_button="'.($show_join_button ? '1' : '0').'")</td></tr>';
+                                    echo '<tr><td>'.__('Suchfeld anzeigen', CPC2_TEXT_DOMAIN).'</td><td>';
+                                        $search = cpc_get_shortcode_default($values, 'cpc_groups_list-search', true);
+                                        echo '<input type="checkbox" name="cpc_groups_list-search"'.($search ? ' CHECKED' : '').'></td><td>(search="'.($search ? '1' : '0').'")</td></tr>';
+                                    echo '<tr><td>'.__('Limit', CPC2_TEXT_DOMAIN).'</td><td>';
+                                        $limit = cpc_get_shortcode_default($values, 'cpc_groups_list-limit', '-1');
+                                        echo '<input type="text" name="cpc_groups_list-limit" value="'.$limit.'" style="width:50px"></td><td>(limit="'.$limit.'")</td></tr>';
+                                echo '</table>';
+                            echo cpc_show_options_close();
+
+                            // [cpc-group-single]
+                            $values = get_option('cpc_shortcode_options_'.'cpc_group_single') ? get_option('cpc_shortcode_options_'.'cpc_group_single') : array();   
+                            echo cpc_show_options($cpc_expand_shortcode, 'cpc_group_single_tab');
+                                echo '<strong>'.__('Zweck:', CPC2_TEXT_DOMAIN).'</strong> '.__("Zeigt Details einer einzelnen Gruppe an.", CPC2_TEXT_DOMAIN).'<br />';
+                                echo '<strong>'.__('Wie benutzen:', CPC2_TEXT_DOMAIN).'</strong> '.__('Füge [cpc-group-single] zu einer Gruppenseite hinzu (wird automatisch die aktuelle Gruppe anzeigen).', CPC2_TEXT_DOMAIN);
+                                echo '<p><strong>'.__('Optionen', CPC2_TEXT_DOMAIN).'</strong><br />';
+                                echo '<table cellpadding="0" cellspacing="0" class="cpc_shortcode_value_row">';
+                                    echo '<tr><td>'.__('Gruppen-ID', CPC2_TEXT_DOMAIN).'</td><td>';
+                                        $group_id = cpc_get_shortcode_default($values, 'cpc_group_single-group_id', '');
+                                        echo '<input type="text" name="cpc_group_single-group_id" value="'.$group_id.'" style="width:100px"></td><td>(group_id="'.$group_id.'")</td></tr>';
+                                    echo '<tr><td colspan="3"><small>'.__('Leer lassen, um aktuelle Gruppe zu verwenden', CPC2_TEXT_DOMAIN).'</small></td></tr>';
+                                    echo '<tr><td>'.__('Avatar anzeigen', CPC2_TEXT_DOMAIN).'</td><td>';
+                                        $show_avatar = cpc_get_shortcode_default($values, 'cpc_group_single-show_avatar', true);
+                                        echo '<input type="checkbox" name="cpc_group_single-show_avatar"'.($show_avatar ? ' CHECKED' : '').'></td><td>(show_avatar="'.($show_avatar ? '1' : '0').'")</td></tr>';
+                                    echo '<tr><td>'.__('Avatar-Größe', CPC2_TEXT_DOMAIN).'</td><td>';
+                                        $avatar_size = cpc_get_shortcode_default($values, 'cpc_group_single-avatar_size', '100');
+                                        echo '<input type="text" name="cpc_group_single-avatar_size" value="'.$avatar_size.'" style="width:50px"></td><td>(avatar_size="'.$avatar_size.'")</td></tr>';
+                                    echo '<tr><td>'.__('Beschreibung anzeigen', CPC2_TEXT_DOMAIN).'</td><td>';
+                                        $show_description = cpc_get_shortcode_default($values, 'cpc_group_single-show_description', true);
+                                        echo '<input type="checkbox" name="cpc_group_single-show_description"'.($show_description ? ' CHECKED' : '').'></td><td>(show_description="'.($show_description ? '1' : '0').'")</td></tr>';
+                                    echo '<tr><td>'.__('Mitglieder anzeigen', CPC2_TEXT_DOMAIN).'</td><td>';
+                                        $show_members = cpc_get_shortcode_default($values, 'cpc_group_single-show_members', true);
+                                        echo '<input type="checkbox" name="cpc_group_single-show_members"'.($show_members ? ' CHECKED' : '').'></td><td>(show_members="'.($show_members ? '1' : '0').'")</td></tr>';
+                                    echo '<tr><td>'.__('Aktionen anzeigen', CPC2_TEXT_DOMAIN).'</td><td>';
+                                        $show_actions = cpc_get_shortcode_default($values, 'cpc_group_single-show_actions', true);
+                                        echo '<input type="checkbox" name="cpc_group_single-show_actions"'.($show_actions ? ' CHECKED' : '').'></td><td>(show_actions="'.($show_actions ? '1' : '0').'")</td></tr>';
+                                echo '</table>';
+                            echo cpc_show_options_close();
+
+                            // [cpc-group-members]
+                            $values = get_option('cpc_shortcode_options_'.'cpc_group_members') ? get_option('cpc_shortcode_options_'.'cpc_group_members') : array();   
+                            echo cpc_show_options($cpc_expand_shortcode, 'cpc_group_members_tab');
+                                echo '<strong>'.__('Zweck:', CPC2_TEXT_DOMAIN).'</strong> '.__("Zeigt die Mitglieder einer Gruppe an.", CPC2_TEXT_DOMAIN).'<br />';
+                                echo '<strong>'.__('Wie benutzen:', CPC2_TEXT_DOMAIN).'</strong> '.__('Füge [cpc-group-members] zu einer Seite hinzu.', CPC2_TEXT_DOMAIN);
+                                echo '<p><strong>'.__('Optionen', CPC2_TEXT_DOMAIN).'</strong><br />';
+                                echo '<table cellpadding="0" cellspacing="0" class="cpc_shortcode_value_row">';
+                                    echo '<tr><td>'.__('Gruppen-ID', CPC2_TEXT_DOMAIN).'</td><td>';
+                                        $group_id = cpc_get_shortcode_default($values, 'cpc_group_members-group_id', '');
+                                        echo '<input type="text" name="cpc_group_members-group_id" value="'.$group_id.'" style="width:100px"></td><td>(group_id="'.$group_id.'")</td></tr>';
+                                    echo '<tr><td colspan="3"><small>'.__('Leer lassen, um aktuelle Gruppe zu verwenden', CPC2_TEXT_DOMAIN).'</small></td></tr>';
+                                    echo '<tr><td>'.__('Rolle filtern', CPC2_TEXT_DOMAIN).'</td><td>';
+                                        $role = cpc_get_shortcode_default($values, 'cpc_group_members-role', '');
+                                        echo '<select name="cpc_group_members-role">';
+                                            echo '<option value=""'.($role == '' ? ' SELECTED' : '').'>'.__('Alle', CPC2_TEXT_DOMAIN).'</option>';
+                                            echo '<option value="admin"'.($role == 'admin' ? ' SELECTED' : '').'>'.__('Admin', CPC2_TEXT_DOMAIN).'</option>';
+                                            echo '<option value="moderator"'.($role == 'moderator' ? ' SELECTED' : '').'>'.__('Moderator', CPC2_TEXT_DOMAIN).'</option>';
+                                            echo '<option value="member"'.($role == 'member' ? ' SELECTED' : '').'>'.__('Mitglied', CPC2_TEXT_DOMAIN).'</option>';
+                                        echo '</select></td><td>(role="'.$role.'")</td></tr>';
+                                    echo '<tr><td>'.__('Spalten', CPC2_TEXT_DOMAIN).'</td><td>';
+                                        $columns = cpc_get_shortcode_default($values, 'cpc_group_members-columns', '4');
+                                        echo '<input type="text" name="cpc_group_members-columns" value="'.$columns.'" style="width:50px"></td><td>(columns="'.$columns.'")</td></tr>';
+                                    echo '<tr><td>'.__('Avatar anzeigen', CPC2_TEXT_DOMAIN).'</td><td>';
+                                        $show_avatar = cpc_get_shortcode_default($values, 'cpc_group_members-show_avatar', true);
+                                        echo '<input type="checkbox" name="cpc_group_members-show_avatar"'.($show_avatar ? ' CHECKED' : '').'></td><td>(show_avatar="'.($show_avatar ? '1' : '0').'")</td></tr>';
+                                    echo '<tr><td>'.__('Avatar-Größe', CPC2_TEXT_DOMAIN).'</td><td>';
+                                        $avatar_size = cpc_get_shortcode_default($values, 'cpc_group_members-avatar_size', '50');
+                                        echo '<input type="text" name="cpc_group_members-avatar_size" value="'.$avatar_size.'" style="width:50px"></td><td>(avatar_size="'.$avatar_size.'")</td></tr>';
+                                    echo '<tr><td>'.__('Rolle anzeigen', CPC2_TEXT_DOMAIN).'</td><td>';
+                                        $show_role = cpc_get_shortcode_default($values, 'cpc_group_members-show_role', true);
+                                        echo '<input type="checkbox" name="cpc_group_members-show_role"'.($show_role ? ' CHECKED' : '').'></td><td>(show_role="'.($show_role ? '1' : '0').'")</td></tr>';
+                                    echo '<tr><td>'.__('Limit', CPC2_TEXT_DOMAIN).'</td><td>';
+                                        $limit = cpc_get_shortcode_default($values, 'cpc_group_members-limit', '-1');
+                                        echo '<input type="text" name="cpc_group_members-limit" value="'.$limit.'" style="width:50px"></td><td>(limit="'.$limit.'")</td></tr>';
+                                echo '</table>';
+                            echo cpc_show_options_close();
+
+                            // [cpc-my-groups]
+                            $values = get_option('cpc_shortcode_options_'.'cpc_my_groups') ? get_option('cpc_shortcode_options_'.'cpc_my_groups') : array();   
+                            echo cpc_show_options($cpc_expand_shortcode, 'cpc_my_groups_tab');
+                                echo '<strong>'.__('Zweck:', CPC2_TEXT_DOMAIN).'</strong> '.__("Zeigt die Gruppen des aktuell angemeldeten Benutzers an.", CPC2_TEXT_DOMAIN).'<br />';
+                                echo '<strong>'.__('Wie benutzen:', CPC2_TEXT_DOMAIN).'</strong> '.__('Füge [cpc-my-groups] zu einer ClassicPress-Seite hinzu.', CPC2_TEXT_DOMAIN);
+                                echo '<p><strong>'.__('Optionen', CPC2_TEXT_DOMAIN).'</strong><br />';
+                                echo '<table cellpadding="0" cellspacing="0" class="cpc_shortcode_value_row">';
+                                    echo '<tr><td>'.__('Spalten', CPC2_TEXT_DOMAIN).'</td><td>';
+                                        $columns = cpc_get_shortcode_default($values, 'cpc_my_groups-columns', '3');
+                                        echo '<input type="text" name="cpc_my_groups-columns" value="'.$columns.'" style="width:50px"></td><td>(columns="'.$columns.'")</td></tr>';
+                                    echo '<tr><td>'.__('Avatar anzeigen', CPC2_TEXT_DOMAIN).'</td><td>';
+                                        $show_avatar = cpc_get_shortcode_default($values, 'cpc_my_groups-show_avatar', true);
+                                        echo '<input type="checkbox" name="cpc_my_groups-show_avatar"'.($show_avatar ? ' CHECKED' : '').'></td><td>(show_avatar="'.($show_avatar ? '1' : '0').'")</td></tr>';
+                                    echo '<tr><td>'.__('Avatar-Größe', CPC2_TEXT_DOMAIN).'</td><td>';
+                                        $avatar_size = cpc_get_shortcode_default($values, 'cpc_my_groups-avatar_size', '50');
+                                        echo '<input type="text" name="cpc_my_groups-avatar_size" value="'.$avatar_size.'" style="width:50px"></td><td>(avatar_size="'.$avatar_size.'")</td></tr>';
+                                    echo '<tr><td>'.__('Rolle anzeigen', CPC2_TEXT_DOMAIN).'</td><td>';
+                                        $show_role = cpc_get_shortcode_default($values, 'cpc_my_groups-show_role', true);
+                                        echo '<input type="checkbox" name="cpc_my_groups-show_role"'.($show_role ? ' CHECKED' : '').'></td><td>(show_role="'.($show_role ? '1' : '0').'")</td></tr>';
+                                echo '</table>';
+                            echo cpc_show_options_close();
+
+                            // [cpc-group-create]
+                            $values = get_option('cpc_shortcode_options_'.'cpc_group_create') ? get_option('cpc_shortcode_options_'.'cpc_group_create') : array();   
+                            echo cpc_show_options($cpc_expand_shortcode, 'cpc_group_create_tab');
+                                echo '<strong>'.__('Zweck:', CPC2_TEXT_DOMAIN).'</strong> '.__("Zeigt ein Formular zum Erstellen einer neuen Gruppe an.", CPC2_TEXT_DOMAIN).'<br />';
+                                echo '<strong>'.__('Wie benutzen:', CPC2_TEXT_DOMAIN).'</strong> '.__('Füge [cpc-group-create] zu einer ClassicPress-Seite hinzu.', CPC2_TEXT_DOMAIN);
+                                echo '<p><strong>'.__('Optionen', CPC2_TEXT_DOMAIN).'</strong><br />';
+                                echo '<table cellpadding="0" cellspacing="0" class="cpc_shortcode_value_row">';
+                                    echo '<tr><td>'.__('Weiterleitung nach Erstellung', CPC2_TEXT_DOMAIN).'</td><td>';
+                                        $redirect = cpc_get_shortcode_default($values, 'cpc_group_create-redirect', '');
+                                        echo '<input type="text" name="cpc_group_create-redirect" value="'.$redirect.'" style="width:200px"></td><td>(redirect="'.$redirect.'")</td></tr>';
+                                    echo '<tr><td colspan="3"><small>'.__('URL zur Weiterleitung nach erfolgreicher Gruppenerstellung (optional)', CPC2_TEXT_DOMAIN).'</small></td></tr>';
+                                echo '</table>';
+                            echo cpc_show_options_close();
+
+                            // [cpc-group-join-button]
+                            $values = get_option('cpc_shortcode_options_'.'cpc_group_join_button') ? get_option('cpc_shortcode_options_'.'cpc_group_join_button') : array();   
+                            echo cpc_show_options($cpc_expand_shortcode, 'cpc_group_join_button_tab');
+                                echo '<strong>'.__('Zweck:', CPC2_TEXT_DOMAIN).'</strong> '.__("Zeigt einen Beitreten/Verlassen-Button an.", CPC2_TEXT_DOMAIN).'<br />';
+                                echo '<strong>'.__('Wie benutzen:', CPC2_TEXT_DOMAIN).'</strong> '.__('Füge [cpc-group-join-button] zu einer Seite hinzu.', CPC2_TEXT_DOMAIN);
+                                echo '<p><strong>'.__('Optionen', CPC2_TEXT_DOMAIN).'</strong><br />';
+                                echo '<table cellpadding="0" cellspacing="0" class="cpc_shortcode_value_row">';
+                                    echo '<tr><td>'.__('Gruppen-ID', CPC2_TEXT_DOMAIN).'</td><td>';
+                                        $group_id = cpc_get_shortcode_default($values, 'cpc_group_join_button-group_id', '');
+                                        echo '<input type="text" name="cpc_group_join_button-group_id" value="'.$group_id.'" style="width:100px"></td><td>(group_id="'.$group_id.'")</td></tr>';
+                                    echo '<tr><td colspan="3"><small>'.__('Leer lassen, um aktuelle Gruppe zu verwenden', CPC2_TEXT_DOMAIN).'</small></td></tr>';
+                                    echo '<tr><td>'.__('Beitrittstext', CPC2_TEXT_DOMAIN).'</td><td>';
+                                        $join_text = cpc_get_shortcode_default($values, 'cpc_group_join_button-join_text', __('Beitreten', CPC2_TEXT_DOMAIN));
+                                        echo '<input type="text" name="cpc_group_join_button-join_text" value="'.$join_text.'" style="width:150px"></td><td>(join_text="'.$join_text.'")</td></tr>';
+                                    echo '<tr><td>'.__('Verlassen-Text', CPC2_TEXT_DOMAIN).'</td><td>';
+                                        $leave_text = cpc_get_shortcode_default($values, 'cpc_group_join_button-leave_text', __('Verlassen', CPC2_TEXT_DOMAIN));
+                                        echo '<input type="text" name="cpc_group_join_button-leave_text" value="'.$leave_text.'" style="width:150px"></td><td>(leave_text="'.$leave_text.'")</td></tr>';
+                                echo '</table>';
+                            echo cpc_show_options_close();
 
                             /* ----------------------- CONDITIONAL TAB ----------------------- */    
 
@@ -2639,6 +2817,7 @@ function cpc_admin_getting_started_core_save($the_post) {
 	if (isset($the_post['core-friendships']))  $cpc_default_core .= 'core-friendships,';
 	if (isset($the_post['core-alerts'])) 	   $cpc_default_core .= 'core-alerts,';
 	if (isset($the_post['core-forums'])) 	   $cpc_default_core .= 'core-forums,';
+	if (isset($the_post['core-groups'])) 	   $cpc_default_core .= 'core-groups,';
 	update_option('cpc_default_core', $cpc_default_core);  
 
 	if (isset($the_post['cpc_core_options_tips'])):
@@ -2774,6 +2953,7 @@ if (!function_exists('cpc_admin_getting_started_extensions')):
                 echo cpc_show_core($values, 'core-friendships', __('Freundschaften', CPC2_TEXT_DOMAIN), 'https://cp-community.n3rds.work/profile-page/', '');
                 echo cpc_show_core($values, 'core-alerts', __('Benachrichtigungen', CPC2_TEXT_DOMAIN), 'https://cp-community.n3rds.work/email-alerts/', '');
                 echo cpc_show_core($values, 'core-forums', __('Foren', CPC2_TEXT_DOMAIN), 'https://cp-community.n3rds.work/forum-page/', '');
+                echo cpc_show_core($values, 'core-groups', __('Gruppen', CPC2_TEXT_DOMAIN), 'https://cp-community.n3rds.work/groups/', '');
                 ?>
             </td>
         </tr> 
@@ -2791,8 +2971,8 @@ function cpc_show_core($values, $field, $label, $help, $video) {
     if (in_array($field, $values)) $html .= ' CHECKED';
     $html .= '>'.$label;
 
-    if ($help) $html .= sprintf('<a href="%s" target="_blank"><img style="width:16px;height:16px" src="'.plugins_url('../cp-community/css/images/help.png', __FILE__).'" title="'.__('Hilfe', CPC2_TEXT_DOMAIN).'" /></a>', $help);
-    if ($video) $html .= sprintf('<a href="%s" target="_blank"><img style="width:16px;height:16px" src="'.plugins_url('../cp-community/css/images/video.png', __FILE__).'" title="'.__('Video', CPC2_TEXT_DOMAIN).'" /></a>', $video);
+    if ($help) $html .= sprintf('<a href="%s" target="_blank"><img style="width:16px;height:16px" src="'.plugins_url('../ps-community/css/images/help.png', __FILE__).'" title="'.__('Hilfe', CPC2_TEXT_DOMAIN).'" /></a>', $help);
+    if ($video) $html .= sprintf('<a href="%s" target="_blank"><img style="width:16px;height:16px" src="'.plugins_url('../ps-community/css/images/video.png', __FILE__).'" title="'.__('Video', CPC2_TEXT_DOMAIN).'" /></a>', $video);
     $html .= '<br />';
     return $html;
 }
@@ -2814,7 +2994,7 @@ function cpc_admin_getting_started_styles() {
         echo '</style>';
         echo '<div id="cpc_release_notes">';
             echo '<div id="cpc_welcome_bar" style="margin-top: 20px;">';
-                echo '<img id="cpc_welcome_logo" style="width:56px; height:56px; float:left;" src="'.plugins_url('../cp-community/css/images/cpc_logo.png', __FILE__).'" title="'.__('Hilfe', CPC2_TEXT_DOMAIN).'" />';
+                echo '<img id="cpc_welcome_logo" style="width:56px; height:56px; float:left;" src="'.plugins_url('../ps-community/css/images/cpc_logo.png', __FILE__).'" title="'.__('Hilfe', CPC2_TEXT_DOMAIN).'" />';
                 echo '<div style="font-size:2em; line-height:1em; font-weight:100; color:#fff;">'.__('Willkommen bei CP-Community', CPC2_TEXT_DOMAIN).'</div>';
                 echo '<p style="color:#fff;"><em>'.__('Das ultimative Plugin für soziale Netzwerke für ClassicPress', CPC2_TEXT_DOMAIN).'</em></p>';
             echo '</div>';
@@ -2866,6 +3046,7 @@ function cpc_admin_getting_started_styles() {
                                     $tabs = array();
                                     array_push($tabs, array('tab' => 'cpc_option_elements', 'option' => 'elements', 'title' => __('Interface', CPC2_TEXT_DOMAIN)));
                                     array_push($tabs, array('tab' => 'cpc_option_forums', 'option' => 'forums', 'title' => __('Foren', CPC2_TEXT_DOMAIN)));
+                                    array_push($tabs, array('tab' => 'cpc_option_groups', 'option' => 'groups', 'title' => __('Gruppen', CPC2_TEXT_DOMAIN)));
 
                                     // any more tabs?
                                     $tabs = apply_filters( 'cpc_styles_show_tab_filter', $tabs );
@@ -2897,6 +3078,10 @@ function cpc_admin_getting_started_styles() {
                                     // Forums
                                     echo cpc_show_style($cpc_expand_tab, $cpc_expand_shortcode, 'forums', 'cpc_forum_tab', CPC_PREFIX.'-forum');
                                     echo cpc_show_style($cpc_expand_tab, $cpc_expand_shortcode, 'forums', 'cpc_forums_tab', CPC_PREFIX.'-forums');
+                                    // Groups
+                                    echo cpc_show_style($cpc_expand_tab, $cpc_expand_shortcode, 'groups', 'cpc_groups_list_tab', CPC_PREFIX.'-groups');
+                                    echo cpc_show_style($cpc_expand_tab, $cpc_expand_shortcode, 'groups', 'cpc_group_single_tab', CPC_PREFIX.'-group-single');
+                                    echo cpc_show_style($cpc_expand_tab, $cpc_expand_shortcode, 'groups', 'cpc_my_groups_tab', CPC_PREFIX.'-my-groups');
 
                                     // any more shortcodes?
                                     do_action('cpc_styles_shortcode_hook', $cpc_expand_tab, $cpc_expand_shortcode);    
@@ -2964,6 +3149,57 @@ function cpc_admin_getting_started_styles() {
                                     echo cpc_styles_show_values(__('Forumtitel', CPC2_TEXT_DOMAIN),                'cpc_forums_forum_title',                   '', '', '', 'off', 'off', $function, $values, '');
                                     echo cpc_styles_show_values(__('Forumtitel (Mouseover)', CPC2_TEXT_DOMAIN),   'cpc_forums_forum_title:hover',                   '', '', '', 'off', 'off', $function, $values, '');
                                     echo cpc_styles_show_values(__('Forumtitel (Klick)', CPC2_TEXT_DOMAIN),        'cpc_forums_forum_title:active',                   '', '', '', 'off', 'off', $function, $values, sprintf(__('If Forum Title is styled, it would be best to <a href="%s">turn off "Top level as links"</a> via the [cpc-forums] shortcode.', CPC2_TEXT_DOMAIN), admin_url( 'admin.php?page=cpc_com_shortcodes' )));
+
+                                echo '</table>';    
+                            echo '</div>';    
+
+                            /* ----------------------- GROUPS TAB ----------------------- */
+
+                            // [cpc-groups]
+                            $function = 'cpc_groups';
+                            $values = get_option('cpc_styles_'.$function) ? get_option('cpc_styles_'.$function) : array(); 
+
+                            echo cpc_show_options($cpc_expand_shortcode, 'cpc_groups_list_tab');
+                                echo '<table class="widefat fixed" cellspacing="0">';
+                                    echo cpc_styles_header();
+
+                                    echo cpc_styles_show_values(__('Gruppen-Container', CPC2_TEXT_DOMAIN), 'cpc_groups_grid', '', '', '', 'off', 'off', $function, $values);
+                                    echo cpc_styles_show_values(__('Gruppen-Karte', CPC2_TEXT_DOMAIN), 'cpc_group_card', '', '', '', 'off', 'off', $function, $values);
+                                    echo cpc_styles_show_values(__('Gruppen-Titel', CPC2_TEXT_DOMAIN), 'cpc_group_card_title', '', '', '', 'off', 'off', $function, $values);
+                                    echo cpc_styles_show_values(__('Gruppen-Titel (Mouseover)', CPC2_TEXT_DOMAIN), 'cpc_group_card_title:hover', '', '', '', 'off', 'off', $function, $values);
+                                    echo cpc_styles_show_values(__('Gruppen-Meta', CPC2_TEXT_DOMAIN), 'cpc_group_meta', '', '', '', 'off', 'off', $function, $values);
+                                    echo cpc_styles_show_values(__('Gruppen-Beschreibung', CPC2_TEXT_DOMAIN), 'cpc_group_description', '', '', '', 'off', 'off', $function, $values);
+
+                                echo '</table>';    
+                            echo '</div>';    
+
+                            // [cpc-group-single]
+                            $function = 'cpc_group_single';
+                            $values = get_option('cpc_styles_'.$function) ? get_option('cpc_styles_'.$function) : array(); 
+
+                            echo cpc_show_options($cpc_expand_shortcode, 'cpc_group_single_tab');
+                                echo '<table class="widefat fixed" cellspacing="0">';
+                                    echo cpc_styles_header();
+
+                                    echo cpc_styles_show_values(__('Gruppen-Header', CPC2_TEXT_DOMAIN), 'cpc_group_header', '', '', '', 'off', 'off', $function, $values);
+                                    echo cpc_styles_show_values(__('Gruppen-Titel', CPC2_TEXT_DOMAIN), 'cpc_group_header h1', '', '', '', 'off', 'off', $function, $values);
+                                    echo cpc_styles_show_values(__('Gruppen-Inhalt', CPC2_TEXT_DOMAIN), 'cpc_group_content', '', '', '', 'off', 'off', $function, $values);
+                                    echo cpc_styles_show_values(__('Gruppen-Aktionen', CPC2_TEXT_DOMAIN), 'cpc_group_actions', '', '', '', 'off', 'off', $function, $values);
+
+                                echo '</table>';    
+                            echo '</div>';    
+
+                            // [cpc-my-groups]
+                            $function = 'cpc_my_groups';
+                            $values = get_option('cpc_styles_'.$function) ? get_option('cpc_styles_'.$function) : array(); 
+
+                            echo cpc_show_options($cpc_expand_shortcode, 'cpc_my_groups_tab');
+                                echo '<table class="widefat fixed" cellspacing="0">';
+                                    echo cpc_styles_header();
+
+                                    echo cpc_styles_show_values(__('Meine Gruppen Grid', CPC2_TEXT_DOMAIN), 'cpc_my_groups_grid', '', '', '', 'off', 'off', $function, $values);
+                                    echo cpc_styles_show_values(__('Gruppen-Karte', CPC2_TEXT_DOMAIN), 'cpc_group_card', '', '', '', 'off', 'off', $function, $values);
+                                    echo cpc_styles_show_values(__('Rollen-Badge', CPC2_TEXT_DOMAIN), 'cpc_group_role_badge', '', '', '', 'off', 'off', $function, $values);
 
                                 echo '</table>';    
                             echo '</div>';    

@@ -233,15 +233,16 @@ function cpccom_manage() {
                 echo '</div>';
             endif;
 
-            /*if (strpos(CPC_CORE_PLUGINS, 'core-groups') !== false):
+            if (strpos(CPC_CORE_PLUGINS, 'core-groups') !== false):
 		  	    echo '<div class="cpc_manage_left">';
 			  	    echo '<h3>'.__('Gruppen', CPC2_TEXT_DOMAIN).'</h3>';
 			  	    echo '<ul class="cpc_manage_icons">';
-			  	    echo '<li class="cpc_icon_groups'.cpc_admin_fav('manage_groups').'"><a href="edit.php?post_type=cpc_group">'.__('Manage Groups', CPC2_TEXT_DOMAIN).'</a></li>';
-			  	    echo '<li class="cpc_icon_groups'.cpc_admin_fav('group_members').'"><a href="edit.php?post_type=cpc_group_members">'.__('Group Members', CPC2_TEXT_DOMAIN).'</a></li>';
+			  	    echo '<li class="cpc_icon_groups'.cpc_admin_fav('manage_groups').'"><a href="edit.php?post_type=cpc_group">'.__('Gruppen verwalten', CPC2_TEXT_DOMAIN).'</a></li>';
+			  	    echo '<li class="cpc_icon_groups'.cpc_admin_fav('group_members').'"><a href="edit.php?post_type=cpc_group_members">'.__('Gruppenmitglieder', CPC2_TEXT_DOMAIN).'</a></li>';
+			  	    echo '<li class="cpc_icon_groups'.cpc_admin_fav('group_setup').'"><a href="admin.php?page=cpccom_groups_setup">'.__('Gruppen Setup', CPC2_TEXT_DOMAIN).'</a></li>';
 			  	    echo '</ul>';
 		  	    echo '</div>';
-		  	endif;*/
+		  	endif;
 
 		echo '</div>';
 
@@ -276,7 +277,7 @@ function cpccom_release_notes() {
 	  	echo '</style>';
 	  	echo '<div id="cpc_release_notes">';
 	  		echo '<div id="cpc_welcome_bar" style="margin-top: 20px;">';
-		  		echo '<img id="cpc_welcome_logo" style="width:56px; height:56px; float:left;" src="'.plugins_url('../cp-community/css/images/cpc_logo.png', __FILE__).'" title="'.__('help', CPC2_TEXT_DOMAIN).'" />';
+		  		echo '<img id="cpc_welcome_logo" style="width:56px; height:56px; float:left;" src="'.plugins_url('../ps-community/css/images/cpc_logo.png', __FILE__).'" title="'.__('help', CPC2_TEXT_DOMAIN).'" />';
 		  		echo '<div style="font-size:2em; line-height:1em; font-weight:100; color:#fff;">'.__('Willkommen bei PS Community', CPC2_TEXT_DOMAIN).'</div>';
 		  		echo '<p style="color:#fff;"><em>'.__('Das ultimative Plugin für soziale Netzwerke für ClassicPress', CPC2_TEXT_DOMAIN).'</em></p>';
 	  		echo '</div>';
@@ -373,7 +374,7 @@ function cpccom_setup() {
 
 		echo '<div '.$show_header.'id="cpc_welcome">';
 			echo '<div id="cpc_welcome_bar">';
-				echo '<img id="cpc_welcome_logo" style="width:56px; height:56px; float:left;" src="'.plugins_url('../cp-community/css/images/cpc_logo.png', __FILE__).'" title="'.__('Hilfe', CPC2_TEXT_DOMAIN).'" />';
+				echo '<img id="cpc_welcome_logo" style="width:56px; height:56px; float:left;" src="'.plugins_url('../ps-community/css/images/cpc_logo.png', __FILE__).'" title="'.__('Hilfe', CPC2_TEXT_DOMAIN).'" />';
 				echo '<div style="font-size:2em; line-height:1em; font-weight:100; color:#fff;">'.__('Willkommen bei CP-Community', CPC2_TEXT_DOMAIN).'</div>';
 				echo '<p style="color:#fff;"><em>'.__('Das ultimative Plugin für soziale Netzwerke für ClassicPress', CPC2_TEXT_DOMAIN).'</em></p>';
 			echo '</div>';
@@ -613,7 +614,7 @@ function cpc_com_reset() {
 	  	echo '</style>';
         	
   		echo '<div id="cpc_welcome_bar" style="margin-top: 20px;">';
-	  		echo '<img id="cpc_welcome_logo" style="width:56px; height:56px; float:left;" src="'.plugins_url('../cp-community/css/images/cpc_logo.png', __FILE__).'" title="'.__('Hilfe', CPC2_TEXT_DOMAIN).'" />';
+	  		echo '<img id="cpc_welcome_logo" style="width:56px; height:56px; float:left;" src="'.plugins_url('../ps-community/css/images/cpc_logo.png', __FILE__).'" title="'.__('Hilfe', CPC2_TEXT_DOMAIN).'" />';
 	  		echo '<div style="font-size:2em; line-height:1em; font-weight:100; color:#fff;">'.__('Willkommen bei CP-Community', CPC2_TEXT_DOMAIN).'</div>';
 	  		echo '<p style="color:#fff;"><em>'.__('Das ultimative Plugin für soziale Netzwerke für ClassicPress', CPC2_TEXT_DOMAIN).'</em></p>';
   		echo '</div>';
