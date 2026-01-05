@@ -346,6 +346,13 @@ function cpc_group_members($atts) {
 					'member' => __('Mitglied', CPC2_TEXT_DOMAIN),
 				);
 				$role_label = isset($role_labels[$member->member_role]) ? $role_labels[$member->member_role] : $member->member_role;
+				
+				// Check if this user is the group creator/owner
+				$group = get_post($group_id);
+				if ($group && $member->ID == $group->post_author && $member->member_role === 'admin'):
+					$role_label = __('Gruppenbesitzer', CPC2_TEXT_DOMAIN);
+				endif;
+				
 				$html .= '<div class="cpc-member-role">'.$role_label.'</div>';
 			endif;
 

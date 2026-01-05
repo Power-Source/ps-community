@@ -88,6 +88,11 @@ function cpc_render_group_tabs($group_id, $active_tab = 'overview') {
  * Render group tab content
  */
 function cpc_render_group_tab_content($group_id, $active_tab = 'overview', $shortcode_atts = array()) {
+	// Initialize groups JS/CSS for AJAX context
+	if (function_exists('cpc_groups_init')) {
+		cpc_groups_init();
+	}
+	
 	$html = '';
 	
 	switch ($active_tab):
@@ -219,26 +224,39 @@ function cpc_render_group_tab_forum($group_id, $atts = array()) {
 		return '<p>'.__('Forum-Modul ist nicht aktiviert.', CPC2_TEXT_DOMAIN).'</p>';
 	}
 	
-	// Ensure forum module is initialized (load shortcode handlers)
-	// Make sure forum hooks are registered
+	// Initialize forum (load JS/CSS) - important for AJAX context
 	if (function_exists('cpc_forum_init')) {
 		cpc_forum_init();
 	}
-	
-	// Use the forum shortcode
-	$shortcode = '[cpc-forum-page slug="'.$forum_slug.'"]';
-	
-	// Execute shortcode
-	$html = do_shortcode($shortcode);
-	
-	// If shortcode didn't execute (just returned the shortcode string), try to render directly
-	if (strpos($html, '[cpc-forum-page') === 0) {
-		error_log('DEBUG: Shortcode did not execute, trying direct render');
-		// Try to call forum function directly if available
-		if (function_exists('cpc_forum_page')) {
-			$html = cpc_forum_page(array('slug' => $forum_slug));
+
+	// If ?topic=slug is present (common in tab context), resolve to topic_id for forum renderer
+	if (isset($_GET['topic']) && !isset($_GET['topic_id'])) {
+		$topic_slug = sanitize_title(wp_unslash($_GET['topic']));
+		if ($topic_slug) {
+			$topic_post = get_page_by_path($topic_slug, OBJECT, 'cpc_forum_post');
+			if ($topic_post) {
+				$_GET['topic_id'] = $topic_post->ID;
+				// Also set query var so cpc_forum_page() detects single view logic
+				global $wp_query;
+				if (isset($wp_query) && is_object($wp_query)) {
+					$wp_query->query_vars['topic'] = $topic_slug;
+				}
+			}
 		}
 	}
+
+	// Ensure forum assets are loaded in AJAX context (wp_enqueue_script won't print here)
+	$plugin_base = dirname(plugins_url('', __FILE__)); // .../plugins/ps-community
+	$html_assets  = '<link rel="stylesheet" href="'.$plugin_base.'/forums/cpc_forum.css" />';
+	$html_assets .= '<link rel="stylesheet" href="'.$plugin_base.'/js/select2.css" />';
+	$html_assets .= '<script>window.cpc_forum_ajax = {ajaxurl: "'.admin_url('admin-ajax.php').'", is_admin: '.(current_user_can('manage_options') ? 'true' : 'false').'};</script>';
+	$html_assets .= '<script src="'.$plugin_base.'/js/select2.js"></script>';
+	$html_assets .= '<script src="'.$plugin_base.'/forums/cpc_forum.js"></script>';
+
+	// Call forum function directly with show=true to display the form immediately
+	$html = $html_assets;
+	
+	$html .= cpc_forum_page(array('slug' => $forum_slug, 'show' => true));
 	
 	return $html;
 }
@@ -349,6 +367,7 @@ function cpc_render_group_tab_settings($group_id, $atts = array()) {
 	}
 	
 	$html .= '<form class="cpc-group-permissions-form" data-group-id="'.$group_id.'">';
+	$html .= '<input type="hidden" name="group_id" value="'.$group_id.'">';
 	
 	$html .= '<div class="cpc-form-field">';
 	$html .= '<label>'.__('Wer darf im Forum posten?', CPC2_TEXT_DOMAIN).'</label>';
@@ -410,6 +429,46 @@ function cpc_render_group_tab_settings($group_id, $atts = array()) {
 		$html .= '</div>';
 	else:
 		$html .= '<p>'.__('Keine ausstehenden Beitrittanfragen.', CPC2_TEXT_DOMAIN).'</p>';
+	endif;
+	
+	// Moderators Management Section
+	$html .= '<hr>';
+	$html .= '<h3>'.__('Moderatoren verwalten', CPC2_TEXT_DOMAIN).'</h3>';
+	
+	// Get all group members
+	$members = cpc_get_group_members($group_id);
+	
+	if (!empty($members)):
+		$html .= '<table class="cpc-members-role-table">';
+		$html .= '<thead><tr><th>'.__('Mitglied', CPC2_TEXT_DOMAIN).'</th><th>'.__('Aktuelle Rolle', CPC2_TEXT_DOMAIN).'</th><th>'.__('Aktion', CPC2_TEXT_DOMAIN).'</th></tr></thead><tbody>';
+		
+		foreach ($members as $member):
+			$user = get_userdata($member->user_id);
+			if (!$user) continue;
+			
+			$html .= '<tr>';
+			$html .= '<td>'.$user->display_name.'</td>';
+			$html .= '<td><strong>'.ucfirst($member->member_role).'</strong></td>';
+			$html .= '<td>';
+			
+			// Don't allow changing own role
+			if ($member->user_id != get_current_user_id()):
+				$html .= '<select class="cpc-change-member-role" data-user-id="'.$member->user_id.'" data-group-id="'.$group_id.'">';
+				$html .= '<option value="member"'.($member->member_role === 'member' ? ' selected' : '').'>'.__('Mitglied', CPC2_TEXT_DOMAIN).'</option>';
+				$html .= '<option value="moderator"'.($member->member_role === 'moderator' ? ' selected' : '').'>'.__('Moderator', CPC2_TEXT_DOMAIN).'</option>';
+				$html .= '<option value="admin"'.($member->member_role === 'admin' ? ' selected' : '').'>'.__('Admin', CPC2_TEXT_DOMAIN).'</option>';
+				$html .= '</select>';
+			else:
+				$html .= '<em>'.__('(Du selbst)', CPC2_TEXT_DOMAIN).'</em>';
+			endif;
+			
+			$html .= '</td>';
+			$html .= '</tr>';
+		endforeach;
+		
+		$html .= '</tbody></table>';
+	else:
+		$html .= '<p>'.__('Keine Mitglieder gefunden.', CPC2_TEXT_DOMAIN).'</p>';
 	endif;
 	
 	$html .= '<hr>';
@@ -479,7 +538,7 @@ function cpc_render_group_activity_post_full($post) {
 	$html .= '<div class="cpc-activity-text">'.$post->post_content.'</div>';
 	
 	$html .= '<div class="cpc-activity-meta">';
-	$html .= '<small>'.human_time_diff($post->post_date_gmt, current_time('mysql', true)).' '.__('ago', CPC2_TEXT_DOMAIN).'</small>';
+	$html .= '<small>'.human_time_diff(strtotime($post->post_date_gmt), current_time('timestamp', true)).' '.__('ago', CPC2_TEXT_DOMAIN).'</small>';
 	
 	// Edit/Delete buttons if user has permission
 	$group_id = get_post_meta($post->ID, 'cpc_activity_group_id', true);
@@ -523,7 +582,7 @@ function cpc_render_group_activity_post_full($post) {
 				
 				$html .= '<div class="cpc-activity-reply" data-comment-id="'.$comment->comment_ID.'">';
 				$html .= '<span class="cpc-activity-reply-author">'.$reply_user->display_name.'</span>';
-				$html .= '<span class="cpc-activity-reply-time">'.human_time_diff($comment->comment_date_gmt, current_time('mysql', true)).' ago</span>';
+				$html .= '<span class="cpc-activity-reply-time">'.human_time_diff(strtotime($comment->comment_date_gmt), current_time('timestamp', true)).' ago</span>';
 				
 				// Edit/Delete for replies
 				$can_edit_reply = ($comment->user_id == get_current_user_id()) || cpc_can_moderate_activity(get_current_user_id(), get_post_meta($post->ID, 'cpc_activity_group_id', true), 'edit');

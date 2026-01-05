@@ -615,4 +615,185 @@ function cpc_ajax_toggle_group_forum() {
 		));
 	}
 }
+
+// Save group permissions
+add_action('wp_ajax_cpc_save_group_permissions', 'cpc_ajax_save_group_permissions');
+function cpc_ajax_save_group_permissions() {
+	check_ajax_referer('cpc_groups_nonce', 'nonce');
+	
+	if (!is_user_logged_in()) {
+		wp_send_json_error(array('message' => __('Du musst angemeldet sein.', CPC2_TEXT_DOMAIN)));
+	}
+	
+	$group_id = isset($_POST['group_id']) ? intval($_POST['group_id']) : 0;
+	$current_user_id = get_current_user_id();
+	
+	// Debug
+	$is_admin = cpc_is_group_admin($current_user_id, $group_id);
+	$role = cpc_get_group_member_role($current_user_id, $group_id);
+	error_log("DEBUG save_permissions: user_id=$current_user_id, group_id=$group_id, is_admin=$is_admin, role=$role");
+	
+	// Check if user is group admin (or WordPress admin as fallback)
+	if (!cpc_is_group_admin($current_user_id, $group_id) && !current_user_can('manage_options')) {
+		wp_send_json_error(array('message' => __('Du hast keine Berechtigung dazu.', CPC2_TEXT_DOMAIN)));
+	}
+	
+	$permissions = array(
+		'forum_post' => isset($_POST['forum_post']) ? sanitize_text_field($_POST['forum_post']) : 'member',
+		'activity_edit_all' => isset($_POST['activity_edit_all']) ? sanitize_text_field($_POST['activity_edit_all']) : 'moderator',
+		'activity_delete_all' => isset($_POST['activity_delete_all']) ? sanitize_text_field($_POST['activity_delete_all']) : 'moderator',
+	);
+	
+	update_post_meta($group_id, 'cpc_group_permissions', $permissions);
+	
+	wp_send_json_success(array('message' => __('Berechtigungen erfolgreich gespeichert!', CPC2_TEXT_DOMAIN)));
+}
+
+// Edit activity post
+add_action('wp_ajax_cpc_edit_activity', 'cpc_ajax_edit_activity');
+function cpc_ajax_edit_activity() {
+	check_ajax_referer('cpc_groups_nonce', 'nonce');
+	
+	if (!is_user_logged_in()) {
+		wp_send_json_error(array('message' => __('Du musst angemeldet sein.', CPC2_TEXT_DOMAIN)));
+	}
+	
+	$post_id = isset($_POST['post_id']) ? intval($_POST['post_id']) : 0;
+	$content = isset($_POST['content']) ? wp_kses_post($_POST['content']) : '';
+	$current_user_id = get_current_user_id();
+	
+	if (!$post_id || !$content) {
+		wp_send_json_error(array('message' => __('Ungültige Daten.', CPC2_TEXT_DOMAIN)));
+	}
+	
+	$post = get_post($post_id);
+	if (!$post || $post->post_type !== 'cpc_activity') {
+		wp_send_json_error(array('message' => __('Beitrag nicht gefunden.', CPC2_TEXT_DOMAIN)));
+	}
+	
+	$group_id = get_post_meta($post_id, 'cpc_activity_group_id', true);
+	
+	// Check permission
+	if ($post->post_author != $current_user_id && !cpc_can_moderate_activity($current_user_id, $group_id, 'edit')) {
+		wp_send_json_error(array('message' => __('Keine Berechtigung zum Bearbeiten.', CPC2_TEXT_DOMAIN)));
+	}
+	
+	wp_update_post(array(
+		'ID' => $post_id,
+		'post_content' => $content
+	));
+	
+	wp_send_json_success(array(
+		'message' => __('Beitrag erfolgreich bearbeitet!', CPC2_TEXT_DOMAIN),
+		'content' => $content
+	));
+}
+
+// Delete activity post
+add_action('wp_ajax_cpc_delete_activity', 'cpc_ajax_delete_activity');
+function cpc_ajax_delete_activity() {
+	check_ajax_referer('cpc_groups_nonce', 'nonce');
+	
+	if (!is_user_logged_in()) {
+		wp_send_json_error(array('message' => __('Du musst angemeldet sein.', CPC2_TEXT_DOMAIN)));
+	}
+	
+	$post_id = isset($_POST['post_id']) ? intval($_POST['post_id']) : 0;
+	$current_user_id = get_current_user_id();
+	
+	if (!$post_id) {
+		wp_send_json_error(array('message' => __('Ungültige Daten.', CPC2_TEXT_DOMAIN)));
+	}
+	
+	$post = get_post($post_id);
+	if (!$post || $post->post_type !== 'cpc_activity') {
+		wp_send_json_error(array('message' => __('Beitrag nicht gefunden.', CPC2_TEXT_DOMAIN)));
+	}
+	
+	$group_id = get_post_meta($post_id, 'cpc_activity_group_id', true);
+	
+	// Check permission
+	if ($post->post_author != $current_user_id && !cpc_can_moderate_activity($current_user_id, $group_id, 'delete')) {
+		wp_send_json_error(array('message' => __('Keine Berechtigung zum Löschen.', CPC2_TEXT_DOMAIN)));
+	}
+	
+	wp_delete_post($post_id, true);
+	
+	wp_send_json_success(array('message' => __('Beitrag erfolgreich gelöscht!', CPC2_TEXT_DOMAIN)));
+}
+
+// Edit reply
+add_action('wp_ajax_cpc_edit_reply', 'cpc_ajax_edit_reply');
+function cpc_ajax_edit_reply() {
+	check_ajax_referer('cpc_groups_nonce', 'nonce');
+	
+	if (!is_user_logged_in()) {
+		wp_send_json_error(array('message' => __('Du musst angemeldet sein.', CPC2_TEXT_DOMAIN)));
+	}
+	
+	$comment_id = isset($_POST['comment_id']) ? intval($_POST['comment_id']) : 0;
+	$content = isset($_POST['content']) ? wp_kses_post($_POST['content']) : '';
+	$current_user_id = get_current_user_id();
+	
+	if (!$comment_id || !$content) {
+		wp_send_json_error(array('message' => __('Ungültige Daten.', CPC2_TEXT_DOMAIN)));
+	}
+	
+	$comment = get_comment($comment_id);
+	if (!$comment) {
+		wp_send_json_error(array('message' => __('Antwort nicht gefunden.', CPC2_TEXT_DOMAIN)));
+	}
+	
+	$post_id = $comment->comment_post_ID;
+	$group_id = get_post_meta($post_id, 'cpc_activity_group_id', true);
+	
+	// Check permission
+	if ($comment->user_id != $current_user_id && !cpc_can_moderate_activity($current_user_id, $group_id, 'edit')) {
+		wp_send_json_error(array('message' => __('Keine Berechtigung zum Bearbeiten.', CPC2_TEXT_DOMAIN)));
+	}
+	
+	wp_update_comment(array(
+		'comment_ID' => $comment_id,
+		'comment_content' => $content
+	));
+	
+	wp_send_json_success(array(
+		'message' => __('Antwort erfolgreich bearbeitet!', CPC2_TEXT_DOMAIN),
+		'content' => $content
+	));
+}
+
+// Delete reply
+add_action('wp_ajax_cpc_delete_reply', 'cpc_ajax_delete_reply');
+function cpc_ajax_delete_reply() {
+	check_ajax_referer('cpc_groups_nonce', 'nonce');
+	
+	if (!is_user_logged_in()) {
+		wp_send_json_error(array('message' => __('Du musst angemeldet sein.', CPC2_TEXT_DOMAIN)));
+	}
+	
+	$comment_id = isset($_POST['comment_id']) ? intval($_POST['comment_id']) : 0;
+	$current_user_id = get_current_user_id();
+	
+	if (!$comment_id) {
+		wp_send_json_error(array('message' => __('Ungültige Daten.', CPC2_TEXT_DOMAIN)));
+	}
+	
+	$comment = get_comment($comment_id);
+	if (!$comment) {
+		wp_send_json_error(array('message' => __('Antwort nicht gefunden.', CPC2_TEXT_DOMAIN)));
+	}
+	
+	$post_id = $comment->comment_post_ID;
+	$group_id = get_post_meta($post_id, 'cpc_activity_group_id', true);
+	
+	// Check permission
+	if ($comment->user_id != $current_user_id && !cpc_can_moderate_activity($current_user_id, $group_id, 'delete')) {
+		wp_send_json_error(array('message' => __('Keine Berechtigung zum Löschen.', CPC2_TEXT_DOMAIN)));
+	}
+	
+	wp_delete_comment($comment_id, true);
+	
+	wp_send_json_success(array('message' => __('Antwort erfolgreich gelöscht!', CPC2_TEXT_DOMAIN)));
+}
 ?>

@@ -889,6 +889,142 @@
     border-radius: 4px;
 }
 
+/* Edit Forms */
+.cpc-edit-activity-form,
+.cpc-edit-reply-form {
+    margin: 10px 0;
+    padding: 15px;
+    background: #f9f9f9;
+    border-radius: 4px;
+    border: 1px solid #ddd;
+}
+
+.cpc-edit-activity-textarea,
+.cpc-edit-reply-textarea {
+    width: 100%;
+    min-height: 100px;
+    padding: 10px;
+    border: 1px solid #ddd;
+    border-radius: 4px;
+    font-family: inherit;
+    font-size: 14px;
+    resize: vertical;
+}
+
+.cpc-edit-actions {
+    margin-top: 10px;
+    display: flex;
+    gap: 10px;
+}
+
+.cpc-edit-actions button {
+    padding: 8px 16px;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    font-size: 14px;
+    transition: all 0.2s;
+}
+
+.cpc-save-activity-edit,
+.cpc-save-reply-edit {
+    background: #0073aa;
+    color: white;
+}
+
+.cpc-save-activity-edit:hover,
+.cpc-save-reply-edit:hover {
+    background: #005a87;
+}
+
+.cpc-cancel-activity-edit,
+.cpc-cancel-reply-edit {
+    background: #ddd;
+    color: #333;
+}
+
+.cpc-cancel-activity-edit:hover,
+.cpc-cancel-reply-edit:hover {
+    background: #ccc;
+}
+
+.cpc-save-activity-edit:disabled,
+.cpc-save-reply-edit:disabled {
+    opacity: 0.6;
+    cursor: not-allowed;
+}
+
+/* Permissions Form */
+.cpc-group-permissions-form .cpc-form-row {
+    margin-bottom: 15px;
+}
+
+.cpc-group-permissions-form label {
+    display: block;
+    font-weight: 600;
+    margin-bottom: 5px;
+}
+
+.cpc-group-permissions-form select {
+    width: 100%;
+    padding: 8px;
+    border: 1px solid #ddd;
+    border-radius: 4px;
+    font-size: 14px;
+}
+
+.cpc-group-permissions-form button[type="submit"] {
+    margin-top: 10px;
+    padding: 10px 20px;
+    background: #0073aa;
+    color: white;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    font-size: 14px;
+    transition: background 0.2s;
+}
+
+.cpc-group-permissions-form button[type="submit"]:hover {
+    background: #005a87;
+}
+
+.cpc-group-permissions-form button[type="submit"]:disabled {
+    opacity: 0.6;
+    cursor: not-allowed;
+}
+
+/* Members Role Table */
+.cpc-members-role-table {
+	width: 100%;
+	border-collapse: collapse;
+	margin: 15px 0;
+}
+
+.cpc-members-role-table thead th {
+	background: #f5f5f5;
+	padding: 10px;
+	text-align: left;
+	border-bottom: 2px solid #ddd;
+	font-weight: 600;
+}
+
+.cpc-members-role-table tbody td {
+	padding: 10px;
+	border-bottom: 1px solid #eee;
+}
+
+.cpc-members-role-table tbody tr:hover {
+	background: #fafafa;
+}
+
+.cpc-change-member-role {
+	padding: 5px 10px;
+	border: 1px solid #ddd;
+	border-radius: 3px;
+	font-size: 14px;
+}
+
 /* Loading State */
 .cpc-groups-loading {
     text-align: center;

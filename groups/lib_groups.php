@@ -90,6 +90,13 @@ function cpc_get_group_member_role($user_id, $group_id) {
 	if (!empty($membership)) {
 		return get_post_meta($membership[0]->ID, 'cpc_member_role', true);
 	}
+	
+	// Fallback: Check if user is group creator/author
+	$group = get_post($group_id);
+	if ($group && $group->post_author == $user_id) {
+		return 'admin';
+	}
+	
 	return false;
 }
 
@@ -299,6 +306,20 @@ function cpc_get_group_members($group_id, $status = 'active', $role = '') {
 				$user->member_role = get_post_meta($membership->ID, 'cpc_member_role', true);
 				$user->member_joined = get_post_meta($membership->ID, 'cpc_member_joined', true);
 				$members[] = $user;
+			}
+		}
+	}
+	
+	// Fallback: If no members found, add the group creator as admin
+	if (empty($members)) {
+		$group = get_post($group_id);
+		if ($group && $group->post_author) {
+			$creator = get_user_by('id', $group->post_author);
+			if ($creator) {
+				$creator->membership_id = 0;
+				$creator->member_role = 'admin';
+				$creator->member_joined = strtotime($group->post_date);
+				$members[] = $creator;
 			}
 		}
 	}

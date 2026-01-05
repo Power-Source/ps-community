@@ -960,7 +960,7 @@ function cpc_forum_post($atts) {
 
 								// Hole immer den rohen BBCODE aus der Datenbank
 								$raw_content = '';
-								if ($my_posts && isset($my_posts[0]->post_content)) {
+								if (isset($my_posts) && $my_posts && isset($my_posts[0]->post_content)) {
 									$raw_content = $my_posts[0]->post_content;
 								}
 

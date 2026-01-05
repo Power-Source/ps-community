@@ -158,6 +158,268 @@ jQuery(document).ready(function($) {
         });
     });
     
+    // Save group permissions
+    $(document).on('submit', '.cpc-group-permissions-form', function(e) {
+        e.preventDefault();
+        
+        var form = $(this);
+        var submitBtn = form.find('button[type="submit"]');
+        var groupId = form.find('input[name="group_id"]').val() || form.data('group-id');
+        
+        submitBtn.prop('disabled', true).text('Speichern...');
+        
+        $.ajax({
+            url: cpc_groups_ajax.ajaxurl,
+            type: 'POST',
+            data: {
+                action: 'cpc_save_group_permissions',
+                nonce: cpc_groups_ajax.nonce,
+                group_id: groupId,
+                forum_post: form.find('select[name="forum_post"]').val(),
+                activity_edit_all: form.find('select[name="activity_edit_all"]').val(),
+                activity_delete_all: form.find('select[name="activity_delete_all"]').val()
+            },
+            success: function(response) {
+                if (response.success) {
+                    cpc_show_notification(response.data.message, 'success');
+                } else {
+                    cpc_show_notification(response.data.message, 'error');
+                }
+                submitBtn.prop('disabled', false).text('Speichern');
+            },
+            error: function() {
+                cpc_show_notification('Fehler beim Speichern', 'error');
+                submitBtn.prop('disabled', false).text('Speichern');
+            }
+        });
+    });
+    
+    // Edit activity post
+    $(document).on('click', '.cpc-edit-activity', function(e) {
+        e.preventDefault();
+        
+        var link = $(this);
+        var postId = link.data('post-id');
+        var activityPost = link.closest('.cpc-group-activity-post');
+        var textDiv = activityPost.find('.cpc-activity-text');
+        var originalContent = textDiv.html().trim();
+        
+        // Create edit form
+        var editForm = $('<div class="cpc-edit-activity-form">' +
+            '<textarea class="cpc-edit-activity-textarea">' + $('<div>').html(originalContent).text() + '</textarea>' +
+            '<div class="cpc-edit-actions">' +
+                '<button type="button" class="cpc-save-activity-edit" data-post-id="' + postId + '">Speichern</button>' +
+                '<button type="button" class="cpc-cancel-activity-edit">Abbrechen</button>' +
+            '</div>' +
+        '</div>');
+        
+        textDiv.hide().after(editForm);
+        link.hide();
+    });
+    
+    // Save activity edit
+    $(document).on('click', '.cpc-save-activity-edit', function(e) {
+        var btn = $(this);
+        var postId = btn.data('post-id');
+        var editForm = btn.closest('.cpc-edit-activity-form');
+        var textarea = editForm.find('.cpc-edit-activity-textarea');
+        var content = textarea.val();
+        var activityPost = editForm.closest('.cpc-group-activity-post');
+        var textDiv = activityPost.find('.cpc-activity-text');
+        
+        if (!content.trim()) {
+            cpc_show_notification('Bitte gib einen Inhalt ein', 'error');
+            return;
+        }
+        
+        btn.prop('disabled', true).text('Speichern...');
+        
+        $.ajax({
+            url: cpc_groups_ajax.ajaxurl,
+            type: 'POST',
+            data: {
+                action: 'cpc_edit_activity',
+                nonce: cpc_groups_ajax.nonce,
+                post_id: postId,
+                content: content
+            },
+            success: function(response) {
+                if (response.success) {
+                    cpc_show_notification(response.data.message, 'success');
+                    textDiv.html(response.data.content).show();
+                    editForm.remove();
+                    activityPost.find('.cpc-edit-activity').show();
+                } else {
+                    cpc_show_notification(response.data.message, 'error');
+                    btn.prop('disabled', false).text('Speichern');
+                }
+            },
+            error: function() {
+                cpc_show_notification('Fehler beim Speichern', 'error');
+                btn.prop('disabled', false).text('Speichern');
+            }
+        });
+    });
+    
+    // Cancel activity edit
+    $(document).on('click', '.cpc-cancel-activity-edit', function(e) {
+        var editForm = $(this).closest('.cpc-edit-activity-form');
+        var activityPost = editForm.closest('.cpc-group-activity-post');
+        
+        activityPost.find('.cpc-activity-text').show();
+        activityPost.find('.cpc-edit-activity').show();
+        editForm.remove();
+    });
+    
+    // Delete activity post
+    $(document).on('click', '.cpc-delete-activity', function(e) {
+        e.preventDefault();
+        
+        if (!confirm('Möchtest du diesen Beitrag wirklich löschen?')) {
+            return;
+        }
+        
+        var link = $(this);
+        var postId = link.data('post-id');
+        var activityPost = link.closest('.cpc-group-activity-post');
+        
+        $.ajax({
+            url: cpc_groups_ajax.ajaxurl,
+            type: 'POST',
+            data: {
+                action: 'cpc_delete_activity',
+                nonce: cpc_groups_ajax.nonce,
+                post_id: postId
+            },
+            success: function(response) {
+                if (response.success) {
+                    cpc_show_notification(response.data.message, 'success');
+                    activityPost.fadeOut(300, function() {
+                        $(this).remove();
+                    });
+                } else {
+                    cpc_show_notification(response.data.message, 'error');
+                }
+            },
+            error: function() {
+                cpc_show_notification('Fehler beim Löschen', 'error');
+            }
+        });
+    });
+    
+    // Edit reply
+    $(document).on('click', '.cpc-edit-reply', function(e) {
+        e.preventDefault();
+        
+        var link = $(this);
+        var commentId = link.data('comment-id');
+        var reply = link.closest('.cpc-activity-reply');
+        var textDiv = reply.find('.cpc-reply-text');
+        var originalContent = textDiv.html().trim();
+        
+        // Create edit form
+        var editForm = $('<div class="cpc-edit-reply-form">' +
+            '<textarea class="cpc-edit-reply-textarea">' + $('<div>').html(originalContent).text() + '</textarea>' +
+            '<div class="cpc-edit-actions">' +
+                '<button type="button" class="cpc-save-reply-edit" data-comment-id="' + commentId + '">Speichern</button>' +
+                '<button type="button" class="cpc-cancel-reply-edit">Abbrechen</button>' +
+            '</div>' +
+        '</div>');
+        
+        textDiv.hide().after(editForm);
+        link.hide();
+    });
+    
+    // Save reply edit
+    $(document).on('click', '.cpc-save-reply-edit', function(e) {
+        var btn = $(this);
+        var commentId = btn.data('comment-id');
+        var editForm = btn.closest('.cpc-edit-reply-form');
+        var textarea = editForm.find('.cpc-edit-reply-textarea');
+        var content = textarea.val();
+        var reply = editForm.closest('.cpc-activity-reply');
+        var textDiv = reply.find('.cpc-reply-text');
+        
+        if (!content.trim()) {
+            cpc_show_notification('Bitte gib einen Inhalt ein', 'error');
+            return;
+        }
+        
+        btn.prop('disabled', true).text('Speichern...');
+        
+        $.ajax({
+            url: cpc_groups_ajax.ajaxurl,
+            type: 'POST',
+            data: {
+                action: 'cpc_edit_reply',
+                nonce: cpc_groups_ajax.nonce,
+                comment_id: commentId,
+                content: content
+            },
+            success: function(response) {
+                if (response.success) {
+                    cpc_show_notification(response.data.message, 'success');
+                    textDiv.html(response.data.content).show();
+                    editForm.remove();
+                    reply.find('.cpc-edit-reply').show();
+                } else {
+                    cpc_show_notification(response.data.message, 'error');
+                    btn.prop('disabled', false).text('Speichern');
+                }
+            },
+            error: function() {
+                cpc_show_notification('Fehler beim Speichern', 'error');
+                btn.prop('disabled', false).text('Speichern');
+            }
+        });
+    });
+    
+    // Cancel reply edit
+    $(document).on('click', '.cpc-cancel-reply-edit', function(e) {
+        var editForm = $(this).closest('.cpc-edit-reply-form');
+        var reply = editForm.closest('.cpc-activity-reply');
+        
+        reply.find('.cpc-reply-text').show();
+        reply.find('.cpc-edit-reply').show();
+        editForm.remove();
+    });
+    
+    // Delete reply
+    $(document).on('click', '.cpc-delete-reply', function(e) {
+        e.preventDefault();
+        
+        if (!confirm('Möchtest du diese Antwort wirklich löschen?')) {
+            return;
+        }
+        
+        var link = $(this);
+        var commentId = link.data('comment-id');
+        var reply = link.closest('.cpc-activity-reply');
+        
+        $.ajax({
+            url: cpc_groups_ajax.ajaxurl,
+            type: 'POST',
+            data: {
+                action: 'cpc_delete_reply',
+                nonce: cpc_groups_ajax.nonce,
+                comment_id: commentId
+            },
+            success: function(response) {
+                if (response.success) {
+                    cpc_show_notification(response.data.message, 'success');
+                    reply.fadeOut(300, function() {
+                        $(this).remove();
+                    });
+                } else {
+                    cpc_show_notification(response.data.message, 'error');
+                }
+            },
+            error: function() {
+                cpc_show_notification('Fehler beim Löschen', 'error');
+            }
+        });
+    });
+    
     // Join Group
     $(document).on('click', '.cpc-group-join-btn', function(e) {
         e.preventDefault();
@@ -590,6 +852,51 @@ jQuery(document).ready(function($) {
                 submitBtn.prop('disabled', false).text('Forum-Einstellungen speichern');
             }
         });
+    });
+    
+    // Change member role
+    $(document).on('change', '.cpc-change-member-role', function() {
+        var select = $(this);
+        var userId = select.data('user-id');
+        var groupId = select.data('group-id');
+        var newRole = select.val();
+        var oldRole = select.find('option[selected]').val() || select.find('option:first').val();
+        
+        if (confirm('Rolle wirklich zu "' + newRole + '" ändern?')) {
+            $.ajax({
+                url: cpc_groups_ajax.ajaxurl,
+                type: 'POST',
+                data: {
+                    action: 'cpc_change_member_role',
+                    nonce: cpc_groups_ajax.nonce,
+                    group_id: groupId,
+                    member_id: userId,
+                    new_role: newRole
+                },
+                success: function(response) {
+                    if (response.success) {
+                        cpc_show_notification(response.data.message, 'success');
+                        // Update the selected attribute
+                        select.find('option').removeAttr('selected');
+                        select.find('option[value="' + newRole + '"]').attr('selected', 'selected');
+                        // Update the display
+                        select.closest('tr').find('td:eq(1)').html('<strong>' + newRole.charAt(0).toUpperCase() + newRole.slice(1) + '</strong>');
+                    } else {
+                        cpc_show_notification(response.data.message, 'error');
+                        // Revert to old role
+                        select.val(oldRole);
+                    }
+                },
+                error: function() {
+                    cpc_show_notification('Fehler beim Ändern der Rolle', 'error');
+                    // Revert to old role
+                    select.val(oldRole);
+                }
+            });
+        } else {
+            // Revert to old role
+            select.val(oldRole);
+        }
     });
 
     // Generate nonce for AJAX requests if not already set
