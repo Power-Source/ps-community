@@ -243,12 +243,15 @@ if (strpos(CPC_CORE_PLUGINS, 'core-avatar') !== false):
 
 	add_filter('cpc_avatar_group', 'cpc_groups_get_avatar', 10, 4);
 	function cpc_groups_get_avatar($avatar, $object_id, $size, $args) {
+		$placeholder_svg = '<svg xmlns="http://www.w3.org/2000/svg" width="120" height="120" viewBox="0 0 120 120"><rect fill="#dbeafe" width="120" height="120"/><text x="50%" y="55%" font-size="28" text-anchor="middle" fill="#4b5563" font-family="sans-serif">G</text></svg>';
+		$placeholder_avatar = 'data:image/svg+xml;charset=UTF-8,' . rawurlencode($placeholder_svg);
+
 		$group = get_post($object_id);
 		if ($group && $group->post_type == 'cpc_group') {
 			if (has_post_thumbnail($object_id)) {
 				$avatar = get_the_post_thumbnail($object_id, array($size, $size));
 			} else {
-				$avatar = '<img src="'.plugins_url('images/group-avatar-default.png', __FILE__).'" width="'.$size.'" height="'.$size.'" />';
+				$avatar = '<img src="'.$placeholder_avatar.'" width="'.$size.'" height="'.$size.'" alt="" />';
 			}
 		}
 		return $avatar;

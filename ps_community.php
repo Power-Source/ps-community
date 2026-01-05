@@ -70,12 +70,105 @@ add_filter('rewrite_rules_array', 'cpc_profile_rewrite_rules');
 
 // Language
 add_action('plugins_loaded', 'cpc_languages');
+
 // Get core plugin features enabled
+// In Multisite: ensure each site has the option set
 if (!$core_plugins = get_option('cpc_default_core')):
-    update_option('cpc_default_core', 'core-profile,core-activity,core-avatar,core-friendships,core-groups,core-alerts,core-forums');
-    $core_plugins = 'core-profile,core-activity,core-avatar,core-friendships,core-groups,core-alerts,core-forums';
+    $default_core = 'core-profile,core-activity,core-avatar,core-friendships,core-groups,core-alerts,core-forums';
+    update_option('cpc_default_core', $default_core);
+    $core_plugins = $default_core;
 endif;
+
+// Multisite fallback: if option exists but is empty or doesn't include groups, update it
+if (is_multisite() && (!$core_plugins || strpos($core_plugins, 'core-groups') === false)) {
+    $default_core = 'core-profile,core-activity,core-avatar,core-friendships,core-groups,core-alerts,core-forums';
+    update_option('cpc_default_core', $default_core);
+    $core_plugins = $default_core;
+}
+
 if (!defined('CPC_CORE_PLUGINS')) define ('CPC_CORE_PLUGINS', $core_plugins);
+
+// Ensure shortcodes are processed in page content - HIGHEST PRIORITY
+// Run before everything else to make sure it works with all themes
+add_filter('the_content', function($content) {
+    // Check if content contains PS Community group shortcodes
+    if (has_shortcode($content, 'cpc-groups') || 
+        has_shortcode($content, 'cpc-group-single') ||
+        has_shortcode($content, 'cpc-group-create') ||
+        has_shortcode($content, 'cpc-group-members') ||
+        has_shortcode($content, 'cpc-my-groups')) {
+        // Force shortcode processing
+        $content = do_shortcode($content);
+    }
+    return $content;
+}, 1);
+
+// Also ensure shortcodes work in widgets and other output
+add_filter('widget_text', function($content) {
+    if (has_shortcode($content, 'cpc-groups') || 
+        has_shortcode($content, 'cpc-group-single') ||
+        has_shortcode($content, 'cpc-group-create') ||
+        has_shortcode($content, 'cpc-group-members') ||
+        has_shortcode($content, 'cpc-my-groups')) {
+        $content = do_shortcode($content);
+    }
+    return $content;
+}, 1);
+
+// Multisite: Ensure required pages and options are set for Groups module
+add_action('plugins_loaded', 'cpc_multisite_ensure_group_pages');
+function cpc_multisite_ensure_group_pages() {
+    if (is_multisite() && get_current_blog_id() > 1 && strpos(CPC_CORE_PLUGINS, 'core-groups') !== false) {
+        // Check if group single page is set
+        if (!get_option('cpccom_group_single_page')) {
+            // Try to find existing page for single group view
+            $group_single_page = get_page_by_path('gruppe', OBJECT, 'page');
+            if ($group_single_page) {
+                update_option('cpccom_group_single_page', $group_single_page->ID);
+            } else {
+                // Create the page if it doesn't exist
+                $page_id = wp_insert_post(array(
+                    'post_type' => 'page',
+                    'post_title' => __('Gruppe', 'ps-community'),
+                    'post_name' => 'gruppe',
+                    'post_content' => '[cpc-group-single]',
+                    'post_status' => 'publish',
+                ));
+                if ($page_id && !is_wp_error($page_id)) {
+                    update_option('cpccom_group_single_page', $page_id);
+                }
+            }
+        }
+        // Check if group create page is set
+        if (!get_option('cpccom_group_create_page')) {
+            // Try to find existing page for group creation
+            $group_create_page = get_page_by_path('neue-gruppe', OBJECT, 'page');
+            if ($group_create_page) {
+                update_option('cpccom_group_create_page', $group_create_page->ID);
+            } else {
+                // Create the page if it doesn't exist
+                $page_id = wp_insert_post(array(
+                    'post_type' => 'page',
+                    'post_title' => __('Neue Gruppe', 'ps-community'),
+                    'post_name' => 'neue-gruppe',
+                    'post_content' => '[cpc-group-create]',
+                    'post_status' => 'publish',
+                ));
+                if ($page_id && !is_wp_error($page_id)) {
+                    update_option('cpccom_group_create_page', $page_id);
+                }
+            }
+        }
+    }
+}
+
+// Debug: Output CPC_CORE_PLUGINS value (remove after testing)
+add_action('wp_footer', function() {
+    if (current_user_can('manage_options')) {
+        echo '<!-- PS Community Debug: CPC_CORE_PLUGINS = ' . esc_html(CPC_CORE_PLUGINS) . ' -->';
+    }
+}, 999);
+
 // Permalink re-writes
 function cpc_show_rewrite() {
 	global $wp_rewrite;
@@ -306,6 +399,11 @@ if (strpos(CPC_CORE_PLUGINS, 'core-forums') !== false):
 endif;
 // Groups
 if (strpos(CPC_CORE_PLUGINS, 'core-groups') !== false):
+    // DEBUG: Zeige dass Gruppen geladen werden
+    add_action('wp_footer', function() {
+        echo '<!-- GROUPS MODULE LOADED: YES -->';
+    }, 1);
+    
     require_once('groups/lib_groups.php');
     require_once('groups/cpc_custom_post_group.php');
     require_once('groups/cpc_custom_post_group_members.php');
@@ -315,6 +413,11 @@ if (strpos(CPC_CORE_PLUGINS, 'core-groups') !== false):
     if ( defined('DOING_AJAX') && DOING_AJAX ):
         require_once('groups/ajax_groups.php');
     endif;
+else:
+    // DEBUG: Zeige dass Gruppen NICHT geladen werden
+    add_action('wp_footer', function() {
+        echo '<!-- GROUPS MODULE LOADED: NO - CPC_CORE_PLUGINS = ' . esc_html(CPC_CORE_PLUGINS) . ' -->';
+    }, 1);
 endif;
 // Admin
 if (is_admin()):

@@ -36,6 +36,20 @@ add_action('wp_enqueue_scripts', 'cpc_groups_register_assets', 0);
  * [cpc-groups] - Display list of groups
  */
 function cpc_groups_list($atts) {
+	// Debug-Ausgabe
+	$debug = '<div style="border:2px solid blue;padding:10px;margin:10px 0;background:#f0f0f0;">';
+	$debug .= '<strong>DEBUG INFO:</strong><br>';
+	$debug .= 'Shortcode wird ausgeführt!<br>';
+	$debug .= 'CPC_CORE_PLUGINS: ' . (defined('CPC_CORE_PLUGINS') ? CPC_CORE_PLUGINS : 'NICHT DEFINIERT') . '<br>';
+	$debug .= 'Blog ID: ' . (is_multisite() ? get_current_blog_id() : 'Kein Multisite') . '<br>';
+	$debug .= 'cpc_groups_init exists: ' . (function_exists('cpc_groups_init') ? 'JA' : 'NEIN') . '<br>';
+	$debug .= '</div>';
+	
+	// Debug: Check if function is called
+	if (!function_exists('cpc_groups_init')) {
+		return $debug . '<div style="border:2px solid red;padding:10px;margin:10px 0;">ERROR: cpc_groups_init function nicht gefunden! Gruppen-Modul nicht geladen.</div>';
+	}
+	
 	// Init
 	cpc_groups_init();
 
@@ -62,6 +76,10 @@ function cpc_groups_list($atts) {
 	$html = '';
 	$html .= '<div class="cpc-groups-list">';
 
+	// Placeholder image for missing avatars (embedded SVG, URL-encoded via rawurlencode)
+	$placeholder_svg = '<svg xmlns="http://www.w3.org/2000/svg" width="120" height="120" viewBox="0 0 120 120"><rect fill="#dbeafe" width="120" height="120"/><text x="50%" y="55%" font-size="28" text-anchor="middle" fill="#4b5563" font-family="sans-serif">G</text></svg>';
+	$placeholder_avatar = 'data:image/svg+xml;charset=UTF-8,' . rawurlencode($placeholder_svg);
+
 	// Groups Toolbar (Create + Search)
 	$html .= '<div class="cpc-groups-toolbar">';
 	
@@ -84,11 +102,14 @@ function cpc_groups_list($atts) {
 
 	$html .= '</div>'; // .cpc-groups-toolbar
 
+	// Get current blog ID for multisite support
+	$current_blog_id = is_multisite() ? get_current_blog_id() : null;
+
 	// Get groups
 	if (isset($_GET['group_search']) && $_GET['group_search'] != ''):
-		$groups = cpc_search_groups($_GET['group_search'], $type == 'all' ? '' : $type);
+		$groups = cpc_search_groups($_GET['group_search'], $type == 'all' ? '' : $type, $current_blog_id);
 	else:
-		$groups = cpc_get_groups_by_type($type == 'all' ? '' : $type, $limit);
+		$groups = cpc_get_groups_by_type($type == 'all' ? '' : $type, $limit, $current_blog_id);
 	endif;
 
 	// Filter hidden groups if user is not logged in
@@ -121,7 +142,7 @@ function cpc_groups_list($atts) {
 				if (has_post_thumbnail($group->ID)):
 					$html .= get_the_post_thumbnail($group->ID, array($avatar_size, $avatar_size));
 				else:
-					$html .= '<img src="'.plugins_url('images/group-avatar-default.png', __FILE__).'" width="'.$avatar_size.'" height="'.$avatar_size.'" />';
+					$html .= '<img src="'.$placeholder_avatar.'" width="'.$avatar_size.'" height="'.$avatar_size.'" alt="" />';
 				endif;
 				$html .= '</a>';
 				$html .= '</div>';
@@ -154,7 +175,7 @@ function cpc_groups_list($atts) {
 			endif;
 
 			if ($show_join_button && is_user_logged_in()):
-				$is_member = cpc_is_group_member(get_current_user_id(), $group->ID);
+				$is_member = cpc_is_group_member(get_current_user_id(), $group->ID, $current_blog_id);
 				if ($is_member):
 					$html .= '<a href="#" class="cpc-group-leave-btn" data-group-id="'.$group->ID.'">'.__('Gruppe verlassen', CPC2_TEXT_DOMAIN).'</a>';
 				else:
@@ -203,6 +224,9 @@ function cpc_group_single($atts) {
 		'styles' => true,
 	), $atts, 'cpc_group_single' ) );
 
+	// Get current blog ID for multisite support
+	$current_blog_id = is_multisite() ? get_current_blog_id() : null;
+
 	// Try to get group ID from current post or URL
 	if (!$group_id && is_singular('cpc_group')):
 		$group_id = get_the_ID();
@@ -219,6 +243,9 @@ function cpc_group_single($atts) {
 	if (!$group_id):
 		return '<p>'.__('Gruppe nicht gefunden.', CPC2_TEXT_DOMAIN).'</p>';
 	endif;
+
+	$placeholder_svg = '<svg xmlns="http://www.w3.org/2000/svg" width="120" height="120" viewBox="0 0 120 120"><rect fill="#dbeafe" width="120" height="120"/><text x="50%" y="55%" font-size="28" text-anchor="middle" fill="#4b5563" font-family="sans-serif">G</text></svg>';
+	$placeholder_avatar = 'data:image/svg+xml;charset=UTF-8,' . rawurlencode($placeholder_svg);
 
 	$group = get_post($group_id);
 	if (!$group || $group->post_type != 'cpc_group'):
@@ -242,7 +269,7 @@ function cpc_group_single($atts) {
 		if (has_post_thumbnail($group_id)):
 			$html .= get_the_post_thumbnail($group_id, array($avatar_size, $avatar_size));
 		else:
-			$html .= '<img src="'.plugins_url('images/group-avatar-default.png', __FILE__).'" width="'.$avatar_size.'" height="'.$avatar_size.'" />';
+			$html .= '<img src="'.$placeholder_avatar.'" width="'.$avatar_size.'" height="'.$avatar_size.'" alt="" />';
 		endif;
 		$html .= '</div>';
 	endif;
@@ -257,7 +284,7 @@ function cpc_group_single($atts) {
 	$html .= '</div>';
 
 	if (is_user_logged_in()):
-		$is_member = cpc_is_group_member(get_current_user_id(), $group_id);
+		$is_member = cpc_is_group_member(get_current_user_id(), $group_id, $current_blog_id);
 		
 		$html .= '<div class="cpc-group-actions">';
 		if ($is_member):
@@ -337,8 +364,11 @@ function cpc_group_members($atts) {
 		return '<p>'.__('Gruppe nicht angegeben.', CPC2_TEXT_DOMAIN).'</p>';
 	endif;
 
+	// Get current blog ID for multisite support
+	$current_blog_id = is_multisite() ? get_current_blog_id() : null;
+
 	$html = '';
-	$members = cpc_get_group_members($group_id, 'active', $role);
+	$members = cpc_get_group_members($group_id, 'active', $role, $current_blog_id);
 
 	if ($limit > 0):
 		$members = array_slice($members, 0, $limit);
@@ -422,9 +452,15 @@ function cpc_my_groups($atts) {
 		'styles' => true,
 	), $atts, 'cpc_my_groups' ) );
 
+	$placeholder_svg = '<svg xmlns="http://www.w3.org/2000/svg" width="120" height="120" viewBox="0 0 120 120"><rect fill="#dbeafe" width="120" height="120"/><text x="50%" y="55%" font-size="28" text-anchor="middle" fill="#4b5563" font-family="sans-serif">G</text></svg>';
+	$placeholder_avatar = 'data:image/svg+xml;charset=UTF-8,' . rawurlencode($placeholder_svg);
+
+	// Get current blog ID for multisite support
+	$current_blog_id = is_multisite() ? get_current_blog_id() : null;
+
 	$html = '';
 	$user_id = get_current_user_id();
-	$groups = cpc_get_user_groups($user_id);
+	$groups = cpc_get_user_groups($user_id, 'active', $current_blog_id);
 
 	if ($groups):
 		$html .= '<div class="cpc-my-groups">';
@@ -433,17 +469,17 @@ function cpc_my_groups($atts) {
 		foreach ($groups as $group):
 			$group_type = get_post_meta($group->ID, 'cpc_group_type', true);
 			if (!$group_type) $group_type = 'public';
-			$user_role = cpc_get_group_member_role($user_id, $group->ID);
+			$user_role = cpc_get_group_member_role($user_id, $group->ID, $current_blog_id);
 
 			$html .= '<div class="cpc-group-card cpc-group-type-'.$group_type.'">';
 			
 			if ($show_avatar):
 				$html .= '<div class="cpc-group-avatar">';
-			$html .= '<a href="'.cpc_get_group_link($group->ID).'">';
+		$html .= '<a href="'.cpc_get_group_link($group->ID).'">';
 				if (has_post_thumbnail($group->ID)):
 					$html .= get_the_post_thumbnail($group->ID, array($avatar_size, $avatar_size));
 				else:
-					$html .= '<img src="'.plugins_url('images/group-avatar-default.png', __FILE__).'" width="'.$avatar_size.'" height="'.$avatar_size.'" />';
+					$html .= '<img src="'.$placeholder_avatar.'" width="'.$avatar_size.'" height="'.$avatar_size.'" alt="" />';
 				endif;
 				$html .= '</a>';
 				$html .= '</div>';
@@ -562,7 +598,10 @@ function cpc_group_join_button($atts) {
 		return '';
 	endif;
 
-	$is_member = cpc_is_group_member(get_current_user_id(), $group_id);
+	// Get current blog ID for multisite support
+	$current_blog_id = is_multisite() ? get_current_blog_id() : null;
+
+	$is_member = cpc_is_group_member(get_current_user_id(), $group_id, $current_blog_id);
 	$group_type = get_post_meta($group_id, 'cpc_group_type', true);
 
 	$html = '';
@@ -604,7 +643,10 @@ function cpc_group_leave_button($atts) {
 		return '';
 	endif;
 
-	$is_member = cpc_is_group_member(get_current_user_id(), $group_id);
+	// Get current blog ID for multisite support
+	$current_blog_id = is_multisite() ? get_current_blog_id() : null;
+
+	$is_member = cpc_is_group_member(get_current_user_id(), $group_id, $current_blog_id);
 
 	$html = '';
 	if ($is_member):

@@ -14,6 +14,7 @@ function cpc_ajax_post_group_activity() {
 	$group_id = isset($_POST['group_id']) ? intval($_POST['group_id']) : 0;
 	$content = isset($_POST['activity_content']) ? wp_kses_post($_POST['activity_content']) : '';
 	$user_id = get_current_user_id();
+	$current_blog_id = is_multisite() ? get_current_blog_id() : null;
 
 	if (!$group_id) {
 		wp_send_json_error(array('message' => __('Ungültige Gruppe.', CPC2_TEXT_DOMAIN)));
@@ -29,7 +30,7 @@ function cpc_ajax_post_group_activity() {
 	}
 
 	// Check if user is group member
-	if (!cpc_is_group_member($user_id, $group_id)) {
+	if (!cpc_is_group_member($user_id, $group_id, $current_blog_id)) {
 		wp_send_json_error(array('message' => __('Du musst Mitglied der Gruppe sein um zu posten.', CPC2_TEXT_DOMAIN)));
 	}
 
@@ -80,6 +81,7 @@ function cpc_ajax_join_group() {
 
 	$group_id = isset($_POST['group_id']) ? intval($_POST['group_id']) : 0;
 	$user_id = get_current_user_id();
+	$current_blog_id = is_multisite() ? get_current_blog_id() : null;
 
 	if (!$group_id) {
 		wp_send_json_error(array('message' => __('Ungültige Gruppe.', CPC2_TEXT_DOMAIN)));
@@ -91,7 +93,7 @@ function cpc_ajax_join_group() {
 	}
 
 	// Check if already member
-	if (cpc_is_group_member($user_id, $group_id)) {
+	if (cpc_is_group_member($user_id, $group_id, $current_blog_id)) {
 		wp_send_json_error(array('message' => __('Du bist bereits Mitglied dieser Gruppe.', CPC2_TEXT_DOMAIN)));
 	}
 
@@ -104,7 +106,7 @@ function cpc_ajax_join_group() {
 		$status = 'pending'; // Requires approval for private groups
 	}
 
-	$membership_id = cpc_add_group_member($user_id, $group_id, 'member', $status);
+	$membership_id = cpc_add_group_member($user_id, $group_id, 'member', $status, $current_blog_id);
 
 	if ($membership_id) {
 		if ($status == 'pending') {
@@ -134,6 +136,7 @@ function cpc_ajax_leave_group() {
 
 	$group_id = isset($_POST['group_id']) ? intval($_POST['group_id']) : 0;
 	$user_id = get_current_user_id();
+	$current_blog_id = is_multisite() ? get_current_blog_id() : null;
 
 	if (!$group_id) {
 		wp_send_json_error(array('message' => __('Ungültige Gruppe.', CPC2_TEXT_DOMAIN)));
@@ -145,7 +148,7 @@ function cpc_ajax_leave_group() {
 		wp_send_json_error(array('message' => __('Du kannst die Gruppe nicht verlassen, da du der einzige Admin bist. Ernenne zuerst einen anderen Admin.', CPC2_TEXT_DOMAIN)));
 	}
 
-	$success = cpc_remove_group_member($user_id, $group_id);
+	$success = cpc_remove_group_member($user_id, $group_id, $current_blog_id);
 
 	if ($success) {
 		wp_send_json_success(array('message' => __('Du hast die Gruppe verlassen.', CPC2_TEXT_DOMAIN)));
@@ -177,6 +180,7 @@ function cpc_ajax_create_group() {
 	}
 
 	$user_id = get_current_user_id();
+	$current_blog_id = is_multisite() ? get_current_blog_id() : null;
 
 	// Create group post
 	$group_id = wp_insert_post(array(
@@ -197,7 +201,7 @@ function cpc_ajax_create_group() {
 	update_post_meta($group_id, 'cpc_group_updated', current_time('timestamp'));
 
 	// Add creator as admin member
-	cpc_add_group_member($user_id, $group_id, 'admin', 'active');
+	cpc_add_group_member($user_id, $group_id, 'admin', 'active', $current_blog_id);
 
 	// Handle avatar upload if present
 	if (!empty($_FILES['group_avatar']['name'])) {
@@ -285,6 +289,7 @@ function cpc_ajax_remove_member() {
 	$member_id = isset($_POST['member_id']) ? intval($_POST['member_id']) : 0;
 
 	$current_user_id = get_current_user_id();
+	$current_blog_id = is_multisite() ? get_current_blog_id() : null;
 
 	// Check if current user is admin or moderator
 	if (!cpc_is_group_moderator($current_user_id, $group_id)) {
@@ -296,7 +301,7 @@ function cpc_ajax_remove_member() {
 		wp_send_json_error(array('message' => __('Nutze die "Gruppe verlassen" Funktion.', CPC2_TEXT_DOMAIN)));
 	}
 
-	$success = cpc_remove_group_member($member_id, $group_id);
+	$success = cpc_remove_group_member($member_id, $group_id, $current_blog_id);
 
 	if ($success) {
 		wp_send_json_success(array('message' => __('Mitglied erfolgreich entfernt.', CPC2_TEXT_DOMAIN)));
@@ -485,6 +490,7 @@ function cpc_ajax_post_activity_reply() {
 	$post_id = isset($_POST['post_id']) ? intval($_POST['post_id']) : 0;
 	$reply_content = isset($_POST['reply_content']) ? wp_kses_post($_POST['reply_content']) : '';
 	$user_id = get_current_user_id();
+	$current_blog_id = is_multisite() ? get_current_blog_id() : null;
 	
 	if (!$post_id) {
 		wp_send_json_error(array('message' => __('Ungültiger Post.', CPC2_TEXT_DOMAIN)));
@@ -507,7 +513,7 @@ function cpc_ajax_post_activity_reply() {
 	}
 	
 	// Check if user is group member
-	if (!cpc_is_group_member($user_id, $group_id)) {
+	if (!cpc_is_group_member($user_id, $group_id, $current_blog_id)) {
 		wp_send_json_error(array('message' => __('Du musst Mitglied der Gruppe sein um zu antworten.', CPC2_TEXT_DOMAIN)));
 	}
 	
@@ -717,6 +723,8 @@ function cpc_ajax_group_send_invites() {
 	$group_id = isset($_POST['group_id']) ? intval($_POST['group_id']) : 0;
 	$friend_ids = isset($_POST['friend_ids']) ? (array) $_POST['friend_ids'] : array();
 	$message = isset($_POST['invite_message']) ? wp_kses_post(wp_trim_words($_POST['invite_message'], 30, '...')) : '';
+	$current_blog_id = is_multisite() ? get_current_blog_id() : null;
+	
 	if (!$group_id || empty($friend_ids)) {
 		wp_send_json_error(array('message' => __('Bitte wähle mindestens einen Freund aus.', CPC2_TEXT_DOMAIN)));
 	}
@@ -734,11 +742,11 @@ function cpc_ajax_group_send_invites() {
 	foreach ($friend_ids as $fid) {
 		$fid = intval($fid);
 		if (!$fid) continue;
-		if (cpc_is_group_member($fid, $group_id)) continue;
-		$existing = cpc_get_membership_request($group_id, $fid);
+		if (cpc_is_group_member($fid, $group_id, $current_blog_id)) continue;
+		$existing = cpc_get_membership_request($group_id, $fid, $current_blog_id);
 		if ($existing) continue;
 
-		$membership_id = cpc_add_group_member($fid, $group_id, 'member', 'pending');
+		$membership_id = cpc_add_group_member($fid, $group_id, 'member', 'pending', $current_blog_id);
 		if (!$membership_id) continue;
 		update_post_meta($membership_id, 'cpc_member_invited_by', get_current_user_id());
 		update_post_meta($membership_id, 'cpc_member_invite_message', $message);

@@ -4,6 +4,21 @@
 
 /* =========================== LABELS FOR ADMIN =========================== */
 
+/* Redirect single group posts to the group page shortcode instead of showing CPT template */
+add_action( 'template_redirect', 'cpc_group_template_redirect' );
+function cpc_group_template_redirect() {
+	if ( is_singular( 'cpc_group' ) ) {
+		$group = get_queried_object();
+		$group_page_id = get_option('cpccom_group_single_page');
+		
+		if ( $group_page_id ) {
+			// Redirect to group page with group_name parameter
+			$redirect_url = add_query_arg( 'group_name', $group->post_name, get_permalink( $group_page_id ) );
+			wp_redirect( $redirect_url, 301 );
+			exit;
+		}
+	}
+}
 function cpc_custom_post_group() {
 	$labels = array(
 		'name'               => __( 'Gruppen', CPC2_TEXT_DOMAIN ),
@@ -38,9 +53,9 @@ function cpc_custom_post_group() {
 		'exclude_from_search' 	=> false,
 		'show_in_menu' 			=> get_option('cpc_core_admin_icons') ? 'cpc_com' : true,
 		'publicly_queryable'	=> true,
-		'has_archive'			=> true,
+		'has_archive'			=> false,
 		'hierarchical'			=> true,
-		'rewrite'				=> array( 'slug' => 'groups' ),
+		'rewrite'				=> array( 'slug' => 'groups', 'with_front' => false ),
 		'supports'      		=> array( 'title', 'editor', 'thumbnail', 'comments', 'page-attributes' ),
 	);
 	register_post_type( 'cpc_group', $args );

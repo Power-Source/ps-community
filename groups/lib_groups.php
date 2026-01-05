@@ -5,7 +5,14 @@
 /**
  * Get group member count
  */
-function cpc_get_group_member_count($group_id) {
+function cpc_get_group_member_count($group_id, $blog_id = null) {
+	// Multisite support
+	$switched = false;
+	if (is_multisite() && $blog_id && $blog_id != get_current_blog_id()) {
+		switch_to_blog($blog_id);
+		$switched = true;
+	}
+	
 	$args = array(
 		'post_type' => 'cpc_group_members',
 		'posts_per_page' => -1,
@@ -22,14 +29,20 @@ function cpc_get_group_member_count($group_id) {
 		),
 	);
 	$members = get_posts($args);
-	return count($members);
+	$count = count($members);
+	
+	if ($switched) {
+		restore_current_blog();
+	}
+	
+	return $count;
 }
 
 /**
  * Update group member count (cached in post meta)
  */
-function cpc_update_group_member_count($group_id) {
-	$count = cpc_get_group_member_count($group_id);
+function cpc_update_group_member_count($group_id, $blog_id = null) {
+	$count = cpc_get_group_member_count($group_id, $blog_id);
 	update_post_meta($group_id, 'cpc_group_member_count', $count);
 	return $count;
 }
@@ -37,9 +50,16 @@ function cpc_update_group_member_count($group_id) {
 /**
  * Check if user is member of group
  */
-function cpc_is_group_member($user_id, $group_id) {
+function cpc_is_group_member($user_id, $group_id, $blog_id = null) {
 	if (!$user_id) $user_id = get_current_user_id();
 	if (!$user_id) return false;
+
+	// Multisite support
+	$switched = false;
+	if (is_multisite() && $blog_id && $blog_id != get_current_blog_id()) {
+		switch_to_blog($blog_id);
+		$switched = true;
+	}
 
 	$args = array(
 		'post_type' => 'cpc_group_members',
@@ -61,15 +81,28 @@ function cpc_is_group_member($user_id, $group_id) {
 		),
 	);
 	$membership = get_posts($args);
-	return !empty($membership);
+	$is_member = !empty($membership);
+	
+	if ($switched) {
+		restore_current_blog();
+	}
+	
+	return $is_member;
 }
 
 /**
  * Get user's role in group
  */
-function cpc_get_group_member_role($user_id, $group_id) {
+function cpc_get_group_member_role($user_id, $group_id, $blog_id = null) {
 	if (!$user_id) $user_id = get_current_user_id();
 	if (!$user_id) return false;
+
+	// Multisite support
+	$switched = false;
+	if (is_multisite() && $blog_id && $blog_id != get_current_blog_id()) {
+		switch_to_blog($blog_id);
+		$switched = true;
+	}
 
 	$args = array(
 		'post_type' => 'cpc_group_members',
@@ -87,17 +120,25 @@ function cpc_get_group_member_role($user_id, $group_id) {
 		),
 	);
 	$membership = get_posts($args);
+	$role = false;
+	
 	if (!empty($membership)) {
-		return get_post_meta($membership[0]->ID, 'cpc_member_role', true);
+		$role = get_post_meta($membership[0]->ID, 'cpc_member_role', true);
 	}
 	
 	// Fallback: Check if user is group creator/author
-	$group = get_post($group_id);
-	if ($group && $group->post_author == $user_id) {
-		return 'admin';
+	if (!$role) {
+		$group = get_post($group_id);
+		if ($group && $group->post_author == $user_id) {
+			$role = 'admin';
+		}
 	}
 	
-	return false;
+	if ($switched) {
+		restore_current_blog();
+	}
+	
+	return $role;
 }
 
 /**
@@ -144,16 +185,27 @@ function cpc_can_view_group($user_id, $group_id) {
 /**
  * Add user to group
  */
-function cpc_add_group_member($user_id, $group_id, $role = 'member', $status = 'active') {
+function cpc_add_group_member($user_id, $group_id, $role = 'member', $status = 'active', $blog_id = null) {
+	// Multisite support
+	$switched = false;
+	if (is_multisite() && $blog_id && $blog_id != get_current_blog_id()) {
+		switch_to_blog($blog_id);
+		$switched = true;
+	}
+	
 	// Check if already member
 	if (cpc_is_group_member($user_id, $group_id)) {
+		if ($switched) restore_current_blog();
 		return false;
 	}
 
 	$user = get_user_by('id', $user_id);
 	$group = get_post($group_id);
 
-	if (!$user || !$group) return false;
+	if (!$user || !$group) {
+		if ($switched) restore_current_blog();
+		return false;
+	}
 
 	// Create membership post
 	$membership_id = wp_insert_post(array(
@@ -178,16 +230,25 @@ function cpc_add_group_member($user_id, $group_id, $role = 'member', $status = '
 
 		do_action('cpc_user_joined_group', $user_id, $group_id, $membership_id);
 
+		if ($switched) restore_current_blog();
 		return $membership_id;
 	}
 
+	if ($switched) restore_current_blog();
 	return false;
 }
 
 /**
  * Remove user from group
  */
-function cpc_remove_group_member($user_id, $group_id) {
+function cpc_remove_group_member($user_id, $group_id, $blog_id = null) {
+	// Multisite support
+	$switched = false;
+	if (is_multisite() && $blog_id && $blog_id != get_current_blog_id()) {
+		switch_to_blog($blog_id);
+		$switched = true;
+	}
+	
 	$args = array(
 		'post_type' => 'cpc_group_members',
 		'posts_per_page' => 1,
@@ -216,18 +277,27 @@ function cpc_remove_group_member($user_id, $group_id) {
 
 		do_action('cpc_user_left_group', $user_id, $group_id);
 
+		if ($switched) restore_current_blog();
 		return true;
 	}
 
+	if ($switched) restore_current_blog();
 	return false;
 }
 
 /**
  * Get user's groups
  */
-function cpc_get_user_groups($user_id, $status = 'active') {
+function cpc_get_user_groups($user_id, $status = 'active', $blog_id = null) {
 	if (!$user_id) $user_id = get_current_user_id();
 	if (!$user_id) return array();
+
+	// Multisite support
+	$switched = false;
+	if (is_multisite() && $blog_id && $blog_id != get_current_blog_id()) {
+		switch_to_blog($blog_id);
+		$switched = true;
+	}
 
 	$args = array(
 		'post_type' => 'cpc_group_members',
@@ -261,13 +331,24 @@ function cpc_get_user_groups($user_id, $status = 'active') {
 		}
 	}
 
+	if ($switched) {
+		restore_current_blog();
+	}
+
 	return $groups;
 }
 
 /**
  * Get group members
  */
-function cpc_get_group_members($group_id, $status = 'active', $role = '') {
+function cpc_get_group_members($group_id, $status = 'active', $role = '', $blog_id = null) {
+	// Multisite support
+	$switched = false;
+	if (is_multisite() && $blog_id && $blog_id != get_current_blog_id()) {
+		switch_to_blog($blog_id);
+		$switched = true;
+	}
+	
 	$args = array(
 		'post_type' => 'cpc_group_members',
 		'posts_per_page' => -1,
@@ -324,14 +405,18 @@ function cpc_get_group_members($group_id, $status = 'active', $role = '') {
 		}
 	}
 
+	if ($switched) {
+		restore_current_blog();
+	}
+
 	return $members;
 }
 
 /**
  * Get group admins
  */
-function cpc_get_group_admins($group_id) {
-	return cpc_get_group_members($group_id, 'active', 'admin');
+function cpc_get_group_admins($group_id, $blog_id = null) {
+	return cpc_get_group_members($group_id, 'active', 'admin', $blog_id);
 }
 
 /**
@@ -356,7 +441,14 @@ function cpc_get_group_type_label($type) {
 /**
  * Get groups by type
  */
-function cpc_get_groups_by_type($type = 'public', $limit = -1) {
+function cpc_get_groups_by_type($type = 'public', $limit = -1, $blog_id = null) {
+	// Multisite support
+	$switched = false;
+	if (is_multisite() && $blog_id && $blog_id != get_current_blog_id()) {
+		switch_to_blog($blog_id);
+		$switched = true;
+	}
+	
 	$args = array(
 		'post_type' => 'cpc_group',
 		'posts_per_page' => $limit,
@@ -374,13 +466,26 @@ function cpc_get_groups_by_type($type = 'public', $limit = -1) {
 		);
 	}
 
-	return get_posts($args);
+	$groups = get_posts($args);
+	
+	if ($switched) {
+		restore_current_blog();
+	}
+	
+	return $groups;
 }
 
 /**
  * Search groups
  */
-function cpc_search_groups($search_term, $type = '') {
+function cpc_search_groups($search_term, $type = '', $blog_id = null) {
+	// Multisite support
+	$switched = false;
+	if (is_multisite() && $blog_id && $blog_id != get_current_blog_id()) {
+		switch_to_blog($blog_id);
+		$switched = true;
+	}
+	
 	$args = array(
 		'post_type' => 'cpc_group',
 		'posts_per_page' => -1,
@@ -397,13 +502,26 @@ function cpc_search_groups($search_term, $type = '') {
 		);
 	}
 
-	return get_posts($args);
+	$groups = get_posts($args);
+	
+	if ($switched) {
+		restore_current_blog();
+	}
+	
+	return $groups;
 }
 
 /**
  * Get pending membership requests for a group
  */
-function cpc_get_pending_membership_requests($group_id) {
+function cpc_get_pending_membership_requests($group_id, $blog_id = null) {
+	// Multisite support
+	$switched = false;
+	if (is_multisite() && $blog_id && $blog_id != get_current_blog_id()) {
+		switch_to_blog($blog_id);
+		$switched = true;
+	}
+	
 	$args = array(
 		'post_type' => 'cpc_group_members',
 		'posts_per_page' => -1,
@@ -420,7 +538,13 @@ function cpc_get_pending_membership_requests($group_id) {
 		),
 	);
 	
-	return get_posts($args);
+	$requests = get_posts($args);
+	
+	if ($switched) {
+		restore_current_blog();
+	}
+	
+	return $requests;
 }
 
 /**
@@ -433,7 +557,14 @@ function cpc_reject_membership_request($request_id) {
 /**
  * Get membership request by user and group
  */
-function cpc_get_membership_request($group_id, $user_id) {
+function cpc_get_membership_request($group_id, $user_id, $blog_id = null) {
+	// Multisite support
+	$switched = false;
+	if (is_multisite() && $blog_id && $blog_id != get_current_blog_id()) {
+		switch_to_blog($blog_id);
+		$switched = true;
+	}
+	
 	$args = array(
 		'post_type' => 'cpc_group_members',
 		'posts_per_page' => 1,
@@ -451,7 +582,13 @@ function cpc_get_membership_request($group_id, $user_id) {
 	);
 	
 	$results = get_posts($args);
-	return !empty($results) ? $results[0] : null;
+	$result = !empty($results) ? $results[0] : null;
+	
+	if ($switched) {
+		restore_current_blog();
+	}
+	
+	return $result;
 }
 
 /**
