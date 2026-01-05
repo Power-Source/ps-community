@@ -565,4 +565,26 @@ function cpc_can_moderate_activity($user_id, $group_id, $action = 'edit') {
 	
 	return false;
 }
+
+/**
+ * Check if user can invite members to group
+ */
+function cpc_can_invite_members($user_id, $group_id) {
+	if (!$user_id) return false;
+	$role = cpc_get_group_member_role($user_id, $group_id);
+	if (!$role) return false;
+
+	$permissions = get_post_meta($group_id, 'cpc_group_permissions', true);
+	if (!is_array($permissions)) {
+		$permissions = array('invite_members' => 'member');
+	}
+	$required_role = isset($permissions['invite_members']) ? $permissions['invite_members'] : 'member';
+
+	if ($required_role === 'admin') {
+		return $role === 'admin';
+	} elseif ($required_role === 'moderator') {
+		return in_array($role, array('admin', 'moderator'));
+	}
+	return in_array($role, array('admin', 'moderator', 'member'));
+}
 ?>

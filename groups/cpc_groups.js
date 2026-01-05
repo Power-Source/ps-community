@@ -899,6 +899,77 @@ jQuery(document).ready(function($) {
         }
     });
 
+    // Open invite modal
+    $(document).on('click', '.cpc-group-invite-btn', function(e) {
+        e.preventDefault();
+        var groupId = $(this).data('group-id');
+        if (!groupId) return;
+        $.ajax({
+            url: cpc_groups_ajax.ajaxurl,
+            type: 'POST',
+            data: {
+                action: 'cpc_group_invite_modal',
+                nonce: cpc_groups_ajax.nonce,
+                group_id: groupId
+            },
+            success: function(response) {
+                if (response.success && response.data.html) {
+                    $('body').append(response.data.html);
+                } else if (response.data && response.data.message) {
+                    alert(response.data.message);
+                }
+            },
+            error: function() {
+                alert('Fehler beim Laden des Einladungsdialogs');
+            }
+        });
+    });
+
+    // Close invite modal
+    $(document).on('click', '.cpc-group-invite-close, .cpc-group-invite-modal-overlay', function(e) {
+        if ($(e.target).closest('.cpc-group-invite-modal').length && !$(e.target).hasClass('cpc-group-invite-close')) {
+            return;
+        }
+        $('.cpc-group-invite-modal-overlay').remove();
+    });
+
+    // Submit invites
+    $(document).on('submit', '.cpc-group-invite-form', function(e) {
+        e.preventDefault();
+        var form = $(this);
+        var groupId = form.data('group-id');
+        var selected = form.find('input[name="friend_ids[]"]:checked');
+        if (selected.length === 0) {
+            alert('Bitte mindestens einen Freund auswählen.');
+            return;
+        }
+        var friendIds = [];
+        selected.each(function(){ friendIds.push($(this).val()); });
+        var message = form.find('textarea[name="invite_message"]').val();
+        $.ajax({
+            url: cpc_groups_ajax.ajaxurl,
+            type: 'POST',
+            data: {
+                action: 'cpc_group_send_invites',
+                nonce: cpc_groups_ajax.nonce,
+                group_id: groupId,
+                friend_ids: friendIds,
+                invite_message: message
+            },
+            success: function(response) {
+                if (response.success) {
+                    alert(response.data.message || 'Einladungen gesendet.');
+                    $('.cpc-group-invite-modal-overlay').remove();
+                } else if (response.data && response.data.message) {
+                    alert(response.data.message);
+                }
+            },
+            error: function() {
+                alert('Fehler beim Senden der Einladungen');
+            }
+        });
+    });
+
     // Generate nonce for AJAX requests if not already set
     if (typeof cpc_groups_ajax.nonce === 'undefined') {
         // Try to get from other CPC ajax objects as fallback

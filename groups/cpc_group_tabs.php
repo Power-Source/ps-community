@@ -410,9 +410,15 @@ function cpc_render_group_tab_settings($group_id, $atts = array()) {
 	if (!is_array($permissions)) {
 		$permissions = array(
 			'forum_post' => 'member', // Who can post in forum: member, moderator, admin
+			'invite_members' => 'member', // Who can invite members: member, moderator, admin
 			'activity_edit_all' => 'moderator', // Who can edit all activity posts: moderator, admin
 			'activity_delete_all' => 'moderator', // Who can delete all activity posts: moderator, admin
 		);
+	} else {
+		// Backfill missing key
+		if (!isset($permissions['invite_members'])) {
+			$permissions['invite_members'] = 'member';
+		}
 	}
 	
 	$html .= '<form class="cpc-group-permissions-form" data-group-id="'.$group_id.'">';
@@ -426,7 +432,16 @@ function cpc_render_group_tab_settings($group_id, $atts = array()) {
 	$html .= '<option value="admin" '.selected($permissions['forum_post'], 'admin', false).'>'.__('Nur Admins', CPC2_TEXT_DOMAIN).'</option>';
 	$html .= '</select>';
 	$html .= '</div>';
-	
+
+	$html .= '<div class="cpc-form-field">';
+	$html .= '<label>'.__('Wer darf Mitglieder einladen?', CPC2_TEXT_DOMAIN).'</label>';
+	$html .= '<select name="invite_members">';
+	$html .= '<option value="member" '.selected($permissions['invite_members'], 'member', false).'>'.__('Alle Mitglieder', CPC2_TEXT_DOMAIN).'</option>';
+	$html .= '<option value="moderator" '.selected($permissions['invite_members'], 'moderator', false).'>'.__('Nur Moderatoren und Admins', CPC2_TEXT_DOMAIN).'</option>';
+	$html .= '<option value="admin" '.selected($permissions['invite_members'], 'admin', false).'>'.__('Nur Admins', CPC2_TEXT_DOMAIN).'</option>';
+	$html .= '</select>';
+	$html .= '</div>';
+
 	$html .= '<div class="cpc-form-field">';
 	$html .= '<label>'.__('Wer darf fremde Aktivitäts-Beiträge bearbeiten?', CPC2_TEXT_DOMAIN).'</label>';
 	$html .= '<select name="activity_edit_all">';

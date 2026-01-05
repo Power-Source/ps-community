@@ -640,6 +640,7 @@ function cpc_ajax_save_group_permissions() {
 	
 	$permissions = array(
 		'forum_post' => isset($_POST['forum_post']) ? sanitize_text_field($_POST['forum_post']) : 'member',
+		'invite_members' => isset($_POST['invite_members']) ? sanitize_text_field($_POST['invite_members']) : 'member',
 		'activity_edit_all' => isset($_POST['activity_edit_all']) ? sanitize_text_field($_POST['activity_edit_all']) : 'moderator',
 		'activity_delete_all' => isset($_POST['activity_delete_all']) ? sanitize_text_field($_POST['activity_delete_all']) : 'moderator',
 	);
@@ -647,6 +648,119 @@ function cpc_ajax_save_group_permissions() {
 	update_post_meta($group_id, 'cpc_group_permissions', $permissions);
 	
 	wp_send_json_success(array('message' => __('Berechtigungen erfolgreich gespeichert!', CPC2_TEXT_DOMAIN)));
+}
+
+// Load invite modal
+add_action('wp_ajax_cpc_group_invite_modal', 'cpc_ajax_group_invite_modal');
+function cpc_ajax_group_invite_modal() {
+	check_ajax_referer('cpc_groups_nonce', 'nonce');
+	if (!is_user_logged_in()) {
+		wp_send_json_error(array('message' => __('Du musst angemeldet sein.', CPC2_TEXT_DOMAIN)));
+	}
+	if (!defined('CPC_CORE_PLUGINS') || strpos(CPC_CORE_PLUGINS, 'core-friendships') === false) {
+		wp_send_json_error(array('message' => __('Freundschaften sind nicht aktiviert.', CPC2_TEXT_DOMAIN)));
+	}
+	$group_id = isset($_POST['group_id']) ? intval($_POST['group_id']) : 0;
+	if (!$group_id) {
+		wp_send_json_error(array('message' => __('Ungültige Gruppe.', CPC2_TEXT_DOMAIN)));
+	}
+	if (!function_exists('cpc_can_invite_members') || !cpc_can_invite_members(get_current_user_id(), $group_id)) {
+		wp_send_json_error(array('message' => __('Keine Berechtigung zum Einladen.', CPC2_TEXT_DOMAIN)));
+	}
+
+	$friends = function_exists('cpc_get_friends') ? cpc_get_friends(get_current_user_id(), true) : array();
+	$html = '<style>.cpc-group-invite-modal-overlay{position:fixed;z-index:9999;top:0;left:0;right:0;bottom:0;background:rgba(0,0,0,0.45);display:flex;align-items:center;justify-content:center;padding:20px;}';
+	$html .= '.cpc-group-invite-modal{background:#fff;border-radius:8px;max-width:500px;width:100%;padding:20px;position:relative;box-shadow:0 10px 40px rgba(0,0,0,0.2);}';
+	$html .= '.cpc-group-invite-close{position:absolute;top:10px;right:12px;border:none;background:transparent;font-size:20px;cursor:pointer;}';
+	$html .= '.cpc-group-invite-list{max-height:240px;overflow:auto;border:1px solid #e5e5e5;padding:10px;margin-bottom:12px;}';
+	$html .= '.cpc-group-invite-row{display:block;margin:6px 0;font-weight:600;}';
+	$html .= '.cpc-group-invite-form textarea{width:100%;min-height:80px;margin:6px 0 12px;}';
+	$html .= '.cpc-group-invite-modal h3{margin-top:0;}';
+	$html .= '</style>';
+	$html .= '<div class="cpc-group-invite-modal-overlay"><div class="cpc-group-invite-modal"><button type="button" class="cpc-group-invite-close">×</button>';
+	$html .= '<h3>'.__('Freunde einladen', CPC2_TEXT_DOMAIN).'</h3>';
+	if (empty($friends)) {
+		$html .= '<p>'.__('Du hast noch keine Freunde.', CPC2_TEXT_DOMAIN).'</p>';
+	} else {
+		$html .= '<form class="cpc-group-invite-form" data-group-id="'.$group_id.'">';
+		$html .= '<div class="cpc-group-invite-list">';
+		foreach ($friends as $friend) {
+			$user = get_userdata($friend['ID']);
+			if (!$user) continue;
+			$html .= '<label class="cpc-group-invite-row">';
+			$html .= '<input type="checkbox" name="friend_ids[]" value="'.$user->ID.'"> ';
+			$html .= esc_html($user->display_name);
+			$html .= '</label>';
+		}
+		$html .= '</div>';
+		$default_msg = __('Hey, komm in unsere Gruppe – würde mich freuen, wenn du dabei bist!', CPC2_TEXT_DOMAIN);
+		$html .= '<label>'.__('Nachricht (optional)', CPC2_TEXT_DOMAIN).'</label>';
+		$html .= '<textarea name="invite_message" maxlength="300" placeholder="'.$default_msg.'"></textarea>';
+		$html .= '<button type="submit" class="cpc-btn cpc-btn-primary">'.__('Einladungen senden', CPC2_TEXT_DOMAIN).'</button>';
+		$html .= '</form>';
+	}
+	$html .= '</div></div>';
+
+	wp_send_json_success(array('html' => $html));
+}
+
+// Send invites
+add_action('wp_ajax_cpc_group_send_invites', 'cpc_ajax_group_send_invites');
+function cpc_ajax_group_send_invites() {
+	check_ajax_referer('cpc_groups_nonce', 'nonce');
+	if (!is_user_logged_in()) {
+		wp_send_json_error(array('message' => __('Du musst angemeldet sein.', CPC2_TEXT_DOMAIN)));
+	}
+	if (!defined('CPC_CORE_PLUGINS') || strpos(CPC_CORE_PLUGINS, 'core-friendships') === false) {
+		wp_send_json_error(array('message' => __('Freundschaften sind nicht aktiviert.', CPC2_TEXT_DOMAIN)));
+	}
+	$group_id = isset($_POST['group_id']) ? intval($_POST['group_id']) : 0;
+	$friend_ids = isset($_POST['friend_ids']) ? (array) $_POST['friend_ids'] : array();
+	$message = isset($_POST['invite_message']) ? wp_kses_post(wp_trim_words($_POST['invite_message'], 30, '...')) : '';
+	if (!$group_id || empty($friend_ids)) {
+		wp_send_json_error(array('message' => __('Bitte wähle mindestens einen Freund aus.', CPC2_TEXT_DOMAIN)));
+	}
+	if (!function_exists('cpc_can_invite_members') || !cpc_can_invite_members(get_current_user_id(), $group_id)) {
+		wp_send_json_error(array('message' => __('Keine Berechtigung zum Einladen.', CPC2_TEXT_DOMAIN)));
+	}
+
+	$sent = 0;
+	$group = get_post($group_id);
+	$group_link = function_exists('cpc_get_group_link') ? cpc_get_group_link($group_id) : get_permalink($group_id);
+	$invite_link = add_query_arg(array('tab' => 'overview'), $group_link);
+	$default_msg = __('Hey, komm in unsere Gruppe – würde mich freuen, wenn du dabei bist!', CPC2_TEXT_DOMAIN);
+	if (!$message) $message = $default_msg;
+
+	foreach ($friend_ids as $fid) {
+		$fid = intval($fid);
+		if (!$fid) continue;
+		if (cpc_is_group_member($fid, $group_id)) continue;
+		$existing = cpc_get_membership_request($group_id, $fid);
+		if ($existing) continue;
+
+		$membership_id = cpc_add_group_member($fid, $group_id, 'member', 'pending');
+		if (!$membership_id) continue;
+		update_post_meta($membership_id, 'cpc_member_invited_by', get_current_user_id());
+		update_post_meta($membership_id, 'cpc_member_invite_message', $message);
+
+		// Alert to invited user
+		if (function_exists('cpc_com_insert_alert')) {
+			$subject = sprintf(__('Einladung zur Gruppe %s', CPC2_TEXT_DOMAIN), $group ? $group->post_title : '');
+			$subject = get_bloginfo('name').': '.$subject;
+			$content = apply_filters('cpc_alert_before', '');
+			$content .= '<p>'.esc_html($message).'</p>';
+			$content .= '<p><a href="'.$invite_link.'">'.$invite_link.'</a></p>';
+			$content = apply_filters('cpc_alert_after', $content);
+			cpc_com_insert_alert('group_invite', $subject, $content, get_current_user_id(), $fid, '', $invite_link, $message, 'pending', '');
+		}
+		$sent++;
+	}
+
+	if ($sent === 0) {
+		wp_send_json_error(array('message' => __('Keine Einladungen gesendet (bereits Mitglied oder Anfrage offen).', CPC2_TEXT_DOMAIN)));
+	}
+
+	wp_send_json_success(array('message' => sprintf(__('%d Einladung(en) gesendet.', CPC2_TEXT_DOMAIN), $sent)));
 }
 
 // Edit activity post

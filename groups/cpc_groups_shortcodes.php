@@ -250,6 +250,10 @@ function cpc_group_single($atts) {
 		
 		$html .= '<div class="cpc-group-actions">';
 		if ($is_member):
+			// Invite button only if friendships module enabled and user has invite permission
+			if (defined('CPC_CORE_PLUGINS') && strpos(CPC_CORE_PLUGINS, 'core-friendships') !== false && function_exists('cpc_can_invite_members') && cpc_can_invite_members(get_current_user_id(), $group_id)) {
+				$html .= '<a href="#" class="cpc-group-invite-btn" data-group-id="'.$group_id.'">'.__('Freunde einladen', CPC2_TEXT_DOMAIN).'</a>';
+			}
 			$html .= '<a href="#" class="cpc-group-leave-btn" data-group-id="'.$group_id.'">'.__('Gruppe verlassen', CPC2_TEXT_DOMAIN).'</a>';
 		else:
 			if ($group_type != 'hidden'):
