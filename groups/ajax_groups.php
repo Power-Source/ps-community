@@ -563,8 +563,6 @@ function cpc_ajax_toggle_group_forum() {
 	$forum_visibility = isset($_POST['forum_visibility']) ? sanitize_text_field($_POST['forum_visibility']) : 'group_only';
 	$current_user_id = get_current_user_id();
 	
-	error_log('DEBUG: cpc_toggle_group_forum - group_id='.$group_id.', enable='.$enable_forum.', visibility='.$forum_visibility);
-	
 	// Check if user is group admin
 	if (!cpc_is_group_admin($current_user_id, $group_id)) {
 		wp_send_json_error(array('message' => __('Du hast keine Berechtigung dazu.', CPC2_TEXT_DOMAIN)));
@@ -583,12 +581,10 @@ function cpc_ajax_toggle_group_forum() {
 	if ($enable_forum) {
 		// Enable forum - create if doesn't exist
 		$forum_slug = get_post_meta($group_id, 'cpc_group_forum_slug', true);
-		error_log('DEBUG: Existing forum_slug='.$forum_slug);
 		
 		if (!$forum_slug) {
 			// Create forum for this group
 			$forum_slug = cpc_create_group_forum($group_id);
-			error_log('DEBUG: Created forum_slug='.$forum_slug);
 			if (is_wp_error($forum_slug)) {
 				wp_send_json_error(array('message' => $forum_slug->get_error_message()));
 			}
@@ -596,7 +592,6 @@ function cpc_ajax_toggle_group_forum() {
 		
 		update_post_meta($group_id, 'cpc_group_has_forum', true);
 		update_post_meta($group_id, 'cpc_group_forum_visibility', $forum_visibility);
-		error_log('DEBUG: Updated meta - has_forum=true, visibility='.$forum_visibility);
 		
 		// Update forum visibility
 		$term = get_term_by('slug', $forum_slug, 'cpc_forum');
@@ -613,7 +608,6 @@ function cpc_ajax_toggle_group_forum() {
 	} else {
 		// Disable forum
 		update_post_meta($group_id, 'cpc_group_has_forum', false);
-		error_log('DEBUG: Disabled forum for group '.$group_id);
 		
 		wp_send_json_success(array(
 			'message' => __('Forum deaktiviert', CPC2_TEXT_DOMAIN),
