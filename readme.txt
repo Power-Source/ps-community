@@ -17,7 +17,7 @@ Füge einfach das Plugin hinzu, klicken auf eine Schaltfläche und Du hast ganz 
 
 **Unglaublich kompatibel**
 
-Unglaublich kompatibel mit Themes und Plugins. Weitere Informationen, einschließlich zusätzlicher Plugins für PS Community, findest Du unter https://cp-community.n3rds.work/.
+Unglaublich kompatibel mit Themes und Plugins. Weitere Informationen, einschließlich zusätzlicher Plugins für PS Community, findest Du unter https://github.com/Power-Source/.
 
 **Massiv anpassbar**
 
