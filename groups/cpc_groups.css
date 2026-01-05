@@ -193,7 +193,8 @@
 
 /* Join/Leave Buttons */
 .cpc-group-join-btn,
-.cpc-group-leave-btn {
+.cpc-group-leave-btn,
+.cpc-group-pending-btn {
     display: inline-block;
     padding: 8px 16px;
     margin-top: 10px;
@@ -204,6 +205,7 @@
     font-size: 14px;
     transition: background 0.3s ease;
     cursor: pointer;
+    border: none;
 }
 
 .cpc-group-join-btn:hover {
@@ -216,6 +218,16 @@
 
 .cpc-group-leave-btn:hover {
     background: #c82333;
+}
+
+.cpc-group-pending-btn {
+    background: #6c757d;
+    cursor: default;
+    opacity: 0.7;
+}
+
+.cpc-group-pending-btn:hover {
+    background: #6c757d;
 }
 
 /* Single Group Page */
@@ -389,6 +401,321 @@
     background: #f8d7da;
     color: #721c24;
     border: 1px solid #f5c6cb;
+}
+
+/* Group Tabs */
+.cpc-group-tabs-nav {
+    border-bottom: 2px solid #e0e0e0;
+    margin-bottom: 30px;
+}
+
+.cpc-group-tabs-list {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    display: flex;
+    flex-wrap: wrap;
+    gap: 5px;
+}
+
+.cpc-group-tab-item {
+    margin: 0;
+}
+
+.cpc-group-tab-link {
+    display: block;
+    padding: 12px 20px;
+    color: #666;
+    text-decoration: none;
+    border-bottom: 3px solid transparent;
+    transition: all 0.3s ease;
+    font-weight: 500;
+}
+
+.cpc-group-tab-link:hover {
+    color: #0073aa;
+    background: #f5f5f5;
+}
+
+.cpc-group-tab-item.active .cpc-group-tab-link {
+    color: #0073aa;
+    border-bottom-color: #0073aa;
+}
+
+.cpc-group-tabs-content {
+    margin-top: 20px;
+    animation: fadeIn 0.3s ease;
+}
+
+@keyframes fadeIn {
+    from { opacity: 0; }
+    to { opacity: 1; }
+}
+
+/* Tab Content - Overview */
+.cpc-group-overview-tab {
+    padding: 20px 0;
+}
+
+.cpc-group-description-full {
+    margin-bottom: 30px;
+    line-height: 1.6;
+}
+
+.cpc-group-stats {
+    background: #f9f9f9;
+    padding: 20px;
+    border-radius: 4px;
+    margin-bottom: 20px;
+    display: flex;
+    gap: 30px;
+    flex-wrap: wrap;
+}
+
+.cpc-group-stat {
+    text-align: center;
+}
+
+.cpc-group-stat strong {
+    display: block;
+    font-size: 24px;
+    color: #0073aa;
+    margin-bottom: 5px;
+}
+
+.cpc-group-actions-overview {
+    display: flex;
+    gap: 10px;
+    flex-wrap: wrap;
+}
+
+.cpc-group-actions-overview .cpc-btn {
+    flex: 1;
+    min-width: 200px;
+    text-align: center;
+}
+
+/* Tab Content - Activity */
+.cpc-group-activity-tab {
+    padding: 20px 0;
+}
+
+.cpc-activity-post {
+    display: flex;
+    gap: 12px;
+    padding: 15px;
+    border: 1px solid #e0e0e0;
+    border-radius: 4px;
+    margin-bottom: 15px;
+    background: #fafafa;
+}
+
+.cpc-activity-avatar {
+    flex-shrink: 0;
+}
+
+.cpc-activity-avatar img {
+    border-radius: 50%;
+    width: 48px;
+    height: 48px;
+}
+
+.cpc-activity-content {
+    flex-grow: 1;
+}
+
+.cpc-activity-author {
+    font-weight: 600;
+    margin-bottom: 5px;
+}
+
+.cpc-activity-author a {
+    color: #0073aa;
+    text-decoration: none;
+}
+
+.cpc-activity-author a:hover {
+    text-decoration: underline;
+}
+
+.cpc-activity-text {
+    color: #333;
+    margin: 8px 0;
+    line-height: 1.5;
+}
+
+.cpc-activity-meta {
+    margin-top: 8px;
+}
+
+.cpc-activity-meta small {
+    color: #999;
+    font-size: 0.9em;
+}
+
+.cpc-group-activity-post {
+    padding: 15px;
+    border: 1px solid #e0e0e0;
+    border-radius: 4px;
+    margin-bottom: 15px;
+    background: #fafafa;
+}
+
+.cpc-group-activity-post strong {
+    display: block;
+    margin-bottom: 8px;
+    color: #333;
+}
+
+.cpc-group-activity-post p {
+    margin: 0 0 10px 0;
+    color: #666;
+}
+
+.cpc-group-activity-post small {
+    color: #999;
+}
+
+.cpc-no-activity {
+    text-align: center;
+    padding: 40px 20px;
+    color: #999;
+}
+
+.cpc-group-activity-form {
+    background: #f9f9f9;
+    padding: 20px;
+    border-radius: 4px;
+    margin-bottom: 20px;
+}
+
+.cpc-group-activity-form h4 {
+    margin-top: 0;
+}
+
+.cpc-group-activity-form textarea {
+    width: 100%;
+    padding: 10px;
+    border: 1px solid #ddd;
+    border-radius: 4px;
+    font-family: inherit;
+    margin-bottom: 10px;
+    min-height: 80px;
+    resize: vertical;
+}
+
+/* Tab Content - Settings */
+.cpc-group-settings-tab {
+    padding: 20px 0;
+}
+
+.cpc-group-settings-tab h3 {
+    margin-top: 30px;
+    margin-bottom: 15px;
+    border-bottom: 1px solid #e0e0e0;
+    padding-bottom: 10px;
+}
+
+.cpc-group-settings-tab h3:first-child {
+    margin-top: 0;
+}
+
+.cpc-membership-requests {
+    margin: 20px 0;
+}
+
+.cpc-membership-request {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 15px;
+    background: #f9f9f9;
+    border-radius: 4px;
+    margin-bottom: 10px;
+    border: 1px solid #e0e0e0;
+}
+
+.cpc-membership-request:last-child {
+    margin-bottom: 0;
+}
+
+.cpc-request-user {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.cpc-request-user img {
+    border-radius: 50%;
+}
+
+.cpc-request-name {
+    font-weight: 600;
+}
+
+.cpc-request-actions {
+    display: flex;
+    gap: 10px;
+}
+
+.cpc-request-actions .cpc-btn {
+    padding: 6px 12px;
+    font-size: 14px;
+}
+
+.cpc-group-settings-form {
+    background: #f9f9f9;
+    padding: 20px;
+    border-radius: 4px;
+    margin-bottom: 20px;
+}
+
+.cpc-group-settings-form .cpc-form-field {
+    margin-bottom: 15px;
+}
+
+.cpc-group-settings-form .cpc-form-field label {
+    display: block;
+    margin-bottom: 5px;
+    font-weight: 600;
+}
+
+.cpc-group-settings-form .cpc-form-field select {
+    width: 100%;
+    padding: 8px 10px;
+    border: 1px solid #ddd;
+    border-radius: 4px;
+}
+
+.cpc-btn {
+    display: inline-block;
+    padding: 10px 20px;
+    background: #0073aa;
+    color: #fff;
+    text-decoration: none;
+    border-radius: 4px;
+    font-weight: 600;
+    border: none;
+    cursor: pointer;
+    transition: background 0.3s ease;
+}
+
+.cpc-btn:hover {
+    background: #005177;
+    color: #fff;
+    text-decoration: none;
+}
+
+.cpc-btn-primary {
+    background: #0073aa;
+}
+
+.cpc-btn-danger {
+    background: #dc3545;
+}
+
+.cpc-btn-danger:hover {
+    background: #c82333;
 }
 
 /* My Groups */

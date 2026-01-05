@@ -106,7 +106,7 @@ function cpc_groups_list($atts) {
 			
 			if ($show_avatar):
 				$html .= '<div class="cpc-group-avatar">';
-				$html .= '<a href="'.get_permalink($group->ID).'">';
+			$html .= '<a href="'.cpc_get_group_link($group->ID).'">';
 				if (has_post_thumbnail($group->ID)):
 					$html .= get_the_post_thumbnail($group->ID, array($avatar_size, $avatar_size));
 				else:
@@ -117,7 +117,19 @@ function cpc_groups_list($atts) {
 			endif;
 
 			$html .= '<div class="cpc-group-info">';
-			$html .= '<h3 class="cpc-group-title"><a href="'.get_permalink($group->ID).'">'.$group->post_title.'</a></h3>';
+			// Generate group link
+			$group_single_page = get_option('cpccom_group_single_page');
+			if ($group_single_page):
+				$page_link = get_page_link($group_single_page);
+				if (cpc_using_permalinks()):
+					$group_link = $page_link . $group->post_name . '/';
+				else:
+					$group_link = $page_link . (strpos($page_link, '?') ? '&' : '?') . 'group_name=' . $group->post_name;
+				endif;
+			else:
+				$group_link = get_permalink($group->ID);
+			endif;
+			$html .= '<h3 class="cpc-group-title"><a href="'.$group_link.'">'.$group->post_title.'</a></h3>';
 			$html .= '<div class="cpc-group-meta">';
 			$html .= '<span class="cpc-group-type-badge">'.cpc_get_group_type_label($group_type).'</span>';
 			if ($show_member_count):
@@ -226,16 +238,12 @@ function cpc_group_single($atts) {
 	$html .= '<span class="cpc-group-members">'.$member_count.' '._n('Mitglied', 'Mitglieder', $member_count, CPC2_TEXT_DOMAIN).'</span>';
 	$html .= '</div>';
 
-	if ($show_actions && is_user_logged_in()):
+	if (is_user_logged_in()):
 		$is_member = cpc_is_group_member(get_current_user_id(), $group_id);
-		$is_admin = cpc_is_group_admin(get_current_user_id(), $group_id);
 		
 		$html .= '<div class="cpc-group-actions">';
 		if ($is_member):
 			$html .= '<a href="#" class="cpc-group-leave-btn" data-group-id="'.$group_id.'">'.__('Gruppe verlassen', CPC2_TEXT_DOMAIN).'</a>';
-			if ($is_admin):
-				$html .= '<a href="'.get_edit_post_link($group_id).'" class="cpc-group-edit-btn">'.__('Gruppe bearbeiten', CPC2_TEXT_DOMAIN).'</a>';
-			endif;
 		else:
 			if ($group_type != 'hidden'):
 				$html .= '<a href="#" class="cpc-group-join-btn" data-group-id="'.$group_id.'">'.__('Gruppe beitreten', CPC2_TEXT_DOMAIN).'</a>';
@@ -247,15 +255,22 @@ function cpc_group_single($atts) {
 	$html .= '</div>'; // .cpc-group-header-info
 	$html .= '</div>'; // .cpc-group-header
 
-	if ($show_description && $group->post_content):
-		$html .= '<div class="cpc-group-description">';
-		$html .= apply_filters('the_content', $group->post_content);
-		$html .= '</div>';
-	endif;
-
-	if ($show_members):
-		$html .= do_shortcode('[cpc-group-members group_id="'.$group_id.'"]');
-	endif;
+	// Get active tab from URL or default
+	$active_tab = isset($_GET['tab']) ? sanitize_text_field($_GET['tab']) : 'overview';
+	
+	// Validate tab - only allow known tabs
+	$valid_tabs = array('overview', 'members', 'settings');
+	if (!in_array($active_tab, $valid_tabs)) {
+		$active_tab = 'overview';
+	}
+	
+	// Render tabs navigation
+	$html .= cpc_render_group_tabs($group_id, $active_tab);
+	
+	// Render tab content
+	$html .= '<div class="cpc-group-tabs-content" data-group-id="'.$group_id.'">';
+	$html .= cpc_render_group_tab_content($group_id, $active_tab, $atts);
+	$html .= '</div>'; // .cpc-group-tabs-content
 
 	$html .= '</div>'; // .cpc-group-single
 
@@ -307,12 +322,22 @@ function cpc_group_members($atts) {
 			
 			if ($show_avatar):
 				$html .= '<div class="cpc-member-avatar">';
-				$html .= get_avatar($member->ID, $avatar_size);
+				// Use CPC avatar function if available, otherwise fallback to WordPress avatar
+				if (function_exists('user_avatar_get_avatar')):
+					$html .= user_avatar_get_avatar($member->ID, $avatar_size);
+				else:
+					$html .= get_avatar($member->ID, $avatar_size);
+				endif;
 				$html .= '</div>';
 			endif;
 
 			$html .= '<div class="cpc-member-info">';
-			$html .= '<div class="cpc-member-name">'.$member->display_name.'</div>';
+			$profile_link = cpc_comfile_link($member->ID);
+			if ($profile_link):
+				$html .= '<div class="cpc-member-name"><a href="'.$profile_link.'">'.$member->display_name.'</a></div>';
+			else:
+				$html .= '<div class="cpc-member-name">'.$member->display_name.'</div>';
+			endif;
 			
 			if ($show_role && $member->member_role):
 				$role_labels = array(
@@ -375,7 +400,7 @@ function cpc_my_groups($atts) {
 			
 			if ($show_avatar):
 				$html .= '<div class="cpc-group-avatar">';
-				$html .= '<a href="'.get_permalink($group->ID).'">';
+			$html .= '<a href="'.cpc_get_group_link($group->ID).'">';
 				if (has_post_thumbnail($group->ID)):
 					$html .= get_the_post_thumbnail($group->ID, array($avatar_size, $avatar_size));
 				else:
@@ -386,8 +411,7 @@ function cpc_my_groups($atts) {
 			endif;
 
 			$html .= '<div class="cpc-group-info">';
-			$html .= '<h3 class="cpc-group-title"><a href="'.get_permalink($group->ID).'">'.$group->post_title.'</a></h3>';
-			
+		$html .= '<h3 class="cpc-group-title"><a href="'.cpc_get_group_link($group->ID).'">'.$group->post_title.'</a></h3>';
 			if ($show_role && $user_role):
 				$role_labels = array(
 					'admin' => __('Admin', CPC2_TEXT_DOMAIN),

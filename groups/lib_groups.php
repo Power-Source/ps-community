@@ -378,4 +378,88 @@ function cpc_search_groups($search_term, $type = '') {
 
 	return get_posts($args);
 }
+
+/**
+ * Get pending membership requests for a group
+ */
+function cpc_get_pending_membership_requests($group_id) {
+	$args = array(
+		'post_type' => 'cpc_group_members',
+		'posts_per_page' => -1,
+		'post_status' => 'publish',
+		'meta_query' => array(
+			array(
+				'key' => 'cpc_member_group_id',
+				'value' => $group_id,
+			),
+			array(
+				'key' => 'cpc_member_status',
+				'value' => 'pending',
+			),
+		),
+	);
+	
+	return get_posts($args);
+}
+
+/**
+ * Reject membership request
+ */
+function cpc_reject_membership_request($request_id) {
+	wp_delete_post($request_id, true);
+}
+
+/**
+ * Get membership request by user and group
+ */
+function cpc_get_membership_request($group_id, $user_id) {
+	$args = array(
+		'post_type' => 'cpc_group_members',
+		'posts_per_page' => 1,
+		'post_status' => 'publish',
+		'meta_query' => array(
+			array(
+				'key' => 'cpc_member_user_id',
+				'value' => $user_id,
+			),
+			array(
+				'key' => 'cpc_member_group_id',
+				'value' => $group_id,
+			),
+		),
+	);
+	
+	$results = get_posts($args);
+	return !empty($results) ? $results[0] : null;
+}
+
+/**
+ * Get link to group single page
+ */
+function cpc_get_group_link($group_id) {
+	$group_page_id = get_option('cpccom_group_single_page');
+	
+	if (!$group_page_id) {
+		// Fallback to CPT permalink if no page is configured
+		return get_permalink($group_id);
+	}
+	
+	$group = get_post($group_id);
+	if (!$group) return '';
+	
+	$group_page = get_post($group_page_id);
+	if (!$group_page) return get_permalink($group_id);
+	
+	// Get base page URL
+	$page_url = get_permalink($group_page_id);
+	
+	// Check if using permalinks
+	if (cpc_using_permalinks()) {
+		// URL structure: /group-page/group-slug/
+		return trailingslashit($page_url) . $group->post_name . '/';
+	} else {
+		// Query string structure
+		return add_query_arg('group_name', $group->post_name, $page_url);
+	}
+}
 ?>

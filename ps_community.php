@@ -243,6 +243,7 @@ function cpc_forum_insert_query_vars( $vars ){
     array_push($vars, 'topic');
     array_push($vars, 'fpage');
     array_push($vars, 'user');
+    array_push($vars, 'group_name');
     return $vars;
 }
 // After plugin activation, reset alerts schedule to ensure it is running
@@ -254,6 +255,10 @@ function cpc_community_activate() {
         // Re-add as new schedule, schedule the event for right now, then to repeat using the hook 'cpc_community_alerts_hook'
         wp_schedule_event( time(), 'cpc_community_alerts_schedule', 'cpc_community_alerts_hook' );
     endif;
+    
+    // Flush rewrite rules
+    global $wp_rewrite;
+    $wp_rewrite->flush_rules();
 }
 // Core functions
 require_once('cpc_core.php');
@@ -306,6 +311,7 @@ if (strpos(CPC_CORE_PLUGINS, 'core-groups') !== false):
     require_once('groups/cpc_custom_post_group_members.php');
     require_once('groups/cpc_groups_shortcodes.php');
     require_once('groups/cpc_groups_hooks_and_filters.php');
+    require_once('groups/cpc_group_tabs.php');
     if ( defined('DOING_AJAX') && DOING_AJAX ):
         require_once('groups/ajax_groups.php');
     endif;

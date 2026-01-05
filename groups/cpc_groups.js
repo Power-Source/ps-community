@@ -212,7 +212,46 @@ jQuery(document).ready(function($) {
         });
     });
 
-    // Approve Pending Member (for admins)
+    // Group Tabs Navigation
+    $(document).on('click', '.cpc-group-tab-link', function(e) {
+        e.preventDefault();
+        
+        var link = $(this);
+        var tab = link.data('tab');
+        var tabs_container = link.closest('.cpc-group-tabs-nav').next('.cpc-group-tabs-content');
+        
+        // Update active tab styling
+        link.closest('.cpc-group-tabs-list').find('.cpc-group-tab-item').removeClass('active');
+        link.closest('.cpc-group-tab-item').addClass('active');
+        
+        // Update URL with tab parameter
+        var url = new URL(window.location);
+        url.searchParams.set('tab', tab);
+        window.history.replaceState({}, '', url);
+        
+        // Load tab content via AJAX
+        var groupId = tabs_container.data('group-id');
+        if (groupId) {
+            $.ajax({
+                url: cpc_groups_ajax.ajaxurl,
+                type: 'POST',
+                data: {
+                    action: 'cpc_load_group_tab',
+                    nonce: cpc_groups_ajax.nonce,
+                    group_id: groupId,
+                    tab: tab
+                },
+                success: function(response) {
+                    if (response.success) {
+                        tabs_container.html(response.data.html);
+                    }
+                },
+                error: function() {
+                    console.log('Error loading tab');
+                }
+            });
+        }
+    });
     $(document).on('click', '.cpc-approve-member', function(e) {
         e.preventDefault();
         
@@ -257,6 +296,94 @@ jQuery(document).ready(function($) {
             };
             reader.readAsDataURL(file);
         }
+    });
+
+    // Approve membership request
+    $(document).on('click', '.cpc-approve-membership', function(e) {
+        e.preventDefault();
+        
+        var btn = $(this);
+        var requestId = btn.data('request-id');
+        var groupId = btn.data('group-id');
+        
+        if (!confirm('Möchtest du diese Beitrittanfrage wirklich annehmen?')) {
+            return;
+        }
+        
+        btn.prop('disabled', true);
+        
+        $.ajax({
+            url: cpc_groups_ajax.ajaxurl,
+            type: 'POST',
+            data: {
+                action: 'cpc_approve_membership',
+                nonce: cpc_groups_ajax.nonce,
+                request_id: requestId,
+                group_id: groupId
+            },
+            success: function(response) {
+                if (response.success) {
+                    btn.closest('.cpc-membership-request').fadeOut(function() {
+                        $(this).remove();
+                        // Check if there are any requests left
+                        if ($('.cpc-membership-request').length === 0) {
+                            $('.cpc-membership-requests').html('<p>Keine ausstehenden Beitrittanfragen.</p>');
+                        }
+                    });
+                } else {
+                    alert(response.data.message);
+                    btn.prop('disabled', false);
+                }
+            },
+            error: function() {
+                alert('Fehler beim Verarbeiten der Anfrage');
+                btn.prop('disabled', false);
+            }
+        });
+    });
+
+    // Reject membership request
+    $(document).on('click', '.cpc-reject-membership', function(e) {
+        e.preventDefault();
+        
+        var btn = $(this);
+        var requestId = btn.data('request-id');
+        var groupId = btn.data('group-id');
+        
+        if (!confirm('Möchtest du diese Beitrittanfrage wirklich ablehnen?')) {
+            return;
+        }
+        
+        btn.prop('disabled', true);
+        
+        $.ajax({
+            url: cpc_groups_ajax.ajaxurl,
+            type: 'POST',
+            data: {
+                action: 'cpc_reject_membership',
+                nonce: cpc_groups_ajax.nonce,
+                request_id: requestId,
+                group_id: groupId
+            },
+            success: function(response) {
+                if (response.success) {
+                    btn.closest('.cpc-membership-request').fadeOut(function() {
+                        $(this).remove();
+                        // Check if there are any requests left
+                        if ($('.cpc-membership-request').length === 0) {
+                            $('.cpc-membership-requests').html('<p>Keine ausstehenden Beitrittanfragen.</p>');
+                        }
+                    });
+                } else {
+                    alert(response.data.message);
+                    btn.prop('disabled', false);
+                }
+            },
+            error: function() {
+                alert('Fehler beim Verarbeiten der Anfrage');
+                btn.prop('disabled', false);
+            }
+        });
     });
 
     // Generate nonce for AJAX requests if not already set

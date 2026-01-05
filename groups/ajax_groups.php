@@ -288,6 +288,119 @@ function cpc_ajax_approve_member() {
 
 	do_action('cpc_member_approved', $member_id, $group_id);
 
-	wp_send_json_success(array('message' => __('Mitglied erfolgreich genehmigt.', CPC2_TEXT_DOMAIN)));
+	wp_send_json_success(array('message' => __('Mitglied erfolgreich genehmigt.', CPC2_TEXT_DOMAIN)));}
+
+// Load group tab content via AJAX
+add_action('wp_ajax_cpc_load_group_tab', 'cpc_ajax_load_group_tab');
+add_action('wp_ajax_nopriv_cpc_load_group_tab', 'cpc_ajax_load_group_tab');
+function cpc_ajax_load_group_tab() {
+	check_ajax_referer('cpc_groups_nonce', 'nonce');
+	
+	if (!isset($_POST['group_id']) || !isset($_POST['tab'])) {
+		wp_send_json_error(array('message' => 'Ungültige Parameter'));
+	}
+	
+	$group_id = intval($_POST['group_id']);
+	$tab = sanitize_key($_POST['tab']);
+	
+	// Get group
+	$group = get_post($group_id);
+	if (!$group || $group->post_type !== 'cpc_group') {
+		wp_send_json_error(array('message' => 'Gruppe nicht gefunden'));
+	}
+	
+	// Check if user can view group
+	if (!cpc_can_view_group($group_id, get_current_user_id())) {
+		wp_send_json_error(array('message' => 'Zugriff verweigert'));
+	}
+	
+	// Render tab content
+	ob_start();
+	cpc_render_group_tab_content($group_id, $tab, array());
+	$content = ob_get_clean();
+	
+	wp_send_json_success(array('html' => $content));
+}
+
+// Approve membership request
+add_action('wp_ajax_cpc_approve_membership', 'cpc_ajax_approve_membership');
+function cpc_ajax_approve_membership() {
+	check_ajax_referer('cpc_groups_nonce', 'nonce');
+	
+	if (!is_user_logged_in()) {
+		wp_send_json_error(array('message' => 'Sie müssen angemeldet sein'));
+	}
+	
+	if (!isset($_POST['request_id']) || !isset($_POST['group_id'])) {
+		wp_send_json_error(array('message' => 'Ungültige Parameter'));
+	}
+	
+	$request_id = intval($_POST['request_id']);
+	$group_id = intval($_POST['group_id']);
+	$current_user_id = get_current_user_id();
+	
+	// Check if user is group admin
+	if (!cpc_is_group_admin($current_user_id, $group_id)) {
+		wp_send_json_error(array('message' => 'Du hast keine Berechtigung, diese Anfrage zu genehmigen'));
+	}
+	
+	// Get the request
+	$request = get_post($request_id);
+	if (!$request || $request->post_type !== 'cpc_group_members') {
+		wp_send_json_error(array('message' => 'Anfrage nicht gefunden'));
+	}
+	
+	// Approve the request
+	update_post_meta($request_id, 'cpc_member_status', 'active');
+	update_post_meta($request_id, 'cpc_member_joined', current_time('mysql'));
+	
+	// Update member count
+	cpc_update_group_member_count($group_id);
+	
+	// Fire action for other plugins
+	$user_id = get_post_meta($request_id, 'cpc_member_user_id', true);
+	do_action('cpc_membership_approved', $user_id, $group_id);
+	
+	wp_send_json_success(array('message' => __('Mitgliedschaft genehmigt', CPC2_TEXT_DOMAIN)));
+}
+
+// Reject membership request
+add_action('wp_ajax_cpc_reject_membership', 'cpc_ajax_reject_membership');
+function cpc_ajax_reject_membership() {
+	check_ajax_referer('cpc_groups_nonce', 'nonce');
+	
+	if (!is_user_logged_in()) {
+		wp_send_json_error(array('message' => 'Sie müssen angemeldet sein'));
+	}
+	
+	if (!isset($_POST['request_id']) || !isset($_POST['group_id'])) {
+		wp_send_json_error(array('message' => 'Ungültige Parameter'));
+	}
+	
+	$request_id = intval($_POST['request_id']);
+	$group_id = intval($_POST['group_id']);
+	$current_user_id = get_current_user_id();
+	
+	// Check if user is group admin
+	if (!cpc_is_group_admin($current_user_id, $group_id)) {
+		wp_send_json_error(array('message' => 'Du hast keine Berechtigung, diese Anfrage abzulehnen'));
+	}
+	
+	// Get the request
+	$request = get_post($request_id);
+	if (!$request || $request->post_type !== 'cpc_group_members') {
+		wp_send_json_error(array('message' => 'Anfrage nicht gefunden'));
+	}
+	
+	// Get user ID before deleting
+	$user_id = get_post_meta($request_id, 'cpc_member_user_id', true);
+	
+	// Delete the request
+	wp_delete_post($request_id, true);
+	
+	// Fire action for other plugins
+	do_action('cpc_membership_rejected', $user_id, $group_id);
+	
+	wp_send_json_success(array('message' => __('Anfrage abgelehnt', CPC2_TEXT_DOMAIN)));
 }
 ?>
