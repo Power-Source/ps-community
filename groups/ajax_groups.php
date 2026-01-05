@@ -2,6 +2,73 @@
 
 /* AJAX handlers for group functionality */
 
+// Post group activity
+add_action('wp_ajax_cpc_post_group_activity', 'cpc_ajax_post_group_activity');
+function cpc_ajax_post_group_activity() {
+	check_ajax_referer('cpc_groups_nonce', 'nonce');
+
+	if (!is_user_logged_in()) {
+		wp_send_json_error(array('message' => __('Du musst angemeldet sein.', CPC2_TEXT_DOMAIN)));
+	}
+
+	$group_id = isset($_POST['group_id']) ? intval($_POST['group_id']) : 0;
+	$content = isset($_POST['activity_content']) ? wp_kses_post($_POST['activity_content']) : '';
+	$user_id = get_current_user_id();
+
+	if (!$group_id) {
+		wp_send_json_error(array('message' => __('Ungültige Gruppe.', CPC2_TEXT_DOMAIN)));
+	}
+
+	if (!$content) {
+		wp_send_json_error(array('message' => __('Aktivität kann nicht leer sein.', CPC2_TEXT_DOMAIN)));
+	}
+
+	$group = get_post($group_id);
+	if (!$group || $group->post_type !== 'cpc_group') {
+		wp_send_json_error(array('message' => __('Gruppe nicht gefunden.', CPC2_TEXT_DOMAIN)));
+	}
+
+	// Check if user is group member
+	if (!cpc_is_group_member($user_id, $group_id)) {
+		wp_send_json_error(array('message' => __('Du musst Mitglied der Gruppe sein um zu posten.', CPC2_TEXT_DOMAIN)));
+	}
+
+	// Check if activity module is available and use it if present
+	if (function_exists('cpc_add_activity')) {
+		// Use activity module if available
+		$activity_id = cpc_add_activity(
+			$user_id,
+			'group_activity',
+			$content,
+			$group_id
+		);
+	} else {
+		// Fallback: create activity post directly
+		$activity_id = wp_insert_post(array(
+			'post_type' => 'cpc_activity',
+			'post_content' => $content,
+			'post_author' => $user_id,
+			'post_status' => 'publish',
+			'post_title' => substr($content, 0, 100)
+		));
+
+		if (!is_wp_error($activity_id)) {
+			// Add meta to link to group
+			update_post_meta($activity_id, 'cpc_activity_group_id', $group_id);
+			update_post_meta($activity_id, 'cpc_activity_type', 'group_activity');
+		}
+	}
+
+	if ($activity_id && !is_wp_error($activity_id)) {
+		wp_send_json_success(array(
+			'message' => __('Aktivität erfolgreich gepostet!', CPC2_TEXT_DOMAIN),
+			'activity_id' => $activity_id
+		));
+	} else {
+		wp_send_json_error(array('message' => __('Fehler beim Posten der Aktivität.', CPC2_TEXT_DOMAIN)));
+	}
+}
+
 // Join group
 add_action('wp_ajax_cpc_join_group', 'cpc_ajax_join_group');
 function cpc_ajax_join_group() {
@@ -310,14 +377,16 @@ function cpc_ajax_load_group_tab() {
 	}
 	
 	// Check if user can view group
-	if (!cpc_can_view_group($group_id, get_current_user_id())) {
+	if (!cpc_can_view_group(get_current_user_id(), $group_id)) {
 		wp_send_json_error(array('message' => 'Zugriff verweigert'));
 	}
 	
-	// Render tab content
-	ob_start();
-	cpc_render_group_tab_content($group_id, $tab, array());
-	$content = ob_get_clean();
+	// Render tab content - function returns HTML, doesn't echo it
+	$content = cpc_render_group_tab_content($group_id, $tab, array());
+	
+	if (empty($content)) {
+		$content = '<p>Kein Inhalt für diesen Tab verfügbar.</p>';
+	}
 	
 	wp_send_json_success(array('html' => $content));
 }
@@ -402,5 +471,78 @@ function cpc_ajax_reject_membership() {
 	do_action('cpc_membership_rejected', $user_id, $group_id);
 	
 	wp_send_json_success(array('message' => __('Anfrage abgelehnt', CPC2_TEXT_DOMAIN)));
+}
+
+// Toggle group forum
+add_action('wp_ajax_cpc_toggle_group_forum', 'cpc_ajax_toggle_group_forum');
+function cpc_ajax_toggle_group_forum() {
+	check_ajax_referer('cpc_groups_nonce', 'nonce');
+	
+	if (!is_user_logged_in()) {
+		wp_send_json_error(array('message' => __('Du musst angemeldet sein.', CPC2_TEXT_DOMAIN)));
+	}
+	
+	$group_id = isset($_POST['group_id']) ? intval($_POST['group_id']) : 0;
+	$enable_forum = isset($_POST['enable_forum']) && $_POST['enable_forum'] === 'true';
+	$forum_visibility = isset($_POST['forum_visibility']) ? sanitize_text_field($_POST['forum_visibility']) : 'group_only';
+	$current_user_id = get_current_user_id();
+	
+	error_log('DEBUG: cpc_toggle_group_forum - group_id='.$group_id.', enable='.$enable_forum.', visibility='.$forum_visibility);
+	
+	// Check if user is group admin
+	if (!cpc_is_group_admin($current_user_id, $group_id)) {
+		wp_send_json_error(array('message' => __('Du hast keine Berechtigung dazu.', CPC2_TEXT_DOMAIN)));
+	}
+	
+	// Check if forum module is active
+	if (!function_exists('cpc_forum_page')) {
+		wp_send_json_error(array('message' => __('Forum-Modul ist nicht aktiviert.', CPC2_TEXT_DOMAIN)));
+	}
+	
+	$group = get_post($group_id);
+	if (!$group || $group->post_type !== 'cpc_group') {
+		wp_send_json_error(array('message' => __('Gruppe nicht gefunden.', CPC2_TEXT_DOMAIN)));
+	}
+	
+	if ($enable_forum) {
+		// Enable forum - create if doesn't exist
+		$forum_slug = get_post_meta($group_id, 'cpc_group_forum_slug', true);
+		error_log('DEBUG: Existing forum_slug='.$forum_slug);
+		
+		if (!$forum_slug) {
+			// Create forum for this group
+			$forum_slug = cpc_create_group_forum($group_id);
+			error_log('DEBUG: Created forum_slug='.$forum_slug);
+			if (is_wp_error($forum_slug)) {
+				wp_send_json_error(array('message' => $forum_slug->get_error_message()));
+			}
+		}
+		
+		update_post_meta($group_id, 'cpc_group_has_forum', true);
+		update_post_meta($group_id, 'cpc_group_forum_visibility', $forum_visibility);
+		error_log('DEBUG: Updated meta - has_forum=true, visibility='.$forum_visibility);
+		
+		// Update forum visibility
+		$term = get_term_by('slug', $forum_slug, 'cpc_forum');
+		if ($term) {
+			cpc_update_term_meta($term->term_id, 'cpc_forum_public', $forum_visibility === 'public');
+		}
+		
+		wp_send_json_success(array(
+			'message' => __('Forum erfolgreich aktiviert!', CPC2_TEXT_DOMAIN),
+			'forum_slug' => $forum_slug,
+			'reload' => true
+		));
+		
+	} else {
+		// Disable forum
+		update_post_meta($group_id, 'cpc_group_has_forum', false);
+		error_log('DEBUG: Disabled forum for group '.$group_id);
+		
+		wp_send_json_success(array(
+			'message' => __('Forum deaktiviert', CPC2_TEXT_DOMAIN),
+			'reload' => true
+		));
+	}
 }
 ?>

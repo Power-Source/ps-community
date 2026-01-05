@@ -17,6 +17,15 @@ function cpc_get_group_tabs($group_id, $user_id = 0) {
 		'priority' => 10,
 	);
 	
+	// Forum tab - only if enabled for this group
+	if (get_post_meta($group_id, 'cpc_group_has_forum', true)) {
+		$tabs['forum'] = array(
+			'label' => __('Forum', CPC2_TEXT_DOMAIN),
+			'icon' => 'comments-alt',
+			'priority' => 15,
+		);
+	}
+	
 	// Members tab - everyone
 	$tabs['members'] = array(
 		'label' => __('Mitglieder', CPC2_TEXT_DOMAIN),
@@ -84,6 +93,9 @@ function cpc_render_group_tab_content($group_id, $active_tab = 'overview', $shor
 	switch ($active_tab):
 		case 'overview':
 			$html .= cpc_render_group_tab_overview($group_id, $shortcode_atts);
+			break;
+		case 'forum':
+			$html .= cpc_render_group_tab_forum($group_id, $shortcode_atts);
 			break;
 		case 'members':
 			$html .= cpc_render_group_tab_members($group_id, $shortcode_atts);
@@ -153,6 +165,51 @@ function cpc_render_group_tab_members($group_id, $atts = array()) {
 }
 
 /**
+ * Render Forum Tab
+ */
+function cpc_render_group_tab_forum($group_id, $atts = array()) {
+	// Check if group has forum enabled
+	if (!get_post_meta($group_id, 'cpc_group_has_forum', true)) {
+		return '<p>'.__('Forum ist für diese Gruppe nicht aktiviert.', CPC2_TEXT_DOMAIN).'</p>';
+	}
+	
+	// Get forum slug for this group
+	$forum_slug = get_post_meta($group_id, 'cpc_group_forum_slug', true);
+	
+	if (!$forum_slug) {
+		return '<p>'.__('Forum-Fehler: Kein Forum-Slug gefunden.', CPC2_TEXT_DOMAIN).'</p>';
+	}
+	
+	// Check if forum module is active
+	if (!function_exists('cpc_forum_page')) {
+		return '<p>'.__('Forum-Modul ist nicht aktiviert.', CPC2_TEXT_DOMAIN).'</p>';
+	}
+	
+	// Ensure forum module is initialized (load shortcode handlers)
+	// Make sure forum hooks are registered
+	if (function_exists('cpc_forum_init')) {
+		cpc_forum_init();
+	}
+	
+	// Use the forum shortcode
+	$shortcode = '[cpc-forum-page slug="'.$forum_slug.'"]';
+	
+	// Execute shortcode
+	$html = do_shortcode($shortcode);
+	
+	// If shortcode didn't execute (just returned the shortcode string), try to render directly
+	if (strpos($html, '[cpc-forum-page') === 0) {
+		error_log('DEBUG: Shortcode did not execute, trying direct render');
+		// Try to call forum function directly if available
+		if (function_exists('cpc_forum_page')) {
+			$html = cpc_forum_page(array('slug' => $forum_slug));
+		}
+	}
+	
+	return $html;
+}
+
+/**
  * Render Activity Tab
  */
 function cpc_render_group_tab_activity($group_id, $atts = array()) {
@@ -208,6 +265,41 @@ function cpc_render_group_tab_settings($group_id, $atts = array()) {
 	
 	$html .= '<button type="submit" class="cpc-btn cpc-btn-primary">'.__('Änderungen speichern', CPC2_TEXT_DOMAIN).'</button>';
 	$html .= '</form>';
+	
+	// Forum Settings (only if forum module is active)
+	if (function_exists('cpc_forum_page')):
+		$html .= '<hr>';
+		$html .= '<h3>'.__('Forum-Einstellungen', CPC2_TEXT_DOMAIN).'</h3>';
+		
+		$has_forum = get_post_meta($group_id, 'cpc_group_has_forum', true);
+		$forum_visibility = get_post_meta($group_id, 'cpc_group_forum_visibility', true);
+		if (!$forum_visibility) $forum_visibility = 'group_only';
+		
+		$html .= '<form class="cpc-group-forum-settings-form" data-group-id="'.$group_id.'">' ;
+		
+		$html .= '<div class="cpc-form-field">';
+		$html .= '<label>';
+		$html .= '<input type="checkbox" name="enable_forum" id="enable_forum" '.checked($has_forum, true, false).'> ';
+		$html .= __('Forum für diese Gruppe aktivieren', CPC2_TEXT_DOMAIN);
+		$html .= '</label>';
+		$html .= '<p class="description">'.__('Wenn aktiviert, können Gruppenmitglieder im Gruppen-Forum diskutieren.', CPC2_TEXT_DOMAIN).'</p>';
+		$html .= '</div>';
+		
+		$html .= '<div class="cpc-form-field cpc-forum-visibility-field" '.(!$has_forum ? 'style="display:none;"' : '').'>';
+		$html .= '<label>'.__('Forum-Sichtbarkeit', CPC2_TEXT_DOMAIN).'</label>';
+		$html .= '<label style="display:block;margin:5px 0;">';
+		$html .= '<input type="radio" name="forum_visibility" value="group_only" '.checked($forum_visibility, 'group_only', false).'> ';
+		$html .= __('Nur für Gruppenmitglieder sichtbar', CPC2_TEXT_DOMAIN);
+		$html .= '</label>';
+		$html .= '<label style="display:block;margin:5px 0;">';
+		$html .= '<input type="radio" name="forum_visibility" value="public" '.checked($forum_visibility, 'public', false).'> ';
+		$html .= __('Auch in der öffentlichen Forenansicht sichtbar', CPC2_TEXT_DOMAIN);
+		$html .= '</label>';
+		$html .= '</div>';
+		
+		$html .= '<button type="submit" class="cpc-btn cpc-btn-primary">'.__('Forum-Einstellungen speichern', CPC2_TEXT_DOMAIN).'</button>';
+		$html .= '</form>';
+	endif;
 	
 	$html .= '<hr>';
 	$html .= '<h3>'.__('Mitglieder verwalten', CPC2_TEXT_DOMAIN).'</h3>';

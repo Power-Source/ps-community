@@ -2,6 +2,80 @@
 
 jQuery(document).ready(function($) {
     
+    // Post Group Activity
+    $(document).on('submit', '.cpc-group-post-activity-form', function(e) {
+        e.preventDefault();
+        
+        var form = $(this);
+        var groupId = form.data('group-id');
+        var content = form.find('textarea[name="activity_content"]').val();
+        var submitBtn = form.find('button[type="submit"]');
+        
+        if (!groupId) {
+            cpc_show_notification('Fehler: Gruppe nicht gefunden.', 'error');
+            return;
+        }
+        
+        if (!content || content.trim() === '') {
+            cpc_show_notification('Bitte schreibe etwas, bevor du postest.', 'error');
+            return;
+        }
+        
+        submitBtn.prop('disabled', true).text('Wird gepostet...');
+        
+        $.ajax({
+            url: cpc_groups_ajax.ajaxurl,
+            type: 'POST',
+            data: {
+                action: 'cpc_post_group_activity',
+                nonce: cpc_groups_ajax.nonce,
+                group_id: groupId,
+                activity_content: content
+            },
+            success: function(response) {
+                if (response.success) {
+                    cpc_show_notification(response.data.message, 'success');
+                    form.find('textarea').val('');
+                    submitBtn.prop('disabled', false).text('Posten');
+                    
+                    // Reload the activity tab to show new post
+                    setTimeout(function() {
+                        if (typeof cpc_load_group_tab === 'function') {
+                            cpc_load_group_tab(groupId, 'overview');
+                        } else {
+                            location.reload();
+                        }
+                    }, 500);
+                } else {
+                    cpc_show_notification(response.data.message, 'error');
+                    submitBtn.prop('disabled', false).text('Posten');
+                }
+            },
+            error: function() {
+                cpc_show_notification('Fehler beim Posten der Aktivität', 'error');
+                submitBtn.prop('disabled', false).text('Posten');
+            }
+        });
+    });
+    
+    // Show notification helper function
+    function cpc_show_notification(message, type) {
+        type = type || 'info';
+        
+        var notification = $('<div class="cpc-notification cpc-notification-' + type + '">' + message + '</div>');
+        
+        // Add to page if not exists
+        if ($('.cpc-notifications-container').length === 0) {
+            $('body').prepend('<div class="cpc-notifications-container"></div>');
+        }
+        
+        $('.cpc-notifications-container').append(notification);
+        
+        notification.fadeIn().delay(3000).fadeOut(function() {
+            $(this).remove();
+        });
+    }
+    
     // Join Group
     $(document).on('click', '.cpc-group-join-btn', function(e) {
         e.preventDefault();
@@ -382,6 +456,56 @@ jQuery(document).ready(function($) {
             error: function() {
                 alert('Fehler beim Verarbeiten der Anfrage');
                 btn.prop('disabled', false);
+            }
+        });
+    });
+
+    // Toggle forum visibility field based on checkbox
+    $(document).on('change', '#enable_forum', function() {
+        if ($(this).is(':checked')) {
+            $('.cpc-forum-visibility-field').slideDown();
+        } else {
+            $('.cpc-forum-visibility-field').slideUp();
+        }
+    });
+
+    // Submit group forum settings
+    $(document).on('submit', '.cpc-group-forum-settings-form', function(e) {
+        e.preventDefault();
+        
+        var form = $(this);
+        var groupId = form.data('group-id');
+        var enableForum = form.find('#enable_forum').is(':checked');
+        var forumVisibility = form.find('input[name="forum_visibility"]:checked').val();
+        var submitBtn = form.find('button[type="submit"]');
+        
+        submitBtn.prop('disabled', true).text('Speichern...');
+        
+        $.ajax({
+            url: cpc_groups_ajax.ajaxurl,
+            type: 'POST',
+            data: {
+                action: 'cpc_toggle_group_forum',
+                nonce: cpc_groups_ajax.nonce,
+                group_id: groupId,
+                enable_forum: enableForum,
+                forum_visibility: forumVisibility
+            },
+            success: function(response) {
+                submitBtn.prop('disabled', false).text('Forum-Einstellungen speichern');
+                
+                if (response.success) {
+                    alert(response.data.message);
+                    if (response.data.reload) {
+                        location.reload();
+                    }
+                } else {
+                    alert(response.data.message);
+                }
+            },
+            error: function() {
+                alert('Fehler beim Speichern der Forum-Einstellungen');
+                submitBtn.prop('disabled', false).text('Forum-Einstellungen speichern');
             }
         });
     });

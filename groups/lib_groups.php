@@ -462,4 +462,61 @@ function cpc_get_group_link($group_id) {
 		return add_query_arg('group_name', $group->post_name, $page_url);
 	}
 }
+
+/**
+ * Create forum for group
+ */
+function cpc_create_group_forum($group_id) {
+	// Check if taxonomy exists
+	if (!taxonomy_exists('cpc_forum')) {
+		return new WP_Error('forum_not_available', __('Forum-Funktion ist nicht verfügbar', CPC2_TEXT_DOMAIN));
+	}
+	
+	$group = get_post($group_id);
+	if (!$group || $group->post_type !== 'cpc_group') {
+		return new WP_Error('invalid_group', __('Ungültige Gruppe', CPC2_TEXT_DOMAIN));
+	}
+	
+	// Generate forum slug from group name
+	$forum_slug = 'group-' . $group->post_name;
+	
+	// Check if forum already exists
+	$existing_term = get_term_by('slug', $forum_slug, 'cpc_forum');
+	if ($existing_term) {
+		// Update meta to link to group
+		cpc_update_term_meta($existing_term->term_id, 'cpc_forum_group_id', $group_id);
+		update_post_meta($group_id, 'cpc_group_forum_slug', $forum_slug);
+		return $forum_slug;
+	}
+	
+	// Create new forum
+	$forum_name = $group->post_title . ' Forum';
+	$result = wp_insert_term(
+		$forum_name,
+		'cpc_forum',
+		array(
+			'slug' => $forum_slug,
+			'description' => sprintf(__('Diskussionsforum für die Gruppe %s', CPC2_TEXT_DOMAIN), $group->post_title),
+		)
+	);
+	
+	if (is_wp_error($result)) {
+		return $result;
+	}
+	
+	$term_id = $result['term_id'];
+	
+	// Set forum meta
+	$forum_visibility = get_post_meta($group_id, 'cpc_group_forum_visibility', true);
+	if (!$forum_visibility) $forum_visibility = 'group_only';
+	
+	cpc_update_term_meta($term_id, 'cpc_forum_public', $forum_visibility === 'public');
+	cpc_update_term_meta($term_id, 'cpc_forum_group_id', $group_id);
+	cpc_update_term_meta($term_id, 'cpc_forum_order', 999); // Low priority in forum list
+	
+	// Save forum slug to group
+	update_post_meta($group_id, 'cpc_group_forum_slug', $forum_slug);
+	
+	return $forum_slug;
+}
 ?>
