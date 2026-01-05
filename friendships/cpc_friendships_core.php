@@ -1,6 +1,6 @@
 <?php
 /* ******** */ /*   AJAX   */ /* ******** */
-if (is_admin()) add_action('init', 'cpc_friendships_admin_init');
+if (is_admin()) add_action('admin_enqueue_scripts', 'cpc_friendships_admin_init');
 function cpc_friendships_admin_init() {
 	wp_enqueue_script('cpc-friendship-js', plugins_url('cpc_friends.js', __FILE__), array('jquery'));	
 	wp_localize_script('cpc-friendship-js', 'cpc_friendships_ajax', array( 'ajaxurl' => admin_url( 'admin-ajax.php' ) ));

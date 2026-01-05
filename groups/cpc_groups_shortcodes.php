@@ -19,6 +19,17 @@ function cpc_groups_init() {
     do_action('cpc_groups_init_hook');
 }
 
+// Register (not enqueue) scripts/styles so they're available but not loaded unless needed
+function cpc_groups_register_assets() {
+    if ( ! wp_script_is('cpc-groups-js', 'registered') ) {
+        wp_register_script('cpc-groups-js', plugins_url('cpc_groups.js', __FILE__), array('jquery'));
+    }
+    if ( ! wp_style_is('cpc-groups-css', 'registered') ) {
+        wp_register_style('cpc-groups-css', plugins_url('cpc_groups.css', __FILE__), array(), '1.0');
+    }
+}
+add_action('wp_enqueue_scripts', 'cpc_groups_register_assets', 0);
+
 /* ********** */ /* SHORTCODES */ /* ********** */
 
 /**
@@ -26,7 +37,7 @@ function cpc_groups_init() {
  */
 function cpc_groups_list($atts) {
 	// Init
-	add_action('wp_footer', 'cpc_groups_init');
+	cpc_groups_init();
 
 	global $current_user;
 	
@@ -170,7 +181,7 @@ add_shortcode('cpc-groups', 'cpc_groups_list');
  * [cpc-group-single] - Display single group details
  */
 function cpc_group_single($atts) {
-	add_action('wp_footer', 'cpc_groups_init');
+	cpc_groups_init();
 
 	// Prevent WP from treating group + topic/tab URLs as 404 so the shortcode still renders
 	global $wp_query;
@@ -304,7 +315,7 @@ add_shortcode('cpc-group-single', 'cpc_group_single');
  * [cpc-group-members] - Display group members
  */
 function cpc_group_members($atts) {
-	add_action('wp_footer', 'cpc_groups_init');
+	cpc_groups_init();
 
 	$values = cpc_get_shortcode_options('cpc_group_members');
 	extract( shortcode_atts( array(
@@ -396,7 +407,7 @@ add_shortcode('cpc-group-members', 'cpc_group_members');
  * [cpc-my-groups] - Display current user's groups
  */
 function cpc_my_groups($atts) {
-	add_action('wp_footer', 'cpc_groups_init');
+	cpc_groups_init();
 
 	if (!is_user_logged_in()):
 		return '<p>'.__('Du musst angemeldet sein, um deine Gruppen zu sehen.', CPC2_TEXT_DOMAIN).'</p>';
@@ -469,7 +480,7 @@ add_shortcode('cpc-my-groups', 'cpc_my_groups');
  * [cpc-group-create] - Group creation form
  */
 function cpc_group_create($atts) {
-	add_action('wp_footer', 'cpc_groups_init');
+	cpc_groups_init();
 
 	if (!is_user_logged_in()):
 		return '<p>'.__('Du musst angemeldet sein, um eine Gruppe zu erstellen.', CPC2_TEXT_DOMAIN).'</p>';
@@ -529,7 +540,7 @@ add_shortcode('cpc-group-create', 'cpc_group_create');
  * [cpc-group-join-button] - Simple join button
  */
 function cpc_group_join_button($atts) {
-	add_action('wp_footer', 'cpc_groups_init');
+	cpc_groups_init();
 
 	if (!is_user_logged_in()):
 		return '';
@@ -572,7 +583,7 @@ add_shortcode('cpc-group-join-button', 'cpc_group_join_button');
  * [cpc-group-leave-button] - Simple leave button
  */
 function cpc_group_leave_button($atts) {
-	add_action('wp_footer', 'cpc_groups_init');
+	cpc_groups_init();
 
 	if (!is_user_logged_in()):
 		return '';

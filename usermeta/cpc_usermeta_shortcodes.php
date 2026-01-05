@@ -87,7 +87,7 @@ function cpc_user_id($atts) {
 function cpc_usermeta_button($atts) {
 
 	// Init
-	add_action('wp_footer', 'cpc_usermeta_init');
+	cpc_usermeta_init();
 
 	global $current_user;
 	$html = '';
@@ -127,7 +127,7 @@ function cpc_usermeta_button($atts) {
 function cpc_usermeta($atts) {
 
 	// Init
-	add_action('wp_footer', 'cpc_usermeta_init');
+	cpc_usermeta_init();
 
 	global $current_user;
 	$html = '';
@@ -203,8 +203,8 @@ function cpc_usermeta($atts) {
 function cpc_usermeta_change($atts) {
 
 	// Init
-	add_action('wp_footer', 'cpc_usermeta_init');
-    add_action('wp_footer', 'cpc_add_tab_css');
+	cpc_usermeta_init();
+    cpc_add_tab_css();
 
 	global $current_user, $wpdb;
 	$html = '';
@@ -592,7 +592,7 @@ function cpc_usermeta_change($atts) {
 function cpc_usermeta_change_link($atts) {
 
 	// Init
-	add_action('wp_footer', 'cpc_usermeta_init');
+	cpc_usermeta_init();
 
 	global $current_user;
 	$html = '';
@@ -632,7 +632,7 @@ function cpc_usermeta_change_link($atts) {
 function cpc_close_account($atts) {
 
 	// Init
-	add_action('wp_footer', 'cpc_usermeta_init');
+	cpc_usermeta_init();
 
 	global $current_user;
 	$html = '';
@@ -703,7 +703,7 @@ function cpc_join_site($atts) {
 function cpc_no_user_check($atts){
 
     // Init
-    add_action('wp_footer', 'cpc_usermeta_init');
+    cpc_usermeta_init();
 
     global $current_user;
     $html = '';
@@ -751,7 +751,7 @@ function cpc_is_friend_content($atts, $content="") {
     if (strpos(CPC_CORE_PLUGINS, 'core-friendships') !== false):
 
         // Init
-        add_action('wp_footer', 'cpc_usermeta_init');
+        cpc_usermeta_init();
 
         $html = '';
         global $current_user;
@@ -835,7 +835,7 @@ function cpc_is_friend_content($atts, $content="") {
 function cpc_user_exists_content($atts, $content="") {
 
     // Init
-    add_action('wp_footer', 'cpc_usermeta_init');
+    cpc_usermeta_init();
 
     $html = '';
     global $current_user;
@@ -871,7 +871,7 @@ function cpc_user_exists_content($atts, $content="") {
 function cpc_not_logged_in($atts, $content="") {
 
     // Init
-    add_action('wp_footer', 'cpc_usermeta_init');
+    cpc_usermeta_init();
 
     // Shortcode parameters
     $values = cpc_get_shortcode_options('cpc_not_logged_in');
@@ -897,7 +897,7 @@ function cpc_not_logged_in($atts, $content="") {
 function cpc_is_logged_in($atts, $content="") {
 
     // Init
-    add_action('wp_footer', 'cpc_usermeta_init');
+    cpc_usermeta_init();
 
     // Shortcode parameters
     $values = cpc_get_shortcode_options('cpc_is_logged_in');
@@ -923,7 +923,7 @@ function cpc_is_logged_in($atts, $content="") {
 function cpc_backup_activity_page($atts){
 
 	// Init
-	add_action('wp_footer', 'cpc_usermeta_init');
+	cpc_usermeta_init();
 
     global $current_user;
 	$html = '';
@@ -989,7 +989,7 @@ function cpc_backup_activity_page($atts){
 // Displays when last active
 function cpc_last_active($atts) {
     // Init
-    add_action('wp_footer', 'cpc_usermeta_init');
+    cpc_usermeta_init();
 
     $html = '';
     if (is_user_logged_in()) {
@@ -1040,7 +1040,7 @@ function cpc_last_active($atts) {
 // Displays when last logged in
 function cpc_last_logged_in($atts) {
     // Init
-    add_action('wp_footer', 'cpc_usermeta_init');
+    cpc_usermeta_init();
 
     $html = '';
     

@@ -40,13 +40,8 @@ function user_avatar_admin_print_styles() {
  */
 function user_avatar_init(){
 	
-	wp_enqueue_style( 'global' );
-	wp_enqueue_style( 'wp-admin' );
-	wp_enqueue_style( 'colors' );
-	wp_enqueue_style( 'ie' );
-	wp_enqueue_style('user-avatar', plugins_url('user-avatar.css', __FILE__), 'css');
-	wp_enqueue_style('imgareaselect');
-	wp_enqueue_script('imgareaselect');
+	// Only enqueue in iframe context, don't call wp_enqueue_style/script here
+	// as this function is called from user_avatar_iframe_head hook
 	do_action('admin_print_styles');
 	do_action('admin_print_scripts');
 	do_action('admin_head');

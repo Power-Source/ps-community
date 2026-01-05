@@ -30,7 +30,7 @@ function cpc_activity_init() {
 function cpc_activity_page($atts){
 
 	// Init
-	add_action('wp_footer', 'cpc_activity_init');
+	cpc_activity_init();
 
     global $current_user;
 	$html = '';
@@ -101,7 +101,7 @@ function cpc_activity_post($atts) {
     if (!isset($_GET['view'])):
 
     	// Init
-    	add_action('wp_footer', 'cpc_activity_init');
+    	cpc_activity_init();
 
     	$html = '';
 
@@ -181,7 +181,7 @@ $debug = ($_SERVER['REQUEST_URI'] == '/test-page/' || $_SERVER['REQUEST_URI'] ==
 if ($debug) $debug_html .= 'Start: '.date('Y-m-d H:i:s').'<br />';
 
 	// Init
-	add_action('wp_footer', 'cpc_activity_init');
+	cpc_activity_init();
 
 	$html = '';
 	global $current_user, $wpdb;

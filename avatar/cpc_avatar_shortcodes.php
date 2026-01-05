@@ -31,7 +31,7 @@ function cpc_avatar_init() {
 function cpc_avatar($atts) {
 
 	// Init
-	add_action('wp_footer', 'cpc_avatar_init');
+	cpc_avatar_init();
 
 	global $current_user;
 	$html = '';
@@ -120,7 +120,7 @@ function cpc_avatar($atts) {
 function cpc_avatar_change_link($atts) {
 
     // Init
-    add_action('wp_footer', 'cpc_avatar_init');
+    cpc_avatar_init();
 
     global $current_user;
     $html = '';
@@ -166,7 +166,7 @@ function cpc_avatar_change_link($atts) {
 function cpc_avatar_change($atts) {
 
 	// Init
-	add_action('wp_footer', 'cpc_avatar_init');
+	cpc_avatar_init();
 
 	global $current_user;
 	$html = '';

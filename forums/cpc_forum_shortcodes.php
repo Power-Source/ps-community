@@ -32,7 +32,7 @@ function cpc_forum_init() {
 function cpc_forum_page($atts) {
 
 	// Init
-	add_action('wp_footer', 'cpc_forum_init');
+	cpc_forum_init();
 
 	$html = '';
 
@@ -73,7 +73,7 @@ function cpc_forum_page($atts) {
 function cpc_forum_show_posts($atts) {
 
 	// Init
-	add_action('wp_footer', 'cpc_forum_init');
+	cpc_forum_init();
 
 	$html = '';
 
@@ -540,7 +540,7 @@ function cpc_forum_show_posts($atts) {
 function cpc_forum_backto($atts) {
 
 	// Init
-	add_action('wp_footer', 'cpc_forum_init');
+	cpc_forum_init();
 
 	$html = '';
 
@@ -597,7 +597,7 @@ function cpc_forum_backto($atts) {
 function cpc_forum_comment($atts) {
 
 	// Init
-	add_action('wp_footer', 'cpc_forum_init');
+	cpc_forum_init();
 
 	$html = '';
 
@@ -847,7 +847,7 @@ function cpc_forum_comment($atts) {
 function cpc_forum_post($atts) {
 
 	// Init
-	add_action('wp_footer', 'cpc_forum_init');
+	cpc_forum_init();
 
 	$html = '';
 
@@ -1018,7 +1018,7 @@ function cpc_forum_post($atts) {
 function cpc_forum($atts) {
 
 	// Init
-	add_action('wp_footer', 'cpc_forum_init');
+	cpc_forum_init();
     
 	global $current_user;
 	
@@ -1255,7 +1255,7 @@ function cpc_forum($atts) {
 function cpc_forum_children($atts) {
 
 	// Init
-	add_action('wp_footer', 'cpc_forum_init');
+	cpc_forum_init();
 
 	$html = '';
 
@@ -1542,7 +1542,7 @@ function cpc_forum_children($atts) {
 function cpc_forums($atts) {
 
 	// Init
-	add_action('wp_footer', 'cpc_forum_init');
+	cpc_forum_init();
 
 	$html = '';
 
@@ -1927,7 +1927,7 @@ function cpc_forum_categories_children($html, $values, $slug, $forum_id, $show_c
 function cpc_forum_sharethis_insert($atts) {
     
     // Init
-	add_action('wp_footer', 'cpc_forum_init');
+	cpc_forum_init();
     
     global $current_user;
     
@@ -1960,7 +1960,7 @@ function cpc_forum_sharethis_insert($atts) {
 function cpc_is_forum_posts_list($atts, $content="") {
 
     // Init
-    add_action('wp_footer', 'cpc_forum_init');
+    cpc_forum_init();
 
     // Shortcode parameters
     $values = cpc_get_shortcode_options('cpc_is_forum_posts_list');
@@ -1986,7 +1986,7 @@ function cpc_is_forum_posts_list($atts, $content="") {
 function cpc_is_forum_single_post($atts, $content="") {
 
     // Init
-    add_action('wp_footer', 'cpc_forum_init');
+    cpc_forum_init();
 
     // Shortcode parameters
     $values = cpc_get_shortcode_options('cpc_is_forum_single_post');

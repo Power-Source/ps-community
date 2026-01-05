@@ -20,7 +20,7 @@ function cpc_friends_init() {
 function cpc_favourite_friend($atts) {
 
 	// Init
-	add_action('wp_footer', 'cpc_friends_init');
+	cpc_friends_init();
 
 	$html = '';
 	global $current_user;
@@ -82,7 +82,7 @@ function cpc_favourite_friend($atts) {
 function cpc_friends_status($atts) {
 
 	// Init
-	add_action('wp_footer', 'cpc_friends_init');
+	cpc_friends_init();
 
 	$html = '';
 	global $current_user;
@@ -135,7 +135,7 @@ function cpc_friends_status($atts) {
 function cpc_friends_add_button($atts) {
 
 	// Init
-	add_action('wp_footer', 'cpc_friends_init');
+	cpc_friends_init();
 
 	$html = '';
 	global $current_user;
@@ -194,7 +194,7 @@ function cpc_friends_add_button($atts) {
 function cpc_friends($atts) {
 
 	// Init
-	add_action('wp_footer', 'cpc_friends_init');
+	cpc_friends_init();
 
 	$html = '';
 	global $current_user;
@@ -385,7 +385,7 @@ function cpc_friends($atts) {
 function cpc_friends_pending($atts) {
 
 	// Init
-	add_action('wp_footer', 'cpc_friends_init');
+	cpc_friends_init();
 
 	$html = '';
 	global $current_user;
@@ -485,7 +485,7 @@ function cpc_friends_pending($atts) {
 function cpc_friends_count($atts) {
 
     // Init
-    add_action('wp_footer', 'cpc_friends_init');
+    cpc_friends_init();
 
     $html = '';
     global $current_user;
@@ -531,7 +531,7 @@ function cpc_friends_count($atts) {
 function cpc_alerts_friends($atts) {
 
     // Init
-    add_action('wp_footer', 'cpc_friends_init');
+    cpc_friends_init();
 
     $html = '';
     global $current_user;

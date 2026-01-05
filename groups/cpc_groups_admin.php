@@ -339,17 +339,6 @@ function cpc_admin_getting_started_groups() {
 		</tr>
 		<tr class="form-field">
 			<td scope="row" valign="top">
-				<label for="cpc_groups_allow_creation"><?php _e('Gruppenerstellung erlauben', CPC2_TEXT_DOMAIN); ?></label>
-			</td>
-			<td>
-				<input type="checkbox" name="cpc_groups_allow_creation" 
-				<?php if (get_option('cpc_groups_allow_creation', true)) echo ' CHECKED'; ?>
-				/>
-				<span class="description"><?php _e('Erlaubt registrierten Benutzern, eigene Gruppen zu erstellen.', CPC2_TEXT_DOMAIN); ?></span>
-			</td>
-		</tr>
-		<tr class="form-field">
-			<td scope="row" valign="top">
 				<label for="cpc_groups_require_approval"><?php _e('Gruppengenehmigung erforderlich', CPC2_TEXT_DOMAIN); ?></label>
 			</td>
 			<td>

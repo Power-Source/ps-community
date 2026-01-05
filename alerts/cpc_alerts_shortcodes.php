@@ -22,7 +22,7 @@ function cpc_alerts_init() {
 function cpc_alerts_activity($atts) {
 
 	// Init
-	add_action('wp_footer', 'cpc_alerts_init');
+	cpc_alerts_init();
 
 	global $current_user;
 	$html = '';
