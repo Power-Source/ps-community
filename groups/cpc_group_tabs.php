@@ -122,12 +122,22 @@ function cpc_render_group_tab_overview($group_id, $atts = array()) {
 	
 	$html = '';
 	$html .= '<div class="cpc-group-overview-tab">';
-	$html .= '<!-- Aktivitäts-Tab für Gruppe '.$group_id.' -->';
+	
+	// Post activity form first (top of tab) - only for members
+	if (is_user_logged_in() && cpc_is_group_member(get_current_user_id(), $group_id)):
+		$html .= cpc_render_group_activity_form($group_id);
+	endif;
+	
+	// Get pagination
+	$current_page = isset($_GET['page']) ? max(1, intval($_GET['page'])) : 1;
+	$posts_per_page = 20;
+	$offset = ($current_page - 1) * $posts_per_page;
 	
 	// Get activity posts for this group
 	$args = array(
 		'post_type' => 'cpc_activity',
-		'posts_per_page' => 20,
+		'posts_per_page' => $posts_per_page,
+		'paged' => $current_page,
 		'post_status' => 'publish',
 		'meta_key' => 'cpc_activity_group_id',
 		'meta_value' => $group_id,
@@ -143,13 +153,37 @@ function cpc_render_group_tab_overview($group_id, $atts = array()) {
 			$html .= cpc_render_group_activity_post_full($post);
 		endforeach;
 		wp_reset_postdata();
+		
+		// Pagination
+		if ($activity_query->max_num_pages > 1):
+			$html .= '<div class="cpc-pagination">';
+			
+			// Previous page link
+			if ($current_page > 1):
+				$prev_url = add_query_arg('page', $current_page - 1);
+				$html .= '<a href="'.$prev_url.'" class="cpc-pagination-prev">&laquo; '.__('Zurück', CPC2_TEXT_DOMAIN).'</a>';
+			endif;
+			
+			// Page numbers
+			for ($i = 1; $i <= $activity_query->max_num_pages; $i++):
+				if ($i === $current_page):
+					$html .= '<span class="cpc-pagination-current">'.$i.'</span>';
+				else:
+					$page_url = add_query_arg('page', $i);
+					$html .= '<a href="'.$page_url.'" class="cpc-pagination-number">'.$i.'</a>';
+				endif;
+			endfor;
+			
+			// Next page link
+			if ($current_page < $activity_query->max_num_pages):
+				$next_url = add_query_arg('page', $current_page + 1);
+				$html .= '<a href="'.$next_url.'" class="cpc-pagination-next">'.__('Weiter', CPC2_TEXT_DOMAIN).' &raquo;</a>';
+			endif;
+			
+			$html .= '</div>';
+		endif;
 	else:
 		$html .= '<p class="cpc-no-activity">'.__('Noch keine Aktivität in dieser Gruppe.', CPC2_TEXT_DOMAIN).'</p>';
-	endif;
-	
-	// Post activity form if member
-	if (is_user_logged_in() && cpc_is_group_member(get_current_user_id(), $group_id)):
-		$html .= cpc_render_group_activity_form($group_id);
 	endif;
 	
 	$html .= '</div>'; // .cpc-group-overview-tab
@@ -301,10 +335,51 @@ function cpc_render_group_tab_settings($group_id, $atts = array()) {
 		$html .= '</form>';
 	endif;
 	
+	// Group Permissions
 	$html .= '<hr>';
-	$html .= '<h3>'.__('Mitglieder verwalten', CPC2_TEXT_DOMAIN).'</h3>';
+	$html .= '<h3>'.__('Gruppenberechtigungen', CPC2_TEXT_DOMAIN).'</h3>';
 	
-	// Get pending membership requests
+	$permissions = get_post_meta($group_id, 'cpc_group_permissions', true);
+	if (!is_array($permissions)) {
+		$permissions = array(
+			'forum_post' => 'member', // Who can post in forum: member, moderator, admin
+			'activity_edit_all' => 'moderator', // Who can edit all activity posts: moderator, admin
+			'activity_delete_all' => 'moderator', // Who can delete all activity posts: moderator, admin
+		);
+	}
+	
+	$html .= '<form class="cpc-group-permissions-form" data-group-id="'.$group_id.'">';
+	
+	$html .= '<div class="cpc-form-field">';
+	$html .= '<label>'.__('Wer darf im Forum posten?', CPC2_TEXT_DOMAIN).'</label>';
+	$html .= '<select name="forum_post">';
+	$html .= '<option value="member" '.selected($permissions['forum_post'], 'member', false).'>'.__('Alle Mitglieder', CPC2_TEXT_DOMAIN).'</option>';
+	$html .= '<option value="moderator" '.selected($permissions['forum_post'], 'moderator', false).'>'.__('Nur Moderatoren und Admins', CPC2_TEXT_DOMAIN).'</option>';
+	$html .= '<option value="admin" '.selected($permissions['forum_post'], 'admin', false).'>'.__('Nur Admins', CPC2_TEXT_DOMAIN).'</option>';
+	$html .= '</select>';
+	$html .= '</div>';
+	
+	$html .= '<div class="cpc-form-field">';
+	$html .= '<label>'.__('Wer darf fremde Aktivitäts-Beiträge bearbeiten?', CPC2_TEXT_DOMAIN).'</label>';
+	$html .= '<select name="activity_edit_all">';
+	$html .= '<option value="moderator" '.selected($permissions['activity_edit_all'], 'moderator', false).'>'.__('Moderatoren und Admins', CPC2_TEXT_DOMAIN).'</option>';
+	$html .= '<option value="admin" '.selected($permissions['activity_edit_all'], 'admin', false).'>'.__('Nur Admins', CPC2_TEXT_DOMAIN).'</option>';
+	$html .= '</select>';
+	$html .= '<p class="description">'.__('Eigene Beiträge kann jeder immer bearbeiten.', CPC2_TEXT_DOMAIN).'</p>';
+	$html .= '</div>';
+	
+	$html .= '<div class="cpc-form-field">';
+	$html .= '<label>'.__('Wer darf fremde Aktivitäts-Beiträge löschen?', CPC2_TEXT_DOMAIN).'</label>';
+	$html .= '<select name="activity_delete_all">';
+	$html .= '<option value="moderator" '.selected($permissions['activity_delete_all'], 'moderator', false).'>'.__('Moderatoren und Admins', CPC2_TEXT_DOMAIN).'</option>';
+	$html .= '<option value="admin" '.selected($permissions['activity_delete_all'], 'admin', false).'>'.__('Nur Admins', CPC2_TEXT_DOMAIN).'</option>';
+	$html .= '</select>';
+	$html .= '<p class="description">'.__('Eigene Beiträge kann jeder immer löschen.', CPC2_TEXT_DOMAIN).'</p>';
+	$html .= '</div>';
+	
+	$html .= '<button type="submit" class="cpc-btn cpc-btn-primary">'.__('Berechtigungen speichern', CPC2_TEXT_DOMAIN).'</button>';
+	$html .= '</form>';
+	
 	$pending_requests = cpc_get_pending_membership_requests($group_id);
 	
 	if (!empty($pending_requests)):
@@ -405,7 +480,81 @@ function cpc_render_group_activity_post_full($post) {
 	
 	$html .= '<div class="cpc-activity-meta">';
 	$html .= '<small>'.human_time_diff($post->post_date_gmt, current_time('mysql', true)).' '.__('ago', CPC2_TEXT_DOMAIN).'</small>';
+	
+	// Edit/Delete buttons if user has permission
+	$group_id = get_post_meta($post->ID, 'cpc_activity_group_id', true);
+	$current_user_id = get_current_user_id();
+	
+	if ($current_user_id) {
+		$can_edit = ($post->post_author == $current_user_id) || cpc_can_moderate_activity($current_user_id, $group_id, 'edit');
+		$can_delete = ($post->post_author == $current_user_id) || cpc_can_moderate_activity($current_user_id, $group_id, 'delete');
+		
+		if ($can_edit || $can_delete) {
+			$html .= '<span class="cpc-activity-actions">';
+			
+			if ($can_edit) {
+				$html .= ' | <a href="#" class="cpc-edit-activity" data-post-id="'.$post->ID.'">'.__('Bearbeiten', CPC2_TEXT_DOMAIN).'</a>';
+			}
+			
+			if ($can_delete) {
+				$html .= ' | <a href="#" class="cpc-delete-activity" data-post-id="'.$post->ID.'">'.__('Löschen', CPC2_TEXT_DOMAIN).'</a>';
+			}
+			
+			$html .= '</span>';
+		}
+	}
+	
 	$html .= '</div>';
+	
+	// Replies section
+	if (is_user_logged_in() && cpc_is_group_member(get_current_user_id(), get_post_meta($post->ID, 'cpc_activity_group_id', true))):
+		$html .= '<div class="cpc-activity-replies">';
+		
+		// Get replies/comments
+		$comments = get_comments(array(
+			'post_id' => $post->ID,
+			'status' => 'approve',
+		));
+		
+		if (!empty($comments)):
+			foreach ($comments as $comment):
+				$reply_user = get_userdata($comment->user_id);
+				if (!$reply_user) continue;
+				
+				$html .= '<div class="cpc-activity-reply" data-comment-id="'.$comment->comment_ID.'">';
+				$html .= '<span class="cpc-activity-reply-author">'.$reply_user->display_name.'</span>';
+				$html .= '<span class="cpc-activity-reply-time">'.human_time_diff($comment->comment_date_gmt, current_time('mysql', true)).' ago</span>';
+				
+				// Edit/Delete for replies
+				$can_edit_reply = ($comment->user_id == get_current_user_id()) || cpc_can_moderate_activity(get_current_user_id(), get_post_meta($post->ID, 'cpc_activity_group_id', true), 'edit');
+				$can_delete_reply = ($comment->user_id == get_current_user_id()) || cpc_can_moderate_activity(get_current_user_id(), get_post_meta($post->ID, 'cpc_activity_group_id', true), 'delete');
+				
+				if ($can_edit_reply || $can_delete_reply) {
+					$html .= '<span class="cpc-reply-actions">';
+					if ($can_edit_reply) {
+						$html .= ' | <a href="#" class="cpc-edit-reply" data-comment-id="'.$comment->comment_ID.'">'.__('Bearbeiten', CPC2_TEXT_DOMAIN).'</a>';
+					}
+					if ($can_delete_reply) {
+						$html .= ' | <a href="#" class="cpc-delete-reply" data-comment-id="'.$comment->comment_ID.'">'.__('Löschen', CPC2_TEXT_DOMAIN).'</a>';
+					}
+					$html .= '</span>';
+				}
+				
+				$html .= '<div class="cpc-reply-text">'.$comment->comment_content.'</div>';
+				$html .= '</div>';
+			endforeach;
+		endif;
+		
+		// Reply form (collapsible)
+		$html .= '<div class="cpc-activity-reply-form" style="display:none;">';
+		$html .= '<textarea placeholder="'.__('Schreibe eine Antwort...', CPC2_TEXT_DOMAIN).'" class="cpc-reply-content" data-post-id="'.$post->ID.'"></textarea>';
+		$html .= '<button type="button" class="cpc-btn cpc-btn-small cpc-post-reply" data-post-id="'.$post->ID.'">'.__('Antworten', CPC2_TEXT_DOMAIN).'</button>';
+		$html .= '</div>';
+		
+		$html .= '<span class="cpc-reply-toggle" data-post-id="'.$post->ID.'">'.__('Antwort hinzufügen', CPC2_TEXT_DOMAIN).'</span>';
+		
+		$html .= '</div>'; // .cpc-activity-replies
+	endif;
 	
 	$html .= '</div>'; // .cpc-activity-content
 	$html .= '</div>'; // .cpc-activity-post

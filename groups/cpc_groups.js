@@ -76,6 +76,88 @@ jQuery(document).ready(function($) {
         });
     }
     
+    // Toggle activity reply form
+    $(document).on('click', '.cpc-reply-toggle', function(e) {
+        e.preventDefault();
+        
+        var toggle = $(this);
+        var postId = toggle.data('post-id');
+        var form = toggle.closest('.cpc-activity-replies').find('.cpc-activity-reply-form');
+        
+        if (form.is(':visible')) {
+            form.slideUp();
+            toggle.text($(this).data('original-text') || 'Antwort hinzufügen');
+        } else {
+            form.slideDown();
+            toggle.text('Abbrechen');
+            toggle.data('original-text', 'Antwort hinzufügen');
+            form.find('textarea').focus();
+        }
+    });
+    
+    // Post activity reply
+    $(document).on('click', '.cpc-post-reply', function(e) {
+        e.preventDefault();
+        
+        var btn = $(this);
+        var postId = btn.data('post-id');
+        var textarea = btn.closest('.cpc-activity-reply-form').find('.cpc-reply-content');
+        var content = textarea.val();
+        var repliesContainer = btn.closest('.cpc-activity-replies');
+        
+        if (!content || content.trim() === '') {
+            cpc_show_notification('Bitte schreibe etwas als Antwort', 'error');
+            return;
+        }
+        
+        btn.prop('disabled', true).text('Wird gesendet...');
+        
+        $.ajax({
+            url: cpc_groups_ajax.ajaxurl,
+            type: 'POST',
+            data: {
+                action: 'cpc_post_activity_reply',
+                nonce: cpc_groups_ajax.nonce,
+                post_id: postId,
+                reply_content: content
+            },
+            success: function(response) {
+                if (response.success) {
+                    cpc_show_notification('Antwort erfolgreich gepostet!', 'success');
+                    textarea.val('');
+                    btn.prop('disabled', false).text('Antworten');
+                    
+                    // Add reply to DOM immediately
+                    if (response.data.reply_html) {
+                        // Find or create the replies container
+                        var existingReplies = repliesContainer.find('.cpc-activity-reply');
+                        if (existingReplies.length > 0) {
+                            // Add after last reply
+                            existingReplies.last().after(response.data.reply_html);
+                        } else {
+                            // Add before the form
+                            repliesContainer.find('.cpc-activity-reply-form').before(response.data.reply_html);
+                        }
+                        
+                        // Animate the new reply
+                        repliesContainer.find('.cpc-activity-reply').last().hide().fadeIn();
+                    }
+                    
+                    // Hide the form
+                    repliesContainer.find('.cpc-activity-reply-form').slideUp();
+                    repliesContainer.find('.cpc-reply-toggle').text('Antwort hinzufügen');
+                } else {
+                    cpc_show_notification(response.data.message, 'error');
+                    btn.prop('disabled', false).text('Antworten');
+                }
+            },
+            error: function() {
+                cpc_show_notification('Fehler beim Posten der Antwort', 'error');
+                btn.prop('disabled', false).text('Antworten');
+            }
+        });
+    });
+    
     // Join Group
     $(document).on('click', '.cpc-group-join-btn', function(e) {
         e.preventDefault();

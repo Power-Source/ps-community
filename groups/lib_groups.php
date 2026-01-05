@@ -519,4 +519,36 @@ function cpc_create_group_forum($group_id) {
 	
 	return $forum_slug;
 }
+
+/**
+ * Check if user can moderate activity (edit/delete posts)
+ */
+function cpc_can_moderate_activity($user_id, $group_id, $action = 'edit') {
+	if (!$user_id) return false;
+	
+	// Get user's role in group
+	$role = cpc_get_group_member_role($user_id, $group_id);
+	if (!$role) return false;
+	
+	// Get group permissions
+	$permissions = get_post_meta($group_id, 'cpc_group_permissions', true);
+	if (!is_array($permissions)) {
+		$permissions = array(
+			'activity_edit_all' => 'moderator',
+			'activity_delete_all' => 'moderator',
+		);
+	}
+	
+	$permission_key = 'activity_' . $action . '_all';
+	$required_role = isset($permissions[$permission_key]) ? $permissions[$permission_key] : 'moderator';
+	
+	// Check if user's role meets requirement
+	if ($required_role === 'admin') {
+		return $role === 'admin';
+	} elseif ($required_role === 'moderator') {
+		return in_array($role, array('admin', 'moderator'));
+	}
+	
+	return false;
+}
 ?>

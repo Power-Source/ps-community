@@ -757,12 +757,115 @@
     background: #0073aa;
 }
 
+.cpc-btn-small {
+    padding: 6px 12px;
+    font-size: 12px;
+    font-weight: 500;
+}
+
 .cpc-btn-danger {
     background: #dc3545;
 }
 
 .cpc-btn-danger:hover {
     background: #c82333;
+}
+
+/* Pagination */
+.cpc-pagination {
+    display: flex;
+    gap: 8px;
+    justify-content: center;
+    margin: 30px 0;
+    flex-wrap: wrap;
+}
+
+.cpc-pagination a,
+.cpc-pagination span {
+    display: inline-block;
+    padding: 8px 12px;
+    border: 1px solid #ddd;
+    border-radius: 4px;
+    text-decoration: none;
+    font-size: 14px;
+}
+
+.cpc-pagination a {
+    background: #f9f9f9;
+    color: #0073aa;
+    transition: all 0.3s ease;
+}
+
+.cpc-pagination a:hover {
+    background: #0073aa;
+    color: #fff;
+    border-color: #0073aa;
+}
+
+.cpc-pagination-current {
+    background: #0073aa;
+    color: #fff;
+    border-color: #0073aa;
+}
+
+/* Activity Replies */
+.cpc-activity-replies {
+    margin-top: 15px;
+    padding-top: 15px;
+    border-top: 1px solid #e0e0e0;
+}
+
+.cpc-activity-reply {
+    background: #f5f5f5;
+    padding: 10px;
+    border-radius: 4px;
+    margin-bottom: 8px;
+    font-size: 14px;
+}
+
+.cpc-activity-reply-author {
+    font-weight: 600;
+    color: #0073aa;
+}
+
+.cpc-activity-reply-time {
+    color: #999;
+    font-size: 12px;
+    margin-left: 10px;
+}
+
+.cpc-activity-reply-form {
+    margin-top: 10px;
+}
+
+.cpc-activity-reply-form textarea {
+    width: 100%;
+    padding: 8px;
+    border: 1px solid #ddd;
+    border-radius: 4px;
+    font-family: inherit;
+    font-size: 12px;
+    margin-bottom: 8px;
+    resize: vertical;
+    min-height: 50px;
+}
+
+.cpc-activity-reply-form button {
+    padding: 6px 12px;
+    font-size: 12px;
+}
+
+.cpc-reply-toggle {
+    display: inline-block;
+    color: #0073aa;
+    cursor: pointer;
+    font-size: 12px;
+    margin-top: 8px;
+    text-decoration: underline;
+}
+
+.cpc-reply-toggle:hover {
+    color: #005177;
 }
 
 /* My Groups */

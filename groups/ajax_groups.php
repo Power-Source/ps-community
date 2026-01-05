@@ -473,6 +473,76 @@ function cpc_ajax_reject_membership() {
 	wp_send_json_success(array('message' => __('Anfrage abgelehnt', CPC2_TEXT_DOMAIN)));
 }
 
+// Post activity reply
+add_action('wp_ajax_cpc_post_activity_reply', 'cpc_ajax_post_activity_reply');
+function cpc_ajax_post_activity_reply() {
+	check_ajax_referer('cpc_groups_nonce', 'nonce');
+	
+	if (!is_user_logged_in()) {
+		wp_send_json_error(array('message' => __('Du musst angemeldet sein.', CPC2_TEXT_DOMAIN)));
+	}
+	
+	$post_id = isset($_POST['post_id']) ? intval($_POST['post_id']) : 0;
+	$reply_content = isset($_POST['reply_content']) ? wp_kses_post($_POST['reply_content']) : '';
+	$user_id = get_current_user_id();
+	
+	if (!$post_id) {
+		wp_send_json_error(array('message' => __('Ungültiger Post.', CPC2_TEXT_DOMAIN)));
+	}
+	
+	if (!$reply_content) {
+		wp_send_json_error(array('message' => __('Antwort kann nicht leer sein.', CPC2_TEXT_DOMAIN)));
+	}
+	
+	// Get the activity post
+	$post = get_post($post_id);
+	if (!$post || $post->post_type !== 'cpc_activity') {
+		wp_send_json_error(array('message' => __('Post nicht gefunden.', CPC2_TEXT_DOMAIN)));
+	}
+	
+	// Get the group
+	$group_id = get_post_meta($post_id, 'cpc_activity_group_id', true);
+	if (!$group_id) {
+		wp_send_json_error(array('message' => __('Gruppe nicht gefunden.', CPC2_TEXT_DOMAIN)));
+	}
+	
+	// Check if user is group member
+	if (!cpc_is_group_member($user_id, $group_id)) {
+		wp_send_json_error(array('message' => __('Du musst Mitglied der Gruppe sein um zu antworten.', CPC2_TEXT_DOMAIN)));
+	}
+	
+	// Add comment as reply
+	$comment_id = wp_insert_comment(array(
+		'comment_post_ID' => $post_id,
+		'comment_author' => '',
+		'comment_author_email' => '',
+		'comment_author_url' => '',
+		'comment_content' => $reply_content,
+		'user_id' => $user_id,
+		'comment_approved' => 1,
+	));
+	
+	if ($comment_id) {
+		// Generate HTML for the new reply
+		$comment = get_comment($comment_id);
+		$reply_user = get_userdata($user_id);
+		
+		$reply_html = '<div class="cpc-activity-reply">';
+		$reply_html .= '<span class="cpc-activity-reply-author">'.$reply_user->display_name.'</span>';
+		$reply_html .= '<span class="cpc-activity-reply-time">'.__('gerade eben', CPC2_TEXT_DOMAIN).'</span>';
+		$reply_html .= '<div>'.$reply_content.'</div>';
+		$reply_html .= '</div>';
+		
+		wp_send_json_success(array(
+			'message' => __('Antwort erfolgreich gepostet!', CPC2_TEXT_DOMAIN),
+			'comment_id' => $comment_id,
+			'reply_html' => $reply_html
+		));
+	} else {
+		wp_send_json_error(array('message' => __('Fehler beim Posten der Antwort.', CPC2_TEXT_DOMAIN)));
+	}
+}
+
 // Toggle group forum
 add_action('wp_ajax_cpc_toggle_group_forum', 'cpc_ajax_toggle_group_forum');
 function cpc_ajax_toggle_group_forum() {
