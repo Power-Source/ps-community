@@ -178,6 +178,14 @@ function cpc_group_single($atts) {
 		$group_id = get_the_ID();
 	endif;
 
+	// Try to get group from URL parameter (group_name)
+	if (!$group_id && isset($_GET['group_name'])):
+		$group_name = sanitize_text_field($_GET['group_name']);
+		$group = get_page_by_path($group_name, OBJECT, 'cpc_group');
+		if ($group):
+			$group_id = $group->ID;
+		endif;
+	endif;
 	if (!$group_id):
 		return '<p>'.__('Gruppe nicht gefunden.', CPC2_TEXT_DOMAIN).'</p>';
 	endif;

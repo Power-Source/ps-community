@@ -102,6 +102,7 @@ jQuery(document).ready(function($) {
         var form = $(this);
         var formData = new FormData(this);
         formData.append('action', 'cpc_create_group');
+        formData.append('nonce', form.find('input[name="cpc_create_group_nonce"]').val());
         
         var submitBtn = form.find('.cpc-group-create-submit');
         var messageDiv = form.siblings('.cpc-group-create-message');

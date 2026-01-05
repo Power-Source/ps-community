@@ -146,6 +146,13 @@ function cpc_forum_insert_rewrite_rules( $rules ) {
                 endforeach;
             endif;
         endif;
+		// Group slugs -------------------
+		if (strpos(CPC_CORE_PLUGINS, 'core-groups') !== false && $page_id = get_option('cpccom_group_single_page')):
+			if ($group_page = get_post($page_id)):
+				$group_page_slug = $group_page->post_name;
+				$newrules[$group_page_slug.'/([^/]+)/?'] = 'index.php?pagename='.$group_page_slug.'&group_name=$matches[1]';
+			endif;
+		endif;
 	}	
 	return $newrules + $rules;
 }
@@ -186,6 +193,14 @@ function cpc_forum_flush_rewrite_rules(){
                 endforeach;
             endif;
         endif;
+		// Group slugs -------------------
+		if (strpos(CPC_CORE_PLUGINS, 'core-groups') !== false && $page_id = get_option('cpccom_group_single_page')):
+			$group_page = get_post($page_id);
+			if ($group_page):
+				$group_page_slug = $group_page->post_name;
+				if ( ! isset( $rules[$group_page_slug.'/([^/]+)/?'] ) ) $flush = true;		
+			endif;
+		endif;
 	} else {	
 		// Usernames ---------------------
 		if (strpos(CPC_CORE_PLUGINS, 'core-profile') !== false && $page_id = get_option('cpccom_profile_page')):
@@ -207,6 +222,14 @@ function cpc_forum_flush_rewrite_rules(){
                 endforeach;
             endif;
         endif;
+		// Group slugs -------------------
+		if (strpos(CPC_CORE_PLUGINS, 'core-groups') !== false && $page_id = get_option('cpccom_group_single_page')):
+			$group_page = get_post($page_id);
+			if ($group_page):
+				$group_page_slug = $group_page->post_name;
+				if ( ! isset( $rules[$group_page_slug.'/([^/]+)/?'] ) ) $flush = true;		
+			endif;
+		endif;
 	}	
 	// If required, flush re-write rules
 	if ($flush) {
