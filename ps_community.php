@@ -115,7 +115,7 @@ function cpc_forum_insert_rewrite_rules( $rules ) {
 			// Forum slugs -------------------
 			if (strpos(CPC_CORE_PLUGINS, 'core-forums') !== false):
                 $terms = get_terms( "cpc_forum", array( ) );
-                if ( count($terms) > 0 ):	
+                if ( ! is_wp_error( $terms ) && count($terms) > 0 ):	
                     foreach ( $terms as $term ):
                         // Add re-write for Forum slug
                         $post = get_post( cpc_get_term_meta($term->term_id, 'cpc_forum_cat_page', true) );
@@ -137,7 +137,7 @@ function cpc_forum_insert_rewrite_rules( $rules ) {
 		// Forum slugs -------------------
         if (strpos(CPC_CORE_PLUGINS, 'core-forums') !== false):
             $terms = get_terms( "cpc_forum", array( ) );
-            if ( count($terms) > 0 ):	
+            if ( ! is_wp_error( $terms ) && count($terms) > 0 ):	
                 foreach ( $terms as $term ):
                     $post = get_post( cpc_get_term_meta($term->term_id, 'cpc_forum_cat_page', true) );
                     if ($post):
