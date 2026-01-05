@@ -172,6 +172,13 @@ add_shortcode('cpc-groups', 'cpc_groups_list');
 function cpc_group_single($atts) {
 	add_action('wp_footer', 'cpc_groups_init');
 
+	// Prevent WP from treating group + topic/tab URLs as 404 so the shortcode still renders
+	global $wp_query;
+	if (isset($_GET['group_name']) || isset($_GET['tab']) || isset($_GET['topic'])) {
+		$wp_query->is_404 = false;
+		$wp_query->is_page = true;
+	}
+
 	global $current_user, $post;
 	
 	$values = cpc_get_shortcode_options('cpc_group_single');
@@ -255,14 +262,24 @@ function cpc_group_single($atts) {
 	$html .= '</div>'; // .cpc-group-header-info
 	$html .= '</div>'; // .cpc-group-header
 
-	// Get active tab from URL or default
-	$active_tab = isset($_GET['tab']) ? sanitize_text_field($_GET['tab']) : 'overview';
+	// Determine available tabs dynamically
+	$tabs = cpc_get_group_tabs($group_id);
+	$valid_tabs = array_keys($tabs);
 	
-	// Validate tab - only allow known tabs
-	$valid_tabs = array('overview', 'members', 'settings');
-	if (!in_array($active_tab, $valid_tabs)) {
-		$active_tab = 'overview';
+	// Derive requested tab
+	$requested_tab = isset($_GET['tab']) ? sanitize_text_field($_GET['tab']) : 'overview';
+	
+	// If a topic is requested, force forum tab when available
+	if (isset($_GET['topic']) && in_array('forum', $valid_tabs, true)) {
+		$requested_tab = 'forum';
 	}
+
+	// Validate requested tab, fallback to overview or first available
+	if (!in_array($requested_tab, $valid_tabs, true)) {
+		$requested_tab = in_array('overview', $valid_tabs, true) ? 'overview' : reset($valid_tabs);
+	}
+
+	$active_tab = $requested_tab;
 	
 	// Render tabs navigation
 	$html .= cpc_render_group_tabs($group_id, $active_tab);

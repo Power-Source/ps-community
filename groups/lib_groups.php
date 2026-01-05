@@ -471,17 +471,10 @@ function cpc_get_group_link($group_id) {
 	$group_page = get_post($group_page_id);
 	if (!$group_page) return get_permalink($group_id);
 	
-	// Get base page URL
+	// Always use the configured page as base and pass group_name as query arg.
+	// Avoid pretty path segments because no rewrite rule maps them to the group page.
 	$page_url = get_permalink($group_page_id);
-	
-	// Check if using permalinks
-	if (cpc_using_permalinks()) {
-		// URL structure: /group-page/group-slug/
-		return trailingslashit($page_url) . $group->post_name . '/';
-	} else {
-		// Query string structure
-		return add_query_arg('group_name', $group->post_name, $page_url);
-	}
+	return add_query_arg('group_name', $group->post_name, $page_url);
 }
 
 /**

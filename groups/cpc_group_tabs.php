@@ -58,9 +58,9 @@ function cpc_get_group_tabs($group_id, $user_id = 0) {
  */
 function cpc_render_group_tabs($group_id, $active_tab = 'overview') {
 	$tabs = cpc_get_group_tabs($group_id);
-	
-	$current_url = add_query_arg(array());
-	$current_url = remove_query_arg('tab', $current_url);
+
+	// Always build from canonical group link so we keep group_name in query string
+	$current_url = remove_query_arg('tab', cpc_get_group_link($group_id));
 	
 	$html = '<div class="cpc-group-tabs-nav">';
 	$html .= '<ul class="cpc-group-tabs-list">';
@@ -257,6 +257,24 @@ function cpc_render_group_tab_forum($group_id, $atts = array()) {
 	$html = $html_assets;
 	
 	$html .= cpc_forum_page(array('slug' => $forum_slug, 'show' => true));
+
+	// Rewrite topic links to stay in group tab context
+	$group_tab_url = add_query_arg('tab', 'forum', cpc_get_group_link($group_id));
+	$html = preg_replace_callback(
+		'/href="([^"]*?)(?:[?&])topic=([^"&#]+)/',
+		function($m) use ($group_tab_url) {
+			$target = add_query_arg('topic', $m[2], $group_tab_url);
+			return 'href="'.$target.'"';
+		},
+		$html
+	);
+
+	// Rewrite generic back links (e.g., cpc_forum_backto) to the group forum tab
+	$html = preg_replace(
+		'/href="[^\"]*(?:[?&](?:page_id|cpc_forum_cat_page)=[^" ]*)"/',
+		'href="'.$group_tab_url.'"',
+		$html
+	);
 	
 	return $html;
 }
