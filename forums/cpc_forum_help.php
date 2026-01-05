@@ -3,7 +3,7 @@
 add_action( 'admin_menu', 'cpc_add_forums_menu' );
 function cpc_add_forums_menu() {
     add_submenu_page(get_option('cpc_core_admin_icons') ? 'cpc_com' : '', __('Forum Setup', CPC2_TEXT_DOMAIN), __('Forum Setup', CPC2_TEXT_DOMAIN), 'manage_options', 'edit-tags.php?taxonomy=cpc_forum&post_type=cpc_forum_post');
-    add_submenu_page(get_option('cpc_core_admin_icons') ? 'cpc_com' : '', __('Alle Foren', CPC2_TEXT_DOMAIN), __('AAlle Foren', CPC2_TEXT_DOMAIN), 'manage_options', 'cpccom_forum_setup', 'cpccom_forum_setup');
+    add_submenu_page(get_option('cpc_core_admin_icons') ? 'cpc_com' : '', __('Alle Foren', CPC2_TEXT_DOMAIN), __('Alle Foren', CPC2_TEXT_DOMAIN), 'manage_options', 'cpccom_forum_setup', 'cpccom_forum_setup');
 }
 
 // Quick Start
