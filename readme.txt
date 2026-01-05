@@ -3,7 +3,8 @@ Contributors: DerN3rd
 Tags: wp community, social network, social networking, social media, cp-community, wp community, community
 Requires at least: 4.9
 Tested up to: 6.8.1
-Stable tag: 1.0.5
+ClassicPress: 2.6.0
+Stable tag: 1.0.6
 License URI: https://www.gnu.org/licenses/gpl-2.0.html
 
 == Description ==
@@ -29,6 +30,12 @@ Kein Problem! Ändere ganz einfach den gesamten Text, den Deine Benutzer sehen, 
 [POWERED BY PSOURCE](https://github.com/Power-Source)
 
 == ChangeLog ==
+
+= 1.0.6 =
+
+* Gruppenfunktion BETA
+* Kleinere Bugfixes
+* Weiteres Jquery UI ersetzt
 
 = 1.0.5 =
 
