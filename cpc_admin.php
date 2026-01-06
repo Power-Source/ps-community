@@ -325,8 +325,8 @@ function cpccom_release_notes() {
 					<div style="font-size:1.6em; line-height:1.6em; color: #510051; font-weight: bold;">Core PS Community plugin</div>
 					<a href="https://cp-psource.github.io/cp-community/" target-"_blank">Verfügbar im PSOURCE GitHub-Repository</a><br />
 
-                    <h2 style="font-style:italic; margin-top:20px;">Changelog Versionsnummer 1.0.6.:</h2>
-					<p>Wir haben eine Gruppenfunktion hinzugefügt (BETA).</p>
+                    <h2 style="font-style:italic; margin-top:20px;">Changelog Versionsnummer 1.0.7.:</h2>
+					<p>PS Chat integration (BETA).</p>
                     <p>Etliche kleine Bugfixes umgesetzt.<p>
                     <p>Weitere JQUERY unabhängigkeit umgesetzt für volle ClassicPress Kompatibilität.<p>
                     <p>Getestet mit WP 6.8.1, CP 2.6.0 und PhP 8.4<p> 

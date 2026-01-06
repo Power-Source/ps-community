@@ -4,7 +4,7 @@ Tags: wp community, social network, social networking, social media, cp-communit
 Requires at least: 4.9
 Tested up to: 6.8.1
 ClassicPress: 2.6.0
-Stable tag: 1.0.6
+Stable tag: 
 License URI: https://www.gnu.org/licenses/gpl-2.0.html
 
 == Description ==
@@ -30,6 +30,11 @@ Kein Problem! Ändere ganz einfach den gesamten Text, den Deine Benutzer sehen, 
 [POWERED BY PSOURCE](https://github.com/Power-Source)
 
 == ChangeLog ==
+
+= 1.0.7 =
+
+* PS Chat Integration
+* Einige Bugfixes
 
 = 1.0.6 =
 
