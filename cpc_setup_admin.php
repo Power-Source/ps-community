@@ -3029,6 +3029,10 @@ function cpc_admin_getting_started_styles() {
                         echo sprintf(__('Dieser Abschnitt bietet eine schnelle und einfache Möglichkeit, alle PS Community-Bildschirmelemente zu gestalten und erspart Dir die Verwendung von CSS. Zurücksetzen <a onclick="return confirm(\''.__('Bist Du sicher? Dies kann icht rückgängig gemacht werden!', CPC2_TEXT_DOMAIN).'\')" href="%s">Alle Stiländerungen zurücksetzen</a>.', CPC2_TEXT_DOMAIN), admin_url( 'admin.php?page=cpc_com_styles&cpc_reset_options=1')).'<br />';
                         echo '<p>'.sprintf(__('Wenn Du mit der Maus über ein Element fährst, wird die verwendete CSS-Klasse angezeigt und Du kannst dann <a href="%s">Benutzerdefiniertes CSS</a> verwenden, um erweiterte Attribute hinzuzufügen.', CPC2_TEXT_DOMAIN), admin_url( 'admin.php?page=cpc_com_custom_css')).'</p>';
                         
+                        // Ensure expand variables are set even if styles are disabled
+                        $cpc_expand_tab = isset($_POST['cpc_expand_tab']) ? $_POST['cpc_expand_tab'] : 'elements';
+                        $cpc_expand_shortcode = isset($_POST['cpc_expand_shortcode']) ? $_POST['cpc_expand_shortcode'] : 'cpc_elements_tab';
+
                         $use_styles = get_option('cpccom_use_styles');
                         if (!$use_styles):
                         
