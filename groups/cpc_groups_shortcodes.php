@@ -6,7 +6,7 @@
 
 function cpc_groups_init() {
     // JS and CSS
-    wp_enqueue_script('cpc-groups-js', plugins_url('cpc_groups.js', __FILE__), array('jquery'));	
+	wp_enqueue_script('cpc-groups-js', plugins_url('cpc_groups.js', __FILE__), array('jquery'));	
     wp_localize_script( 'cpc-groups-js', 'cpc_groups_ajax', array( 
         'ajaxurl' => admin_url( 'admin-ajax.php' ),
         'nonce' => wp_create_nonce('cpc_groups_nonce'),
@@ -14,6 +14,13 @@ function cpc_groups_init() {
         'user_id' => get_current_user_id(),
     ) );		
     wp_enqueue_style('cpc-groups-css', plugins_url('cpc_groups.css', __FILE__), array(), '1.0');
+
+    // Settings JS (for admin settings form in groups page)
+	wp_enqueue_script('cpc-groups-settings-js', plugins_url('cpc_groups_settings.js', __FILE__), array('jquery'), '1.0');
+	wp_localize_script( 'cpc-groups-settings-js', 'cpc_groups_settings', array( 
+		'ajaxurl' => admin_url( 'admin-ajax.php' ),
+		'nonce' => wp_create_nonce('cpc_groups_nonce'),
+	) );
 
     // Anything else?
     do_action('cpc_groups_init_hook');
@@ -24,6 +31,9 @@ function cpc_groups_register_assets() {
     if ( ! wp_script_is('cpc-groups-js', 'registered') ) {
         wp_register_script('cpc-groups-js', plugins_url('cpc_groups.js', __FILE__), array('jquery'));
     }
+	if ( ! wp_script_is('cpc-groups-settings-js', 'registered') ) {
+		wp_register_script('cpc-groups-settings-js', plugins_url('cpc_groups_settings.js', __FILE__), array('jquery'), '1.0');
+	}
     if ( ! wp_style_is('cpc-groups-css', 'registered') ) {
         wp_register_style('cpc-groups-css', plugins_url('cpc_groups.css', __FILE__), array(), '1.0');
     }

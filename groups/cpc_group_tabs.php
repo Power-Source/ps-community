@@ -26,6 +26,15 @@ function cpc_get_group_tabs($group_id, $user_id = 0) {
 		);
 	}
 	
+	// Chat tab - only if PS-Chat is available and enabled for this group
+	if (function_exists('cpc_group_has_chat') && cpc_group_has_chat($group_id)) {
+		$tabs['chat'] = array(
+			'label' => __('Chat', CPC2_TEXT_DOMAIN),
+			'icon' => 'format-chat',
+			'priority' => 17,
+		);
+	}
+	
 	// Members tab - everyone
 	$tabs['members'] = array(
 		'label' => __('Mitglieder', CPC2_TEXT_DOMAIN),
@@ -101,6 +110,9 @@ function cpc_render_group_tab_content($group_id, $active_tab = 'overview', $shor
 			break;
 		case 'forum':
 			$html .= cpc_render_group_tab_forum($group_id, $shortcode_atts);
+			break;
+		case 'chat':
+			$html .= cpc_render_group_tab_chat($group_id, $shortcode_atts);
 			break;
 		case 'members':
 			$html .= cpc_render_group_tab_members($group_id, $shortcode_atts);
@@ -354,6 +366,7 @@ function cpc_render_group_tab_settings($group_id, $atts = array()) {
 	
 	$html .= '<h3>'.__('Grundeinstellungen', CPC2_TEXT_DOMAIN).'</h3>';
 	$html .= '<form class="cpc-group-settings-form" data-group-id="'.$group_id.'">';
+	$html .= wp_nonce_field('cpc_groups_nonce', 'cpc_groups_nonce', true, false);
 	
 	$html .= '<div class="cpc-form-field">';
 	$html .= '<label for="group_type_setting">'.__('Gruppentyp', CPC2_TEXT_DOMAIN).'</label>';
@@ -377,6 +390,7 @@ function cpc_render_group_tab_settings($group_id, $atts = array()) {
 		if (!$forum_visibility) $forum_visibility = 'group_only';
 		
 		$html .= '<form class="cpc-group-forum-settings-form" data-group-id="'.$group_id.'">' ;
+		$html .= wp_nonce_field('cpc_groups_nonce', 'cpc_groups_nonce', true, false);
 		
 		$html .= '<div class="cpc-form-field">';
 		$html .= '<label>';
@@ -402,6 +416,102 @@ function cpc_render_group_tab_settings($group_id, $atts = array()) {
 		$html .= '</form>';
 	endif;
 	
+	// Chat Settings (if PS-Chat is available and group chats are enabled)
+	if (function_exists('cpc_pschat_is_available') && cpc_group_chats_enabled()):
+		$html .= '<hr>';
+		$html .= '<h3>'.__('Chat-Einstellungen', CPC2_TEXT_DOMAIN).'</h3>';
+		
+		$has_chat = get_post_meta($group_id, 'cpc_group_has_chat', true);
+		$chat_config = cpc_get_group_chat_config($group_id);
+		
+		$html .= '<form class="cpc-group-chat-settings-form" data-group-id="'.$group_id.'" action="javascript:void(0);" method="post">';
+		$html .= wp_nonce_field('cpc_groups_nonce', 'cpc_groups_nonce', false, false);
+		
+		// Enable/Disable Chat
+		$html .= '<div class="cpc-form-field">';
+		$html .= '<label>';
+		$html .= '<input type="checkbox" name="enable_chat" id="enable_chat" '.checked($has_chat, true, false).'> ';
+		$html .= __('Chat für diese Gruppe aktivieren', CPC2_TEXT_DOMAIN);
+		$html .= '</label>';
+		$html .= '<p class="description">'.__('Wenn aktiviert, wird den Gruppenmitgliedern ein Chat-Tab angezeigt.', CPC2_TEXT_DOMAIN).'</p>';
+		$html .= '</div>';
+		
+		// Chat Configuration section (hidden when chat disabled)
+		$chat_section_style = $has_chat ? '' : 'display:none;';
+		$html .= '<div class="cpc-chat-config-section" style="background: #f5f5f5; padding: 15px; border-left: 4px solid #0073aa; margin: 20px 0; '.$chat_section_style.'">';
+		$html .= '<h4>'.__('Chat-Konfiguration', CPC2_TEXT_DOMAIN).'</h4>';
+			
+			// Chat Name
+			$html .= '<div class="cpc-form-field">';
+			$html .= '<label for="chat_box_title">'.__('Chat-Name / Titel', CPC2_TEXT_DOMAIN).'</label>';
+			$html .= '<input type="text" id="chat_box_title" name="chat_box_title" value="'.esc_attr($chat_config['box_title']).'" style="width:100%;max-width:500px;" />';
+			$html .= '<p class="description">'.__('Der Titel für die Chat-Box in dieser Gruppe.', CPC2_TEXT_DOMAIN).'</p>';
+			$html .= '</div>';
+			
+			// Emojis
+			$html .= '<div class="cpc-form-field">';
+			$html .= '<label>';
+			$html .= '<input type="checkbox" name="chat_emoticons" id="chat_emoticons" value="enabled" '.checked($chat_config['emoticons'], 'enabled', false).'> ';
+			$html .= __('Emojis erlauben', CPC2_TEXT_DOMAIN);
+			$html .= '</label>';
+			$html .= '<p class="description">'.__('Zeige den Emoji-Picker in der Chat-Eingabe.', CPC2_TEXT_DOMAIN).'</p>';
+			$html .= '</div>';
+			
+			// Timestamps
+			$html .= '<div class="cpc-form-field">';
+			$html .= '<label>';
+			$html .= '<input type="checkbox" name="chat_row_time" id="chat_row_time" value="enabled" '.checked($chat_config['row_time'], 'enabled', false).'> ';
+			$html .= __('Zeitstempel anzeigen', CPC2_TEXT_DOMAIN);
+			$html .= '</label>';
+			$html .= '<p class="description">'.__('Zeige die Uhrzeit neben jeder Chat-Nachricht.', CPC2_TEXT_DOMAIN).'</p>';
+			$html .= '</div>';
+			
+			// User List
+			$html .= '<div class="cpc-form-field">';
+			$html .= '<label for="chat_users_list_position">'.__('Aktive Teilnehmer anzeigen', CPC2_TEXT_DOMAIN).'</label>';
+			$html .= '<select name="chat_users_list_position" id="chat_users_list_position">';
+			$html .= '<option value="none" '.selected($chat_config['users_list_position'], 'none', false).'>'.__('Nicht anzeigen', CPC2_TEXT_DOMAIN).'</option>';
+			$html .= '<option value="right" '.selected($chat_config['users_list_position'], 'right', false).'>'.__('Rechts', CPC2_TEXT_DOMAIN).'</option>';
+			$html .= '<option value="left" '.selected($chat_config['users_list_position'], 'left', false).'>'.__('Links', CPC2_TEXT_DOMAIN).'</option>';
+			$html .= '<option value="above" '.selected($chat_config['users_list_position'], 'above', false).'>'.__('Oben', CPC2_TEXT_DOMAIN).'</option>';
+			$html .= '<option value="below" '.selected($chat_config['users_list_position'], 'below', false).'>'.__('Unten', CPC2_TEXT_DOMAIN).'</option>';
+			$html .= '</select>';
+			$html .= '<p class="description">'.__('Wo sollen aktive Chatmitglieder angezeigt werden?', CPC2_TEXT_DOMAIN).'</p>';
+			$html .= '</div>';
+			
+			// Sounds
+			$html .= '<div class="cpc-form-field">';
+			$html .= '<label>';
+			$html .= '<input type="checkbox" name="chat_sound" id="chat_sound" value="enabled" '.checked($chat_config['sound'], 'enabled', false).'> ';
+			$html .= __('Benachrichtigungston abspielen', CPC2_TEXT_DOMAIN);
+			$html .= '</label>';
+			$html .= '<p class="description">'.__('Sound abspielen, wenn neue Nachrichten eintreffen.', CPC2_TEXT_DOMAIN).'</p>';
+			$html .= '</div>';
+			
+			// File Uploads
+			$html .= '<div class="cpc-form-field">';
+			$html .= '<label>';
+			$html .= '<input type="checkbox" name="chat_file_uploads_enabled" id="chat_file_uploads_enabled" value="enabled" '.checked($chat_config['file_uploads_enabled'], 'enabled', false).'> ';
+			$html .= __('Datei-Upload erlauben', CPC2_TEXT_DOMAIN);
+			$html .= '</label>';
+			$html .= '<p class="description">'.__('Erlaube Gruppenmitgliedern, Dateien im Chat hochzuladen.', CPC2_TEXT_DOMAIN).'</p>';
+			$html .= '</div>';
+			
+			// Chat Logging
+			$html .= '<div class="cpc-form-field">';
+			$html .= '<label>';
+			$html .= '<input type="checkbox" name="chat_log_creation" id="chat_log_creation" value="enabled" '.checked($chat_config['log_creation'], 'enabled', false).'> ';
+			$html .= __('Chat-Verlauf speichern', CPC2_TEXT_DOMAIN);
+			$html .= '</label>';
+			$html .= '<p class="description">'.__('Speichere alle Chat-Nachrichten zur späteren Anzeige.', CPC2_TEXT_DOMAIN).'</p>';
+			$html .= '</div>';
+			
+			$html .= '</div>'; // .cpc-chat-config-section
+		
+		$html .= '<button type="submit" class="cpc-btn cpc-btn-primary">'.__('Chat-Einstellungen speichern', CPC2_TEXT_DOMAIN).'</button>';
+		$html .= '</form>';
+	endif;
+	
 	// Group Permissions
 	$html .= '<hr>';
 	$html .= '<h3>'.__('Gruppenberechtigungen', CPC2_TEXT_DOMAIN).'</h3>';
@@ -422,6 +532,7 @@ function cpc_render_group_tab_settings($group_id, $atts = array()) {
 	}
 	
 	$html .= '<form class="cpc-group-permissions-form" data-group-id="'.$group_id.'">';
+	$html .= wp_nonce_field('cpc_groups_nonce', 'cpc_groups_nonce', true, false);
 	$html .= '<input type="hidden" name="group_id" value="'.$group_id.'">';
 	
 	$html .= '<div class="cpc-form-field">';
@@ -717,6 +828,39 @@ function cpc_render_group_activity_form($group_id) {
 	$html .= '<button type="submit" class="cpc-btn cpc-btn-primary">'.__('Posten', CPC2_TEXT_DOMAIN).'</button>';
 	$html .= '</form>';
 	$html .= '</div>';
+	
+	return $html;
+}
+
+/**
+ * Render Chat Tab
+ */
+function cpc_render_group_tab_chat($group_id, $atts = array()) {
+	// Check if group has chat enabled
+	if (!cpc_group_has_chat($group_id)) {
+		return '<p>'.__('Chat ist für diese Gruppe nicht aktiviert.', CPC2_TEXT_DOMAIN).'</p>';
+	}
+	
+	// Check PS-Chat availability (uses plugin status instead of function_exists guard)
+	if (function_exists('cpc_pschat_is_available')) {
+		$pschat = cpc_pschat_is_available();
+		if (empty($pschat['active'])) {
+			return '<p>'.__('PS-Chat Plugin ist nicht aktiviert.', CPC2_TEXT_DOMAIN).'</p>';
+		}
+	}
+	
+	$html = '';
+	$html .= '<div class="cpc-group-chat-tab">';
+	
+	// Generate shortcode from group chat config
+	if (function_exists('cpc_generate_group_chat_shortcode')) {
+		$shortcode = cpc_generate_group_chat_shortcode($group_id);
+		$html .= do_shortcode($shortcode);
+	} else {
+		$html .= '<p>'.__('Chat-Konfigurationsfehler.', CPC2_TEXT_DOMAIN).'</p>';
+	}
+	
+	$html .= '</div>'; // .cpc-group-chat-tab
 	
 	return $html;
 }

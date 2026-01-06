@@ -374,6 +374,12 @@ function cpc_ajax_load_group_tab() {
 	
 	$group_id = intval($_POST['group_id']);
 	$tab = sanitize_key($_POST['tab']);
+
+	// For chat we require full page load so PS-Chat assets/localization are present
+	if ($tab === 'chat') {
+		$redirect_url = add_query_arg('tab', 'chat', remove_query_arg('tab', cpc_get_group_link($group_id)));
+		wp_send_json_success(array('redirect' => $redirect_url));
+	}
 	
 	// Get group
 	$group = get_post($group_id);
@@ -911,5 +917,56 @@ function cpc_ajax_delete_reply() {
 	wp_delete_comment($comment_id, true);
 	
 	wp_send_json_success(array('message' => __('Antwort erfolgreich gelöscht!', CPC2_TEXT_DOMAIN)));
+}
+
+/**
+ * Save group chat settings via AJAX
+ */
+add_action('wp_ajax_cpc_save_group_chat_settings', 'cpc_ajax_save_group_chat_settings');
+function cpc_ajax_save_group_chat_settings() {
+	check_ajax_referer('cpc_groups_nonce', 'nonce');
+
+	if (!is_user_logged_in()) {
+		wp_send_json_error(array('message' => __('Du musst angemeldet sein.', CPC2_TEXT_DOMAIN)));
+	}
+
+	$group_id = isset($_POST['group_id']) ? intval($_POST['group_id']) : 0;
+	$enable_chat = isset($_POST['enable_chat']) ? (bool) $_POST['enable_chat'] : false;
+
+	if (!$group_id) {
+		wp_send_json_error(array('message' => __('Ungültige Gruppe.', CPC2_TEXT_DOMAIN)));
+	}
+
+	// Check if user is group admin
+	if (!cpc_is_group_admin(get_current_user_id(), $group_id)) {
+		wp_send_json_error(array('message' => __('Keine Berechtigung.', CPC2_TEXT_DOMAIN)));
+	}
+
+	// Check if chats are enabled globally
+	if (!cpc_group_chats_enabled()) {
+		wp_send_json_error(array('message' => __('Gruppen-Chats sind nicht aktiviert.', CPC2_TEXT_DOMAIN)));
+	}
+
+	// Save enable/disable setting
+	update_post_meta($group_id, 'cpc_group_has_chat', $enable_chat);
+	
+	// If chat is enabled, save configuration
+	if ($enable_chat) {
+		$config = array(
+			'box_title' => isset($_POST['chat_box_title']) ? sanitize_text_field($_POST['chat_box_title']) : '',
+			'emoticons' => isset($_POST['chat_emoticons']) ? sanitize_text_field($_POST['chat_emoticons']) : 'disabled',
+			'row_time' => isset($_POST['chat_row_time']) ? sanitize_text_field($_POST['chat_row_time']) : 'disabled',
+			'users_list_position' => isset($_POST['chat_users_list_position']) ? sanitize_text_field($_POST['chat_users_list_position']) : 'none',
+			'sound' => isset($_POST['chat_sound']) ? sanitize_text_field($_POST['chat_sound']) : 'enabled',
+			'file_uploads_enabled' => isset($_POST['chat_file_uploads_enabled']) ? sanitize_text_field($_POST['chat_file_uploads_enabled']) : 'disabled',
+			'log_creation' => isset($_POST['chat_log_creation']) ? sanitize_text_field($_POST['chat_log_creation']) : 'disabled',
+		);
+		
+		if (function_exists('cpc_save_group_chat_config')) {
+			cpc_save_group_chat_config($group_id, $config);
+		}
+	}
+
+	wp_send_json_success(array('message' => __('Chat-Einstellungen gespeichert!', CPC2_TEXT_DOMAIN)));
 }
 ?>

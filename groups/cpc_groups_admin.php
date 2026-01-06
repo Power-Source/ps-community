@@ -2,18 +2,7 @@
 
 /* Group Admin Settings and Help */
 
-// Add admin help page
-add_action('admin_menu', 'cpc_groups_admin_menu');
-function cpc_groups_admin_menu() {
-	add_submenu_page(
-		'cpc_com',
-		__('Gruppen Verwaltung', CPC2_TEXT_DOMAIN),
-		__('Gruppen Setup', CPC2_TEXT_DOMAIN),
-		'manage_options',
-		'cpccom_groups_setup',
-		'cpc_groups_admin_page'
-	);
-}
+// Group Setup page removed - now in Integrations menu and Single-Group Settings tabs
 
 function cpc_groups_admin_page() {
 	?>
@@ -372,6 +361,33 @@ function cpc_admin_getting_started_groups() {
 				<span class="description"><?php echo __('Maximale Länge für Gruppentitel in URLs.', CPC2_TEXT_DOMAIN) ; ?></span>
 			</td>
 		</tr>
+		<tr class="form-field">
+			<td scope="row" valign="top">
+				<label for="cpc_enable_group_chats"><?php _e('Gruppen-Chats', CPC2_TEXT_DOMAIN); ?></label>
+			</td>
+			<td>
+				<?php 
+				$pschat_available = function_exists('cpc_pschat_is_available') ? cpc_pschat_is_available() : array('active' => false, 'installed' => false);
+				$chats_enabled = get_option('cpc_enable_group_chats', false);
+				?>
+				<?php if (!$pschat_available['active']): ?>
+					<p style="color: #d9534f; margin: 0;">
+						<?php 
+						if ($pschat_available['installed']) {
+							_e('PS-Chat ist installiert, aber nicht aktiviert. Aktiviere es zuerst.', CPC2_TEXT_DOMAIN);
+						} else {
+							_e('PS-Chat ist nicht installiert. Installiere es, um Gruppen-Chats zu nutzen.', CPC2_TEXT_DOMAIN);
+						}
+						?>
+					</p>
+					<input type="checkbox" name="cpc_enable_group_chats" id="cpc_enable_group_chats" disabled />
+					<span class="description"><?php _e('Aktiviert wenn PS-Chat verfügbar ist', CPC2_TEXT_DOMAIN); ?></span>
+				<?php else: ?>
+					<input type="checkbox" name="cpc_enable_group_chats" id="cpc_enable_group_chats" value="1" <?php checked($chats_enabled, 1); ?> />
+					<span class="description"><?php _e('Erlaubt Gruppen-Admins, einen Chat für ihre Gruppe zu aktivieren. Denke daran, dass Chat-Features ressourcenintensiv sind.', CPC2_TEXT_DOMAIN); ?></span>
+				<?php endif; ?>
+			</td>
+		</tr>
 		<?php 
 				do_action('cpc_admin_getting_started_groups_hook');
 		?>
@@ -431,6 +447,13 @@ function cpc_admin_getting_started_groups_save($the_post) {
 	if (isset($the_post['cpc_groups_slug_length'])):
 		update_option('cpc_groups_slug_length', $the_post['cpc_groups_slug_length']);
 	endif;
+
+	// Save chat settings
+	if (isset($the_post['cpc_enable_group_chats'])) {
+		update_option('cpc_enable_group_chats', 1);
+	} else {
+		delete_option('cpc_enable_group_chats');
+	}
 
 }
 ?><?php

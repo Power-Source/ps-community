@@ -637,7 +637,7 @@ jQuery(document).ready(function($) {
         var link = $(this);
         var tab = link.data('tab');
         var tabs_container = link.closest('.cpc-group-tabs-nav').next('.cpc-group-tabs-content');
-        
+
         // Update active tab styling
         link.closest('.cpc-group-tabs-list').find('.cpc-group-tab-item').removeClass('active');
         link.closest('.cpc-group-tab-item').addClass('active');
@@ -661,6 +661,10 @@ jQuery(document).ready(function($) {
                 },
                 success: function(response) {
                     if (response.success) {
+                        if (response.data && response.data.redirect) {
+                            window.location.href = response.data.redirect;
+                            return;
+                        }
                         tabs_container.html(response.data.html);
                     }
                 },

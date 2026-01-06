@@ -274,6 +274,10 @@ function cpc_community_activate() {
 }
 // Core functions
 require_once('cpc_core.php');
+
+// Load integration helpers (needed everywhere, not just admin)
+require_once('lib/psource_chat_integration.php');
+
 // Profile (User meta)
 if (strpos(CPC_CORE_PLUGINS, 'core-profile') !== false):
     require_once('usermeta/cpc_usermeta.php');
@@ -318,11 +322,6 @@ if (strpos(CPC_CORE_PLUGINS, 'core-forums') !== false):
 endif;
 // Groups
 if (strpos(CPC_CORE_PLUGINS, 'core-groups') !== false):
-    // DEBUG: Zeige dass Gruppen geladen werden
-    add_action('wp_footer', function() {
-        echo '<!-- GROUPS MODULE LOADED: YES -->';
-    }, 1);
-    
     require_once('groups/lib_groups.php');
     require_once('groups/cpc_custom_post_group.php');
     require_once('groups/cpc_custom_post_group_members.php');
@@ -333,10 +332,7 @@ if (strpos(CPC_CORE_PLUGINS, 'core-groups') !== false):
         require_once('groups/ajax_groups.php');
     endif;
 else:
-    // DEBUG: Zeige dass Gruppen NICHT geladen werden
-    add_action('wp_footer', function() {
-        echo '<!-- GROUPS MODULE LOADED: NO - CPC_CORE_PLUGINS = ' . esc_html(CPC_CORE_PLUGINS) . ' -->';
-    }, 1);
+    // Groups not loaded
 endif;
 // Admin
 if (is_admin()):

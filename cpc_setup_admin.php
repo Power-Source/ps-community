@@ -1,5 +1,10 @@
 <?php
 
+// Helper function to close options div
+function cpc_show_options_close() {
+    return '</div>';
+}
+
 // Default settings header
 add_action('cpc_admin_getting_started_hook', 'cpc_admin_getting_started_options_header', 1);
 function cpc_admin_getting_started_options_header() {

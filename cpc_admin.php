@@ -1,6 +1,10 @@
 <?php
 // Admin dependencies
 add_action('admin_enqueue_scripts', 'cpc_usermeta_admin_init');
+
+// Load integration modules
+require_once(plugin_dir_path(__FILE__) . 'lib/psource_chat_integration.php');
+
 function cpc_usermeta_admin_init() {
     wp_enqueue_style('wp-color-picker');
     wp_enqueue_script('cpc-usermeta-js', plugins_url('usermeta/cpc_usermeta.js?rndstr='.strval(time()), __FILE__), array('wp-color-picker'));
@@ -28,6 +32,7 @@ function cpc_menu() {
 	add_submenu_page(get_option('cpc_core_admin_icons') ? 'cpc_com' : '', __('Benutzerdefiniertes CSS', CPC2_TEXT_DOMAIN), __('Benutzerdefiniertes CSS', CPC2_TEXT_DOMAIN), 'manage_options', 'cpc_com_custom_css', 'cpccom_custom_css');
 	add_submenu_page(get_option('cpc_core_admin_icons') ? 'cpc_com' : '', __('Lösche alle CPC-Daten', CPC2_TEXT_DOMAIN), __('Lösche CPC-Daten', CPC2_TEXT_DOMAIN), 'manage_options', 'cpc_com_reset', 'cpc_com_reset');
 	add_submenu_page('cpc_com', __('Übersetzungen', CPC2_TEXT_DOMAIN), __('Übersetzungen', CPC2_TEXT_DOMAIN), 'manage_options', 'cpc_com_translations', 'cpc_com_translations');
+	add_submenu_page('cpc_com', __('Integrationen', CPC2_TEXT_DOMAIN), __('Integrationen', CPC2_TEXT_DOMAIN), 'manage_options', 'cpc_integrations', 'cpc_integrations_page');
     
     add_submenu_page(get_option('cpc_core_admin_icons') ? 'cpc_com' : '', __('Benachrichtigungen (pro Benutzer)', CPC2_TEXT_DOMAIN), __('Benachrichtigungen (pro Benutzer)', CPC2_TEXT_DOMAIN), 'manage_options', 'cpc_alerts_per_user', 'cpc_alerts_per_user');
     
@@ -239,7 +244,6 @@ function cpccom_manage() {
 			  	    echo '<ul class="cpc_manage_icons">';
 			  	    echo '<li class="cpc_icon_groups'.cpc_admin_fav('manage_groups').'"><a href="edit.php?post_type=cpc_group">'.__('Gruppen verwalten', CPC2_TEXT_DOMAIN).'</a></li>';
 			  	    echo '<li class="cpc_icon_groups'.cpc_admin_fav('group_members').'"><a href="edit.php?post_type=cpc_group_members">'.__('Gruppenmitglieder', CPC2_TEXT_DOMAIN).'</a></li>';
-			  	    echo '<li class="cpc_icon_groups'.cpc_admin_fav('group_setup').'"><a href="admin.php?page=cpccom_groups_setup">'.__('Gruppen Setup', CPC2_TEXT_DOMAIN).'</a></li>';
 			  	    echo '</ul>';
 		  	    echo '</div>';
 		  	endif;
