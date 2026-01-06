@@ -3,6 +3,55 @@
 /* Group Hooks and Filters */
 
 /**
+ * Multisite: Ensure required pages and options are set for Groups module
+ */
+add_action('plugins_loaded', 'cpc_multisite_ensure_group_pages');
+function cpc_multisite_ensure_group_pages() {
+    if (is_multisite() && get_current_blog_id() > 1 && strpos(CPC_CORE_PLUGINS, 'core-groups') !== false) {
+        // Check if group single page is set
+        if (!get_option('cpccom_group_single_page')) {
+            // Try to find existing page for single group view
+            $group_single_page = get_page_by_path('gruppe', OBJECT, 'page');
+            if ($group_single_page) {
+                update_option('cpccom_group_single_page', $group_single_page->ID);
+            } else {
+                // Create the page if it doesn't exist
+                $page_id = wp_insert_post(array(
+                    'post_type' => 'page',
+                    'post_title' => __('Gruppe', 'ps-community'),
+                    'post_name' => 'gruppe',
+                    'post_content' => '[cpc-group-single]',
+                    'post_status' => 'publish',
+                ));
+                if ($page_id && !is_wp_error($page_id)) {
+                    update_option('cpccom_group_single_page', $page_id);
+                }
+            }
+        }
+        // Check if group create page is set
+        if (!get_option('cpccom_group_create_page')) {
+            // Try to find existing page for group creation
+            $group_create_page = get_page_by_path('neue-gruppe', OBJECT, 'page');
+            if ($group_create_page) {
+                update_option('cpccom_group_create_page', $group_create_page->ID);
+            } else {
+                // Create the page if it doesn't exist
+                $page_id = wp_insert_post(array(
+                    'post_type' => 'page',
+                    'post_title' => __('Neue Gruppe', 'ps-community'),
+                    'post_name' => 'neue-gruppe',
+                    'post_content' => '[cpc-group-create]',
+                    'post_status' => 'publish',
+                ));
+                if ($page_id && !is_wp_error($page_id)) {
+                    update_option('cpccom_group_create_page', $page_id);
+                }
+            }
+        }
+    }
+}
+
+/**
  * Add group activity to activity stream when enabled
  */
 if (strpos(CPC_CORE_PLUGINS, 'core-activity') !== false):
