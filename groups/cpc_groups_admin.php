@@ -100,7 +100,7 @@ function cpc_groups_admin_page() {
 			
 			$public_groups = new WP_Query(array(
 				'post_type' => 'cpc_group',
-				'posts_per_page' => -1,
+			'posts_per_page' => 0,  // FIXED: Stats only, no posts needed
 				'meta_query' => array(
 					array(
 						'key' => 'cpc_group_type',
@@ -111,7 +111,7 @@ function cpc_groups_admin_page() {
 
 			$private_groups = new WP_Query(array(
 				'post_type' => 'cpc_group',
-				'posts_per_page' => -1,
+			'posts_per_page' => 0,  // FIXED: Stats only, no posts needed
 				'meta_query' => array(
 					array(
 						'key' => 'cpc_group_type',
@@ -122,7 +122,7 @@ function cpc_groups_admin_page() {
 
 			$hidden_groups = new WP_Query(array(
 				'post_type' => 'cpc_group',
-				'posts_per_page' => -1,
+			'posts_per_page' => 0,  // FIXED: Stats only, no posts needed
 				'meta_query' => array(
 					array(
 						'key' => 'cpc_group_type',

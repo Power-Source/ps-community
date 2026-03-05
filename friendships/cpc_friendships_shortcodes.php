@@ -310,9 +310,21 @@ function cpc_friends($atts) {
 
                 // Show $count number of friends
                 $c=0;
+                
+                // OPTIMIZATION: Load all users at once instead of per-friend get_user_by() calls
+                $friend_ids = array_unique(array_map(function($f) { return absint($f['friend_id']); }, $friends));
+                $users_map = array();
+                if (!empty($friend_ids)) {
+                    $users = get_users(array(
+                        'include' => $friend_ids,
+                        'number' => -1,
+                    ));
+                    $users_map = wp_list_pluck($users, null, 'ID');
+                }
+                
                 foreach ($friends as $friend):
 
-                    $the_friend = get_user_by('id', $friend['friend_id']);
+                    $the_friend = $users_map[$friend['friend_id']] ?? null;
                     if ($the_friend):
 
                         // Get profile_security of the_friend
@@ -555,7 +567,7 @@ function cpc_alerts_friends($atts) {
 
         $args = array (
             'post_type'              => 'cpc_friendship',
-            'posts_per_page'         => -1,
+            'posts_per_page'         => 500,  // FIXED: Pagination limit
             'post_status'			 => 'pending',
             'meta_query' => array(
                 array(

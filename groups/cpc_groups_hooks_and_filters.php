@@ -165,7 +165,7 @@ function cpc_groups_cleanup_on_delete($post_id) {
 		// Delete all memberships
 		$args = array(
 			'post_type' => 'cpc_group_members',
-			'posts_per_page' => -1,
+		'posts_per_page' => 1000,  // FIXED: Reasonable limit
 			'post_status' => 'any',
 			'meta_query' => array(
 				array(
@@ -189,7 +189,7 @@ function cpc_groups_cleanup_user_memberships($user_id) {
 	// Delete user's memberships
 	$args = array(
 		'post_type' => 'cpc_group_members',
-		'posts_per_page' => -1,
+		'posts_per_page' => 1000,  // FIXED: Reasonable limit
 		'post_status' => 'any',
 		'meta_query' => array(
 			array(
