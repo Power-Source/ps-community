@@ -10,7 +10,7 @@ title: "PS Community Shortcodes"
   <a href="https://github.com/Power-Source/cp-community/releases" style="color:#38c2bb;">📝 Download</a>
 </div>
 
-# CP-Community Shortcodes Dokumentation
+# PS Community Shortcodes Dokumentation
 
 ## Shortcodes: 
 

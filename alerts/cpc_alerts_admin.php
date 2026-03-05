@@ -349,7 +349,7 @@ function cpc_admin_getting_started_alerts() {
 		<td>
 			<input type="checkbox" name="cpc_add_alert_check" />
 			<span class="description">
-				<?php echo sprintf(__('Aktiviere diese Option, um sich selbst eine CP-Community-<a href="%s">Benachrichtigung</a> hinzuzufügen.', CPC2_TEXT_DOMAIN), admin_url( 'edit.php?post_type=cpc_alerts' )); ?>
+				<?php echo sprintf(__('Aktiviere diese Option, um sich selbst eine PS Community-<a href="%s">Benachrichtigung</a> hinzuzufügen.', CPC2_TEXT_DOMAIN), admin_url( 'edit.php?post_type=cpc_alerts' )); ?>
 			</span></td> 
 		</tr> 	
 

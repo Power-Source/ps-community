@@ -25,12 +25,12 @@ function cpc_admin_getting_started_options() {
         echo '<div id="cpc_release_notes">';
             echo '<div id="cpc_welcome_bar" style="margin-top: 20px;">';
                 echo '<img id="cpc_welcome_logo" style="width:56px; height:56px; float:left;" src="'.plugins_url('../ps-community/css/images/cpc_logo.png', __FILE__).'" title="'.__('help', CPC2_TEXT_DOMAIN).'" />';
-                echo '<div style="font-size:2em; line-height:1em; font-weight:100; color:#fff;">'.__('Willkommen bei CP-Community', CPC2_TEXT_DOMAIN).'</div>';
+                echo '<div style="font-size:2em; line-height:1em; font-weight:100; color:#fff;">'.__('Willkommen bei PS Community', CPC2_TEXT_DOMAIN).'</div>';
                 echo '<p style="color:#fff;"><em>'.__('Das ultimative Plugin für soziale Netzwerke für ClassicPress', CPC2_TEXT_DOMAIN).'</em></p>';
             echo '</div>';
 
             $css = 'cpc_admin_getting_started_menu_item_remove_icon ';    
-          	echo '<div style="margin-top:25px" class="'.$css.'cpc_admin_getting_started_menu_item_no_click" >'.__('CP-Community-Shortcodes und Standardeinstellungen', CPC2_TEXT_DOMAIN).'</div>';    
+          	echo '<div style="margin-top:25px" class="'.$css.'cpc_admin_getting_started_menu_item_no_click" >'.__('PS Community-Shortcodes und Standardeinstellungen', CPC2_TEXT_DOMAIN).'</div>';    
         	$display = 'block';
           	echo '<div class="cpc_admin_getting_started_content" id="cpc_admin_getting_started_options" style="display:'.$display.'">';
             
@@ -44,13 +44,13 @@ function cpc_admin_getting_started_options() {
                         $wpdb->query($sql);
                         delete_option('cpccom_global_styles'); // global styles flag
                         echo '<div class="cpc_success" style="margin-top:20px">';
-                            echo sprintf(__('Die Shortcode-Optionen der CP-Community wurden alle zurückgesetzt! <a href="%s">Weiter...</a>', CPC2_TEXT_DOMAIN), admin_url( 'admin.php?page=cpc_com_shortcodes' ));
+                            echo sprintf(__('Die Shortcode-Optionen der PS Community wurden alle zurückgesetzt! <a href="%s">Weiter...</a>', CPC2_TEXT_DOMAIN), admin_url( 'admin.php?page=cpc_com_shortcodes' ));
                         echo '</div>';
 
                     } else {
             
                         echo '<div id="cpc_admin_getting_started_options_help" style="margin-bottom:20px;'.(true || !isset($_POST['cpc_expand_shortcode']) ? '' : 'display:none;').'">';
-                        echo __('Dieser Abschnitt bietet eine schnelle und einfache Möglichkeit, alle Shortcodes der CP-Community anzuzeigen und anzupassen, die jeweils zu jeder ClassicPress-Seite, jedem Beitrag oder jedem Text-Widget hinzugefügt werden können.', CPC2_TEXT_DOMAIN).'<br />';
+                        echo __('Dieser Abschnitt bietet eine schnelle und einfache Möglichkeit, alle Shortcodes der PS Community anzuzeigen und anzupassen, die jeweils zu jeder ClassicPress-Seite, jedem Beitrag oder jedem Text-Widget hinzugefügt werden können.', CPC2_TEXT_DOMAIN).'<br />';
                         echo sprintf(__('Wenn Du nicht sicher bist, welcher Shortcode auf einer ClassicPress-Seite verwendet wird, <a href="%s">bearbeite die Seite</a> und schaue im Seiteninhaltseditor nach.', CPC2_TEXT_DOMAIN), admin_url( 'edit.php?post_type=page' )).'</p>';
                         echo '<p style="margin-top:-8px">'.sprintf(__('Wähle in der linken Spalte einen allgemeinen Bereich und dann einen angezeigten Shortcode aus. Du kannst dann die Standardwerte sehen und festlegen und weitere Hilfe für diesen Shortcode erhalten. Um einen Wert zurückzusetzen, entferne den Wert und speichere ihn, oder <a onclick="return confirm(\''.__('Bist Du Dir sicher, dass dies nicht rückgängig gemacht werden kann?', CPC2_TEXT_DOMAIN).'\')" href="% s">Alle Shortcode-Optionen zurücksetzen</a>.', CPC2_TEXT_DOMAIN), admin_url( 'admin.php?page=cpc_com_shortcodes&cpc_reset_options=1' )).' ';
                         echo __('Du kannst jedem Shortcode auch Optionen hinzufügen, wenn Du eine Seite/einen Beitrag/ein Widget bearbeitest, indem Du Shortcode-Optionen verwendest.', CPC2_TEXT_DOMAIN).'</p>';
@@ -3000,12 +3000,12 @@ function cpc_admin_getting_started_styles() {
         echo '<div id="cpc_release_notes">';
             echo '<div id="cpc_welcome_bar" style="margin-top: 20px;">';
                 echo '<img id="cpc_welcome_logo" style="width:56px; height:56px; float:left;" src="'.plugins_url('../ps-community/css/images/cpc_logo.png', __FILE__).'" title="'.__('Hilfe', CPC2_TEXT_DOMAIN).'" />';
-                echo '<div style="font-size:2em; line-height:1em; font-weight:100; color:#fff;">'.__('Willkommen bei CP-Community', CPC2_TEXT_DOMAIN).'</div>';
+                echo '<div style="font-size:2em; line-height:1em; font-weight:100; color:#fff;">'.__('Willkommen bei PS Community', CPC2_TEXT_DOMAIN).'</div>';
                 echo '<p style="color:#fff;"><em>'.__('Das ultimative Plugin für soziale Netzwerke für ClassicPress', CPC2_TEXT_DOMAIN).'</em></p>';
             echo '</div>';
 
             $css = 'cpc_admin_getting_started_menu_item_remove_icon ';    
-          	echo '<div style="margin-top:25px" class="'.$css.'cpc_admin_getting_started_menu_item_no_click" >'.__('CP-Community-Stile', CPC2_TEXT_DOMAIN).'</div>';    
+          	echo '<div style="margin-top:25px" class="'.$css.'cpc_admin_getting_started_menu_item_no_click" >'.__('PS Community-Stile', CPC2_TEXT_DOMAIN).'</div>';    
         	$display = 'block';
           	echo '<div class="cpc_admin_getting_started_content" id="cpc_admin_getting_started_options" style="display:'.$display.'">';
             
@@ -3018,7 +3018,7 @@ function cpc_admin_getting_started_styles() {
                         $sql = $wpdb->prepare("DELETE FROM {$wpdb->prefix}options WHERE option_name LIKE %s", 'cpc_styles_%');
                         $wpdb->query($sql);
                         echo '<div class="cpc_success" style="margin-top:20px">';
-                            echo sprintf(__('CP-Community-Stile wurden alle zurückgesetzt! <a href="%s">Weiter...</a>', CPC2_TEXT_DOMAIN), admin_url( 'admin.php?page=cpc_com_styles' ));
+                            echo sprintf(__('PS Community-Stile wurden alle zurückgesetzt! <a href="%s">Weiter...</a>', CPC2_TEXT_DOMAIN), admin_url( 'admin.php?page=cpc_com_styles' ));
                         echo '</div>';
 
                     } else {

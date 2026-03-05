@@ -199,7 +199,7 @@ function cpccom_manage() {
 			  	echo '<h3>'.__('Konfigurieren', CPC2_TEXT_DOMAIN).'</h3>';
 			  	echo '<ul class="cpc_manage_icons">';
 			  	echo '<li class="cpc_icon_css'.cpc_admin_fav('custom_css').'"><a href="admin.php?page=cpc_com_custom_css">'.__('Benutzerdefinierte CSS', CPC2_TEXT_DOMAIN).'</a></li>';
-			  	echo '<li class="cpc_icon_reset'.cpc_admin_fav('cpc_com_reset').'"><a href="admin.php?page=cpc_com_reset">'.__('Lösche alle CP-Community-Daten', CPC2_TEXT_DOMAIN).'</a></li>';
+			  	echo '<li class="cpc_icon_reset'.cpc_admin_fav('cpc_com_reset').'"><a href="admin.php?page=cpc_com_reset">'.__('Lösche alle PS Community-Daten', CPC2_TEXT_DOMAIN).'</a></li>';
 			  	echo '</ul>';
 		  	echo '</div>';
 
@@ -294,7 +294,7 @@ function cpccom_release_notes() {
                 <div style="float:right;width:200px"><?php echo sprintf(__('Bitte besuche unsere <a href="%s" target="_blank">Projektseite</a>, oder wirke auf <a href="%s" target="_blank">GitHub</a> mit, um PS Community noch großartiger zu machen!', CPC2_TEXT_DOMAIN), 'https://cp-community.n3rds.work/', 'http://twitter.com/cpcymposium'); ?></div>
             </div>
             <p>
-            	<?php echo sprintf(__('Wenn Du neu bei CP-Community bist, solltest Du die <a href="%s">Setup-Seite</a> besuchen...', CPC2_TEXT_DOMAIN), admin_url('admin.php?page=cpc_com_setup')); ?>
+            	<?php echo sprintf(__('Wenn Du neu bei PS Community bist, solltest Du die <a href="%s">Setup-Seite</a> besuchen...', CPC2_TEXT_DOMAIN), admin_url('admin.php?page=cpc_com_setup')); ?>
             </p>
             
             <p>
@@ -379,7 +379,7 @@ function cpccom_setup() {
 		echo '<div '.$show_header.'id="cpc_welcome">';
 			echo '<div id="cpc_welcome_bar">';
 				echo '<img id="cpc_welcome_logo" style="width:56px; height:56px; float:left;" src="'.plugins_url('../ps-community/css/images/cpc_logo.png', __FILE__).'" title="'.__('Hilfe', CPC2_TEXT_DOMAIN).'" />';
-				echo '<div style="font-size:2em; line-height:1em; font-weight:100; color:#fff;">'.__('Willkommen bei CP-Community', CPC2_TEXT_DOMAIN).'</div>';
+				echo '<div style="font-size:2em; line-height:1em; font-weight:100; color:#fff;">'.__('Willkommen bei PS Community', CPC2_TEXT_DOMAIN).'</div>';
 				echo '<p style="color:#fff;"><em>'.__('Das ultimative Plugin für soziale Netzwerke für ClassicPress', CPC2_TEXT_DOMAIN).'</em></p>';
 			echo '</div>';
 			echo '<div style="width:30%; min-width:200px; margin-right:10px; float: left;">';
@@ -619,11 +619,11 @@ function cpc_com_reset() {
         	
   		echo '<div id="cpc_welcome_bar" style="margin-top: 20px;">';
 	  		echo '<img id="cpc_welcome_logo" style="width:56px; height:56px; float:left;" src="'.plugins_url('../ps-community/css/images/cpc_logo.png', __FILE__).'" title="'.__('Hilfe', CPC2_TEXT_DOMAIN).'" />';
-	  		echo '<div style="font-size:2em; line-height:1em; font-weight:100; color:#fff;">'.__('Willkommen bei CP-Community', CPC2_TEXT_DOMAIN).'</div>';
+	  		echo '<div style="font-size:2em; line-height:1em; font-weight:100; color:#fff;">'.__('Willkommen bei PS Community', CPC2_TEXT_DOMAIN).'</div>';
 	  		echo '<p style="color:#fff;"><em>'.__('Das ultimative Plugin für soziale Netzwerke für ClassicPress', CPC2_TEXT_DOMAIN).'</em></p>';
   		echo '</div>';
 
-  		echo '<div style="font-size:1.4em; margin-top:20px">'.__('CP-Community-Datenentfernung (Zurücksetzen)', CPC2_TEXT_DOMAIN).'</div>';
+  		echo '<div style="font-size:1.4em; margin-top:20px">'.__('PS Community-Datenentfernung (Zurücksetzen)', CPC2_TEXT_DOMAIN).'</div>';
 
 		echo '<p>'.__('Verwende diesen Bildschirm, um PS Community zurückzusetzen oder alle Daten zu entfernen, bevor Du das Plugin deinstallierst.', CPC2_TEXT_DOMAIN).'</p>';
 

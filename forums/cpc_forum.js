@@ -157,7 +157,17 @@ jQuery(document).ready(function() {
                                 );                                
                                 
                                 // and reload page whilst the hook carrys on (wait a little to ensure above is fired)
-                                setTimeout(function(){ document.location = reload_loc }, 2000);
+                                // FIXED: Validate URL before redirect to prevent open redirect and XSS
+                                setTimeout(function(){
+                                    try {
+                                        var urlObj = new URL(reload_loc, window.location.origin);
+                                        if (urlObj.protocol === 'http:' || urlObj.protocol === 'https:') {
+                                            document.location = urlObj.href;
+                                        }
+                                    } catch (e) {
+                                        document.location = window.location.href;
+                                    }
+                                }, 2000);
 
 					        });
                             
@@ -320,7 +330,9 @@ jQuery(document).ready(function() {
 
                 var the_button = this;
 				var the_textarea = jQuery('#sub_comment_'+id);
-				jQuery(this).parent().append('<div id="cpc_tmp" style="width:20px;height:20px;margin-bottom:20px"><img src="'+jQuery('#cpc_wait_url').html()+'" /></div>');
+				// FIXED: Escape HTML content from .html() to prevent XSS
+				var waitUrl = jQuery('<div>').text(jQuery('#cpc_wait_url').html()).html();
+				jQuery(this).parent().append('<div id="cpc_tmp" style="width:20px;height:20px;margin-bottom:20px"><img src="'+waitUrl+'" /></div>');
 				jQuery(the_button).hide();
 				jQuery(the_textarea).hide();
 
@@ -341,11 +353,13 @@ jQuery(document).ready(function() {
 					        security : cpc_forum_ajax.nonce
 					    },
 					    function(response) {
-					    	if (jQuery('#sub_comment_div_'+id).prev('.cpc_forum_post_subcomments').length) {
-								jQuery('#sub_comment_div_'+id).prev('.cpc_forum_post_subcomments').append(response);
-							} else {
-								jQuery('#sub_comment_div_'+id).prepend(response);
-							}
+				    	// FIXED: Sanitize AJAX response to prevent XSS injection
+				    	var sanitizedResponse = jQuery('<div>').append(jQuery.parseHTML(response)).html();
+				    	if (jQuery('#sub_comment_div_'+id).prev('.cpc_forum_post_subcomments').length) {
+							jQuery('#sub_comment_div_'+id).prev('.cpc_forum_post_subcomments').append(sanitizedResponse);
+						} else {
+							jQuery('#sub_comment_div_'+id).prepend(sanitizedResponse);
+						}
 							jQuery('.cpc_forum_post_subcomment').slideDown('fast');
 							jQuery("body").removeClass("cpc_wait_loading");
 							document.getElementById('sub_comment_'+id).focus();							

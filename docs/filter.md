@@ -14,7 +14,7 @@ title: "PS Community Filter"
   <a href="https://cp-psource.github.io/cp-community/psource.html" style="text-decoration: none; color: #0366d6; font-weight: bold;">PSOURCE</a>
 </div>
 
-# CP-Community Filter Dokumentation
+# PS Community Filter Dokumentation
 
 ### Entwickler-Ressourcen:
 
