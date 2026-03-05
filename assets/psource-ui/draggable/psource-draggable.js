@@ -312,16 +312,20 @@ class PSourceDraggable {
         const dataId = this.element.dataset.id;
         const dataName = this.element.dataset.name;
         
-        // Template für Newsletter-Blöcke erstellen
+        // Template für Newsletter-Blöcke erstellen (with XSS protection)
         const newElement = document.createElement('div');
         newElement.className = 'tnpc-row';
-        newElement.innerHTML = `
-            <div class="tnpc-block" data-id="${dataId}">
-                <div class="tnpc-block-content">
-                    ${dataName}
-                </div>
-            </div>
-        `;
+        
+        const blockDiv = document.createElement('div');
+        blockDiv.className = 'tnpc-block';
+        blockDiv.setAttribute('data-id', dataId);
+        
+        const contentDiv = document.createElement('div');
+        contentDiv.className = 'tnpc-block-content';
+        contentDiv.textContent = dataName;
+        
+        blockDiv.appendChild(contentDiv);
+        newElement.appendChild(blockDiv);
         
         return newElement;
     }

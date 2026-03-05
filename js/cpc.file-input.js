@@ -24,7 +24,11 @@ jQuery.fn.cpcbootstrapFileInput = function() {
 
     // Now we're going to wrap that input field with a Bootstrap button.
     // The input will actually still be there, it will just be float above and transparent (done with the CSS).
-    jQueryelem.wrap('<a class="file-input-wrapper ' + className + '"></a>').parent().prepend(buttonWord);
+    var wrapper = jQuery('<a class="file-input-wrapper"></a>');
+    if (className) {
+      wrapper.addClass(className.trim());
+    }
+    jQueryelem.wrap(wrapper).parent().prepend(jQuery('<span></span>').text(buttonWord));
   })
 
   // After we have found all of the file inputs let's apply a listener for tracking the mouse movement.
@@ -94,7 +98,7 @@ jQuery.fn.cpcbootstrapFileInput = function() {
         fileName = fileName.substring(fileName.lastIndexOf('\\')+1,fileName.length);
       }
 
-      jQuery(this).parent().after('<span class="file-input-name">'+fileName+'</span>');
+      jQuery(this).parent().after(jQuery('<span class="file-input-name"></span>').text(fileName));
     });
 
   });

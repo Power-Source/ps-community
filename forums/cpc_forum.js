@@ -31,9 +31,18 @@ jQuery(document).ready(function() {
 
 		jQuery("#cpc_forums_go_to").change(function() {
 			var url = jQuery(this).val();
-			if (url != '') { 
-				jQuery("body").addClass("cpc_wait_loading");
-				window.location = url;
+			if (url != '') {
+				// Validate URL to prevent XSS attacks
+				try {
+					var urlObj = new URL(url, window.location.origin);
+					// Only allow http/https protocols
+					if (urlObj.protocol === 'http:' || urlObj.protocol === 'https:') {
+						jQuery("body").addClass("cpc_wait_loading");
+						window.location = urlObj.href;
+					}
+				} catch (e) {
+					// Invalid URL, do nothing
+				}
 			}
 		});
 
@@ -122,7 +131,7 @@ jQuery(document).ready(function() {
 					        form.submit();
 
 					        jQuery("#cpc_forum_postiframe").load(function () {
-                                iframeContents = jQuery("#cpc_forum_postiframe")[0].contentWindow.document.body.innerHTML;
+                                iframeContents = jQuery("#cpc_forum_postiframe")[0].contentWindow.document.body.textContent;
                                 if (iframeContents.indexOf("*") == 0) {
                                     alert(jQuery('#valid_exts_msg').val());
                                     iframeContents = iframeContents.replace('*', '');
@@ -230,7 +239,7 @@ jQuery(document).ready(function() {
                         form.submit();
 
                         jQuery("#cpc_forum_commentiframe").load(function () {
-                            iframeContents = jQuery("#cpc_forum_commentiframe")[0].contentWindow.document.body.innerHTML;
+                            iframeContents = jQuery("#cpc_forum_commentiframe")[0].contentWindow.document.body.textContent;
                             if (iframeContents.indexOf("*") == 0) {
                                 alert(jQuery('#valid_exts_msg').val());
                                 iframeContents = iframeContents.replace('*', '');
@@ -245,7 +254,16 @@ jQuery(document).ready(function() {
                             	}
                                 window.location = url;
                             } else {
-                                window.location = iframeContents;
+                                // Validate URL before redirecting
+                                try {
+                                    var urlObj = new URL(iframeContents, window.location.origin);
+                                    if (urlObj.protocol === 'http:' || urlObj.protocol === 'https:') {
+                                        window.location = urlObj.href;
+                                    }
+                                } catch (e) {
+                                    // Invalid URL, reload current page instead
+                                    window.location.reload();
+                                }
                             }
                         });
                         
