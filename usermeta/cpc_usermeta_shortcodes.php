@@ -353,6 +353,19 @@ function cpc_usermeta_change($atts) {
                                 echo "window.location.reload();"; 
                             echo "}";
                         echo '</script>';
+                    else:
+                        // Redirect to profile page after successful save
+                        $profile_page_id = get_option('cpccom_profile_page');
+                        if ($profile_page_id) {
+                            $profile_url = get_permalink($profile_page_id);
+                            if ($profile_url) {
+                                $profile_url = add_query_arg('user_id', $user_id, $profile_url);
+                                echo '<script>window.location.href = "' . esc_url($profile_url) . '";</script>';
+                                // PHP redirect als Fallback (falls JavaScript deaktiviert)
+                                wp_redirect($profile_url);
+                                exit;
+                            }
+                        }
                     endif;
                 } // End of nonce check
 
@@ -567,6 +580,17 @@ function cpc_usermeta_change($atts) {
 
                 $html .= '<div id="cpc_required_msg" class="cpc_error" style="display:none">'.$required_msg.'</div>';
                 $html .= '<button type="submit" id="cpc_usermeta_change_submit" class="cpc_button '.$class.'">'.$label.'</button>';
+                
+                // Add "Back to Profile" button
+                $profile_page_id = get_option('cpccom_profile_page');
+                if ($profile_page_id) {
+                    $profile_url = get_permalink($profile_page_id);
+                    if ($profile_url) {
+                        $profile_url = add_query_arg('user_id', $user_id, $profile_url);
+                        $html .= ' <a href="'.esc_url($profile_url).'" class="cpc_button cpc_button_secondary" style="margin-left:10px;">'.__('Zurück zum Profil', CPC2_TEXT_DOMAIN).'</a>';
+                    }
+                }
+                
             $html .= '</form>';
         
 
