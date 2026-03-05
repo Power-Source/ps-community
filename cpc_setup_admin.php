@@ -2558,7 +2558,7 @@ function cpc_show_options($cpc_expand_shortcode, $function) {
 function cpc_get_shortcode_default($values, $name, $default) {
 
     // Remove function if passed in format function-option
-    if (strpos($name, '-')):
+    if (is_string($name) && strpos($name, '-') !== false):
         $arr = explode('-',$name);
         $name = $arr[1];
     endif;
@@ -2809,7 +2809,7 @@ add_action('cpc_admin_setup_form_save_hook', 'cpc_admin_getting_started_core_sav
 function cpc_admin_getting_started_core_save($the_post) {
     
 	$current_core = get_option('cpc_default_core');	
-    if (strpos($current_core, 'XRELOADX')):
+    if (is_string($current_core) && strpos($current_core, 'XRELOADX') !== false):
         // extensions changed, will need to do a reload
         $current_core = str_replace('XRELOADX', '', $current_core);
         update_option('cpc_default_core', $current_core);

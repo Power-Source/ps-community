@@ -166,7 +166,7 @@ function cpc_groups_list($atts) {
 				if (cpc_using_permalinks()):
 					$group_link = $page_link . $group->post_name . '/';
 				else:
-					$group_link = $page_link . (strpos($page_link, '?') ? '&' : '?') . 'group_name=' . $group->post_name;
+					$group_link = $page_link . (strpos($page_link, '?') !== false ? '&' : '?') . 'group_name=' . $group->post_name;
 				endif;
 			else:
 				$group_link = get_permalink($group->ID);

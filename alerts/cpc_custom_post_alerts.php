@@ -215,9 +215,7 @@ function cpc_alerts_clear_sent( $views )
 
 				global $wpdb;
 
-				if ($_REQUEST['cpc_action'] == 'cpc_alerts_clear_sent'):
-
-					$sql = "DELETE FROM ".$wpdb->prefix."posts WHERE post_type='cpc_alerts' and post_status = 'publish'";
+			if (isset($_REQUEST['cpc_action']) && $_REQUEST['cpc_action'] == 'cpc_alerts_clear_sent'):
 					$wpdb->query($sql);
 
 					echo '<div class="updated"><p>';
@@ -226,9 +224,7 @@ function cpc_alerts_clear_sent( $views )
 
 				endif;
 
-				if ($_REQUEST['cpc_action'] == 'cpc_alerts_clear_pending'):
-
-					$sql = "DELETE FROM ".$wpdb->prefix."posts WHERE post_type='cpc_alerts' and post_status = 'pending'";
+			if (isset($_REQUEST['cpc_action']) && $_REQUEST['cpc_action'] == 'cpc_alerts_clear_pending'):
 					$wpdb->query($sql);
 
 					echo '<div class="updated"><p>';
@@ -237,9 +233,7 @@ function cpc_alerts_clear_sent( $views )
 
 				endif;
 
-				if ($_REQUEST['cpc_action'] == 'cpc_alerts_clear_all'):
-
-					$sql = "DELETE FROM ".$wpdb->prefix."posts WHERE post_type='cpc_alerts' and (post_status = 'pending' or post_status = 'publish')";
+			if (isset($_REQUEST['cpc_action']) && $_REQUEST['cpc_action'] == 'cpc_alerts_clear_all'):
 					$wpdb->query($sql);
 
 					echo '<div class="updated"><p>';

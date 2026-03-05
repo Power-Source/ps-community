@@ -125,13 +125,13 @@ function user_avatar_core_avatar_url($uid = false)
 function user_avatar_add_photo() {
     global $current_user;
 
-    if(($_GET['uid'] == $current_user->ID || current_user_can('edit_users')) && is_numeric($_GET['uid'])) {
+    if(isset($_GET['uid']) && ($_GET['uid'] == $current_user->ID || current_user_can('edit_users')) && is_numeric($_GET['uid'])) {
         $uid = $_GET['uid'];
 
         // Prüfe, ob das Modal (iframe) geladen wird
         if (isset($_GET['modal']) && $_GET['modal'] == 1) {
             // NUR das Formular ausgeben, KEIN komplettes HTML-Dokument!
-            switch($_GET['step']) {
+            switch($_GET['step'] ?? '') {
                 case 1: user_avatar_add_photo_step1($uid); break;
                 case 2: user_avatar_add_photo_step2($uid); break;
                 case 3: user_avatar_add_photo_step3($uid); break;
@@ -147,7 +147,7 @@ function user_avatar_add_photo() {
             </head>
             <body>
             <?php
-            switch($_GET['step']) {
+            switch($_GET['step'] ?? '') {
                 case 1: user_avatar_add_photo_step1($uid); break;
                 case 2: user_avatar_add_photo_step2($uid); break;
                 case 3: user_avatar_add_photo_step3($uid); break;
@@ -713,11 +713,11 @@ function user_avatar_avatar_exists($id, $type = "-cpcfull"){
 			}
 			
 			// Check for array
-			if ( 0 < count( $avatar_files ) ) {
+			if ( is_array($avatar_files) && count( $avatar_files ) > 0 ) {
 				// Check for current avatar
 				if( is_array($avatar_files) ):
 					foreach( $avatar_files as $key => $value ) {
-						if(strpos($value, $type)):
+						if(is_string($value) && strpos($value, $type) !== false):
 							$return = $value;
 						endif;
 					}

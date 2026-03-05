@@ -317,7 +317,7 @@ function cpc_bbcode_replace($text_to_search) {
 
 function cpc_make_clickable($text) {
 
-    $internal_link = strpos($text, get_bloginfo('url')) ? 1 : 0;
+    $internal_link = (is_string($text) && strpos($text, get_bloginfo('url')) !== false) ? 1 : 0;
     $suffix = get_option('cpc_external_links');
     $text = make_clickable(str_replace($suffix, '', $text));
 
@@ -391,7 +391,7 @@ function cpc_get_wp_editor($content,$textarea,$css) {
  */
 function cpc_forum_close_comments( $posts ) {
 	
-	if (sizeof($posts) == 1):
+	if (count($posts) == 1):
 
 		if ( 'cpc_forum_post' == get_post_type($posts[0]->ID) && $posts[0]->comment_status != 'closed'):
 

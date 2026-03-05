@@ -1645,7 +1645,7 @@ function cpc_forum_categories_children($html, $values, $slug, $forum_id, $show_c
 	// Translate show_closed
 	$show_closed = ($show_closed) ? '' : 'open';
 
-	if ( count($terms) > 0 ):
+	if ( is_array($terms) && count($terms) > 0 ):
 
 		$forums = array();
 

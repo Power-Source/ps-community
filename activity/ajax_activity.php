@@ -257,7 +257,7 @@ function cpc_return_activity_posts() {
                                     );
                                     $comments = get_comments($args);
                                     if ($comments) {
-                                        $comment_count = sizeof($comments);
+                                        $comment_count = count($comments);
                                         $item_html .= '<div class="cpc_activity_comments">';
 
                                         $comments_shown = 0;

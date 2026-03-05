@@ -67,7 +67,7 @@ function cpc_alerts_activity_redirect() {
     global $current_user;
     if ( $current_user ) {      
 
-        if ($_POST['delete_alert'] != '1'):
+        if (!isset($_POST['delete_alert']) || $_POST['delete_alert'] != '1'):
             update_post_meta( absint($_POST['alert_id']), 'cpc_alert_read', true );
         else:
             wp_delete_post(absint($_POST['alert_id']), true);

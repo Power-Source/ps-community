@@ -424,7 +424,7 @@ function cpc_friends_pending($atts) {
 
 		if (isset($_POST['cpc_friends_pending'])):
 
-			if ($_POST['cpc_friends_pending'] == 'reject'):
+			if (isset($_POST['cpc_friends_pending']) && $_POST['cpc_friends_pending'] == 'reject'):
 
 				$post = get_post ($_POST['cpc_friends_post_id']);
 				if ($post):

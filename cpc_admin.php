@@ -52,7 +52,7 @@ function cpc_menu() {
             'hierarchical'  => false, 
         ) );
 
-        if ( count($terms) > 0 && current_user_can('manage_options')):
+        if ( is_array($terms) && count($terms) > 0 && current_user_can('manage_options')):
 
             global $post;
 

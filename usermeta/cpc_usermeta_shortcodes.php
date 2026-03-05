@@ -335,7 +335,7 @@ function cpc_usermeta_change($atts) {
                     if (isset($_POST['cpccom_lang'])):
                         $user_lang = get_user_meta($user_id, 'cpccom_lang', true);
                         if ($user_lang != $_POST['cpccom_lang']) $refresh = true;
-                        if ($_POST['cpccom_lang']):
+                        if (isset($_POST['cpccom_lang']) && $_POST['cpccom_lang']):
                             update_user_meta( $user_id, 'cpccom_lang', $_POST['cpccom_lang']);
                         else:
                             delete_user_meta($user_id, 'cpccom_lang');

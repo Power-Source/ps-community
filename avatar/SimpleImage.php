@@ -39,11 +39,11 @@ class SimpleImage {
     }
 
     /**
-     * Destroy image resource
+     * Destroy image resource - FIXED for PHP 8+ (GdImage support)
      *
      */
     function __destruct() {
-        if ($this->image !== null && is_resource($this->image)) {
+        if ($this->image !== null && (is_resource($this->image) || $this->image instanceof \GdImage)) {
             imagedestroy($this->image);
         }
     }

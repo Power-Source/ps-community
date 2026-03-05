@@ -74,7 +74,7 @@ function cpc_avatar($atts) {
 		if ($user_can_see_profile):
 
 			// I moved this code out of the '} else {' block below.  It was not being inserted if the $user_id != $current_user->ID thereby not inserting the <div> element.
-			if (!strpos($size, '%')):
+			if (is_string($size) && strpos($size, '%') === false):
 				$html .= sprintf('<div class="cpc_avatar" style="width: %dpx; height: %dpx;">', $size, $size);
 			else:
 				$html .= sprintf('<div class="cpc_avatar" style="width: %d; height: %d;">', $size, $size);

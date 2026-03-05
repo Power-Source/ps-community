@@ -197,10 +197,10 @@ function cpc_return_activity_posts() {
                                     $p = cpc_formatted_content($p, true);
 
                                     // Check for any items (attachments)
-                                    if ($i=strpos($p, '[items]')):
+                                    if (($i = strpos($p, '[items]')) !== false):
                                         $attachments_list = substr($p, $i+7, strlen($p)-($i+7));
-                                        if (strpos($attachments_list, '[')) 
-                                            $attachments_list = substr($attachments_list, 0, strpos($attachments_list, '['));
+                                        if (($pos = strpos($attachments_list, '[')) !== false) 
+                                            $attachments_list = substr($attachments_list, 0, $pos);
                                         $attachments_list = substr(strip_tags($attachments_list), 0, -1);
 
                                         $attachments = explode(',', strip_tags($attachments_list));
@@ -224,7 +224,7 @@ function cpc_return_activity_posts() {
                                     // Shortern if necessary and applicable
                                     if (strpos($p, '[q]') === false && strpos($post_words, '[items]') === false):
                                         $words = explode(' ', $p, $more + 1);
-                                        if (count($words)> $more):
+                                        if (is_array($words) && count($words) > $more):
                                             array_pop($words);
                                             array_push($words, '... [<span class="activity_item_more" rel="'.$item->ID.'" title="'.$more_label.'">'.$more_label.'</span>]');
                                             $item_html .= '<div class="cpc_activity_item_post" id="activity_item_snippet_'.$item->ID.'">'.implode(' ', $words).'</div></div>';
@@ -248,7 +248,7 @@ function cpc_return_activity_posts() {
                                     );
                                     $comments = get_comments($args);
                                     if ($comments) {
-                                        $comment_count = sizeof($comments);
+                                        $comment_count = count($comments);
                                         $item_html .= '<div class="cpc_activity_comments">';
 
                                         $comments_shown = 0;

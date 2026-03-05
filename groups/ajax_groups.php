@@ -144,7 +144,7 @@ function cpc_ajax_leave_group() {
 
 	// Check if user is the creator/only admin
 	$admins = cpc_get_group_admins($group_id);
-	if (count($admins) == 1 && $admins[0]->ID == $user_id) {
+	if (is_array($admins) && count($admins) == 1 && $admins[0]->ID == $user_id) {
 		wp_send_json_error(array('message' => __('Du kannst die Gruppe nicht verlassen, da du der einzige Admin bist. Ernenne zuerst einen anderen Admin.', CPC2_TEXT_DOMAIN)));
 	}
 
