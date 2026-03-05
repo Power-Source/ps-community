@@ -6,7 +6,10 @@ function cpc_alerts_init() {
 	// JS and CSS
 	wp_enqueue_script('cpc-alerts-js', plugins_url('cpc_alerts.js', __FILE__), array('jquery'));	
 	wp_enqueue_style('cpc-alerts-css', plugins_url('cpc_alerts.css', __FILE__), 'css');
-	wp_localize_script('cpc-alerts-js', 'cpc_alerts', array( 'ajaxurl' => admin_url( 'admin-ajax.php' ) ));    	
+	wp_localize_script('cpc-alerts-js', 'cpc_alerts', array( 
+        'ajaxurl' => admin_url( 'admin-ajax.php' ),
+        'nonce' => wp_create_nonce('cpc-alerts-nonce')
+    ));    	
 
 	// Select2 replacement drop-down list from core
 	wp_enqueue_script('cpc-select2-js', plugins_url('../../cp-community/js/select2.js', __FILE__), array('jquery'));	

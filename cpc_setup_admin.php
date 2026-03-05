@@ -40,7 +40,7 @@ function cpc_admin_getting_started_options() {
                     if (isset($_GET['cpc_reset_options'])) {
 
                         global $wpdb;
-                        $sql = "DELETE FROM ".$wpdb->prefix."options WHERE option_name like 'cpc_shortcode_options%'";
+                        $sql = $wpdb->prepare("DELETE FROM {$wpdb->prefix}options WHERE option_name LIKE %s", 'cpc_shortcode_options%');
                         $wpdb->query($sql);
                         delete_option('cpccom_global_styles'); // global styles flag
                         echo '<div class="cpc_success" style="margin-top:20px">';
@@ -2872,7 +2872,7 @@ function cpc_admin_getting_started_core_save($the_post) {
         set_time_limit(86400); // 24 hours    
         global $wpdb;
 
-        $sql = "SELECT ID FROM ".$wpdb->prefix."posts WHERE post_type = 'cpc_activity'";
+        $sql = $wpdb->prepare("SELECT ID FROM {$wpdb->prefix}posts WHERE post_type = %s", 'cpc_activity');
         $the_posts = $wpdb->get_col($sql);
         if ($the_posts):
             foreach ($the_posts as $id):
@@ -3015,7 +3015,7 @@ function cpc_admin_getting_started_styles() {
                     if (isset($_GET['cpc_reset_options'])) {
 
                         global $wpdb;
-                        $sql = "DELETE FROM ".$wpdb->prefix."options WHERE option_name like 'cpc_styles_%'";
+                        $sql = $wpdb->prepare("DELETE FROM {$wpdb->prefix}options WHERE option_name LIKE %s", 'cpc_styles_%');
                         $wpdb->query($sql);
                         echo '<div class="cpc_success" style="margin-top:20px">';
                             echo sprintf(__('CP-Community-Stile wurden alle zurückgesetzt! <a href="%s">Weiter...</a>', CPC2_TEXT_DOMAIN), admin_url( 'admin.php?page=cpc_com_styles' ));

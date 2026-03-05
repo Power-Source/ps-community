@@ -29,7 +29,8 @@ jQuery(document).ready(function() {
 			    {
 			        action : 'cpc_alerts_make_all_read',
 			        alert_id : alert_id,
-			        url : url
+			        url : url,
+			        security : cpc_alerts.nonce
 			    },
 			    function(response) {
 			    }   
@@ -47,6 +48,7 @@ jQuery(document).ready(function() {
                     cpc_alerts.ajaxurl,
                     {
                         action : 'cpc_alerts_delete_all',
+                        security : cpc_alerts.nonce
                     },
                     function(response) {
                     }   
@@ -62,7 +64,8 @@ jQuery(document).ready(function() {
                         action : 'cpc_alerts_activity_redirect',
                         alert_id : alert_id,
                         url : url,
-                        delete_alert : jQuery(this).attr('rel')
+                        delete_alert : jQuery(this).attr('rel'),
+                        security : cpc_alerts.nonce
                     },
                     function(response) {
                         window.location.assign(response);
@@ -113,7 +116,8 @@ jQuery(document).ready(function() {
             {
                 action : 'cpc_alerts_activity_redirect',
                 alert_id : alert_id,
-                url : url
+                url : url,
+                security : cpc_alerts.nonce
             },
             function(response) {
                 window.location.assign(response);
@@ -133,6 +137,7 @@ jQuery(document).ready(function() {
             cpc_alerts.ajaxurl,
             {
                 action : 'cpc_alerts_make_all_read',
+                security : cpc_alerts.nonce
             },
             function(response) {
             }   
@@ -150,6 +155,7 @@ jQuery(document).ready(function() {
             {
                 action : 'cpc_alerts_list_item_delete',
                 alert_id : jQuery(this).attr('rel'),
+                security : cpc_alerts.nonce
             },
             function(response) {
             }   
@@ -181,6 +187,7 @@ jQuery(document).ready(function() {
         jQuery.post(
             cpc_alerts.ajaxurl, {
                 action : 'cpc_alerts_delete_all',
+                security : cpc_alerts.nonce
             },
             function(response) {
             }   

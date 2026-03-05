@@ -124,7 +124,8 @@ jQuery(document).ready(function() {
 			        post_id : id,
 			        comment_content: comment,
 			        size : jQuery(this).data('size'),
-			        link : jQuery(this).data('link')
+			        link : jQuery(this).data('link'),
+			        security : cpc_activity_ajax.nonce
 			    },
 			    function(response) {
 			    	jQuery('#cpc_activity_'+id+'_content').append(response);
@@ -152,7 +153,8 @@ jQuery(document).ready(function() {
 			    cpc_activity_ajax.ajaxurl,
 			    {
 			        action : 'cpc_activity_settings_sticky',
-			        post_id : id
+			        post_id : id,
+			        security : cpc_activity_ajax.nonce
 			    },
 			    function(response) {
 			    }   
@@ -177,7 +179,8 @@ jQuery(document).ready(function() {
             cpc_activity_ajax.ajaxurl,
             {
                 action : 'cpc_activity_settings_hide',
-                post_id : id
+                post_id : id,
+                security : cpc_activity_ajax.nonce
             },
             function(response) {
             }   
@@ -197,7 +200,8 @@ jQuery(document).ready(function() {
 		    cpc_activity_ajax.ajaxurl,
 		    {
 		        action : 'cpc_activity_settings_unsticky',
-		        post_id : id
+		        post_id : id,
+		        security : cpc_activity_ajax.nonce
 		    },
 		    function(response) {
 		    }   
@@ -215,7 +219,8 @@ jQuery(document).ready(function() {
 		    cpc_activity_ajax.ajaxurl,
 		    {
 		        action : 'cpc_activity_settings_delete',
-		        id : id
+		        id : id,
+		        security : cpc_activity_ajax.nonce
 		    },
 		    function(response) {
 		    }   
@@ -233,7 +238,8 @@ jQuery(document).ready(function() {
 		    cpc_activity_ajax.ajaxurl,
 		    {
 		        action : 'cpc_comment_settings_delete',
-		        id : id
+		        id : id,
+		        security : cpc_activity_ajax.nonce
 		    },
 		    function(response) {
 		    }   
@@ -264,6 +270,7 @@ jQuery(document).ready(function() {
             {
                 action : 'cpc_activity_unhide_all',
                 post_id : jQuery(this).attr('rel'),
+                security : cpc_activity_ajax.nonce
             },
             function(response) {
                 alert('OK');

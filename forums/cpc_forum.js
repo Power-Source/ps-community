@@ -148,7 +148,8 @@ jQuery(document).ready(function() {
                                     cpc_forum_ajax.ajaxurl,
                                     {
                                         action : 'cpc_forum_post_add_ajax_hook',
-                                        post_id : post_id
+                                        post_id : post_id,
+                                        security : cpc_forum_ajax.nonce
                                     },
                                     function(response) {
                                         //alert(response); // Will show debugging info
@@ -337,6 +338,7 @@ jQuery(document).ready(function() {
 					        comment : comment,
 					        size : jQuery(this).data('size'),
 					        cpc_forum_moderate : 1,
+					        security : cpc_forum_ajax.nonce
 					    },
 					    function(response) {
 					    	if (jQuery('#sub_comment_div_'+id).prev('.cpc_forum_post_subcomments').length) {
@@ -394,7 +396,8 @@ jQuery(document).ready(function() {
 			    cpc_forum_ajax.ajaxurl,
 			    {
 			        action : 'cpc_forum_comment_reopen',
-			        post_id : post_id
+			        post_id : post_id,
+			        security : cpc_forum_ajax.nonce
 			    },
 			    function(response) {
 			    	location.reload();
@@ -449,7 +452,8 @@ jQuery(document).ready(function() {
 		    cpc_forum_ajax.ajaxurl,
 		    {
 		        action : 'cpc_forum_closed_switch',
-		        state : state
+		        state : state,
+		        security : cpc_forum_ajax.nonce
 		    },
 		    function(response) {
 		    }   

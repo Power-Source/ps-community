@@ -7,12 +7,18 @@ add_action( 'wp_ajax_cpc_forum_post_add_ajax_hook', 'cpc_forum_post_add_ajax_hoo
 
 /* HOOK FOR ADD NEW POST */
 function cpc_forum_post_add_ajax_hook() {
-    do_action( 'cpc_forum_post_add_subs_hook', $_POST, $_POST['post_id'] );
+    // CSRF-Schutz
+    check_ajax_referer('cpc-forum-nonce', 'security');
+    
+    do_action( 'cpc_forum_post_add_subs_hook', $_POST, absint($_POST['post_id']) );
     exit;
 }
 
 /* SAVE COMMENT (TO REPLY) */
 function cpc_forum_add_subcomment() {
+
+	// CSRF-Schutz
+	check_ajax_referer('cpc-forum-nonce', 'security');
 
 	global $wpdb,$current_user;
 
@@ -117,11 +123,14 @@ function cpc_forum_add_subcomment() {
 /* REOPEN COMMENT */
 function cpc_forum_comment_reopen() {
 
+	// CSRF-Schutz
+	check_ajax_referer('cpc-forum-nonce', 'security');
+
 	global $current_user;
 	$the_post = $_POST;
 
 	$my_post = array(
-	      'ID'           	=> $the_post['post_id'],
+	      'ID'           	=> absint($the_post['post_id']),
 	      'comment_status' 	=> 'open',
 	);
 	wp_update_post( $my_post );
@@ -137,8 +146,11 @@ function cpc_forum_comment_reopen() {
 /* SAVE CLOSED SWITCH STATE FOR USER */
 function cpc_forum_closed_switch() {
 
+	// CSRF-Schutz
+	check_ajax_referer('cpc-forum-nonce', 'security');
+
 	global $current_user;
-	if (is_user_logged_in()) update_user_meta($current_user->ID, 'forum_closed_switch', $_POST['state']);
+	if (is_user_logged_in()) update_user_meta($current_user->ID, 'forum_closed_switch', sanitize_text_field($_POST['state']));
 
 }
 

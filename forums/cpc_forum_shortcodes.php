@@ -8,6 +8,7 @@ function cpc_forum_init() {
     wp_localize_script( 'cpc-forum-js', 'cpc_forum_ajax', array( 
         'ajaxurl' => admin_url( 'admin-ajax.php' ),
         'is_admin' => current_user_can('manage_options'),
+        'nonce' => wp_create_nonce('cpc-forum-nonce')
     ) );		
     wp_enqueue_style('cpc-forum-css', plugins_url('cpc_forum.css', __FILE__), array(), '1.0');
     // Select2 replacement drop-down list from core (ready for dependenent plugins like who-to that only uses hooks/filters)

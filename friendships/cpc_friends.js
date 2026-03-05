@@ -13,7 +13,8 @@ jQuery(document).ready(function() {
                 cpc_friendships_ajax.ajaxurl,
                 {
                     action : 'cpc_add_favourite',
-                    user_id: jQuery(this).data('user_id')
+                    user_id: jQuery(this).data('user_id'),
+                    security : cpc_ajax.nonce
                 },
                 function(response) {
                 }   
@@ -24,7 +25,8 @@ jQuery(document).ready(function() {
                 cpc_friendships_ajax.ajaxurl,
                 {
                     action : 'cpc_remove_favourite',
-                    user_id: jQuery(this).data('user_id')
+                    user_id: jQuery(this).data('user_id'),
+                    security : cpc_ajax.nonce
                 },
                 function(response) {
                 }   
@@ -44,7 +46,8 @@ jQuery(document).ready(function() {
 		    cpc_friendships_ajax.ajaxurl,
 		    {
 		        action : 'cpc_add_favourite',
-		        user_id: jQuery(this).attr('rel')
+		        user_id: jQuery(this).attr('rel'),
+		        security : cpc_ajax.nonce
 		    },
 		    function(response) {
 		    }   
@@ -62,7 +65,8 @@ jQuery(document).ready(function() {
 		    cpc_friendships_ajax.ajaxurl,
 		    {
 		        action : 'cpc_remove_favourite',
-		        user_id: jQuery(this).attr('rel')
+		        user_id: jQuery(this).attr('rel'),
+		        security : cpc_ajax.nonce
 		    },
 		    function(response) {
 		    }   
@@ -190,7 +194,8 @@ jQuery(document).ready(function() {
 		    cpc_friendships_ajax.ajaxurl,
 		    {
 		        action : 'cpc_friends_add',
-		        user_id: jQuery(this).attr('rel')
+		        user_id: jQuery(this).attr('rel'),
+		        security : cpc_ajax.nonce
 		    },
 		    function(response) {
 		    	location.reload();
@@ -207,7 +212,8 @@ jQuery(document).ready(function() {
 		    cpc_friendships_ajax.ajaxurl,
 		    {
 		        action : 'cpc_friends_accept',
-		        post_id: jQuery(this).attr('rel')
+		        post_id: jQuery(this).attr('rel'),
+		        security : cpc_ajax.nonce
 		    },
 		    function(response) {
 		    	location.reload();
@@ -224,7 +230,8 @@ jQuery(document).ready(function() {
 		    cpc_friendships_ajax.ajaxurl,
 		    {
 		        action : 'cpc_friends_reject',
-		        post_id: jQuery(this).attr('rel')
+		        post_id: jQuery(this).attr('rel'),
+		        security : cpc_ajax.nonce
 		    },
 		    function(response) {
 		    	location.reload();
@@ -241,7 +248,8 @@ jQuery(document).ready(function() {
 		    cpc_friendships_ajax.ajaxurl,
 		    {
 		        action : 'cpc_friends_reject',
-		        post_id: jQuery(this).attr('rel')
+		        post_id: jQuery(this).attr('rel'),
+		        security : cpc_ajax.nonce
 		    },
 		    function(response) {
 		    	location.reload();
@@ -260,7 +268,8 @@ jQuery(document).ready(function() {
             jQuery.post(
                 cpc_friendships_ajax.ajaxurl,
                 {
-                    action : 'cpc_remove_all_friends'
+                    action : 'cpc_remove_all_friends',
+                    security : cpc_ajax.nonce
                 },
                 function(response) {
                     location.reload();

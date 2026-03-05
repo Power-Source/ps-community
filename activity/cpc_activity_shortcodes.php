@@ -10,7 +10,8 @@ function cpc_activity_init() {
     wp_localize_script('cpc-activity-js', 'cpc_activity_ajax', array(
         'ajaxurl' => admin_url('admin-ajax.php'),
         'plugins_url' => plugins_url('', __FILE__),
-        'activity_post_focus' => get_option('cpccom_activity_set_focus')
+        'activity_post_focus' => get_option('cpccom_activity_set_focus'),
+        'nonce' => wp_create_nonce('cpc-activity-nonce')
     ));
     
     // CSS-Datei einbinden

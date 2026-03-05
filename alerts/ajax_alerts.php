@@ -9,6 +9,9 @@ add_action( 'wp_ajax_cpc_alerts_delete_all', 'cpc_alerts_delete_all' );
 /* DELETE ALL ALERTS */
 function cpc_alerts_delete_all() {
     
+    // CSRF-Schutz
+    check_ajax_referer('cpc-alerts-nonce', 'security');
+    
     global $current_user;
     if ( $current_user ) {    
 
@@ -41,6 +44,9 @@ function cpc_alerts_delete_all() {
 /* DELETE ALERT */
 function cpc_alerts_list_item_delete() {
     
+    // CSRF-Schutz
+    check_ajax_referer('cpc-alerts-nonce', 'security');
+    
     global $current_user;
     if ( $current_user ) {      
 
@@ -55,16 +61,19 @@ function cpc_alerts_list_item_delete() {
 /* MARK ALERT AS READ */
 function cpc_alerts_activity_redirect() {
     
+    // CSRF-Schutz
+    check_ajax_referer('cpc-alerts-nonce', 'security');
+    
     global $current_user;
     if ( $current_user ) {      
 
         if ($_POST['delete_alert'] != '1'):
-            update_post_meta( $_POST['alert_id'], 'cpc_alert_read', true );
+            update_post_meta( absint($_POST['alert_id']), 'cpc_alert_read', true );
         else:
-            wp_delete_post($_POST['alert_id'], true);
+            wp_delete_post(absint($_POST['alert_id']), true);
         endif;
 
-        echo $_POST['url'];
+        echo esc_url($_POST['url']);
         
     }
     
@@ -75,6 +84,9 @@ function cpc_alerts_activity_redirect() {
 
 /* MARK ALL ALERTS AS READ */
 function cpc_alerts_make_all_read() {
+
+    // CSRF-Schutz
+    check_ajax_referer('cpc-alerts-nonce', 'security');
 
     global $current_user;
     if ( $current_user ) {  

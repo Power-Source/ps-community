@@ -30,7 +30,10 @@ function cpc_get_users_ajax() {
 add_action( 'wp_ajax_cpc_friends_add', 'cpc_friends_add' ); // Logged in 
 function cpc_friends_add() {
 
-	$user_id = $_POST['user_id'];
+	// CSRF-Schutz
+	check_ajax_referer('cpc-friendship-nonce', 'security');
+
+	$user_id = absint($_POST['user_id']);
 	global $current_user;
 
 	if ($user_id != $current_user->ID):
@@ -95,6 +98,9 @@ function cpc_friends_add() {
 add_action( 'wp_ajax_cpc_remove_all_friends', 'cpc_remove_all_friends' ); // Logged in 
 function cpc_remove_all_friends() {
 
+	// CSRF-Schutz
+	check_ajax_referer('cpc-friendship-nonce', 'security');
+
 	global $wpdb;
 	if (is_user_logged_in()):    
 
@@ -119,18 +125,21 @@ function cpc_remove_all_friends() {
 add_action( 'wp_ajax_cpc_friends_reject', 'cpc_friends_reject' ); // Logged in 
 function cpc_friends_reject() {
 
+	// CSRF-Schutz
+	check_ajax_referer('cpc-friendship-nonce', 'security');
+
 	global $current_user;
-	$post = get_post($_POST['post_id']);
+	$post = get_post(absint($_POST['post_id']));
 	if ($post):
 		$member1 = get_post_meta ($post->ID, 'cpc_member1', true);
 		$member2 = get_post_meta ($post->ID, 'cpc_member2', true);
 
 		if ($member1 == $current_user->ID || $member2 == $current_user->ID) {
-			wp_delete_post( $_POST['post_id'], true );
+			wp_delete_post( absint($_POST['post_id']), true );
 		}
 		echo 'ok';
 	else:
-		echo 'Post not found: '.$_POST['post_id'];
+		echo 'Post not found: ' . absint($_POST['post_id']);
 	endif;
 
 }
@@ -139,8 +148,11 @@ function cpc_friends_reject() {
 add_action( 'wp_ajax_cpc_friends_accept', 'cpc_friends_accept' ); // Logged in 
 function cpc_friends_accept() {
 
+	// CSRF-Schutz
+	check_ajax_referer('cpc-friendship-nonce', 'security');
+
 	global $current_user;
-	$post = get_post($_POST['post_id']);
+	$post = get_post(absint($_POST['post_id']));
 	$member1 = get_post_meta ($post->ID, 'cpc_member1', true);
 	$member2 = get_post_meta ($post->ID, 'cpc_member2', true);
 

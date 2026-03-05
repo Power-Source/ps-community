@@ -29,11 +29,17 @@ function cpc_return_activity_posts() {
 
     if ($nonce_check):
     
-        if ($arr = unserialize(stripslashes($arr))) {
+        // Sichere Deserialization mit Validierung
+        $arr = @unserialize(stripslashes($arr));
+        if ($arr !== false && is_array($arr)) {
 
             if ($arr):
 
-                $atts = unserialize(stripslashes($atts));
+                // Sichere Deserialization mit Validierung
+                $atts = @unserialize(stripslashes($atts));
+                if ($atts === false || !is_array($atts)) {
+                    $atts = array();
+                }
 
                 // Get shortcode parameters
                 $values = cpc_get_shortcode_options('cpc_activity');    
@@ -367,8 +373,11 @@ function cpc_return_activity_posts() {
 /* ADMIN - UNHIDE ALL POSTS */
 function cpc_activity_unhide_all() {
     
+    // CSRF-Schutz
+    check_ajax_referer('cpc-activity-nonce', 'security');
+    
     global $wpdb;
-    $post_id = $_POST['post_id'];
+    $post_id = absint($_POST['post_id']);
     $sql = "delete from ".$wpdb->prefix."postmeta where meta_key = 'cpc_activity_hidden' and post_id = %d";
     $wpdb->query($wpdb->prepare($sql, $post_id));
     echo $post_id;
@@ -379,15 +388,18 @@ function cpc_activity_unhide_all() {
 /* HIDE POST */
 function cpc_activity_settings_hide() {
 
+    // CSRF-Schutz
+    check_ajax_referer('cpc-activity-nonce', 'security');
+
     global $current_user;
     
     $hidden = get_post_meta ($_POST['post_id'], 'cpc_activity_hidden', true);
     if (!$hidden) $hidden = array();
     array_push($hidden, $current_user->ID);
     
-	update_post_meta( $_POST['post_id'], 'cpc_activity_hidden', $hidden );
+	update_post_meta( absint($_POST['post_id']), 'cpc_activity_hidden', $hidden );
     
-	echo $_POST['post_id'];
+	echo absint($_POST['post_id']);
     exit;
 
 }
@@ -395,8 +407,11 @@ function cpc_activity_settings_hide() {
 /* MAKE POST STICKY */
 function cpc_activity_settings_sticky() {
 
-	if (update_post_meta( $_POST['post_id'], 'cpc_sticky', true )) {
-		echo $_POST['post_id'];
+    // CSRF-Schutz
+    check_ajax_referer('cpc-activity-nonce', 'security');
+
+	if (update_post_meta( absint($_POST['post_id']), 'cpc_sticky', true )) {
+		echo absint($_POST['post_id']);
 	} else {
 		echo 0;
 	}
@@ -406,8 +421,11 @@ function cpc_activity_settings_sticky() {
 /* MAKE POST UNSTICKY */
 function cpc_activity_settings_unsticky() {
 
-	if (delete_post_meta( $_POST['post_id'], 'cpc_sticky' )) {
-		echo $_POST['post_id'];
+    // CSRF-Schutz
+    check_ajax_referer('cpc-activity-nonce', 'security');
+
+	if (delete_post_meta( absint($_POST['post_id']), 'cpc_sticky' )) {
+		echo absint($_POST['post_id']);
 	} else {
 		echo 0;
 	}
@@ -423,9 +441,12 @@ function cpc_activity_settings_unsticky() {
  */
 function cpc_activity_comment_add() {
 
+    // CSRF-Schutz
+    check_ajax_referer('cpc-activity-nonce', 'security');
+
 	global $current_user;
 	$data = array(
-	    'comment_post_ID' => $_POST['post_id'],
+	    'comment_post_ID' => absint($_POST['post_id']),
 	    'comment_content' => strip_tags(trim($_POST['comment_content'])),
 	    'comment_type' => 'cpc_activity_comment',
 	    'comment_parent' => 0,
@@ -478,7 +499,10 @@ function cpc_activity_comment_add() {
 /* DELETE POST */
 function cpc_activity_settings_delete() {
 
-	$id = $_POST['id'];
+    // CSRF-Schutz
+    check_ajax_referer('cpc-activity-nonce', 'security');
+
+	$id = absint($_POST['id']);
 	if ($id):
 		global $current_user;
 		$post = get_post($id);
@@ -510,7 +534,10 @@ function cpc_activity_settings_delete() {
 /* DELETE COMMENT */
 function cpc_comment_settings_delete() {
 
-	$id = $_POST['id'];
+    // CSRF-Schutz
+    check_ajax_referer('cpc-activity-nonce', 'security');
+
+	$id = absint($_POST['id']);
 	if ($id):
 		global $current_user;
 		$comment = get_comment($id);

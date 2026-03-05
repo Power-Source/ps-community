@@ -395,7 +395,7 @@ function cpccom_setup() {
 
 		// Do any saving from quick start hook
 		if (isset($_POST)):
-			if (isset($_POST['cpc_expand'])) echo '<input type="hidden" id="cpc_expand" value="'.$_POST['cpc_expand'].'" />';
+			if (isset($_POST['cpc_expand'])) echo '<input type="hidden" id="cpc_expand" value="' . esc_attr($_POST['cpc_expand']) . '" />';
 			if (isset($_POST['cpccom_quick_start'])):
 				do_action( 'cpc_admin_quick_start_form_save_hook', $_POST);
 			endif;

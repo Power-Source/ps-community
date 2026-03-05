@@ -412,22 +412,34 @@ function cpc_init() {
     	// Alerts admin
         if (strpos(CPC_CORE_PLUGINS, 'core-alerts') !== false):
             wp_enqueue_script('cpc-alerts-js', plugins_url('alerts/cpc_alerts.js', __FILE__), array('jquery'));	
-            wp_localize_script('cpc-alerts-js', 'cpc_alerts', array( 'ajaxurl' => admin_url( 'admin-ajax.php' ) ));    	
+            wp_localize_script('cpc-alerts-js', 'cpc_alerts', array( 
+                'ajaxurl' => admin_url( 'admin-ajax.php' ),
+                'nonce' => wp_create_nonce('cpc-alerts-nonce')
+            ));    	
         endif;
     	// Activity admin
         if (strpos(CPC_CORE_PLUGINS, 'core-activity') !== false):
 		    wp_enqueue_script('cpc-activity-js', plugins_url('activity/cpc_activity.js', __FILE__), array('jquery'));	
-		    wp_localize_script( 'cpc-activity-js', 'cpc_ajax', array( 'ajaxurl' => admin_url( 'admin-ajax.php' ) ) );		
+		    wp_localize_script( 'cpc-activity-js', 'cpc_ajax', array( 
+                'ajaxurl' => admin_url( 'admin-ajax.php' ),
+                'nonce' => wp_create_nonce('cpc-activity-nonce')
+            ) );		
         endif;
 		// Forums admin
         if (strpos(CPC_CORE_PLUGINS, 'core-forums') !== false):
             wp_enqueue_script('cpc-forum-js', plugins_url('forums/cpc_forum.js', __FILE__), array('jquery'));	
-            wp_localize_script( 'cpc-forum-js', 'cpc_ajax', array( 'ajaxurl' => admin_url( 'admin-ajax.php' ) ) );		
+            wp_localize_script( 'cpc-forum-js', 'cpc_ajax', array( 
+                'ajaxurl' => admin_url( 'admin-ajax.php' ),
+                'nonce' => wp_create_nonce('cpc-forum-nonce')
+            ) );		
         endif;
 		// Friendships
         if (strpos(CPC_CORE_PLUGINS, 'core-friendships') !== false):
             wp_enqueue_script('cpc-friendship-js', plugins_url('friendships/cpc_friends.js', __FILE__), array('jquery'));
-            wp_localize_script( 'cpc-friendship-js', 'cpc_ajax', array( 'ajaxurl' => admin_url( 'admin-ajax.php' ) ) );		
+            wp_localize_script( 'cpc-friendship-js', 'cpc_ajax', array( 
+                'ajaxurl' => admin_url( 'admin-ajax.php' ),
+                'nonce' => wp_create_nonce('cpc-friendship-nonce')
+            ) );		
         endif;
 	    wp_enqueue_script('cpc-admin-js', plugins_url('js/cpc.admin.js', __FILE__), array('jquery'));
 		wp_localize_script( 'cpc-admin-js', 'cpc_ajax', array( 'ajaxurl' => admin_url( 'admin-ajax.php' ) ) );		
