@@ -6,8 +6,7 @@ add_action('admin_enqueue_scripts', 'cpc_usermeta_admin_init');
 require_once(plugin_dir_path(__FILE__) . 'lib/psource_chat_integration.php');
 
 function cpc_usermeta_admin_init() {
-    wp_enqueue_style('wp-color-picker');
-    wp_enqueue_script('cpc-usermeta-js', plugins_url('usermeta/cpc_usermeta.js?rndstr='.strval(time()), __FILE__), array('wp-color-picker'));
+    wp_enqueue_script('cpc-usermeta-js', plugins_url('usermeta/cpc_usermeta.js?rndstr='.strval(time()), __FILE__), array('jquery'));
 }
 
 if (isset($_GET['cpc_commo']) && $_GET['cpc_commo'] == 'close') {

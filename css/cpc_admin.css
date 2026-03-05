@@ -352,3 +352,36 @@
     font: normal 20px/1 'dashicons';
     content:'\f305';
 }
+/* Modern Color Picker (Pickr) */
+.cpc-pickr-wrapper {
+    display: inline-block;
+    margin-left: 8px;
+}
+
+.cpc-color-picker {
+    display: none;
+}
+
+.pickr {
+    position: relative;
+    z-index: 1000 !important;
+}
+
+.pickr.pcr-dark {
+    background-color: #2a2a2a;
+}
+
+.pcr-interaction {
+    padding: 7px;
+}
+
+.pcr-type.active {
+    color: #0071b1;
+}
+
+/* Ensure proper spacing in tables */
+td .cpc-pickr-wrapper {
+    margin: 0;
+    padding: 0;
+    vertical-align: middle;
+}

@@ -372,9 +372,41 @@ jQuery(document).ready(function() {
 		}
 	});
     
-    // Color Picker
-    if (jQuery('.cpc-color-picker').length) {
-        jQuery('.cpc-color-picker').wpColorPicker();
+    // HTML5 Native Color Picker
+    if (document.querySelectorAll('.cpc-color-picker').length > 0) {
+        document.querySelectorAll('.cpc-color-picker').forEach(function(input) {
+            // Make text input visible to show HEX value
+            input.type = 'text';
+            input.style.width = '100px';
+            input.style.display = 'inline-block';
+            input.style.marginRight = '8px';
+            
+            // Create HTML5 color picker
+            var colorPicker = document.createElement('input');
+            colorPicker.type = 'color';
+            colorPicker.value = input.value && input.value !== 'transparent' ? input.value : '#000000';
+            colorPicker.style.width = '50px';
+            colorPicker.style.height = '30px';
+            colorPicker.style.border = '1px solid #ccc';
+            colorPicker.style.borderRadius = '3px';
+            colorPicker.style.cursor = 'pointer';
+            colorPicker.style.verticalAlign = 'middle';
+            
+            // Insert color picker after text input
+            input.parentNode.insertBefore(colorPicker, input.nextSibling);
+            
+            // Sync color picker -> text input
+            colorPicker.addEventListener('input', function() {
+                input.value = colorPicker.value.toUpperCase();
+            });
+            
+            // Sync text input -> color picker
+            input.addEventListener('input', function() {
+                if (/^#[0-9A-F]{6}$/i.test(input.value)) {
+                    colorPicker.value = input.value;
+                }
+            });
+        });
     }    
 
     // Show shortcode tip
