@@ -91,8 +91,12 @@ function cpc_jobboard_filter_button_url($url, $button_type) {
 		return $url;
 	}
 	
-	// Check if we're in profile context (profile page loaded)
-	if (!is_page() || !isset($_GET['user_id']) || !isset($_GET['tab']) || $_GET['tab'] !== 'jobboard') {
+	// Check if we're in profile panel context (either via shortcode or GET params)
+	global $je_in_profile_panel_context;
+	$in_profile_context = $je_in_profile_panel_context || 
+		(isset($_GET['tab']) && $_GET['tab'] === 'jobboard');
+	
+	if (!$in_profile_context) {
 		return $url;
 	}
 	
@@ -117,6 +121,7 @@ function cpc_jobboard_filter_button_url($url, $button_type) {
 		'my_jobs' => 'my-jobs',
 		'my_profiles' => 'my-expert',
 		'my_profile' => 'my-expert',
+		'my_wallet' => 'my-wallet',
 	);
 	
 	$section = isset($section_map[$button_type]) ? $section_map[$button_type] : 'landing';
@@ -150,9 +155,23 @@ function cpc_jobboard_render_tab_content($html, $active_tab, $user_id, $shortcod
 		return '<div class="cpc-error">'.__('Du kannst nur deine eigene Jobboard sehen.', CPC2_TEXT_DOMAIN).'</div>';
 	}
 
+	$assets_html = '';
+	if (function_exists('je')) {
+		$je = je();
+		if (is_object($je) && method_exists($je, 'load_script')) {
+			$je->load_script('buttons');
+			$je->load_script('landing');
+
+			ob_start();
+			wp_print_styles(array('jobs-main', 'jobs-buttons-shortcode', 'jobs-list-shortcode', 'expert-list-shortcode', 'jobs-landing-shortcode'));
+			wp_print_scripts(array('jobs-main'));
+			$assets_html = ob_get_clean();
+		}
+	}
+
 	// Render the Jobboard profile panel shortcode
 	if (shortcode_exists('jbp-profile-panel')) {
-		return do_shortcode('[jbp-profile-panel]');
+		return $assets_html . do_shortcode('[jbp-profile-panel]');
 	}
 
 	return '<div class="cpc-error">'.__('Jobboard Shortcode nicht verfügbar (jbp-profile-panel).', CPC2_TEXT_DOMAIN).'</div>';
