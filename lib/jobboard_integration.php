@@ -73,7 +73,7 @@ function cpc_jobboard_add_profile_tab($tabs, $user_id, $viewer_id) {
 	// Add jobboard tab
 	$tabs['jobboard'] = array(
 		'label' => __('Jobboard', CPC2_TEXT_DOMAIN),
-		'icon' => 'briefcase',
+		'icon' => 'portfolio',
 		'priority' => 20, // After activity and messages
 	);
 	
