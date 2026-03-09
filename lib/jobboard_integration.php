@@ -52,6 +52,20 @@ function cpc_jobboard_integration_enabled() {
 	return (bool) get_option('cpc_enable_jobboard_integration', false);
 }
 
+function cpc_jobboard_ensure_ajax_asset_dependencies() {
+	if (!defined('DOING_AJAX') || !DOING_AJAX) {
+		return;
+	}
+
+	if (!wp_style_is('ig-packed', 'registered')) {
+		wp_register_style('ig-packed', false, array(), null);
+	}
+
+	if (!wp_script_is('ig-packed', 'registered')) {
+		wp_register_script('ig-packed', '', array('jquery'), null, true);
+	}
+}
+
 /* Profile Tab Integration */
 
 /**
@@ -155,23 +169,21 @@ function cpc_jobboard_render_tab_content($html, $active_tab, $user_id, $shortcod
 		return '<div class="cpc-error">'.__('Du kannst nur deine eigene Jobboard sehen.', CPC2_TEXT_DOMAIN).'</div>';
 	}
 
-	$assets_html = '';
 	if (function_exists('je')) {
 		$je = je();
 		if (is_object($je) && method_exists($je, 'load_script')) {
+			cpc_jobboard_ensure_ajax_asset_dependencies();
+			if (method_exists($je, 'scripts')) {
+				$je->scripts();
+			}
 			$je->load_script('buttons');
 			$je->load_script('landing');
-
-			ob_start();
-			wp_print_styles(array('jobs-main', 'jobs-buttons-shortcode', 'jobs-list-shortcode', 'expert-list-shortcode', 'jobs-landing-shortcode'));
-			wp_print_scripts(array('jobs-main'));
-			$assets_html = ob_get_clean();
 		}
 	}
 
 	// Render the Jobboard profile panel shortcode
 	if (shortcode_exists('jbp-profile-panel')) {
-		return $assets_html . do_shortcode('[jbp-profile-panel]');
+		return do_shortcode('[jbp-profile-panel]');
 	}
 
 	return '<div class="cpc-error">'.__('Jobboard Shortcode nicht verfügbar (jbp-profile-panel).', CPC2_TEXT_DOMAIN).'</div>';

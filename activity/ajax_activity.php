@@ -417,8 +417,19 @@ function cpc_load_profile_tab_ajax() {
         echo cpc_render_profile_tab_content($user_id, $tab, $atts);
         $content = ob_get_clean();
 
-        $new_style_handles = array_values(array_diff($styles->queue, $initial_style_queue));
-        $new_script_handles = array_values(array_diff($scripts->queue, $initial_script_queue));
+        $queued_style_handles = isset($styles->queue) && is_array($styles->queue) ? $styles->queue : array();
+        $queued_script_handles = isset($scripts->queue) && is_array($scripts->queue) ? $scripts->queue : array();
+        $done_style_handles = isset($styles->done) && is_array($styles->done) ? $styles->done : array();
+        $done_script_handles = isset($scripts->done) && is_array($scripts->done) ? $scripts->done : array();
+
+        $new_style_handles = array_values(array_unique(array_merge(
+            array_diff($queued_style_handles, $initial_style_queue),
+            array_diff($queued_style_handles, $done_style_handles)
+        )));
+        $new_script_handles = array_values(array_unique(array_merge(
+            array_diff($queued_script_handles, $initial_script_queue),
+            array_diff($queued_script_handles, $done_script_handles)
+        )));
 
         $styles_html = '';
         $scripts_html = '';
@@ -433,6 +444,23 @@ function cpc_load_profile_tab_ajax() {
             ob_start();
             $scripts->do_items($new_script_handles);
             $scripts_html = ob_get_clean();
+        }
+
+        if ($tab === 'jobboard' && (trim($styles_html) === '' || trim($scripts_html) === '')) {
+            $jobboard_style_handles = array('jobs-main', 'jobs-buttons-shortcode', 'jobs-list-shortcode', 'expert-list-shortcode', 'jobs-landing-shortcode');
+            $jobboard_script_handles = array('jobs-main');
+
+            if (trim($styles_html) === '') {
+                ob_start();
+                wp_print_styles($jobboard_style_handles);
+                $styles_html = ob_get_clean();
+            }
+
+            if (trim($scripts_html) === '') {
+                ob_start();
+                wp_print_scripts($jobboard_script_handles);
+                $scripts_html = ob_get_clean();
+            }
         }
 		
         wp_send_json_success(array(

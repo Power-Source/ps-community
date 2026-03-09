@@ -49,6 +49,38 @@ jQuery(document).ready(function($) {
 		}
 	}
 
+	function cpcExtractAssetsFromTabHtml(tabHtml) {
+		var result = {
+			html: tabHtml || '',
+			styles: '',
+			scripts: ''
+		};
+
+		if (!tabHtml || typeof tabHtml !== 'string') {
+			return result;
+		}
+
+		var $container = $('<div>').html(tabHtml);
+		var styleParts = [];
+		var scriptParts = [];
+
+		$container.find('link[rel="stylesheet"], style').each(function() {
+			styleParts.push($(this).prop('outerHTML'));
+			$(this).remove();
+		});
+
+		$container.find('script').each(function() {
+			scriptParts.push($(this).prop('outerHTML'));
+			$(this).remove();
+		});
+
+		result.html = $container.html();
+		result.styles = styleParts.join('\n');
+		result.scripts = scriptParts.join('\n');
+
+		return result;
+	}
+
 	function cpcInitLoadedTab(tab) {
 		if (tab === 'activity' && typeof cpc_get_ajax_activity === 'function') {
 			var pageSize = $('#cpc_page_size').html();
@@ -131,11 +163,12 @@ jQuery(document).ready(function($) {
 				}
 
 				if (tabHtml !== '') {
-					cpcInjectTabAssets(stylesHtml, scriptsHtml);
+					var extractedAssets = cpcExtractAssetsFromTabHtml(tabHtml);
+					cpcInjectTabAssets((stylesHtml || '') + extractedAssets.styles, (scriptsHtml || '') + extractedAssets.scripts);
 
 					// Fade out, replace content, fade in
 					$contentWrapper.fadeOut(200, function() {
-						$(this).html(tabHtml);
+						$(this).html(extractedAssets.html);
 						$(this).removeClass('loading').css('opacity', '1').fadeIn(300, function() {
 							cpcInitLoadedTab(tab);
 						});

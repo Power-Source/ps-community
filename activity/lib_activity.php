@@ -32,6 +32,11 @@ if ($action) {
             
 				// Any further actions?
 				do_action( 'cpc_activity_post_add_hook', $_POST, $_FILES, $new_id );
+
+                $render_post_title = get_post_field('post_title', $new_id);
+                if (!is_string($render_post_title) || $render_post_title === '') {
+                    $render_post_title = $the_post['post_title'];
+                }
             
                 $user_id = cpc_get_user_id();
                 $this_user = $current_user->ID;
@@ -69,7 +74,7 @@ if ($action) {
                         // Post
                         if ($the_post):
 
-                            $post_words = $the_post['post_title'];
+                            $post_words = $render_post_title;
 
                             $post_words = str_replace('[a]', '<a', $post_words);
                             $post_words = str_replace('[a2]', '>', $post_words);
@@ -133,7 +138,7 @@ if ($action) {
 
                             // Final filter for handling anything else
                             // Passes $item_html, shortcodes options ($atts), current post ID ($item->ID), post title ($item->post_stitle), user page ($user_id), current users ID ($this_user)
-                            $item_html = apply_filters( 'cpc_activity_item_filter', $item_html, $atts, $new_id, $the_post['post_title'], $user_id, $this_user, 1 );          
+                            $item_html = apply_filters( 'cpc_activity_item_filter', $item_html, $atts, $new_id, $render_post_title, $user_id, $this_user, 1 );          
             
                         else:
 
