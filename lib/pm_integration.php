@@ -251,10 +251,20 @@ function cpc_pm_redirect_inbox_to_profile() {
 	// Build profile URL with messages tab
 	$profile_url = get_permalink($profile_page_id);
 	if ($profile_url) {
-		$profile_url = add_query_arg(array(
+		$redirect_args = array(
 			'user_id' => get_current_user_id(),
 			'tab' => 'messages'
-		), $profile_url);
+		);
+
+		// Preserve selected inbox box (inbox/unread/read/sent/archive) to avoid redirect loops
+		if (isset($_GET['box'])) {
+			$box = sanitize_key(wp_unslash($_GET['box']));
+			if (!empty($box)) {
+				$redirect_args['box'] = $box;
+			}
+		}
+
+		$profile_url = add_query_arg($redirect_args, $profile_url);
 		
 		wp_redirect($profile_url);
 		exit;
