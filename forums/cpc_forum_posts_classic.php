@@ -11,7 +11,7 @@ if ($style == 'classic'):
 
 		foreach ($forum_posts as $forum_post):
 
-			if ($forum_post['post_status'] == 'publish' || current_user_can('edit_posts') || $forum_post['post_author'] = $current_user->ID):
+            if ($forum_post['post_status'] == 'publish' || current_user_can('edit_posts') || $forum_post['post_author'] == $current_user->ID):
             // echo '<span style="color:red">'.$forum_post['post_title'].'</span><br />';
 
                 // read it?
