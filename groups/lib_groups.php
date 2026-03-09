@@ -461,7 +461,13 @@ function cpc_get_group_members($group_id, $status = 'active', $role = '', $blog_
 			'include' => array_unique($user_ids),
 			'number' => -1,
 		));
-		$users_map = wp_list_pluck($users, null, 'ID');
+		foreach ($users as $user_obj) {
+			if (is_object($user_obj) && isset($user_obj->ID)) {
+				$users_map[(int) $user_obj->ID] = $user_obj;
+			} elseif (is_array($user_obj) && isset($user_obj['ID'])) {
+				$users_map[(int) $user_obj['ID']] = (object) $user_obj;
+			}
+		}
 	}
 
 	// Build final members array with cached data
@@ -472,10 +478,17 @@ function cpc_get_group_members($group_id, $status = 'active', $role = '', $blog_
 		
 		if ($user_id > 0 && isset($users_map[$user_id])) {
 			$user = $users_map[$user_id];
-			$user->membership_id = $membership->ID;
-			$user->member_role = $meta_map[$membership->ID]['cpc_member_role'] ?? 'member';
-			$user->member_joined = $meta_map[$membership->ID]['cpc_member_joined'] ?? '';
-			$members[] = $user;
+			if (is_array($user)) {
+				$user = (object) $user;
+			}
+			if (!is_object($user)) {
+				continue;
+			}
+			$member_user = clone $user;
+			$member_user->membership_id = $membership->ID;
+			$member_user->member_role = $meta_map[$membership->ID]['cpc_member_role'] ?? 'member';
+			$member_user->member_joined = $meta_map[$membership->ID]['cpc_member_joined'] ?? '';
+			$members[] = $member_user;
 		}
 	}
 

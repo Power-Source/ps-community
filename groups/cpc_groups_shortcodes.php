@@ -94,7 +94,7 @@ function cpc_groups_list($atts) {
 	$html .= '<div class="cpc-groups-toolbar">';
 	
 	// Create group button
-	if (is_user_logged_in() && get_option('cpc_groups_allow_creation')):
+	if (is_user_logged_in() && get_option('cpc_groups_allow_creation', 1)):
 		$create_page = get_option('cpccom_group_create_page');
 		if ($create_page):
 			$html .= '<a href="'.get_permalink($create_page).'" class="cpc-btn-create-group">'.__('+ Neue Gruppe erstellen', CPC2_TEXT_DOMAIN).'</a>';

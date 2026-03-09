@@ -320,9 +320,7 @@ function cpc_admin_getting_started_groups() {
 				<label for="cpc_groups_allow_creation"><?php _e('Gruppenerstellung erlauben', CPC2_TEXT_DOMAIN); ?></label>
 			</td>
 			<td>
-				<input type="checkbox" name="cpc_groups_allow_creation" 
-				<?php if (get_option('cpc_groups_allow_creation', true)) echo ' CHECKED'; ?>
-				/>
+				<input type="checkbox" name="cpc_groups_allow_creation" value="1" <?php checked((int) get_option('cpc_groups_allow_creation', 1), 1); ?> />
 				<span class="description"><?php _e('Erlaubt registrierten Benutzern, eigene Gruppen zu erstellen.', CPC2_TEXT_DOMAIN); ?></span>
 			</td>
 		</tr>
@@ -428,11 +426,7 @@ function cpc_admin_getting_started_groups_save($the_post) {
 	endif;
 
 	// Andere Einstellungen
-	if (isset($the_post['cpc_groups_allow_creation'])):
-		update_option('cpc_groups_allow_creation', true);
-	else:
-		delete_option('cpc_groups_allow_creation');
-	endif;
+	update_option('cpc_groups_allow_creation', isset($the_post['cpc_groups_allow_creation']) ? 1 : 0);
 
 	if (isset($the_post['cpc_groups_require_approval'])):
 		update_option('cpc_groups_require_approval', true);

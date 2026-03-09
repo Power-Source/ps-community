@@ -636,20 +636,25 @@ jQuery(document).ready(function($) {
         
         var link = $(this);
         var tab = link.data('tab');
-        var tabs_container = link.closest('.cpc-group-tabs-nav').next('.cpc-group-tabs-content');
+        var href = link.attr('href');
+        var tabs_container = link.closest('.cpc-group-single').find('.cpc-group-tabs-content').first();
 
         // Update active tab styling
         link.closest('.cpc-group-tabs-list').find('.cpc-group-tab-item').removeClass('active');
         link.closest('.cpc-group-tab-item').addClass('active');
         
         // Update URL with tab parameter
-        var url = new URL(window.location);
-        url.searchParams.set('tab', tab);
-        window.history.replaceState({}, '', url);
+        try {
+            var url = new URL(window.location.href);
+            url.searchParams.set('tab', tab);
+            window.history.replaceState({}, '', url);
+        } catch (err) {
+            // Ignore URL API errors in older/embedded browsers
+        }
         
         // Load tab content via AJAX
         var groupId = tabs_container.data('group-id');
-        if (groupId) {
+        if (groupId && typeof cpc_groups_ajax !== 'undefined' && cpc_groups_ajax.ajaxurl && cpc_groups_ajax.nonce) {
             $.ajax({
                 url: cpc_groups_ajax.ajaxurl,
                 type: 'POST',
@@ -666,12 +671,18 @@ jQuery(document).ready(function($) {
                             return;
                         }
                         tabs_container.html(response.data.html);
+                    } else if (href) {
+                        window.location.href = href;
                     }
                 },
                 error: function() {
-                    console.log('Error loading tab');
+                    if (href) {
+                        window.location.href = href;
+                    }
                 }
             });
+        } else if (href) {
+            window.location.href = href;
         }
     });
     $(document).on('click', '.cpc-approve-member', function(e) {

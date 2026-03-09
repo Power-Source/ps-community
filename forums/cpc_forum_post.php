@@ -706,7 +706,7 @@ if (!isset($_GET['forum_action']) || ($_GET['forum_action'] != 'edit' && $_GET['
 
 								foreach($comments as $comment) :
 
-									if (current_user_can('edit_posts') || $comment->user_id = $current_user->ID):
+                                    if (current_user_can('edit_posts') || $comment->user_id == $current_user->ID):
 
 										$comment_html = '';
 
