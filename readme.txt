@@ -4,7 +4,7 @@ Tags: wp community, social network, social networking, social media, cp-communit
 Requires at least: 4.9
 Tested up to: 6.8.1
 ClassicPress: 2.6.0
-Stable tag: 
+Stable tag: 1.0.7
 License URI: https://www.gnu.org/licenses/gpl-2.0.html
 
 == Description ==
@@ -30,6 +30,12 @@ Kein Problem! Ändere ganz einfach den gesamten Text, den Deine Benutzer sehen, 
 [POWERED BY PSOURCE](https://github.com/Power-Source)
 
 == ChangeLog ==
+
+= 1.0.8 =
+
+* Activity Plus Integration für Aktivitäten ergänzt (Bilder, Link-Vorschau, Video-Embed)
+* Einstellungen für Activity Plus im Admin ergänzt (Aktivierung, Features, Theme, Ausrichtung)
+* Upload- und Bereinigungslogik für Activity Plus in PS-Community-Struktur integriert
 
 = 1.0.7 =
 

@@ -145,3 +145,284 @@
       display: block !important;
   }
 }
+
+/* Activity Plus */
+
+.cpc_activity_plus {
+    margin-top: 10px;
+}
+
+.cpc_activity_plus_toolbar {
+    margin-bottom: 8px;
+}
+
+.cpc_activity_plus_toolbar .cpc_button {
+    margin-right: 6px;
+}
+
+.cpc_activity_plus_wrap input,
+.cpc_activity_plus_wrap textarea {
+    width: 100%;
+    max-width: 100%;
+    margin-bottom: 8px;
+}
+
+.cpc_activity_plus_link_preview_card {
+    margin-bottom: 8px;
+}
+
+.cpc_activity_plus_link_preview_table {
+    width: 100%;
+    border-collapse: collapse;
+}
+
+.cpc_activity_plus_link_preview_table td {
+    vertical-align: top;
+    padding: 8px;
+}
+
+.cpc_activity_plus_link_preview_image_container {
+    width: 180px;
+    height: 135px;
+    overflow: hidden;
+    border: 1px solid #ddd;
+    background: #f9f9f9;
+}
+
+.cpc_activity_plus_link_preview_image {
+    width: 100%;
+    height: auto;
+    display: none;
+}
+
+.cpc_activity_plus_link_preview_image.active {
+    display: block;
+}
+
+.cpc_activity_plus_link_preview_title {
+    font-weight: bold;
+    font-size: 1.1em;
+    margin-bottom: 6px;
+}
+
+.cpc_activity_plus_link_preview_url {
+    color: #666;
+    font-size: 0.85em;
+    margin-bottom: 8px;
+    word-break: break-all;
+}
+
+.cpc_activity_plus_link_preview_desc {
+    font-size: 0.9em;
+    color: #666;
+    margin-bottom: 8px;
+    line-height: 1.4;
+}
+
+.cpc_activity_plus_thumbnail_chooser {
+    margin-top: 8px;
+    padding-top: 8px;
+    border-top: 1px solid #ddd;
+}
+
+.cpc_activity_plus_thumbnail_nav {
+    display: inline-block;
+    margin-bottom: 8px;
+}
+
+.cpc_activity_plus_thumbnail_nav button {
+    background: #5fb3c9;
+    color: #fff;
+    border: none;
+    padding: 4px 8px;
+    cursor: pointer;
+    border-radius: 3px;
+    font-size: 0.85em;
+    margin: 0 4px;
+}
+
+.cpc_activity_plus_thumbnail_nav button:hover {
+    background: #4a9cb5;
+}
+
+.cpc_activity_plus_thumbnail_nav span {
+    display: inline-block;
+    margin: 0 4px;
+    font-size: 0.85em;
+}
+
+.cpc_activity_plus_no_thumbnail_option {
+    display: block;
+    margin-top: 8px;
+}
+
+.cpc_activity_plus_no_thumbnail_option input {
+    margin-right: 4px;
+}
+
+.cpc_activity_plus_no_thumbnail_option label {
+    font-size: 0.9em;
+    color: #666;
+}
+
+.cpc_activity_plus_video_preview_loading {
+    width: 100%;
+    height: 50px;
+    background: url(images/loading.gif) center top no-repeat;
+    margin-bottom: 8px;
+}
+
+.cpc_activity_plus_video_preview_card {
+    background: #f9f9f9;
+    border: 1px solid #ddd;
+    padding: 8px;
+    margin-bottom: 8px;
+    border-radius: 4px;
+}
+
+.cpc_activity_plus_video_preview_thumb {
+    margin-bottom: 8px;
+    max-width: 300px;
+}
+
+.cpc_activity_plus_video_preview_thumb img {
+    max-width: 100%;
+    height: auto;
+    display: block;
+    border-radius: 4px;
+    border: 1px solid #ddd;
+}
+
+.cpc_activity_plus_video_preview_embed {
+    overflow: auto;
+}
+
+.cpc_activity_plus_video_preview_embed iframe {
+    max-width: 100%;
+    height: auto;
+}
+
+.cpc_activity_plus_images {
+    margin-top: 8px;
+}
+
+.cpc_activity_plus_image {
+    display: inline-block;
+    margin: 0 6px 6px 0;
+}
+
+.cpc_activity_plus_image img {
+    max-width: 120px;
+    height: auto;
+    display: block;
+    border-radius: 4px;
+}
+
+.cpc_activity_plus_video {
+    margin-top: 10px;
+}
+
+/* ================================================ */
+/* THEMES VARIANT */
+/* ================================================ */
+
+/* Shared action bar layout (like original plugin) */
+.cpc_activity_plus .cpc_activity_plus_toolbar {
+    clear: left;
+    padding-top: 5px;
+}
+
+.cpc_activity_plus.cpcap-alignment-right .cpc_activity_plus_toolbar {
+    clear: right;
+    text-align: right;
+}
+
+.cpc_activity_plus .cpc_activity_plus_toggle {
+    border: none;
+    text-decoration: none;
+    display: inline-block;
+    float: left;
+    min-width: 34px;
+    height: 32px;
+    margin-right: 8px;
+    overflow: hidden;
+}
+
+.cpc_activity_plus.cpcap-alignment-right .cpc_activity_plus_toggle {
+    float: right;
+    margin-right: 0;
+    margin-left: 8px;
+}
+
+/* Default (legacy) */
+.cpc_activity_plus.cpcap-theme-default .cpc_activity_plus_toggle span {
+    display: inline-block;
+    line-height: 20px;
+}
+
+/* New theme (icon style, based on original bpfb-theme-new) */
+.cpc_activity_plus.cpcap-theme-new .cpc_activity_plus_toggle {
+    background: none !important;
+    color: #5FB3C9;
+    font-size: 24px;
+    line-height: 32px;
+    font-weight: normal;
+    text-align: center;
+    min-width: 32px;
+    padding: 0 2px;
+}
+
+.cpc_activity_plus.cpcap-theme-new .cpc_activity_plus_toggle:hover,
+.cpc_activity_plus.cpcap-theme-new .cpc_activity_plus_toggle:focus {
+    color: #F33;
+}
+
+.cpc_activity_plus.cpcap-theme-new .cpc_activity_plus_toggle span {
+    display: none;
+}
+
+.cpc_activity_plus.cpcap-theme-new .cpc_activity_plus_toggle_images:before {
+    content: "📷";
+}
+
+.cpc_activity_plus.cpcap-theme-new .cpc_activity_plus_toggle_links:before {
+    content: "🔗";
+}
+
+.cpc_activity_plus.cpcap-theme-new .cpc_activity_plus_toggle_videos:before {
+    content: "▶";
+}
+
+/* Round theme (based on original bpfb-theme-round) */
+.cpc_activity_plus.cpcap-theme-round .cpc_activity_plus_toggle {
+    line-height: 32px;
+    border-radius: 32px;
+    color: #eee;
+    background: #555 !important;
+    border: 1px solid #444;
+    min-width: 34px;
+    text-align: center;
+    font-size: 15px;
+}
+
+.cpc_activity_plus.cpcap-theme-round .cpc_activity_plus_toggle:hover,
+.cpc_activity_plus.cpcap-theme-round .cpc_activity_plus_toggle:focus {
+    color: #333;
+    background: #eee !important;
+}
+
+.cpc_activity_plus.cpcap-theme-round .cpc_activity_plus_toggle span {
+    display: none;
+}
+
+.cpc_activity_plus.cpcap-theme-round .cpc_activity_plus_toggle_images:before {
+    content: "📷";
+}
+
+.cpc_activity_plus.cpcap-theme-round .cpc_activity_plus_toggle_links:before {
+    content: "🔗";
+}
+
+.cpc_activity_plus.cpcap-theme-round .cpc_activity_plus_toggle_videos:before {
+    content: "▶";
+}

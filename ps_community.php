@@ -290,6 +290,7 @@ if (strpos(CPC_CORE_PLUGINS, 'core-avatar') !== false)
     require_once('avatar/cpc_avatar.php');
 // Activity (requires Profile)
 if (strpos(CPC_CORE_PLUGINS, 'core-activity') !== false):
+    require_once('activity/cpc_activity_plus.php');
     require_once('activity/cpc_custom_post_activity.php');
     require_once('activity/cpc_activity_hooks_and_filters.php');
     require_once('activity/ajax_activity.php');
@@ -339,6 +340,9 @@ if (is_admin()):
 	require_once('cpc_admin.php');
 	require_once('cpc_setup_admin.php');
     require_once('ajax_admin.php');
+    if (strpos(CPC_CORE_PLUGINS, 'core-activity') !== false):
+        require_once('activity/cpc_activity_plus_admin.php');
+    endif;
     if (strpos(CPC_CORE_PLUGINS, 'core-forums') !== false):
         require_once('forums/cpc_forum_admin.php');
         require_once('forums/cpc_forum_help.php');

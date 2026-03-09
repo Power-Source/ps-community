@@ -3,6 +3,17 @@
 /* **** */ /* INIT */ /* **** */
 
 function cpc_activity_init() {
+    $activity_plus = function_exists('cpc_activity_plus_get_settings') ? cpc_activity_plus_get_settings() : array(
+        'enabled' => false,
+        'allow_images' => false,
+        'allow_links' => false,
+        'allow_video' => false,
+        'max_images' => 5,
+        'cleanup_on_delete' => false,
+        'theme' => 'default',
+        'alignment' => 'left',
+    );
+
     // JavaScript-Datei einbinden
     wp_enqueue_script('cpc-activity-js', plugins_url('cpc_activity.js', __FILE__), array('jquery'));
     
@@ -11,11 +22,12 @@ function cpc_activity_init() {
         'ajaxurl' => admin_url('admin-ajax.php'),
         'plugins_url' => plugins_url('', __FILE__),
         'activity_post_focus' => get_option('cpccom_activity_set_focus'),
-        'nonce' => wp_create_nonce('cpc-activity-nonce')
+        'nonce' => wp_create_nonce('cpc-activity-nonce'),
+        'activity_plus' => $activity_plus,
     ));
     
-    // CSS-Datei einbinden
-    wp_enqueue_style('cpc-activity-css', plugins_url('cpc_activity.css', __FILE__), array(), '1.0.0');
+    // CSS-Datei einbinden (mit Versionsnummer für Cache-Busting)
+    wp_enqueue_style('cpc-activity-css', plugins_url('cpc_activity.css', __FILE__), array(), '1.0.1');
     
     // Select2-Bibliothek einbinden
     wp_enqueue_script('cpc-select2-js', plugins_url('../js/select2.js', __FILE__), array('jquery'), '4.0.13', true);
