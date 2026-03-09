@@ -84,22 +84,21 @@ function cpc_pm_profile_slot_badge($content, $slot, $user_id, $viewer_id, $atts)
 		return $content;
 	}
 	
-	// Only show to the profile owner (viewing their own profile)
-	if ($viewer_id != $user_id) {
-		return $content;
-	}
-	
 	// Only if user is logged in
 	if (!is_user_logged_in()) {
 		return $content;
 	}
-	
-	// Get unread count (requires PM plugin functions)
-	if (!class_exists('MM_Conversation_Model')) {
+
+	$viewer_id = get_current_user_id();
+	if (!$viewer_id) {
 		return $content;
 	}
 	
-	$unread_count = MM_Conversation_Model::count_unread(true);
+	// Get unread count if PM model is available, otherwise still render link badge
+	$unread_count = 0;
+	if (class_exists('MM_Conversation_Model')) {
+		$unread_count = (int) MM_Conversation_Model::count_unread(true);
+	}
 	
 	// Build profile tab URL for messages
 	$profile_page_id = get_option('cpccom_profile_page');
@@ -107,7 +106,7 @@ function cpc_pm_profile_slot_badge($content, $slot, $user_id, $viewer_id, $atts)
 		$profile_url = get_permalink($profile_page_id);
 		if ($profile_url) {
 			$profile_url = add_query_arg(array(
-				'user_id' => $user_id,
+				'user_id' => $viewer_id,
 				'tab' => 'messages'
 			), $profile_url);
 		}

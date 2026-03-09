@@ -133,6 +133,7 @@ function cpc_activity_page($atts){
     endif;
 
 	// Profile header (always visible, above tabs)
+    $html .= '<div class="cpc-profile-header-block">';
 	$html .= '<style>.cpc_avatar img { border-radius:0px; }</style>';
 	$html .= cpc_display_name(array('user_id'=>$user_id, 'before'=>'<div id="cpc_display_name" style="font-size:2.5em; line-height:2.5em; margin-bottom:20px;">', 'after'=>'</div>'));
 	$html .= '<div style="overflow:auto;overflow-y:hidden;margin-bottom:15px">';
@@ -145,13 +146,19 @@ function cpc_activity_page($atts){
         $html .= '</div>';
     endif;
     $html .= '</div>';
-    if (strpos(CPC_CORE_PLUGINS, 'core-profile') !== false):
-        $html .= '<div style="float:left;margin-right:15px;">';
-        $html .= cpc_usermeta(array('user_id'=>$user_id, 'meta'=>'cpccom_home', 'before'=>'<strong>'.$town_label.'</strong><br />', 'after'=>'<br />'));
-        $html .= cpc_usermeta(array('user_id'=>$user_id, 'meta'=>'cpccom_country', 'before'=>'<strong>'.$country_label.'</strong><br />', 'after'=>'<br />'));
-        $html .= cpc_usermeta_change_link($atts);
-        $html .= cpc_profile_slot(array('slot' => 'profile_header_right', 'user_id' => $user_id, 'this_user' => $this_user));
-    endif;
+        if (strpos(CPC_CORE_PLUGINS, 'core-profile') !== false):
+		$profile_header_right_slot = cpc_profile_slot(array('slot' => 'profile_header_right', 'user_id' => $user_id, 'this_user' => $this_user));
+		
+                $html .= '<div class="cpc-profile-header-meta">';
+                $html .= cpc_usermeta(array('user_id'=>$user_id, 'meta'=>'cpccom_home', 'before'=>'<strong>'.$town_label.'</strong><br />', 'after'=>'<br />'));
+                $html .= cpc_usermeta(array('user_id'=>$user_id, 'meta'=>'cpccom_country', 'before'=>'<strong>'.$country_label.'</strong><br />', 'after'=>'<br />'));
+                $html .= cpc_usermeta_change_link($atts);
+		$html .= '</div>';
+
+		if (!empty($profile_header_right_slot)) {
+			$html .= '<div class="cpc-profile-header-right-slot-wrap"><div class="cpc-profile-header-right-slot">'.$profile_header_right_slot.'</div></div>';
+		}
+        endif;
 	$html .= '</div>';
     if (strpos(CPC_CORE_PLUGINS, 'core-friendships') !== false):
         $html .= '<div id="cpc_display_friend_requests" style="margin-left:10px;float:left;min-width:200px;">';

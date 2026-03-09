@@ -590,8 +590,37 @@
     font-size: 16px;
 }
 
+.cpc-profile-header-block {
+    clear: both;
+    max-width: 100%;
+}
+
+.cpc-profile-header-right-slot {
+    margin-top: 10px;
+    min-height: 20px;
+}
+
+.cpc-profile-header-meta {
+    float: left;
+    margin-right: 15px;
+}
+
+.cpc-profile-header-right-slot-wrap {
+    float: right;
+    text-align: right;
+    min-width: 180px;
+}
+
 /* Responsive badge */
 @media screen and (max-width: 768px) {
+    .cpc-profile-header-meta,
+    .cpc-profile-header-right-slot-wrap {
+        float: none;
+        margin-right: 0;
+        text-align: left;
+        min-width: 0;
+    }
+
     .cpc-pm-badge-link {
         padding: 8px 12px;
         font-size: 13px;
