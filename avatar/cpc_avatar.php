@@ -83,21 +83,124 @@ function user_avatar_core_set_avatar_constants() {
 		
 }
 
+function user_avatar_core_get_cloud_folder_name($uid) {
+	$uid = (int)$uid;
+	if ($uid <= 0) {
+		return 'user-0';
+	}
+
+	if (function_exists('cpc_activity_plus_get_user_cloud_folder_name')) {
+		return cpc_activity_plus_get_user_cloud_folder_name($uid);
+	}
+
+	$stored = get_user_meta($uid, 'cpc_activity_plus_cloud_folder', true);
+	if (!empty($stored) && preg_match('/^[a-z0-9\-]+$/', $stored)) {
+		return $stored;
+	}
+
+	$user = get_user_by('id', $uid);
+	$slug = $user ? sanitize_title($user->user_login) : '';
+	if ($slug === '') {
+		$slug = 'user';
+	}
+
+	$folder = $slug.'-'.$uid;
+	$folder = apply_filters('cpc_activity_plus_user_cloud_folder_name', $folder, $uid, $user);
+	$folder = sanitize_title($folder);
+	if ($folder === '') {
+		$folder = 'user-'.$uid;
+	}
+
+	update_user_meta($uid, 'cpc_activity_plus_cloud_folder', $folder);
+
+	return $folder;
+}
+
+function user_avatar_core_avatar_legacy_upload_path($uid = false) {
+	if (!$uid):
+		global $current_user;
+		$uid = (isset($_GET['user_id'])) ? $_GET['user_id'] : $current_user->ID;
+	endif;
+
+	$uid = (int)$uid;
+	return WP_CONTENT_DIR.'/cpc-pro-content/members/'.$uid.'/avatar/';
+}
+
+function user_avatar_core_avatar_legacy_url($uid = false) {
+	if (!$uid):
+		global $current_user;
+		$uid = (isset($_GET['user_id'])) ? $_GET['user_id'] : $current_user->ID;
+	endif;
+
+	$uid = (int)$uid;
+	return content_url('/cpc-pro-content/members/'.$uid.'/avatar/');
+}
+
+function user_avatar_core_avatar_paths($uid = false) {
+	if (!$uid):
+		global $current_user;
+		$uid = (isset($_GET['user_id'])) ? $_GET['user_id'] : $current_user->ID;
+	endif;
+
+	$uid = (int)$uid;
+	$folder = user_avatar_core_get_cloud_folder_name($uid);
+
+	$primary = WP_CONTENT_DIR.'/cpc-pro-content/members/'.$folder.'/avatar/';
+	$paths = array($primary);
+
+	$legacy = user_avatar_core_avatar_legacy_upload_path($uid);
+	if ($legacy !== $primary && file_exists($legacy) && is_dir($legacy)) {
+		$paths[] = $legacy;
+	}
+
+	return array_values(array_unique($paths));
+}
+
+function user_avatar_core_avatar_meta_path($uid, $filename) {
+	$uid = (int)$uid;
+	$folder = user_avatar_core_get_cloud_folder_name($uid);
+	return '/cpc-pro-content/members/'.$folder.'/avatar/'.ltrim((string)$filename, '/');
+}
+
+function user_avatar_core_avatar_file_url($uid, $filename) {
+	$uid = (int)$uid;
+	$filename = ltrim((string)$filename, '/');
+
+	$paths = user_avatar_core_avatar_paths($uid);
+	foreach ($paths as $path) {
+		if (file_exists($path.$filename)) {
+			if ($path === user_avatar_core_avatar_legacy_upload_path($uid)) {
+				return user_avatar_core_avatar_legacy_url($uid).$filename;
+			}
+			return user_avatar_core_avatar_url($uid).$filename;
+		}
+	}
+
+	return user_avatar_core_avatar_url($uid).$filename;
+}
+
 /**
  * user_avatar_core_avatar_upload_path function.
  * Description: Establishing upload path/area where images that are uploaded will be stored.
  * @access public
  * @return void
  */
-function user_avatar_core_avatar_upload_path($uid = false)
+function user_avatar_core_avatar_upload_path($uid = false, $create = true)
 {
 	if (!$uid):
 		global $current_user;
 		$uid = (isset($_GET['user_id'])) ? $_GET['user_id'] : $current_user->ID;
 	endif;
-	if( !file_exists(WP_CONTENT_DIR."/cpc-pro-content/members/".$uid."/avatar/") )
-		mkdir(WP_CONTENT_DIR."/cpc-pro-content/members/".$uid."/avatar/", 0777 ,true);
-	return WP_CONTENT_DIR."/cpc-pro-content/members/".$uid."/avatar/";
+
+	$uid = (int)$uid;
+	$folder = user_avatar_core_get_cloud_folder_name($uid);
+	$path = WP_CONTENT_DIR.'/cpc-pro-content/members/'.$folder.'/avatar/';
+
+	if ($create && !file_exists($path)) {
+		wp_mkdir_p($path);
+	}
+
+	return $path;
 }
 
 /**
@@ -112,7 +215,10 @@ function user_avatar_core_avatar_url($uid = false)
 		global $current_user;
 		$uid = (isset($_GET['user_id'])) ? $_GET['user_id'] : $current_user->ID;
 	endif;
-	return WP_CONTENT_URL."/cpc-pro-content/members/".$uid."/avatar/";
+
+	$uid = (int)$uid;
+	$folder = user_avatar_core_get_cloud_folder_name($uid);
+	return content_url('/cpc-pro-content/members/'.$folder.'/avatar/');
 }
 
 /**
@@ -382,7 +488,7 @@ function user_avatar_add_photo_step3($uid)
 
     // delete the previous files
     user_avatar_delete_files($uid);
-    @mkdir(WP_CONTENT_DIR."/cpc-pro-content/members/".$uid."/avatar/", 0777 ,true);
+	@mkdir(user_avatar_core_avatar_upload_path($uid), 0777 ,true);
 
     if (!class_exists('SimpleImage')) require_once('SimpleImage.php');
 
@@ -403,7 +509,7 @@ function user_avatar_add_photo_step3($uid)
 	@unlink( $original_file );
 
 	/* Update user's meta data for quick reference */
-  	update_user_meta( $uid, 'cpc_com_avatar', "/cpc-pro-content/members/".$uid."/avatar/".$time_now."-cpcfull.jpg" );
+	update_user_meta( $uid, 'cpc_com_avatar', user_avatar_core_avatar_meta_path($uid, $time_now."-cpcfull.jpg") );
 
 	if ( is_wp_error( $cropped_full ) )
 		wp_die( __( 'Bild konnte nicht verarbeitet werden. Bitte gehe zurück und versuche es erneut.' ), __( 'Bildverarbeitungsfehler' ) );		
@@ -437,19 +543,27 @@ function user_avatar_add_photo_step3($uid)
  */
 function user_avatar_delete_files($uid)
 {
-	$avatar_folder_dir = user_avatar_core_avatar_upload_path($uid);
-	if ( !file_exists( $avatar_folder_dir ) )
-		return false;
+	$paths = user_avatar_core_avatar_paths($uid);
+	$deleted = false;
 
-	if ( is_dir( $avatar_folder_dir ) && $av_dir = opendir( $avatar_folder_dir ) ) {
-		while ( false !== ( $avatar_file = readdir($av_dir) ) ) {
+	foreach ($paths as $avatar_folder_dir) {
+		if ( !file_exists( $avatar_folder_dir ) )
+			continue;
+
+		if ( is_dir( $avatar_folder_dir ) && $av_dir = opendir( $avatar_folder_dir ) ) {
+			while ( false !== ( $avatar_file = readdir($av_dir) ) ) {
 				@unlink( $avatar_folder_dir . '/' . $avatar_file );
+			}
+			closedir($av_dir);
 		}
-		closedir($av_dir);
+
+		@rmdir( $avatar_folder_dir );
+		$deleted = true;
 	}
 
-	@rmdir( $avatar_folder_dir );
 	delete_user_meta( $uid, 'cpc_com_avatar' );
+
+	return $deleted;
 
 }
 
@@ -542,7 +656,7 @@ function user_avatar_fetch_avatar( $args = '' ) {
 	$params = wp_parse_args( $args, $defaults );
 	extract( $params, EXTR_SKIP );
     
-	$avatar_folder_dir = user_avatar_core_avatar_upload_path($item_id);
+	$avatar_folder_dir = user_avatar_core_avatar_upload_path($item_id, false);
 	$avatar_folder_url = user_avatar_core_avatar_url($item_id);
 	
 	//if ($width > 100) $type = "full";
@@ -580,11 +694,10 @@ function user_avatar_fetch_avatar( $args = '' ) {
 	
 
 	if( $avatar_img = user_avatar_avatar_exists( $item_id, $avatar_size ) ):
-    
 
-		$avatar_url = content_url()."/cpc-pro-content/members/".$item_id."/avatar/".$avatar_img;
+		$avatar_url = user_avatar_core_avatar_file_url($item_id, $avatar_img);
 		if(function_exists('is_subdomain_install') && !is_subdomain_install())
-			$avatar_url = content_url()."/cpc-pro-content/members/".$item_id."/avatar/".$avatar_img;
+			$avatar_url = user_avatar_core_avatar_file_url($item_id, $avatar_img);
 
 		// Return it wrapped in an <img> element
 		if ( true === $html ) { // this helps validate stuff
@@ -698,11 +811,14 @@ function user_avatar_form($profile)
  * @return void
  */
 function user_avatar_avatar_exists($id, $type = "-cpcfull"){
-	
-	$avatar_folder_dir = user_avatar_core_avatar_upload_path($id);
 	$return = false;
-	
-	if ( is_dir( $avatar_folder_dir ) && $av_dir = opendir( $avatar_folder_dir ) ) {
+	$paths = user_avatar_core_avatar_paths($id);
+
+	foreach ($paths as $avatar_folder_dir) {
+
+		if (!(is_dir( $avatar_folder_dir ) && $av_dir = opendir( $avatar_folder_dir ))) {
+			continue;
+		}
 
 			// Stash files in an array once to check for one that matches
 			$avatar_files = array();
@@ -727,6 +843,10 @@ function user_avatar_avatar_exists($id, $type = "-cpcfull"){
 
 		// Close the avatar directory
 		closedir( $av_dir );
+
+		if ($return) {
+			break;
+		}
 
 	}
 	

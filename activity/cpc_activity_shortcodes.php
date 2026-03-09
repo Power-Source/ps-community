@@ -12,6 +12,8 @@ function cpc_activity_init() {
         'cleanup_on_delete' => false,
         'theme' => 'default',
         'alignment' => 'left',
+        'media_max_width' => 100,
+        'use_builtin_lightbox' => false,
     );
 
     // JavaScript-Datei einbinden

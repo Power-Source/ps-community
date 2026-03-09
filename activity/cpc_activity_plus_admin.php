@@ -18,6 +18,16 @@ function cpc_admin_getting_started_activity_plus() {
     $allow_links = get_option('cpc_activity_plus_allow_links');
     $allow_video = get_option('cpc_activity_plus_allow_video');
     $max_images = get_option('cpc_activity_plus_max_images') ? (int)get_option('cpc_activity_plus_max_images') : 5;
+    $user_cloud_limit_mb = function_exists('cpc_activity_plus_normalize_user_cloud_limit_mb')
+        ? cpc_activity_plus_normalize_user_cloud_limit_mb(get_option('cpc_activity_plus_user_cloud_limit_mb', 50))
+        : 50;
+    $media_max_width_unit = function_exists('cpc_activity_plus_normalize_media_max_width_unit')
+        ? cpc_activity_plus_normalize_media_max_width_unit(get_option('cpc_activity_plus_media_max_width_unit', '%'))
+        : '%';
+    $media_max_width = function_exists('cpc_activity_plus_normalize_media_max_width_value')
+        ? cpc_activity_plus_normalize_media_max_width_value(get_option('cpc_activity_plus_media_max_width', 100), $media_max_width_unit)
+        : 100;
+    $use_builtin_lightbox = get_option('cpc_activity_plus_use_builtin_lightbox');
     $cleanup_on_delete = get_option('cpc_activity_plus_cleanup_on_delete');
     $theme = function_exists('cpc_activity_plus_normalize_theme') ? cpc_activity_plus_normalize_theme(get_option('cpc_activity_plus_theme', 'default')) : get_option('cpc_activity_plus_theme', 'default');
     $alignment = function_exists('cpc_activity_plus_normalize_alignment') ? cpc_activity_plus_normalize_alignment(get_option('cpc_activity_plus_alignment', 'left')) : get_option('cpc_activity_plus_alignment', 'left');
@@ -61,6 +71,34 @@ function cpc_admin_getting_started_activity_plus() {
         echo '<td>';
             echo '<input name="cpc_activity_plus_max_images" id="cpc_activity_plus_max_images" type="text" style="width:60px" value="'.esc_attr($max_images).'" />';
             echo '<span class="description">'.__('Maximale Anzahl von Bildern pro Aktivitätsbeitrag.', CPC2_TEXT_DOMAIN).'</span>';
+        echo '</td>';
+    echo '</tr>';
+
+    echo '<tr class="form-field">';
+        echo '<th scope="row" valign="top"><label for="cpc_activity_plus_user_cloud_limit_mb">'.__('User-Cloud Größe Beschränken (MB)', CPC2_TEXT_DOMAIN).'</label></th>';
+        echo '<td>';
+            echo '<input name="cpc_activity_plus_user_cloud_limit_mb" id="cpc_activity_plus_user_cloud_limit_mb" type="number" min="1" max="10240" step="1" style="width:90px" value="'.esc_attr($user_cloud_limit_mb).'" />';
+            echo '<span class="description">'.__('Maximaler Speicher pro Benutzer für Activity-Plus-Dateien. Standard: 50 MB.', CPC2_TEXT_DOMAIN).'</span>';
+        echo '</td>';
+    echo '</tr>';
+
+    echo '<tr class="form-field">';
+        echo '<th scope="row" valign="top"><label for="cpc_activity_plus_media_max_width">'.__('Medien-Max-Breite', CPC2_TEXT_DOMAIN).'</label></th>';
+        echo '<td>';
+            echo '<input name="cpc_activity_plus_media_max_width" id="cpc_activity_plus_media_max_width" type="number" step="1" style="width:90px" value="'.esc_attr($media_max_width).'" />';
+            echo '<select name="cpc_activity_plus_media_max_width_unit" id="cpc_activity_plus_media_max_width_unit" style="width:80px;margin-left:8px">';
+                echo '<option value="%" '.selected($media_max_width_unit, '%', false).'>%</option>';
+                echo '<option value="px" '.selected($media_max_width_unit, 'px', false).'>px</option>';
+            echo '</select>';
+            echo '<span class="description" style="display:block">'.__('Wähle Prozent oder Pixel. Bereiche: 10-100% oder 80-2400px. Standard: 100%.', CPC2_TEXT_DOMAIN).'</span>';
+        echo '</td>';
+    echo '</tr>';
+
+    echo '<tr class="form-field">';
+        echo '<th scope="row" valign="top"><label for="cpc_activity_plus_use_builtin_lightbox">'.__('BuiltIn Lightbox benutzen', CPC2_TEXT_DOMAIN).'</label></th>';
+        echo '<td>';
+            echo '<input name="cpc_activity_plus_use_builtin_lightbox" id="cpc_activity_plus_use_builtin_lightbox" type="checkbox" style="width:10px" '.($use_builtin_lightbox ? 'CHECKED' : '').' />';
+            echo '<span class="description">'.__('Öffnet Activity-Plus-Bilder in einer integrierten Lightbox mit Schließen-Button und Beschreibungsoverlay.', CPC2_TEXT_DOMAIN).'</span>';
         echo '</td>';
     echo '</tr>';
 
@@ -151,6 +189,40 @@ function cpc_admin_activity_plus_options_save($the_post) {
         update_option('cpc_activity_plus_max_images', $max_images);
     else:
         update_option('cpc_activity_plus_max_images', 5);
+    endif;
+
+    if (isset($the_post['cpc_activity_plus_user_cloud_limit_mb']) && is_numeric($the_post['cpc_activity_plus_user_cloud_limit_mb'])):
+        $user_cloud_limit_mb = (int)$the_post['cpc_activity_plus_user_cloud_limit_mb'];
+        if ($user_cloud_limit_mb < 1) $user_cloud_limit_mb = 1;
+        if ($user_cloud_limit_mb > 10240) $user_cloud_limit_mb = 10240;
+        update_option('cpc_activity_plus_user_cloud_limit_mb', $user_cloud_limit_mb);
+    else:
+        update_option('cpc_activity_plus_user_cloud_limit_mb', 50);
+    endif;
+
+    $media_max_width_unit = (isset($the_post['cpc_activity_plus_media_max_width_unit']) && in_array($the_post['cpc_activity_plus_media_max_width_unit'], array('%', 'px'), true))
+        ? $the_post['cpc_activity_plus_media_max_width_unit']
+        : '%';
+    update_option('cpc_activity_plus_media_max_width_unit', $media_max_width_unit);
+
+    if (isset($the_post['cpc_activity_plus_media_max_width']) && is_numeric($the_post['cpc_activity_plus_media_max_width'])):
+        $media_max_width = (int)$the_post['cpc_activity_plus_media_max_width'];
+        if ($media_max_width_unit === 'px') {
+            if ($media_max_width < 80) $media_max_width = 80;
+            if ($media_max_width > 2400) $media_max_width = 2400;
+        } else {
+            if ($media_max_width < 10) $media_max_width = 10;
+            if ($media_max_width > 100) $media_max_width = 100;
+        }
+        update_option('cpc_activity_plus_media_max_width', $media_max_width);
+    else:
+        update_option('cpc_activity_plus_media_max_width', 100);
+    endif;
+
+    if (isset($the_post['cpc_activity_plus_use_builtin_lightbox'])):
+        update_option('cpc_activity_plus_use_builtin_lightbox', true);
+    else:
+        delete_option('cpc_activity_plus_use_builtin_lightbox');
     endif;
 
     if (isset($the_post['cpc_activity_plus_cleanup_on_delete'])):

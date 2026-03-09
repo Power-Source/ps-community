@@ -20,7 +20,85 @@ function cpc_activity_plus_normalize_alignment($alignment) {
     return in_array($alignment, array('left', 'right'), true) ? $alignment : 'left';
 }
 
+function cpc_activity_plus_normalize_media_max_width($width) {
+    return cpc_activity_plus_normalize_media_max_width_value($width, '%');
+}
+
+function cpc_activity_plus_normalize_media_max_width_unit($unit) {
+    $unit = trim((string)$unit);
+    return in_array($unit, array('%', 'px'), true) ? $unit : '%';
+}
+
+function cpc_activity_plus_normalize_media_max_width_value($width, $unit = '%') {
+    $unit = cpc_activity_plus_normalize_media_max_width_unit($unit);
+    $width = (int)$width;
+
+    if ($unit === 'px') {
+        if ($width < 80) {
+            $width = 80;
+        }
+        if ($width > 2400) {
+            $width = 2400;
+        }
+        return $width;
+    }
+
+    if ($width < 10) {
+        $width = 10;
+    }
+    if ($width > 100) {
+        $width = 100;
+    }
+    return $width;
+}
+
+function cpc_activity_plus_normalize_user_cloud_limit_mb($limit_mb) {
+    $limit_mb = (int)$limit_mb;
+    if ($limit_mb < 1) {
+        $limit_mb = 1;
+    }
+    if ($limit_mb > 10240) {
+        $limit_mb = 10240;
+    }
+    return $limit_mb;
+}
+
+function cpc_activity_plus_get_user_cloud_folder_name($user_id) {
+    $user_id = (int)$user_id;
+    if ($user_id <= 0) {
+        return 'user-0';
+    }
+
+    $stored = get_user_meta($user_id, 'cpc_activity_plus_cloud_folder', true);
+    if (!empty($stored) && preg_match('/^[a-z0-9\-]+$/', $stored)) {
+        return $stored;
+    }
+
+    $user = get_user_by('id', $user_id);
+    $slug = $user ? sanitize_title($user->user_login) : '';
+    if ($slug === '') {
+        $slug = 'user';
+    }
+
+    $folder = $slug.'-'.$user_id;
+    $folder = apply_filters('cpc_activity_plus_user_cloud_folder_name', $folder, $user_id, $user);
+    $folder = sanitize_title($folder);
+    if ($folder === '') {
+        $folder = 'user-'.$user_id;
+    }
+
+    update_user_meta($user_id, 'cpc_activity_plus_cloud_folder', $folder);
+
+    return $folder;
+}
+
 function cpc_activity_plus_get_settings() {
+
+    $media_max_width_unit = cpc_activity_plus_normalize_media_max_width_unit(get_option('cpc_activity_plus_media_max_width_unit', '%'));
+    $media_max_width_value = cpc_activity_plus_normalize_media_max_width_value(
+        get_option('cpc_activity_plus_media_max_width', 100),
+        $media_max_width_unit
+    );
 
     $settings = array(
         'enabled' => cpc_activity_plus_is_enabled(),
@@ -31,6 +109,11 @@ function cpc_activity_plus_get_settings() {
         'cleanup_on_delete' => (bool)get_option('cpc_activity_plus_cleanup_on_delete'),
         'theme' => cpc_activity_plus_normalize_theme(get_option('cpc_activity_plus_theme', 'default')),
         'alignment' => cpc_activity_plus_normalize_alignment(get_option('cpc_activity_plus_alignment', 'left')),
+        'media_max_width' => $media_max_width_value,
+        'media_max_width_value' => $media_max_width_value,
+        'media_max_width_unit' => $media_max_width_unit,
+        'use_builtin_lightbox' => (bool)get_option('cpc_activity_plus_use_builtin_lightbox'),
+        'user_cloud_limit_mb' => cpc_activity_plus_normalize_user_cloud_limit_mb(get_option('cpc_activity_plus_user_cloud_limit_mb', 50)),
     );
 
     if (!$settings['max_images']) {
@@ -41,11 +124,98 @@ function cpc_activity_plus_get_settings() {
 }
 
 function cpc_activity_plus_user_activity_dir($user_id) {
-    return WP_CONTENT_DIR.'/cpc-pro-content/members/'.(int)$user_id.'/activity/';
+    $folder = cpc_activity_plus_get_user_cloud_folder_name($user_id);
+    return WP_CONTENT_DIR.'/cpc-pro-content/members/'.$folder.'/activity/';
 }
 
 function cpc_activity_plus_user_activity_url($user_id) {
-    return content_url('/cpc-pro-content/members/'.(int)$user_id.'/activity/');
+    $folder = cpc_activity_plus_get_user_cloud_folder_name($user_id);
+    return content_url('/cpc-pro-content/members/'.$folder.'/activity/');
+}
+
+function cpc_activity_plus_user_activity_legacy_dir($user_id) {
+    return WP_CONTENT_DIR.'/cpc-pro-content/members/'.(int)$user_id.'/activity/';
+}
+
+function cpc_activity_plus_get_user_cloud_dirs($user_id) {
+    $dirs = array(
+        cpc_activity_plus_user_activity_dir($user_id),
+    );
+
+    $legacy = cpc_activity_plus_user_activity_legacy_dir($user_id);
+    if ($legacy !== $dirs[0] && file_exists($legacy) && is_dir($legacy)) {
+        $dirs[] = $legacy;
+    }
+
+    return apply_filters('cpc_activity_plus_user_cloud_dirs', array_values(array_unique($dirs)), (int)$user_id);
+}
+
+function cpc_activity_plus_get_directory_size_bytes($dir) {
+    if (!file_exists($dir) || !is_dir($dir)) {
+        return 0;
+    }
+
+    $size = 0;
+    $iterator = new RecursiveIteratorIterator(
+        new RecursiveDirectoryIterator($dir, FilesystemIterator::SKIP_DOTS),
+        RecursiveIteratorIterator::SELF_FIRST
+    );
+
+    foreach ($iterator as $file) {
+        if ($file->isFile()) {
+            $size += (int)$file->getSize();
+        }
+    }
+
+    return max(0, (int)$size);
+}
+
+function cpc_activity_plus_get_user_cloud_limit_bytes($user_id = 0) {
+    $settings = cpc_activity_plus_get_settings();
+    $limit_mb = isset($settings['user_cloud_limit_mb']) ? (int)$settings['user_cloud_limit_mb'] : 50;
+    $limit_mb = (int)apply_filters('cpc_activity_plus_user_cloud_limit_mb', $limit_mb, (int)$user_id, $settings);
+
+    if ($limit_mb <= 0) {
+        return 0;
+    }
+
+    return $limit_mb * 1024 * 1024;
+}
+
+function cpc_activity_plus_get_user_cloud_usage_bytes($user_id) {
+    $user_id = (int)$user_id;
+    if ($user_id <= 0) {
+        return 0;
+    }
+
+    $dirs = cpc_activity_plus_get_user_cloud_dirs($user_id);
+    $usage = 0;
+    foreach ($dirs as $dir) {
+        $usage += cpc_activity_plus_get_directory_size_bytes($dir);
+    }
+
+    return (int)apply_filters('cpc_activity_plus_user_cloud_usage_bytes', $usage, $user_id, $dirs);
+}
+
+function cpc_activity_plus_get_user_cloud_summary($user_id) {
+    $user_id = (int)$user_id;
+    $used = cpc_activity_plus_get_user_cloud_usage_bytes($user_id);
+    $limit = cpc_activity_plus_get_user_cloud_limit_bytes($user_id);
+    $remaining = $limit > 0 ? max(0, $limit - $used) : 0;
+    $percent = ($limit > 0) ? min(100, round(($used / $limit) * 100, 1)) : 0;
+
+    $summary = array(
+        'user_id' => $user_id,
+        'used_bytes' => $used,
+        'used_human' => size_format($used),
+        'limit_bytes' => $limit,
+        'limit_human' => $limit > 0 ? size_format($limit) : __('Unbegrenzt', CPC2_TEXT_DOMAIN),
+        'remaining_bytes' => $remaining,
+        'remaining_human' => $limit > 0 ? size_format($remaining) : __('Unbegrenzt', CPC2_TEXT_DOMAIN),
+        'percent' => $percent,
+    );
+
+    return apply_filters('cpc_activity_plus_user_cloud_summary', $summary, $user_id);
 }
 
 function cpc_activity_plus_mkdir($dir) {
@@ -81,6 +251,12 @@ function cpc_activity_plus_process_uploaded_images($user_id, $files) {
         return $urls;
     }
 
+    $summary = cpc_activity_plus_get_user_cloud_summary($user_id);
+    $limit_bytes = isset($summary['limit_bytes']) ? (int)$summary['limit_bytes'] : 0;
+    $used_bytes = isset($summary['used_bytes']) ? (int)$summary['used_bytes'] : 0;
+    $batch_bytes = 0;
+    $quota_exceeded = false;
+
     $processed = 0;
     for ($index = 0; $index < $count; $index++) {
 
@@ -93,6 +269,17 @@ function cpc_activity_plus_process_uploaded_images($user_id, $files) {
         }
 
         $tmp_name = $images['tmp_name'][$index];
+        $tmp_size = @filesize($tmp_name);
+        if ($tmp_size === false) {
+            $tmp_size = 0;
+        }
+
+        if ($limit_bytes > 0 && ($used_bytes + $batch_bytes + $tmp_size) > $limit_bytes) {
+            $quota_exceeded = true;
+            do_action('cpc_activity_plus_user_cloud_quota_exceeded', $user_id, $images['name'][$index], $tmp_size, $summary);
+            continue;
+        }
+
         $original_name = sanitize_file_name($images['name'][$index]);
         $ext = cpc_activity_plus_safe_ext($original_name);
         if (!$ext) {
@@ -107,7 +294,12 @@ function cpc_activity_plus_process_uploaded_images($user_id, $files) {
         }
 
         $urls[] = trailingslashit(cpc_activity_plus_user_activity_url($user_id)).$filename;
+        $batch_bytes += $tmp_size;
         $processed++;
+    }
+
+    if ($quota_exceeded) {
+        set_transient('cpc_activity_plus_cloud_notice_'.$user_id, __('Ein oder mehrere Bilder wurden nicht hochgeladen, weil dein Cloud-Speicherlimit erreicht ist.', CPC2_TEXT_DOMAIN), 120);
     }
 
     return $urls;
@@ -139,11 +331,34 @@ function cpc_activity_plus_add_form_fields($form_html, $atts, $user_id, $this_us
     }
 
     $settings = cpc_activity_plus_get_settings();
+    $cloud_user_id = (int)$this_user;
+    if (!$cloud_user_id) {
+        $cloud_user_id = (int)get_current_user_id();
+    }
+    if (!$cloud_user_id) {
+        $cloud_user_id = (int)$user_id;
+    }
+
+    $cloud_summary = cpc_activity_plus_get_user_cloud_summary($cloud_user_id);
+    $cloud_notice = get_transient('cpc_activity_plus_cloud_notice_'.$cloud_user_id);
+    if ($cloud_notice) {
+        delete_transient('cpc_activity_plus_cloud_notice_'.$cloud_user_id);
+    }
     $theme_class = 'cpcap-theme-'.$settings['theme'];
     $alignment_class = 'cpcap-alignment-'.$settings['alignment'];
 
     $form_html .= '<input type="hidden" name="cpc_activity_plus_nonce" value="'.wp_create_nonce('cpc_activity_plus_nonce').'" />';
     $form_html .= '<div id="cpc_activity_plus" class="cpc_activity_plus '.$theme_class.' '.$alignment_class.'">';
+        $form_html .= '<div class="cpc_activity_plus_cloud_info">';
+            $form_html .= '<strong>'.__('Cloud-Speicher', CPC2_TEXT_DOMAIN).':</strong> ';
+            $form_html .= esc_html($cloud_summary['used_human']).' '.__('genutzt von', CPC2_TEXT_DOMAIN).' '.esc_html($cloud_summary['limit_human']);
+            if ($cloud_summary['limit_bytes'] > 0) {
+                $form_html .= ' ('.esc_html($cloud_summary['remaining_human']).' '.__('frei', CPC2_TEXT_DOMAIN).')';
+            }
+        $form_html .= '</div>';
+        if ($cloud_notice) {
+            $form_html .= '<div class="cpc_activity_plus_cloud_notice">'.esc_html($cloud_notice).'</div>';
+        }
         $form_html .= '<div class="cpc_activity_plus_toolbar">';
             if ($settings['allow_images']) {
                 $form_html .= '<button type="button" class="cpc_button cpc_activity_plus_toggle cpc_activity_plus_toggle_images" data-target="cpc_activity_plus_images_wrap"><span>'.__('Bild', CPC2_TEXT_DOMAIN).'</span></button>';
@@ -255,6 +470,8 @@ function cpc_activity_plus_render_tags($item_html, $atts, $item_id, $post_title,
         return $item_html;
     }
 
+    $settings = cpc_activity_plus_get_settings();
+
     $plus_html = '';
 
     $images = array();
@@ -276,15 +493,23 @@ function cpc_activity_plus_render_tags($item_html, $atts, $item_id, $post_title,
     $item_html = preg_replace('/\[cpcap_link\s+url="[^"]+"\]\[\/cpcap_link\]/s', '', $item_html);
     $item_html = preg_replace('/\[cpcap_video\].*?\[\/cpcap_video\]/s', '', $item_html);
 
+    $caption_source = preg_replace('/\[cpcap_images\].*?\[\/cpcap_images\]/s', '', $post_title);
+    $caption_source = preg_replace('/\[cpcap_link\s+url="[^"]+"\]\[\/cpcap_link\]/s', '', $caption_source);
+    $caption_source = preg_replace('/\[cpcap_video\].*?\[\/cpcap_video\]/s', '', $caption_source);
+    $caption_text = trim(wp_strip_all_tags($caption_source));
+
     if ($images) {
         $plus_html .= '<div class="cpc_activity_plus_images">';
+        $image_max_width_value = isset($settings['media_max_width_value']) ? (int)$settings['media_max_width_value'] : 100;
+        $image_max_width_unit = isset($settings['media_max_width_unit']) ? cpc_activity_plus_normalize_media_max_width_unit($settings['media_max_width_unit']) : '%';
         foreach ($images as $image_url) {
             $url = esc_url($image_url);
             if (!$url) {
                 continue;
             }
-            $plus_html .= '<a class="cpc_activity_plus_image" href="'.$url.'" target="_blank" rel="noopener noreferrer">';
-            $plus_html .= '<img src="'.$url.'" alt="" loading="lazy" />';
+            $caption_attr = $caption_text !== '' ? ' data-caption="'.esc_attr($caption_text).'"' : '';
+            $plus_html .= '<a class="cpc_activity_plus_image" href="'.$url.'" target="_blank" rel="noopener noreferrer" data-lightbox-group="activity-'.(int)$item_id.'"'.$caption_attr.'>';
+            $plus_html .= '<img src="'.$url.'" alt="" loading="lazy" style="max-width:'.$image_max_width_value.$image_max_width_unit.';" />';
             $plus_html .= '</a>';
         }
         $plus_html .= '<div style="clear:both"></div></div>';
@@ -312,6 +537,43 @@ function cpc_activity_plus_render_tags($item_html, $atts, $item_id, $post_title,
     return $item_html;
 }
 add_filter('cpc_activity_item_filter', 'cpc_activity_plus_render_tags', 20, 7);
+
+add_filter('cpc_profile_slot_content_filter', 'cpc_activity_plus_profile_cloud_info', 20, 5);
+function cpc_activity_plus_profile_cloud_info($content, $slot, $user_id, $viewer_id, $atts) {
+    if ($slot !== 'profile_header_right') {
+        return $content;
+    }
+
+    if (!cpc_activity_plus_is_enabled() || !is_user_logged_in()) {
+        return $content;
+    }
+
+    $user_id = (int)$user_id;
+    $viewer_id = (int)$viewer_id;
+    if (!$viewer_id) {
+        $viewer_id = get_current_user_id();
+    }
+
+    if ($viewer_id !== $user_id) {
+        return $content;
+    }
+
+    $summary = cpc_activity_plus_get_user_cloud_summary($user_id);
+
+    $html = '<div class="cpc-cloud-profile-badge">';
+        $html .= '<div class="cpc-cloud-profile-title">'.__('Cloud-Speicher', CPC2_TEXT_DOMAIN).'</div>';
+        $html .= '<div class="cpc-cloud-profile-stats">';
+            $html .= '<span>'.__('Genutzt:', CPC2_TEXT_DOMAIN).' '.esc_html($summary['used_human']).'</span>';
+            $html .= '<span>'.__('Verbleibend:', CPC2_TEXT_DOMAIN).' '.esc_html($summary['remaining_human']).'</span>';
+        $html .= '</div>';
+        if ($summary['limit_bytes'] > 0) {
+            $html .= '<div class="cpc-cloud-profile-bar"><span style="width:'.esc_attr($summary['percent']).'%"></span></div>';
+            $html .= '<div class="cpc-cloud-profile-meta">'.sprintf(__('Limit: %s', CPC2_TEXT_DOMAIN), esc_html($summary['limit_human'])).'</div>';
+        }
+    $html .= '</div>';
+
+    return $content.$html;
+}
 
 function cpc_activity_plus_extract_thumbnail($body, $base_url) {
     $images = array();

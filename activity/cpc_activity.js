@@ -524,3 +524,120 @@ function cpc_get_ajax_activity(start, page_size, mode) {
     );
 
 }
+
+(function () {
+	'use strict';
+
+	var hasActivityPlus = typeof cpc_activity_ajax !== 'undefined' && cpc_activity_ajax.activity_plus;
+	if (!hasActivityPlus || !cpc_activity_ajax.activity_plus.enabled || !cpc_activity_ajax.activity_plus.use_builtin_lightbox) {
+		return;
+	}
+
+	var lightbox = null;
+	var imageEl = null;
+	var captionWrap = null;
+	var captionText = null;
+	var captionToggle = null;
+	var isOpen = false;
+
+	function closeLightbox() {
+		if (!lightbox) {
+			return;
+		}
+		lightbox.classList.remove('is-open');
+		lightbox.setAttribute('aria-hidden', 'true');
+		document.body.classList.remove('cpc_activity_plus_lightbox_open');
+		if (imageEl) {
+			imageEl.removeAttribute('src');
+		}
+		isOpen = false;
+	}
+
+	function ensureLightbox() {
+		if (lightbox) {
+			return;
+		}
+
+		lightbox = document.createElement('div');
+		lightbox.className = 'cpc_activity_plus_lightbox';
+		lightbox.setAttribute('aria-hidden', 'true');
+		lightbox.innerHTML = '' +
+			'<div class="cpc_activity_plus_lightbox__backdrop" data-lightbox-close="1"></div>' +
+			'<div class="cpc_activity_plus_lightbox__content" role="dialog" aria-modal="true" aria-label="Bildvorschau">' +
+				'<button type="button" class="cpc_activity_plus_lightbox__close" aria-label="Schließen">&times;</button>' +
+				'<img class="cpc_activity_plus_lightbox__image" alt="" />' +
+				'<div class="cpc_activity_plus_lightbox__caption_wrap is-hidden">' +
+					'<button type="button" class="cpc_activity_plus_lightbox__caption_toggle">Beschreibung anzeigen</button>' +
+					'<div class="cpc_activity_plus_lightbox__caption is-hidden"></div>' +
+				'</div>' +
+			'</div>';
+
+		document.body.appendChild(lightbox);
+
+		imageEl = lightbox.querySelector('.cpc_activity_plus_lightbox__image');
+		captionWrap = lightbox.querySelector('.cpc_activity_plus_lightbox__caption_wrap');
+		captionText = lightbox.querySelector('.cpc_activity_plus_lightbox__caption');
+		captionToggle = lightbox.querySelector('.cpc_activity_plus_lightbox__caption_toggle');
+
+		lightbox.querySelector('.cpc_activity_plus_lightbox__close').addEventListener('click', closeLightbox);
+		lightbox.addEventListener('click', function (event) {
+			if (event.target && event.target.getAttribute('data-lightbox-close') === '1') {
+				closeLightbox();
+			}
+		});
+
+		captionToggle.addEventListener('click', function () {
+			if (captionText.classList.contains('is-hidden')) {
+				captionText.classList.remove('is-hidden');
+				captionToggle.textContent = 'Beschreibung ausblenden';
+			} else {
+				captionText.classList.add('is-hidden');
+				captionToggle.textContent = 'Beschreibung anzeigen';
+			}
+		});
+
+		document.addEventListener('keydown', function (event) {
+			if (!isOpen) {
+				return;
+			}
+			if (event.key === 'Escape') {
+				closeLightbox();
+			}
+		});
+	}
+
+	function openLightbox(src, caption) {
+		ensureLightbox();
+		imageEl.setAttribute('src', src);
+
+		if (caption && caption.trim() !== '') {
+			captionWrap.classList.remove('is-hidden');
+			captionText.textContent = caption;
+			captionText.classList.add('is-hidden');
+			captionToggle.textContent = 'Beschreibung anzeigen';
+		} else {
+			captionWrap.classList.add('is-hidden');
+			captionText.textContent = '';
+		}
+
+		lightbox.classList.add('is-open');
+		lightbox.setAttribute('aria-hidden', 'false');
+		document.body.classList.add('cpc_activity_plus_lightbox_open');
+		isOpen = true;
+	}
+
+	document.addEventListener('click', function (event) {
+		var link = event.target && event.target.closest ? event.target.closest('a.cpc_activity_plus_image') : null;
+		if (!link) {
+			return;
+		}
+
+		var imageUrl = link.getAttribute('href');
+		if (!imageUrl) {
+			return;
+		}
+
+		event.preventDefault();
+		openLightbox(imageUrl, link.getAttribute('data-caption') || '');
+	});
+})();

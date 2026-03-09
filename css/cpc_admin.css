@@ -142,6 +142,16 @@
     content:'\f175';
     margin-right: 10px;
 }
+#cpc_admin_getting_started_groups_div:before {
+    font: normal 20px/1 'dashicons';
+    content:'\f175';
+    margin-right: 10px;
+}
+#cpc_admin_getting_started_activity_plus_div:before {
+    font: normal 20px/1 'dashicons';
+    content:'\f163';
+    margin-right: 10px;
+}
 #cpc_admin_getting_started_mail_div:before {
     font: normal 20px/1 'dashicons';
     content:'\f466';

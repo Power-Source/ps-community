@@ -456,15 +456,16 @@ function cpc_avatar_change($atts) {
 
                         // Create avatar folder if not already existing
                         $continue = true;
-                        if( !file_exists(WP_CONTENT_DIR."/cpc-pro-content/members/".$user_id."/avatar/") ):
-    
-                            if (!mkdir(WP_CONTENT_DIR."/cpc-pro-content/members/".$user_id."/avatar/", 0777 ,true)):
+                        $avatar_path = user_avatar_core_avatar_upload_path($user_id);
+                        if( !file_exists($avatar_path) ):
+
+                            if (!wp_mkdir_p($avatar_path)):
                                 $error = error_get_last();
                                 $html .= $error['message'].'<br />';
-                                $html .= WP_CONTENT_DIR."/cpc-pro-content/members/".$user_id."/avatar/<br>";
+                                $html .= $avatar_path.'<br>';
                                 $continue = false;
                             else:
-                                $path = WP_CONTENT_DIR."/cpc-pro-content/members/".$user_id."/avatar/";
+                                $path = $avatar_path;
                                 $cropped_full = $path.$time_now."-cpcfull.jpg";
                                 $cropped_thumb = $path.$time_now."-cpcthumb.jpg";
                             endif;
@@ -477,7 +478,7 @@ function cpc_avatar_change($atts) {
 
                             // delete the previous files
                             user_avatar_delete_files($user_id);
-                            @mkdir(WP_CONTENT_DIR."/cpc-pro-content/members/".$user_id."/avatar/", 0777 ,true);
+                            @mkdir(user_avatar_core_avatar_upload_path($user_id), 0777 ,true);
 
                             if (!class_exists('SimpleImage')) require_once('SimpleImage.php');
 
@@ -496,7 +497,7 @@ function cpc_avatar_change($atts) {
 	                            $image->save($cropped_thumb);
 
 							/* Update user's meta data for quick reference */
-							update_user_meta( $user_id, 'cpc_com_avatar', "/cpc-pro-content/members/".$user_id."/avatar/".$time_now."-cpcfull.jpg" );	 
+                            update_user_meta( $user_id, 'cpc_com_avatar', user_avatar_core_avatar_meta_path($user_id, $time_now."-cpcfull.jpg") );	 
     
                             if ( is_wp_error( $cropped_full ) ):
                                 $html .= __( 'Bild konnte nicht verarbeitet werden. Bitte versuche es erneut.', CPC2_TEXT_DOMAIN);	
@@ -537,14 +538,15 @@ function cpc_avatar_change($atts) {
 
                         // Create avatar folder if not already existing
                         $continue = true;
-                        if( !file_exists(WP_CONTENT_DIR."/cpc-pro-content/members/".$user_id."/avatar/") ):
-                            if (!mkdir(WP_CONTENT_DIR."/cpc-pro-content/members/".$user_id."/avatar/", 0777 ,true)):
+                        $avatar_path = user_avatar_core_avatar_upload_path($user_id);
+                        if( !file_exists($avatar_path) ):
+                            if (!wp_mkdir_p($avatar_path)):
                                 $error = error_get_last();
                                 $html .= $error['message'].'<br />';
-                                $html .= WP_CONTENT_DIR."/cpc-pro-content/members/".$user_id."/avatar/<br>";
+                                $html .= $avatar_path.'<br>';
                                 $continue = false;
                             else:
-                                $path = WP_CONTENT_DIR."/cpc-pro-content/members/".$user_id."/avatar/";
+                                $path = $avatar_path;
                                 $cropped_full = $path.$time_now."-cpcfull.jpg";
                                 $cropped_thumb = $path.$time_now."-cpcthumb.jpg";
                             endif;
@@ -564,7 +566,7 @@ function cpc_avatar_change($atts) {
                             $cropped_thumb = wp_crop_image( $original_file, 0, 0, $width, $height, 300, 300, false, $cropped_thumb );
 
 							/* Update user's meta data for quick reference */
-							update_user_meta( $user_id, 'cpc_com_avatar', "/cpc-pro-content/members/".$user_id."/avatar/".$time_now."-cpcfull.jpg" );	 
+                            update_user_meta( $user_id, 'cpc_com_avatar', user_avatar_core_avatar_meta_path($user_id, $time_now."-cpcfull.jpg") );	 
 
                             if ( is_wp_error( $cropped_full ) ):
                                 $html .= __( 'Bild konnte nicht verarbeitet werden. Bitte versuche es erneut.', CPC2_TEXT_DOMAIN);	

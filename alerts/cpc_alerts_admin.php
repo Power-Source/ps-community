@@ -803,17 +803,34 @@ function cpc_admin_getting_started_core_hook_alerts($the_post) {
                 $found = array();
                 foreach ($users as $id):
                     $count++;
-                    if (file_exists(WP_CONTENT_DIR."/cpc-pro-content/members/".$id."/avatar/")):
-                        $dir = WP_CONTENT_DIR."/cpc-pro-content/members/".$id."/avatar/";
+                    $avatar_dirs = function_exists('user_avatar_core_avatar_paths') ? user_avatar_core_avatar_paths($id) : array();
+                    $matched_avatar = false;
+
+                    foreach ($avatar_dirs as $dir) {
+                        if (!file_exists($dir) || !is_dir($dir)) {
+                            continue;
+                        }
+
                         $dh  = opendir($dir);
                         while (false !== ($filename = readdir($dh))) {
                             if (strpos($filename, 'cpcfull.jpg') !== false) {
-                                update_user_meta( $id, 'cpc_com_avatar', "/cpc-pro-content/members/".$id."/avatar/".$filename );
+                                if (function_exists('user_avatar_core_avatar_meta_path')) {
+                                    update_user_meta( $id, 'cpc_com_avatar', user_avatar_core_avatar_meta_path($id, $filename) );
+                                }
                                 $avatars_found++;
                                 $found[] = $id;
+                                $matched_avatar = true;
+                                break;
                             }
-                        }    
-                    else:
+                        }
+                        closedir($dh);
+
+                        if ($matched_avatar) {
+                            break;
+                        }
+                    }
+
+                    if (!$matched_avatar):
                         delete_user_meta( $id, 'cpc_com_avatar' );
                     endif;
                 endforeach;
@@ -823,6 +840,101 @@ function cpc_admin_getting_started_core_hook_alerts($the_post) {
             ?>
 
         </td> 
+    </tr>
+
+	<tr class="form-field">
+        <th scope="row" valign="top">
+            <label for="activity_migrate_avatar_folders"><?php _e('Avatar-Ordner ins neue Schema migrieren', CPC2_TEXT_DOMAIN); ?></label>
+        </th>
+        <td>
+            <input name="activity_migrate_avatar_folders" id="activity_migrate_avatar_folders" type="checkbox" style="width:10px" />
+            <span class="description"><?php _e('Verschiebt bestehende Avatare aus alten numerischen Benutzerordnern in die neuen User-Cloud-Ordner und aktualisiert die Avatar-Metadaten (einmaliger Vorgang).', CPC2_TEXT_DOMAIN); ?></span>
+
+            <?php
+            if (isset($_POST['activity_migrate_avatar_folders'])):
+                set_time_limit(3600); // 1 hour
+                global $wpdb;
+                $sql = "SELECT ID FROM ".$wpdb->prefix."users";
+                $users = $wpdb->get_col($sql);
+                $count = 0;
+                $users_migrated = 0;
+                $files_moved = 0;
+                $avatar_meta_updated = 0;
+
+                foreach ($users as $id):
+                    $count++;
+
+                    if (!function_exists('user_avatar_core_avatar_legacy_upload_path') || !function_exists('user_avatar_core_avatar_upload_path')) {
+                        continue;
+                    }
+
+                    $legacy_dir = user_avatar_core_avatar_legacy_upload_path($id);
+                    $new_dir = user_avatar_core_avatar_upload_path($id, false);
+
+                    if (!$legacy_dir || !$new_dir || $legacy_dir === $new_dir) {
+                        continue;
+                    }
+
+                    if (!file_exists($legacy_dir) || !is_dir($legacy_dir)) {
+                        continue;
+                    }
+
+                    if (!file_exists($new_dir) && !wp_mkdir_p($new_dir)) {
+                        continue;
+                    }
+
+                    $dh = opendir($legacy_dir);
+                    if (!$dh) {
+                        continue;
+                    }
+
+                    $moved_for_user = 0;
+                    while (false !== ($filename = readdir($dh))) {
+                        if ($filename === '.' || $filename === '..') {
+                            continue;
+                        }
+
+                        $source = $legacy_dir.$filename;
+                        if (!is_file($source)) {
+                            continue;
+                        }
+
+                        $target = $new_dir.$filename;
+                        if (!@rename($source, $target)) {
+                            if (@copy($source, $target)) {
+                                @unlink($source);
+                            } else {
+                                continue;
+                            }
+                        }
+
+                        $moved_for_user++;
+                        $files_moved++;
+
+                        if (strpos($filename, 'cpcfull.jpg') !== false && function_exists('user_avatar_core_avatar_meta_path')) {
+                            update_user_meta($id, 'cpc_com_avatar', user_avatar_core_avatar_meta_path($id, $filename));
+                            $avatar_meta_updated++;
+                        }
+                    }
+                    closedir($dh);
+
+                    if ($moved_for_user > 0) {
+                        $users_migrated++;
+                    }
+
+                    @rmdir($legacy_dir);
+                endforeach;
+
+                echo '<div class="cpc_success" style="margin-top:20px">';
+                echo sprintf(__('%d Benutzer geprüft.', CPC2_TEXT_DOMAIN), $count).'<br />';
+                echo sprintf(__('%d Benutzerordner migriert.', CPC2_TEXT_DOMAIN), $users_migrated).'<br />';
+                echo sprintf(__('%d Avatar-Dateien verschoben.', CPC2_TEXT_DOMAIN), $files_moved).'<br />';
+                echo sprintf(__('%d Avatar-Meta-Einträge aktualisiert.', CPC2_TEXT_DOMAIN), $avatar_meta_updated);
+                echo '</div>';
+            endif;
+            ?>
+
+        </td>
     </tr>
 
 	<tr class="form-field">
