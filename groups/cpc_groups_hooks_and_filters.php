@@ -209,34 +209,73 @@ function cpc_groups_cleanup_user_memberships($user_id) {
 }
 
 /**
- * Add groups to user profile
+ * Add groups tab to user profile (NEW TAB SYSTEM)
  */
-add_filter('cpc_profile_tabs', 'cpc_groups_add_profile_tab', 10, 2);
-function cpc_groups_add_profile_tab($tabs, $user_id) {
-	$tabs['groups'] = __('Gruppen', CPC2_TEXT_DOMAIN);
+add_filter('cpc_profile_tabs', 'cpc_groups_add_profile_tab', 10, 3);
+function cpc_groups_add_profile_tab($tabs, $user_id, $viewer_id) {
+	// Add groups tab with proper array format
+	$tabs['groups'] = array(
+		'label' => __('Gruppen', CPC2_TEXT_DOMAIN),
+		'icon' => 'groups',
+		'priority' => 20, // After activity (10) and messages (15)
+	);
 	return $tabs;
 }
 
-add_filter('cpc_profile_tab_content', 'cpc_groups_profile_tab_content', 10, 2);
-function cpc_groups_profile_tab_content($content, $args) {
-	if ($args['tab'] == 'groups') {
-		$user_id = $args['user_id'];
-		$groups = cpc_get_user_groups($user_id);
-		
-		if ($groups) {
-			$content = '<div class="cpc-user-groups">';
-			$content .= '<h3>'.__('Mitglied in diesen Gruppen', CPC2_TEXT_DOMAIN).'</h3>';
-			$content .= '<ul class="cpc-groups-list">';
-			foreach ($groups as $group) {
-				$content .= '<li><a href="'.get_permalink($group->ID).'">'.$group->post_title.'</a></li>';
-			}
-			$content .= '</ul>';
-			$content .= '</div>';
-		} else {
-			$content = '<p>'.__('Noch kein Mitglied in einer Gruppe.', CPC2_TEXT_DOMAIN).'</p>';
-		}
+/**
+ * Render groups tab content (NEW TAB SYSTEM)
+ */
+add_filter('cpc_profile_tab_content', 'cpc_groups_profile_tab_content', 10, 4);
+function cpc_groups_profile_tab_content($html, $active_tab, $user_id, $shortcode_atts) {
+	// Only handle groups tab
+	if ($active_tab !== 'groups') {
+		return $html;
 	}
-	return $content;
+	
+	// Check if viewing own profile or another user's profile
+	$current_user_id = get_current_user_id();
+	$is_own_profile = ($current_user_id == $user_id);
+	
+	// Get user's groups
+	$groups = cpc_get_user_groups($user_id);
+	
+	if ($groups):
+		// Use the existing cpc-my-groups shortcode for nice visual display
+		// Pass user_id to show this specific user's groups
+		$html .= '<div class="cpc-profile-groups-tab">';
+		
+		if ($is_own_profile):
+			$html .= '<h3>'.__('Meine Gruppen', CPC2_TEXT_DOMAIN).'</h3>';
+		else:
+			$user = get_user_by('id', $user_id);
+			$html .= '<h3>'.sprintf(__('Gruppen von %s', CPC2_TEXT_DOMAIN), $user->display_name).'</h3>';
+		endif;
+		
+		// Render groups using the shortcode with user_id parameter
+		$html .= do_shortcode('[cpc-my-groups user_id="'.$user_id.'"]');
+		
+		$html .= '</div>';
+	else:
+		$html .= '<div class="cpc-profile-groups-empty">';
+		
+		if ($is_own_profile):
+			$html .= '<p>'.__('Du bist noch in keiner Gruppe Mitglied.', CPC2_TEXT_DOMAIN).'</p>';
+			
+			// Show link to groups directory if available
+			$groups_page = get_option('cpccom_groups_page');
+			if ($groups_page):
+				$groups_url = get_permalink($groups_page);
+				$html .= '<p><a href="'.esc_url($groups_url).'" class="cpc-button">'.__('Gruppen entdecken', CPC2_TEXT_DOMAIN).'</a></p>';
+			endif;
+		else:
+			$user = get_user_by('id', $user_id);
+			$html .= '<p>'.sprintf(__('%s ist noch in keiner Gruppe Mitglied.', CPC2_TEXT_DOMAIN), $user->display_name).'</p>';
+		endif;
+		
+		$html .= '</div>';
+	endif;
+	
+	return $html;
 }
 
 /**

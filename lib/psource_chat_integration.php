@@ -257,11 +257,9 @@ function cpc_integrations_page() {
 			<?php endif; ?>
 		</div>
 		
-		<!-- Placeholder for future integrations -->
-		<div class="cpc-integration-box" style="border: 1px solid #ddd; padding: 20px; margin-top: 20px; background-color: #f9f9f9; border-radius: 5px; opacity: 0.6;">
-			<h2><?php _e('Weitere Integrationen folgen', CPC2_TEXT_DOMAIN); ?></h2>
-			<p><?php _e('Platz für zusätzliche PSOURCE Plugins', CPC2_TEXT_DOMAIN); ?></p>
-		</div>
+		<!-- Additional integrations via action hook -->
+		<?php do_action('cpc_integrations_settings'); ?>
+		
 	</div>
 	
 	<?php

@@ -434,3 +434,247 @@
 .cpc_activity_plus.cpcap-theme-round .cpc_activity_plus_toggle_videos:before {
     content: "▶";
 }
+
+/* ========================================
+   PROFILE TABS SYSTEM
+   ======================================== */
+
+.cpc-profile-tabs-nav {
+    margin: 20px 0 10px 0;
+    border-bottom: 2px solid #ddd;
+    clear: both;
+}
+
+.cpc-profile-tabs-list {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    display: flex;
+    flex-wrap: wrap;
+}
+
+.cpc-profile-tab-item {
+    margin: 0 5px -2px 0;
+}
+
+.cpc-profile-tab-link {
+    display: inline-block;
+    padding: 12px 20px;
+    text-decoration: none;
+    color: #555;
+    border-bottom: 3px solid transparent;
+    transition: all 0.2s ease;
+    font-weight: 500;
+}
+
+.cpc-profile-tab-link:hover {
+    color: #0073aa;
+    text-decoration: none;
+}
+
+.cpc-profile-tab-item.active .cpc-profile-tab-link {
+    color: #0073aa;
+    border-bottom-color: #0073aa;
+}
+
+.cpc-profile-tab-link .dashicons {
+    font-size: 16px;
+    width: 16px;
+    height: 16px;
+    line-height: 1;
+    vertical-align: middle;
+    margin-right: 4px;
+}
+
+.cpc-profile-tab-content-wrapper {
+    padding: 20px 0;
+    min-height: 200px;
+}
+
+/* Responsive tabs */
+@media screen and (max-width: 768px) {
+    .cpc-profile-tabs-list {
+        flex-direction: column;
+    }
+    
+    .cpc-profile-tab-item {
+        margin: 0;
+        border-bottom: 1px solid #ddd;
+    }
+    
+    .cpc-profile-tab-link {
+        display: block;
+        padding: 15px;
+        border-bottom: none;
+        border-left: 3px solid transparent;
+    }
+    
+    .cpc-profile-tab-item.active .cpc-profile-tab-link {
+        border-left-color: #0073aa;
+        border-bottom-color: transparent;
+        background-color: #f7f7f7;
+    }
+}
+
+/* ========================================
+   PM INTEGRATION - PROFILE BADGE
+   ======================================== */
+
+.cpc-pm-profile-badge {
+    display: inline-block;
+    margin-top: 10px;
+}
+
+.cpc-pm-badge-link {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    padding: 10px 15px;
+    background: #0073aa;
+    color: #fff;
+    text-decoration: none;
+    border-radius: 4px;
+    transition: all 0.2s ease;
+    font-weight: 500;
+}
+
+.cpc-pm-badge-link:hover {
+    background: #005a87;
+    color: #fff;
+    text-decoration: none;
+    transform: translateY(-1px);
+    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+}
+
+.cpc-pm-icon {
+    font-size: 18px;
+    line-height: 1;
+}
+
+.cpc-pm-label {
+    font-size: 14px;
+}
+
+.cpc-pm-unread-badge {
+    background: #d63638;
+    color: #fff;
+    border-radius: 10px;
+    padding: 2px 8px;
+    font-size: 12px;
+    font-weight: bold;
+    min-width: 20px;
+    text-align: center;
+    animation: pulse 2s ease-in-out infinite;
+}
+
+@keyframes pulse {
+    0%, 100% {
+        transform: scale(1);
+    }
+    50% {
+        transform: scale(1.1);
+    }
+}
+
+/* PM Badge in profile slot - alternative compact style */
+.cpc_profile_slot .cpc-pm-profile-badge {
+    margin-top: 0;
+}
+
+.cpc_profile_slot .cpc-pm-badge-link {
+    padding: 8px 12px;
+    font-size: 13px;
+}
+
+.cpc_profile_slot .cpc-pm-icon {
+    font-size: 16px;
+}
+
+/* Responsive badge */
+@media screen and (max-width: 768px) {
+    .cpc-pm-badge-link {
+        padding: 8px 12px;
+        font-size: 13px;
+    }
+    
+    .cpc-pm-icon {
+        font-size: 16px;
+    }
+    
+    .cpc-pm-label {
+        display: none;
+    }
+}
+
+/* ========================================
+   PROFILE GROUPS TAB
+   ======================================== */
+
+.cpc-profile-groups-tab h3 {
+    margin: 0 0 20px 0;
+    color: #333;
+    font-size: 1.4em;
+}
+
+.cpc-profile-groups-empty {
+    padding: 40px 20px;
+    text-align: center;
+    background: #f9f9f9;
+    border-radius: 4px;
+}
+
+.cpc-profile-groups-empty p {
+    margin: 0 0 15px 0;
+    color: #666;
+}
+
+.cpc-profile-groups-empty .cpc-button {
+    display: inline-block;
+    padding: 10px 20px;
+    background: #0073aa;
+    color: #fff;
+    text-decoration: none;
+    border-radius: 4px;
+    transition: background 0.2s ease;
+}
+
+.cpc-profile-groups-empty .cpc-button:hover {
+    background: #005a87;
+    text-decoration: none;
+}
+/* Profile Tabs - Additional Styles */
+.cpc-profile-tab-item {
+    list-style: none !important;
+}
+
+.cpc-profile-tab-link {
+    cursor: pointer;
+}
+
+.cpc-profile-tab-content-wrapper {
+    transition: opacity 0.3s ease;
+    position: relative;
+}
+
+.cpc-profile-tab-content-wrapper.loading {
+    pointer-events: none;
+}
+
+.cpc-profile-tab-content-wrapper.loading::after {
+    content: '';
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    width: 40px;
+    height: 40px;
+    margin: -20px 0 0 -20px;
+    border: 4px solid #f3f3f3;
+    border-top: 4px solid #0073aa;
+    border-radius: 50%;
+    animation: cpc-spin 1s linear infinite;
+}
+
+@keyframes cpc-spin {
+    0% { transform: rotate(0deg); }
+    100% { transform: rotate(360deg); }
+}

@@ -16,6 +16,11 @@ function cpc_activity_init() {
 
     // JavaScript-Datei einbinden
     wp_enqueue_script('cpc-activity-js', plugins_url('cpc_activity.js', __FILE__), array('jquery'));
+        // Profile Tabs AJAX JavaScript
+        if (function_exists('cpc_get_profile_tabs')) {
+            wp_enqueue_script('cpc-profile-tabs-js', plugins_url('cpc_profile_tabs.js', __FILE__), array('jquery', 'cpc-activity-js'));
+        }
+    
     
     // JavaScript lokalisieren, um PHP-Variablen verfügbar zu machen
     wp_localize_script('cpc-activity-js', 'cpc_activity_ajax', array(
@@ -111,6 +116,11 @@ function cpc_activity_page($atts){
         'styles' => true,
 	), $atts, 'cpc_activity_page' ) );
     
+	// Ensure $atts is an array for later use
+	if (!is_array($atts)) {
+		$atts = array();
+	}
+	
 	if (!$user_id):
         $user_id = cpc_get_user_id();
         $this_user = $current_user->ID;
@@ -122,6 +132,7 @@ function cpc_activity_page($atts){
         endif;
     endif;
 
+	// Profile header (always visible, above tabs)
 	$html .= '<style>.cpc_avatar img { border-radius:0px; }</style>';
 	$html .= cpc_display_name(array('user_id'=>$user_id, 'before'=>'<div id="cpc_display_name" style="font-size:2.5em; line-height:2.5em; margin-bottom:20px;">', 'after'=>'</div>'));
 	$html .= '<div style="overflow:auto;overflow-y:hidden;margin-bottom:15px">';
@@ -149,8 +160,28 @@ function cpc_activity_page($atts){
         $html .= '</div>';
     endif;
 	$html .= '</div>';
-	$html .= cpc_activity_post($atts);
-	$html .= cpc_activity($atts);
+	
+	// Profile tab system
+	if (function_exists('cpc_get_profile_tabs')) {
+		$active_tab = cpc_get_active_profile_tab('activity');
+		$tabs = cpc_get_profile_tabs($user_id, $this_user);
+		
+		// Only show tabs if more than one tab exists
+		if (count($tabs) > 1) {
+			$html .= cpc_render_profile_tabs($user_id, $active_tab);
+			$html .= '<div class="cpc-profile-tab-content-wrapper">';
+			$html .= cpc_render_profile_tab_content($user_id, $active_tab, $atts);
+			$html .= '</div>';
+		} else {
+			// No tabs, show default activity content
+			$html .= cpc_activity_post($atts);
+			$html .= cpc_activity($atts);
+		}
+	} else {
+		// Fallback if tab system not loaded
+		$html .= cpc_activity_post($atts);
+		$html .= cpc_activity($atts);
+	}
 
     if ($html) $html = apply_filters ('cpc_wrap_shortcode_styles_filter', $html, 'cpc_activity_page', '', '', $styles, $values);    
     

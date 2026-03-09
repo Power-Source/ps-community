@@ -12,6 +12,8 @@ add_action( 'wp_ajax_cpc_activity_unhide_all', 'cpc_activity_unhide_all' );
 add_action( 'wp_ajax_cpc_activity_settings_hide', 'cpc_activity_settings_hide' ); 
 add_action( 'wp_ajax_cpc_return_activity_posts', 'cpc_return_activity_posts' ); 
 add_action( 'wp_ajax_nopriv_cpc_return_activity_posts', 'cpc_return_activity_posts' );  // Logged out
+add_action( 'wp_ajax_cpc_load_profile_tab', 'cpc_load_profile_tab_ajax' ); 
+add_action( 'wp_ajax_nopriv_cpc_load_profile_tab', 'cpc_load_profile_tab_ajax' );  // Logged out
 
 /* RETURN ACTIVITY */
 function cpc_return_activity_posts() {
@@ -368,6 +370,82 @@ function cpc_return_activity_posts() {
     endif;
 
 	exit;
+
+}
+
+/* LOAD PROFILE TAB */
+function cpc_load_profile_tab_ajax() {
+    // Verify nonce for security
+    $nonce = isset($_POST['nonce']) ? $_POST['nonce'] : '';
+    $user_id = isset($_POST['user_id']) ? intval($_POST['user_id']) : 0;
+	
+    if (!wp_verify_nonce($nonce, 'cpc_profile_tab_nonce_' . $user_id)) {
+        wp_send_json_error(array('message' => 'Invalid nonce'));
+        exit;
+    }
+	
+    $tab = isset($_POST['tab']) ? sanitize_key($_POST['tab']) : 'activity';
+	
+    if (!$user_id) {
+        wp_send_json_error(array('message' => 'Invalid user ID'));
+        exit;
+    }
+	
+    // Get shortcode attributes if provided
+    $atts = isset($_POST['atts']) ? $_POST['atts'] : array();
+    if (!is_array($atts)) {
+        $atts = array();
+    }
+	
+    // Load tab system if not already loaded
+    if (!function_exists('cpc_render_profile_tab_content')) {
+        $tab_file = dirname(__FILE__) . '/cpc_profile_tabs.php';
+        if (file_exists($tab_file)) {
+            require_once($tab_file);
+        }
+    }
+	
+    // Render tab content
+    if (function_exists('cpc_render_profile_tab_content')) {
+        $styles = wp_styles();
+        $scripts = wp_scripts();
+
+        $initial_style_queue = isset($styles->queue) && is_array($styles->queue) ? $styles->queue : array();
+        $initial_script_queue = isset($scripts->queue) && is_array($scripts->queue) ? $scripts->queue : array();
+
+        ob_start();
+        echo cpc_render_profile_tab_content($user_id, $tab, $atts);
+        $content = ob_get_clean();
+
+        $new_style_handles = array_values(array_diff($styles->queue, $initial_style_queue));
+        $new_script_handles = array_values(array_diff($scripts->queue, $initial_script_queue));
+
+        $styles_html = '';
+        $scripts_html = '';
+
+        if (!empty($new_style_handles)) {
+            ob_start();
+            $styles->do_items($new_style_handles);
+            $styles_html = ob_get_clean();
+        }
+
+        if (!empty($new_script_handles)) {
+            ob_start();
+            $scripts->do_items($new_script_handles);
+            $scripts_html = ob_get_clean();
+        }
+		
+        wp_send_json_success(array(
+            'content' => $content,
+            'tab' => $tab,
+            'styles' => $styles_html,
+            'scripts' => $scripts_html,
+        ));
+    } else {
+        wp_send_json_error(array('message' => 'Tab system not available'));
+    }
+	
+    exit;
 }
 
 /* ADMIN - UNHIDE ALL POSTS */

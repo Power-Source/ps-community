@@ -295,7 +295,14 @@ if (strpos(CPC_CORE_PLUGINS, 'core-activity') !== false):
     require_once('activity/cpc_activity_hooks_and_filters.php');
     require_once('activity/ajax_activity.php');
     require_once('activity/cpc_activity_shortcodes.php');
+    require_once('activity/cpc_profile_tabs.php'); // Profile tab system
 endif;
+
+// PM Integration (requires Profile and Activity)
+if (strpos(CPC_CORE_PLUGINS, 'core-profile') !== false && strpos(CPC_CORE_PLUGINS, 'core-activity') !== false):
+    require_once('lib/pm_integration.php');
+endif;
+
 // Friendships (requires Profile)
 if (strpos(CPC_CORE_PLUGINS, 'core-friendships') !== false):
     require_once('friendships/cpc_friendships_core.php');

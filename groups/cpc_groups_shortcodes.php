@@ -444,23 +444,30 @@ function cpc_group_members($atts) {
 add_shortcode('cpc-group-members', 'cpc_group_members');
 
 /**
- * [cpc-my-groups] - Display current user's groups
+ * [cpc-my-groups] - Display current user's groups (or specified user)
  */
 function cpc_my_groups($atts) {
 	cpc_groups_init();
 
-	if (!is_user_logged_in()):
-		return '<p>'.__('Du musst angemeldet sein, um deine Gruppen zu sehen.', CPC2_TEXT_DOMAIN).'</p>';
-	endif;
-
 	$values = cpc_get_shortcode_options('cpc_my_groups');
 	extract( shortcode_atts( array(
+		'user_id' => cpc_get_shortcode_value($values, 'cpc_my_groups-user_id', 0), // NEW: Support user_id parameter
 		'show_avatar' => cpc_get_shortcode_value($values, 'cpc_my_groups-show_avatar', true),
 		'avatar_size' => cpc_get_shortcode_value($values, 'cpc_my_groups-avatar_size', 50),
 		'show_role' => cpc_get_shortcode_value($values, 'cpc_my_groups-show_role', true),
 		'columns' => cpc_get_shortcode_value($values, 'cpc_my_groups-columns', 3),
 		'styles' => true,
 	), $atts, 'cpc_my_groups' ) );
+	
+	// If no user_id specified, use current user
+	if (!$user_id) {
+		$user_id = get_current_user_id();
+	}
+	
+	// If still no user (not logged in and no ID specified), show login message
+	if (!$user_id) {
+		return '<p>'.__('Du musst angemeldet sein, um deine Gruppen zu sehen.', CPC2_TEXT_DOMAIN).'</p>';
+	}
 
 	$placeholder_svg = '<svg xmlns="http://www.w3.org/2000/svg" width="120" height="120" viewBox="0 0 120 120"><rect fill="#dbeafe" width="120" height="120"/><text x="50%" y="55%" font-size="28" text-anchor="middle" fill="#4b5563" font-family="sans-serif">G</text></svg>';
 	$placeholder_avatar = 'data:image/svg+xml;charset=UTF-8,' . rawurlencode($placeholder_svg);
@@ -469,7 +476,6 @@ function cpc_my_groups($atts) {
 	$current_blog_id = is_multisite() ? get_current_blog_id() : null;
 
 	$html = '';
-	$user_id = get_current_user_id();
 	$groups = cpc_get_user_groups($user_id, 'active', $current_blog_id);
 
 	if ($groups):
