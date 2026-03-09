@@ -6,24 +6,44 @@ jQuery(document).ready(function($) {
 
 	function cpcInjectTabAssets(stylesHtml, scriptsHtml) {
 		if (stylesHtml) {
-			var $styles = $('<div>').html(stylesHtml).find('link[rel="stylesheet"]');
+			var $styleContainer = $('<div>').html(stylesHtml);
+			var $styles = $styleContainer.find('link[rel="stylesheet"]');
 			$styles.each(function() {
 				var href = $(this).attr('href');
 				if (href && $('head link[rel="stylesheet"][href="' + href + '"]').length === 0) {
 					$('head').append($(this).clone());
 				}
 			});
+
+			$styleContainer.find('style').each(function() {
+				var cssText = $(this).html();
+				if (!cssText) return;
+				if ($('head style[data-cpc-inline-style="' + btoa(unescape(encodeURIComponent(cssText))).slice(0, 32) + '"]').length) {
+					return;
+				}
+				var $inlineStyle = $('<style type="text/css"></style>').text(cssText);
+				$inlineStyle.attr('data-cpc-inline-style', btoa(unescape(encodeURIComponent(cssText))).slice(0, 32));
+				$('head').append($inlineStyle);
+			});
 		}
 
 		if (scriptsHtml) {
-			var $scripts = $('<div>').html(scriptsHtml).find('script[src]');
-			$scripts.each(function() {
+			var $scriptContainer = $('<div>').html(scriptsHtml);
+
+			$scriptContainer.find('script[src]').each(function() {
 				var src = $(this).attr('src');
 				if (src && $('script[src="' + src + '"]').length === 0) {
 					var script = document.createElement('script');
 					script.src = src;
 					script.async = false;
 					document.body.appendChild(script);
+				}
+			});
+
+			$scriptContainer.find('script:not([src])').each(function() {
+				var inlineJs = $(this).html();
+				if (inlineJs && $.trim(inlineJs).length) {
+					$.globalEval(inlineJs);
 				}
 			});
 		}

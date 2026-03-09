@@ -177,15 +177,35 @@ function cpc_pm_render_tab_content($html, $active_tab, $user_id, $shortcode_atts
 	if (get_current_user_id() != $user_id) {
 		return '<div class="cpc-error">'.__('Du kannst nur deine eigenen Nachrichten sehen.', CPC2_TEXT_DOMAIN).'</div>';
 	}
-	
-	// Render inbox shortcode
-	if (shortcode_exists('message_inbox')) {
-		// Nav wird vom Tab-System bereitgestellt, nicht vom Inbox-Shortcode
-		$inbox_html = do_shortcode('[message_inbox nav_view="none"]');
+
+	$inbox_html = '';
+
+	// Ensure PM assets are registered in AJAX context before inbox rendering
+	if (function_exists('mmg')) {
+		$pm_instance = mmg();
+		if (is_object($pm_instance) && method_exists($pm_instance, 'scripts')) {
+			$pm_instance->scripts();
+		}
+	}
+
+	// Preferred: render directly via PM controller (works more reliably in AJAX context)
+	if (function_exists('mmg')) {
+		$pm_instance = mmg();
+		if (is_object($pm_instance) && isset($pm_instance->global['inbox_sc']) && is_object($pm_instance->global['inbox_sc']) && method_exists($pm_instance->global['inbox_sc'], 'inbox')) {
+			$inbox_html = $pm_instance->global['inbox_sc']->inbox(array('nav_view' => 'both'));
+		}
+	}
+
+	// Fallback: shortcode rendering
+	if (empty(trim((string) $inbox_html)) && shortcode_exists('message_inbox')) {
+		$inbox_html = do_shortcode('[message_inbox nav_view="both"]');
+	}
+
+	if (!empty(trim((string) $inbox_html))) {
 		return $inbox_html;
 	}
-	
-	return '<div class="cpc-error">'.__('PM-System Shortcode nicht verfügbar.', CPC2_TEXT_DOMAIN).'</div>';
+
+	return '<div class="cpc-error">'.__('Inbox konnte nicht gerendert werden (leere Ausgabe).', CPC2_TEXT_DOMAIN).'</div>';
 }
 
 /* Redirect standalone inbox page to profile tab */
