@@ -303,6 +303,11 @@ if (strpos(CPC_CORE_PLUGINS, 'core-profile') !== false && strpos(CPC_CORE_PLUGIN
     require_once('lib/pm_integration.php');
 endif;
 
+// Jobboard Integration (requires Profile and Activity)
+if (strpos(CPC_CORE_PLUGINS, 'core-profile') !== false && strpos(CPC_CORE_PLUGINS, 'core-activity') !== false):
+    require_once('lib/jobboard_integration.php');
+endif;
+
 // Friendships (requires Profile)
 if (strpos(CPC_CORE_PLUGINS, 'core-friendships') !== false):
     require_once('friendships/cpc_friendships_core.php');
