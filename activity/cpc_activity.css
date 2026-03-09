@@ -322,6 +322,14 @@
     margin-top: 10px;
 }
 
+.cpc_profile_slot {
+    margin-top: 10px;
+}
+
+.cpc_profile_slot_profile_header_right {
+    min-width: 220px;
+}
+
 /* ================================================ */
 /* THEMES VARIANT */
 /* ================================================ */

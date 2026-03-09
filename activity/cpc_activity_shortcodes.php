@@ -40,6 +40,54 @@ function cpc_activity_init() {
 
 /* ********** */ /* SHORTCODES */ /* ********** */
 
+function cpc_profile_slot($atts, $content = '') {
+
+    global $current_user;
+    $html = '';
+
+    $values = cpc_get_shortcode_options('cpc_profile_slot');
+    extract( shortcode_atts( array(
+        'slot' => cpc_get_shortcode_value($values, 'cpc_profile_slot-slot', 'profile_header_right'),
+        'user_id' => cpc_get_shortcode_value($values, 'cpc_profile_slot-user_id', false),
+        'this_user' => cpc_get_shortcode_value($values, 'cpc_profile_slot-this_user', false),
+        'class' => cpc_get_shortcode_value($values, 'cpc_profile_slot-class', ''),
+        'fallback' => cpc_get_shortcode_value($values, 'cpc_profile_slot-fallback', ''),
+        'before' => '',
+        'after' => '',
+        'styles' => true,
+    ), $atts, 'cpc_profile_slot' ) );
+
+    if (!$user_id) $user_id = cpc_get_user_id();
+    if (!$this_user) $this_user = isset($current_user->ID) ? $current_user->ID : 0;
+
+    $slot = sanitize_key($slot);
+    if (!$slot) $slot = 'profile_header_right';
+
+    $inner = '';
+    if (!empty($content)) {
+        $inner .= do_shortcode($content);
+    }
+
+    $inner = apply_filters('cpc_profile_slot_content_filter', $inner, $slot, $user_id, $this_user, $atts);
+
+    ob_start();
+    do_action('cpc_profile_slot_content_action', $slot, $user_id, $this_user, $atts);
+    $inner .= ob_get_clean();
+
+    if (!$inner && $fallback) {
+        $inner = $fallback;
+    }
+
+    if ($inner) {
+        $slot_class = 'cpc_profile_slot_'.sanitize_html_class($slot);
+        $html .= '<div class="cpc_profile_slot '.$slot_class.' '.$class.'">'.$inner.'</div>';
+    }
+
+    if ($html) $html = apply_filters ('cpc_wrap_shortcode_styles_filter', $html, 'cpc_profile_slot', $before, $after, $styles, $values);
+
+    return $html;
+}
+
 function cpc_activity_page($atts){
 
 	// Init
@@ -91,6 +139,7 @@ function cpc_activity_page($atts){
         $html .= cpc_usermeta(array('user_id'=>$user_id, 'meta'=>'cpccom_home', 'before'=>'<strong>'.$town_label.'</strong><br />', 'after'=>'<br />'));
         $html .= cpc_usermeta(array('user_id'=>$user_id, 'meta'=>'cpccom_country', 'before'=>'<strong>'.$country_label.'</strong><br />', 'after'=>'<br />'));
         $html .= cpc_usermeta_change_link($atts);
+        $html .= cpc_profile_slot(array('slot' => 'profile_header_right', 'user_id' => $user_id, 'this_user' => $this_user));
     endif;
 	$html .= '</div>';
     if (strpos(CPC_CORE_PLUGINS, 'core-friendships') !== false):
@@ -535,6 +584,7 @@ if (!is_admin()) {
     add_shortcode(CPC_PREFIX.'-activity-page', 'cpc_activity_page');
 	add_shortcode(CPC_PREFIX.'-activity-post', 'cpc_activity_post');
 	add_shortcode(CPC_PREFIX.'-activity', 'cpc_activity');
+    add_shortcode(CPC_PREFIX.'-profile-slot', 'cpc_profile_slot');
 }
 
 
