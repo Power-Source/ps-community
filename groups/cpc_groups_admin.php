@@ -386,6 +386,16 @@ function cpc_admin_getting_started_groups() {
 				<?php endif; ?>
 			</td>
 		</tr>
+		<tr class="form-field">
+			<td scope="row" valign="top">
+				<label for="cpc_groups_cloud_limit_mb"><?php _e('Gruppen-Speicher-Limit', CPC2_TEXT_DOMAIN); ?></label>
+			</td>
+			<td>
+				<?php $cloud_limit = get_option('cpc_groups_cloud_limit_mb', 100); ?>
+				<input type="number" name="cpc_groups_cloud_limit_mb" id="cpc_groups_cloud_limit_mb" value="<?php echo esc_attr($cloud_limit); ?>" min="0" step="1" style="width:80px;" /> MB
+				<span class="description"><?php _e('Maximaler Speicherplatz für Medien-Uploads pro Gruppe (in MB). Standard: 100 MB.', CPC2_TEXT_DOMAIN); ?></span>
+			</td>
+		</tr>
 		<?php 
 				do_action('cpc_admin_getting_started_groups_hook');
 		?>
@@ -447,6 +457,12 @@ function cpc_admin_getting_started_groups_save($the_post) {
 		update_option('cpc_enable_group_chats', 1);
 	} else {
 		delete_option('cpc_enable_group_chats');
+	}
+
+	// Save group cloud storage limit
+	if (isset($the_post['cpc_groups_cloud_limit_mb'])) {
+		$limit = absint($the_post['cpc_groups_cloud_limit_mb']);
+		update_option('cpc_groups_cloud_limit_mb', $limit > 0 ? $limit : 100);
 	}
 
 }

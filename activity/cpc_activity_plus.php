@@ -711,4 +711,292 @@ function cpc_activity_plus_cleanup_on_delete($post_id) {
 }
 add_action('before_delete_post', 'cpc_activity_plus_cleanup_on_delete');
 
+/**
+ * Group-Cloud Functions 
+ * Manages media storage for group activities
+ */
+
+function cpc_activity_plus_get_group_cloud_folder_name($group_id) {
+    $group_id = (int)$group_id;
+    if ($group_id <= 0) {
+        return 'group-0';
+    }
+
+    $stored = get_post_meta($group_id, 'cpc_activity_plus_cloud_folder', true);
+    if (!empty($stored) && preg_match('/^[a-z0-9\-]+$/', $stored)) {
+        return $stored;
+    }
+
+    $group = get_post($group_id);
+    $slug = $group ? sanitize_title($group->post_name) : '';
+    if ($slug === '') {
+        $slug = 'group';
+    }
+
+    $folder = $slug.'-'.$group_id;
+    $folder = apply_filters('cpc_activity_plus_group_cloud_folder_name', $folder, $group_id, $group);
+    $folder = sanitize_title($folder);
+    if ($folder === '') {
+        $folder = 'group-'.$group_id;
+    }
+
+    update_post_meta($group_id, 'cpc_activity_plus_cloud_folder', $folder);
+
+    return $folder;
+}
+
+function cpc_activity_plus_group_activity_dir($group_id) {
+    $folder = cpc_activity_plus_get_group_cloud_folder_name($group_id);
+    return WP_CONTENT_DIR.'/cpc-pro-content/groups/'.$folder.'/activity/';
+}
+
+function cpc_activity_plus_group_activity_url($group_id) {
+    $folder = cpc_activity_plus_get_group_cloud_folder_name($group_id);
+    return content_url('/cpc-pro-content/groups/'.$folder.'/activity/');
+}
+
+function cpc_activity_plus_get_group_cloud_dirs($group_id) {
+    $dirs = array(
+        cpc_activity_plus_group_activity_dir($group_id),
+    );
+
+    return apply_filters('cpc_activity_plus_group_cloud_dirs', array_values(array_unique($dirs)), (int)$group_id);
+}
+
+function cpc_activity_plus_get_group_cloud_limit_bytes($group_id = 0) {
+    $limit_mb = (int)get_option('cpc_groups_cloud_limit_mb', 100);
+    $limit_mb = (int)apply_filters('cpc_activity_plus_group_cloud_limit_mb', $limit_mb, (int)$group_id);
+
+    if ($limit_mb <= 0) {
+        return 0;
+    }
+
+    return $limit_mb * 1024 * 1024;
+}
+
+function cpc_activity_plus_get_group_cloud_usage_bytes($group_id) {
+    $group_id = (int)$group_id;
+    if ($group_id <= 0) {
+        return 0;
+    }
+
+    $dirs = cpc_activity_plus_get_group_cloud_dirs($group_id);
+    $usage = 0;
+    foreach ($dirs as $dir) {
+        $usage += cpc_activity_plus_get_directory_size_bytes($dir);
+    }
+
+    return (int)apply_filters('cpc_activity_plus_group_cloud_usage_bytes', $usage, $group_id, $dirs);
+}
+
+function cpc_activity_plus_get_group_cloud_summary($group_id) {
+    $group_id = (int)$group_id;
+    $used = cpc_activity_plus_get_group_cloud_usage_bytes($group_id);
+    $limit = cpc_activity_plus_get_group_cloud_limit_bytes($group_id);
+    $remaining = $limit > 0 ? max(0, $limit - $used) : 0;
+    $percent = ($limit > 0) ? min(100, round(($used / $limit) * 100, 1)) : 0;
+
+    $summary = array(
+        'group_id' => $group_id,
+        'used_bytes' => $used,
+        'used_human' => size_format($used),
+        'limit_bytes' => $limit,
+        'limit_human' => $limit > 0 ? size_format($limit) : __('Unbegrenzt', CPC2_TEXT_DOMAIN),
+        'remaining_bytes' => $remaining,
+        'remaining_human' => $limit > 0 ? size_format($remaining) : __('Unbegrenzt', CPC2_TEXT_DOMAIN),
+        'percent' => $percent,
+    );
+
+    return apply_filters('cpc_activity_plus_group_cloud_summary', $summary, $group_id);
+}
+
+/**
+ * Process Activity Plus uploads for group activities
+ * Similar to cpc_activity_plus_on_post_add but adapted for groups
+ */
+function cpc_activity_plus_process_group_uploads($the_post, $the_files, $activity_id, $group_id) {
+    
+    if (!cpc_activity_plus_is_enabled()) {
+        return;
+    }
+
+    if (empty($the_post['cpc_activity_plus_nonce']) || !wp_verify_nonce($the_post['cpc_activity_plus_nonce'], 'cpc_activity_plus_nonce')) {
+        return;
+    }
+
+    $settings = cpc_activity_plus_get_settings();
+    
+    $parts = array();
+
+    // Process uploaded images
+    if ($settings['allow_images']) {
+        $image_urls = cpc_activity_plus_process_uploaded_group_images($group_id, $the_files);
+        $remote_images = cpc_activity_plus_extract_remote_images(isset($the_post['cpc_activity_plus_remote_images']) ? $the_post['cpc_activity_plus_remote_images'] : '');
+        if ($remote_images) {
+            $image_urls = array_merge($image_urls, $remote_images);
+        }
+        $image_urls = array_values(array_unique(array_filter($image_urls)));
+        if ($settings['max_images']) {
+            $image_urls = array_slice($image_urls, 0, $settings['max_images']);
+        }
+        if ($image_urls) {
+            $parts[] = "[cpcap_images]\n".implode("\n", $image_urls)."\n[/cpcap_images]";
+        }
+    }
+
+    // Process link
+    if ($settings['allow_links'] && !empty($the_post['cpc_activity_plus_link_url'])) {
+        $link_url = esc_url_raw($the_post['cpc_activity_plus_link_url']);
+        if ($link_url) {
+            $parts[] = '[cpcap_link url="'.esc_attr($link_url).'"][/cpcap_link]';
+        }
+    }
+
+    // Process video
+    if ($settings['allow_video'] && !empty($the_post['cpc_activity_plus_video_url'])) {
+        $video_url = esc_url_raw($the_post['cpc_activity_plus_video_url']);
+        if ($video_url) {
+            $parts[] = '[cpcap_video]'.$video_url.'[/cpcap_video]';
+        }
+    }
+
+    if (!$parts) {
+        return;
+    }
+
+    // Update activity post with media content
+    $post = get_post($activity_id);
+    if (!$post) {
+        return;
+    }
+
+    $content = rtrim($post->post_title);
+    $content .= "\n".implode("\n", $parts);
+
+    wp_update_post(array(
+        'ID' => $activity_id,
+        'post_title' => $content,
+    ));
+}
+
+/**
+ * Process uploaded images for group activities
+ * Adapted from cpc_activity_plus_process_uploaded_images
+ */
+function cpc_activity_plus_process_uploaded_group_images($group_id, $files) {
+
+    $urls = array();
+    $settings = cpc_activity_plus_get_settings();
+
+    if (empty($files['cpc_activity_plus_images']) || empty($files['cpc_activity_plus_images']['name'])) {
+        return $urls;
+    }
+
+    $images = $files['cpc_activity_plus_images'];
+    $count = is_array($images['name']) ? count($images['name']) : 0;
+    if (!$count) {
+        return $urls;
+    }
+
+    $base_dir = cpc_activity_plus_group_activity_dir($group_id);
+    if (!cpc_activity_plus_mkdir($base_dir)) {
+        return $urls;
+    }
+
+    $summary = cpc_activity_plus_get_group_cloud_summary($group_id);
+    $limit_bytes = isset($summary['limit_bytes']) ? (int)$summary['limit_bytes'] : 0;
+    $used_bytes = isset($summary['used_bytes']) ? (int)$summary['used_bytes'] : 0;
+    $batch_bytes = 0;
+    $quota_exceeded = false;
+
+    $processed = 0;
+    for ($index = 0; $index < $count; $index++) {
+
+        if ($settings['max_images'] && $processed >= $settings['max_images']) {
+            break;
+        }
+
+        if (empty($images['tmp_name'][$index]) || (int)$images['error'][$index] !== 0) {
+            continue;
+        }
+
+        $tmp_name = $images['tmp_name'][$index];
+        $tmp_size = @filesize($tmp_name);
+        if ($tmp_size === false) {
+            $tmp_size = 0;
+        }
+
+        if ($limit_bytes > 0 && ($used_bytes + $batch_bytes + $tmp_size) > $limit_bytes) {
+            $quota_exceeded = true;
+            do_action('cpc_activity_plus_group_cloud_quota_exceeded', $group_id, $images['name'][$index], $tmp_size, $summary);
+            continue;
+        }
+
+        $original_name = sanitize_file_name($images['name'][$index]);
+        $ext = cpc_activity_plus_safe_ext($original_name);
+        if (!$ext) {
+            continue;
+        }
+
+        $filename = wp_unique_filename($base_dir, time().'-'.$original_name);
+        $target = trailingslashit($base_dir).$filename;
+
+        if (!@move_uploaded_file($tmp_name, $target)) {
+            continue;
+        }
+
+        $urls[] = trailingslashit(cpc_activity_plus_group_activity_url($group_id)).$filename;
+        $batch_bytes += $tmp_size;
+        $processed++;
+    }
+
+    if ($quota_exceeded) {
+        do_action('cpc_activity_plus_group_cloud_quota_soft_exceeded', $group_id, $processed, $summary);
+    }
+
+    return $urls;
+}
+
+/**
+ * Cleanup group media when group is deleted
+ */
+function cpc_activity_plus_cleanup_group_on_delete($post_id) {
+    
+    if (!cpc_activity_plus_is_enabled() || !get_option('cpc_activity_plus_cleanup_on_delete')) {
+        return;
+    }
+
+    if (get_post_type($post_id) !== 'cpc_group') {
+        return;
+    }
+
+    // Delete entire group activity directory
+    $group_dir = cpc_activity_plus_group_activity_dir($post_id);
+    if (file_exists($group_dir) && is_dir($group_dir)) {
+        cpc_activity_plus_recursive_rmdir($group_dir);
+    }
+}
+add_action('before_delete_post', 'cpc_activity_plus_cleanup_group_on_delete');
+
+/**
+ * Recursively delete a directory and its contents
+ */
+function cpc_activity_plus_recursive_rmdir($dir) {
+    if (!file_exists($dir) || !is_dir($dir)) {
+        return false;
+    }
+
+    $files = new RecursiveIteratorIterator(
+        new RecursiveDirectoryIterator($dir, RecursiveDirectoryIterator::SKIP_DOTS),
+        RecursiveIteratorIterator::CHILD_FIRST
+    );
+
+    foreach ($files as $fileinfo) {
+        $action = $fileinfo->isDir() ? 'rmdir' : 'unlink';
+        @$action($fileinfo->getRealPath());
+    }
+
+    return @rmdir($dir);
+}
+
 ?>

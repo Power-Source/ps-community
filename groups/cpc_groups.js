@@ -23,19 +23,58 @@ jQuery(document).ready(function($) {
         
         submitBtn.prop('disabled', true).text('Wird gepostet...');
         
+        // Use FormData to support file uploads
+        var formData = new FormData();
+        formData.append('action', 'cpc_post_group_activity');
+        formData.append('nonce', cpc_groups_ajax.nonce);
+        formData.append('group_id', groupId);
+        formData.append('activity_content', content);
+        
+        // Add Activity Plus nonce if exists
+        var activityPlusNonce = form.find('input[name="cpc_activity_plus_nonce"]').val();
+        if (activityPlusNonce) {
+            formData.append('cpc_activity_plus_nonce', activityPlusNonce);
+        }
+        
+        // Add uploaded images
+        var imageFiles = form.find('input[name="cpc_activity_plus_images[]"]');
+        if (imageFiles.length > 0 && imageFiles[0].files) {
+            $.each(imageFiles[0].files, function(i, file) {
+                formData.append('cpc_activity_plus_images[]', file);
+            });
+        }
+        
+        // Add remote images
+        var remoteImages = form.find('textarea[name="cpc_activity_plus_remote_images"]').val();
+        if (remoteImages) {
+            formData.append('cpc_activity_plus_remote_images', remoteImages);
+        }
+        
+        // Add link URL
+        var linkUrl = form.find('input[name="cpc_activity_plus_link_url"]').val();
+        if (linkUrl) {
+            formData.append('cpc_activity_plus_link_url', linkUrl);
+        }
+        
+        // Add video URL
+        var videoUrl = form.find('input[name="cpc_activity_plus_video_url"]').val();
+        if (videoUrl) {
+            formData.append('cpc_activity_plus_video_url', videoUrl);
+        }
+        
         $.ajax({
             url: cpc_groups_ajax.ajaxurl,
             type: 'POST',
-            data: {
-                action: 'cpc_post_group_activity',
-                nonce: cpc_groups_ajax.nonce,
-                group_id: groupId,
-                activity_content: content
-            },
+            data: formData,
+            processData: false,
+            contentType: false,
             success: function(response) {
                 if (response.success) {
                     cpc_show_notification(response.data.message, 'success');
                     form.find('textarea').val('');
+                    form.find('input[type="file"]').val('');
+                    form.find('input[type="url"]').val('');
+                    form.find('.cpc_activity_plus_wrap').hide();
                     submitBtn.prop('disabled', false).text('Posten');
                     
                     // Reload the activity tab to show new post

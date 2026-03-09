@@ -31,6 +31,21 @@ Kein Problem! Ändere ganz einfach den gesamten Text, den Deine Benutzer sehen, 
 
 == ChangeLog ==
 
+= 1.0.9 =
+
+* Gruppen-Einstellung „Gruppenerstellung erlauben“ korrigiert (Checkbox bleibt nach Speichern/Neuladen zuverlässig aktiv oder deaktiviert)
+* Gruppen-Tabschaltung stabilisiert (Fallback auf reguläre Navigation bei fehlgeschlagenem AJAX)
+* Fatal Error im Gruppen-Mitglieder-Tab behoben (`membership_id`-Zuweisung auf Array in `lib_groups.php`)
+* Mehrere Forums-Berechtigungsprüfungen korrigiert (`=` durch `==` in Bedingungen ersetzt)* Activity Plus für Gruppen-Aktivität implementiert:
+* Admin-Einstellung für Gruppen-Upload-Limit (Standard: 100 MB pro Gruppe)
+* Separater Group-Cloud-Speicherpfad `/cpc-pro-content/groups/{group-slug}/activity/`
+* Gruppen-Aktivitätsformular mit vollständiger Activity Plus UI (Bild/Link/Video-Uploads)
+* AJAX-Handler für Datei-Uploads mit FormData-Support erweitert
+* Automatische Bereinigung von Gruppen-Medien bei Gruppen-Löschung
+* Activity Plus Assets (CSS/JS) in Gruppen-Context geladen
+* JavaScript Event-Handler global gemacht für User- und Gruppen-Aktivität
+* Theme-Classes korrigiert für konsistentes Design (cpcap-theme-*, cpcap-alignment-*)
+
 = 1.0.8 =
 
 * Activity Plus Integration für Aktivitäten ergänzt (Bilder, Link-Vorschau, Video-Embed)

@@ -22,6 +22,24 @@ function cpc_groups_init() {
 		'nonce' => wp_create_nonce('cpc_groups_nonce'),
 	) );
 
+    // Load Activity Plus assets if enabled (for group activity forms)
+    if (function_exists('cpc_activity_plus_is_enabled') && cpc_activity_plus_is_enabled()) {
+        $activity_plus = cpc_activity_plus_get_settings();
+        
+        // Enqueue Activity CSS & JS
+        wp_enqueue_style('cpc-activity-css', plugins_url('../activity/cpc_activity.css', __FILE__), array(), '1.0.1');
+        wp_enqueue_script('cpc-activity-js', plugins_url('../activity/cpc_activity.js', __FILE__), array('jquery'));
+        
+        // Localize activity plus settings for JavaScript
+        wp_localize_script('cpc-activity-js', 'cpc_activity_ajax', array(
+            'ajaxurl' => admin_url('admin-ajax.php'),
+            'plugins_url' => plugins_url('../activity/', __FILE__),
+            'activity_post_focus' => get_option('cpccom_activity_set_focus'),
+            'nonce' => wp_create_nonce('cpc-activity-nonce'),
+            'activity_plus' => $activity_plus,
+        ));
+    }
+
     // Anything else?
     do_action('cpc_groups_init_hook');
 }

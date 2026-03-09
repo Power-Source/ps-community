@@ -60,6 +60,11 @@ function cpc_ajax_post_group_activity() {
 		}
 	}
 
+	// Process Activity Plus uploads for group
+	if ($activity_id && !is_wp_error($activity_id) && function_exists('cpc_activity_plus_is_enabled') && cpc_activity_plus_is_enabled()) {
+		cpc_activity_plus_process_group_uploads($_POST, $_FILES, $activity_id, $group_id);
+	}
+
 	if ($activity_id && !is_wp_error($activity_id)) {
 		wp_send_json_success(array(
 			'message' => __('Aktivität erfolgreich gepostet!', CPC2_TEXT_DOMAIN),
