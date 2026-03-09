@@ -538,43 +538,6 @@ function cpc_activity_plus_render_tags($item_html, $atts, $item_id, $post_title,
 }
 add_filter('cpc_activity_item_filter', 'cpc_activity_plus_render_tags', 20, 7);
 
-add_filter('cpc_profile_slot_content_filter', 'cpc_activity_plus_profile_cloud_info', 20, 5);
-function cpc_activity_plus_profile_cloud_info($content, $slot, $user_id, $viewer_id, $atts) {
-    if ($slot !== 'profile_header_right') {
-        return $content;
-    }
-
-    if (!cpc_activity_plus_is_enabled() || !is_user_logged_in()) {
-        return $content;
-    }
-
-    $user_id = (int)$user_id;
-    $viewer_id = (int)$viewer_id;
-    if (!$viewer_id) {
-        $viewer_id = get_current_user_id();
-    }
-
-    if ($viewer_id !== $user_id) {
-        return $content;
-    }
-
-    $summary = cpc_activity_plus_get_user_cloud_summary($user_id);
-
-    $html = '<div class="cpc-cloud-profile-badge">';
-        $html .= '<div class="cpc-cloud-profile-title">'.__('Cloud-Speicher', CPC2_TEXT_DOMAIN).'</div>';
-        $html .= '<div class="cpc-cloud-profile-stats">';
-            $html .= '<span>'.__('Genutzt:', CPC2_TEXT_DOMAIN).' '.esc_html($summary['used_human']).'</span>';
-            $html .= '<span>'.__('Verbleibend:', CPC2_TEXT_DOMAIN).' '.esc_html($summary['remaining_human']).'</span>';
-        $html .= '</div>';
-        if ($summary['limit_bytes'] > 0) {
-            $html .= '<div class="cpc-cloud-profile-bar"><span style="width:'.esc_attr($summary['percent']).'%"></span></div>';
-            $html .= '<div class="cpc-cloud-profile-meta">'.sprintf(__('Limit: %s', CPC2_TEXT_DOMAIN), esc_html($summary['limit_human'])).'</div>';
-        }
-    $html .= '</div>';
-
-    return $content.$html;
-}
-
 function cpc_activity_plus_extract_thumbnail($body, $base_url) {
     $images = array();
 
