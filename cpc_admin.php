@@ -322,12 +322,16 @@ function cpccom_release_notes() {
 				<td valign="top" class="cpc_release_notes" style="<?php echo $cup_of_tea_left; ?>width:45%;">
 
 					<div style="font-size:1.6em; line-height:1.6em; color: #510051; font-weight: bold;">Core PS Community plugin</div>
-					<a href="https://cp-psource.github.io/cp-community/" target-"_blank">Verfügbar im PSOURCE GitHub-Repository</a><br />
+					<a href="https://power-source.github.io/ps-community/" target-"_blank">Verfügbar im PSOURCE GitHub-Repository</a><br />
 
-                    <h2 style="font-style:italic; margin-top:20px;">Changelog Versionsnummer 1.0.7.:</h2>
-					<p>PS Chat integration (BETA).</p>
-                    <p>Etliche kleine Bugfixes umgesetzt.<p>
-                    <p>Weitere JQUERY unabhängigkeit umgesetzt für volle ClassicPress Kompatibilität.<p>
+                    <h2 style="font-style:italic; margin-top:20px;">Changelog Versionsnummer 1.0.8:</h2>
+					<p>Activity Plus Integration für Aktivitäten ergänzt (Bilder, Link-Vorschau, Video-Embed)</p>
+                    <p>Einstellungen für Activity Plus im Admin ergänzt (Aktivierung, Features, Theme, Ausrichtung)<p>
+                    <p>Upload- und Bereinigungslogik für Activity Plus in PS-Community-Struktur integriert<p>
+                    <p>Jobboard-Integration in Profil-Tab ergänzt (Startseite, Meine Jobs, Mein Profil, Jobboard, Expertenboard)<p> 
+                    <p>Navigation im Jobboard-Profil-Tab vollständig intern umgesetzt (inkl. AJAX-Sektionen und Formular-Redirects)<p>
+                    <p>Assets für Jobboard-Sektionen im Profil-Tab ergänzt (inkl. Expert-Form, Social-Icons und Anhänge/Uploader)<p>  
+                    <p>Unterstützung für Jobboardguthaben-Menüpunkt im Profil-Tab ergänzt (über bestehende Jobboard-Hooks)<p>
                     <p>Getestet mit WP 6.8.1, CP 2.6.0 und PhP 8.4<p> 
                   
                 </td>
@@ -335,7 +339,7 @@ function cpccom_release_notes() {
 				<td valign="top" class="cpc_release_notes" style="<?php echo $cup_of_tea_right; ?>">
 
                     <div style="font-size:1.6em; line-height:1.6em; color: #510051; font-weight: bold;">PS Community Entwicklung</div>
-					<a href="https://n3rds.work/licenses/" target-"_blank">Hilf mit PS Community noch besser zu machen!</a><br />			
+					<a href="https://nerdservice.eimen.net/" target-"_blank">Hilf mit PS Community noch besser zu machen!</a><br />			
 
                     <h2 style="font-style:italic; margin-top:20px;">Entwicklung</h2>
 
@@ -343,7 +347,7 @@ function cpccom_release_notes() {
                     <p>Wir planen die Entwicklungsumgebung auf Github weiter auszubauen und zugänglicher zu machen</p>
                     <a href="https://github.com/Power-Source/cp-community/issues" target-"_blank">Hier kannst Du Fehler melden!</a><br />
                     <p>Wir freuen uns über jeden, der dieses Projekt mitgestalten möchte:</p>
-                    <a href="https://github.com/orgs/cp-psource/projects/8" target-"_blank">Entwickler-Board</a><br />
+                    <a href="https://github.com/Power-Source/ps-community" target-"_blank">Entwickler-Board</a><br />
 					
 				</td>
 			</tr></table>

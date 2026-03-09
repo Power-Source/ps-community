@@ -3,49 +3,13 @@
 Plugin Name: PS Community
 Plugin URI: https://power-source.github.io/ps-community/
 Description: Füge Deiner ClassicPress-Webseite schnell und einfach ein soziales Netzwerk hinzu!
-Version: 1.0.7
+Version: 1.0.8
 Author: PSOURCE
 Author URI: https://github.com/Power-Source
 License: GPLv2 or later
 Text Domain: cp-community
 Domain Path: /languages
 */
-// PS Update Manager - Hinweis wenn nicht installiert
-add_action( 'admin_notices', function() {
-    // Prüfe ob Update Manager aktiv ist
-    if ( ! function_exists( 'ps_register_product' ) && current_user_can( 'install_plugins' ) ) {
-        $screen = get_current_screen();
-        if ( $screen && in_array( $screen->id, array( 'plugins', 'plugins-network' ) ) ) {
-            // Prüfe ob bereits installiert aber inaktiv
-            $plugin_file = 'ps-update-manager/ps-update-manager.php';
-            $all_plugins = get_plugins();
-            $is_installed = isset( $all_plugins[ $plugin_file ] );
-            
-            echo '<div class="notice notice-warning is-dismissible"><p>';
-            echo '<strong>PS Chat:</strong> ';
-            
-            if ( $is_installed ) {
-                // Installiert aber inaktiv - Aktivierungs-Link
-                $activate_url = wp_nonce_url(
-                    admin_url( 'plugins.php?action=activate&plugin=' . urlencode( $plugin_file ) ),
-                    'activate-plugin_' . $plugin_file
-                );
-                echo sprintf(
-                    __( 'Aktiviere den <a href="%s">PS Update Manager</a> für automatische Updates von GitHub.', 'psource-chat' ),
-                    esc_url( $activate_url )
-                );
-            } else {
-                // Nicht installiert - Download-Link
-                echo sprintf(
-                    __( 'Installiere den <a href="%s" target="_blank">PS Update Manager</a> für automatische Updates aller PSource Plugins & Themes.', 'psource-chat' ),
-                    'https://github.com/Power-Source/ps-update-manager/releases/latest'
-                );
-            }
-            
-            echo '</p></div>';
-        }
-    }
-});
 
 if ( !defined('CPC2_TEXT_DOMAIN') ) define('CPC2_TEXT_DOMAIN', 'cp-community');
 if ( !defined('CPC_PREFIX') ) define('CPC_PREFIX', 'cpc');
@@ -375,7 +339,7 @@ add_action( 'wp_footer', 'cpc_add_wait_modal_box' );
 function cpc_update_routine() {
 		
 	global $wpdb;
-	$new_version = '1.0.7';
+	$new_version = '1.0.8';
 //echo get_option('cp_community_ver').'<br />';
 //echo $new_version.'<br />';
 	$do_update = (is_blog_admin() && current_user_can('manage_options') && get_option('cp_community_ver') != $new_version);
