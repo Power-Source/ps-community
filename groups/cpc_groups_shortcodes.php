@@ -64,18 +64,8 @@ add_action('wp_enqueue_scripts', 'cpc_groups_register_assets', 0);
  * [cpc-groups] - Display list of groups
  */
 function cpc_groups_list($atts) {
-	// Debug-Ausgabe
-	$debug = '<div style="border:2px solid blue;padding:10px;margin:10px 0;background:#f0f0f0;">';
-	$debug .= '<strong>DEBUG INFO:</strong><br>';
-	$debug .= 'Shortcode wird ausgeführt!<br>';
-	$debug .= 'CPC_CORE_PLUGINS: ' . (defined('CPC_CORE_PLUGINS') ? CPC_CORE_PLUGINS : 'NICHT DEFINIERT') . '<br>';
-	$debug .= 'Blog ID: ' . (is_multisite() ? get_current_blog_id() : 'Kein Multisite') . '<br>';
-	$debug .= 'cpc_groups_init exists: ' . (function_exists('cpc_groups_init') ? 'JA' : 'NEIN') . '<br>';
-	$debug .= '</div>';
-	
-	// Debug: Check if function is called
 	if (!function_exists('cpc_groups_init')) {
-		return $debug . '<div style="border:2px solid red;padding:10px;margin:10px 0;">ERROR: cpc_groups_init function nicht gefunden! Gruppen-Modul nicht geladen.</div>';
+		return '<p class="cpc-error">' . __('Gruppen-Modul nicht geladen.', CPC2_TEXT_DOMAIN) . '</p>';
 	}
 	
 	// Init

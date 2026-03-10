@@ -1,3 +1,145 @@
+/* ==========================================================
+   PS Community – Design Tokens
+   Alle Farbwerte, Abstände und Radii zentral definiert,
+   damit Profil- und Gruppen-Seite ein einheitliches
+   Erscheinungsbild haben.
+   ========================================================== */
+:root {
+    /* Primärfarbe */
+    --cpc-primary:       #0073aa;
+    --cpc-primary-dark:  #005177;
+    --cpc-primary-light: #e5f3ff;
+
+    /* Neutrale Farben */
+    --cpc-text:          #333;
+    --cpc-text-meta:     #666;
+    --cpc-text-muted:    #999;
+    --cpc-bg-subtle:     #f9f9f9;
+    --cpc-bg-white:      #fff;
+
+    /* Rahmen */
+    --cpc-border:        #ddd;
+    --cpc-border-light:  #e0e0e0;
+
+    /* Ecken-Radii */
+    --cpc-radius-sm:     4px;
+    --cpc-radius-md:     6px;
+    --cpc-radius-lg:     8px;
+
+    /* Abstände */
+    --cpc-space-xs:      5px;
+    --cpc-space-sm:      10px;
+    --cpc-space-md:      20px;
+    --cpc-space-lg:      30px;
+
+    /* Typografie */
+    --cpc-font-sm:       12px;
+    --cpc-font-md:       14px;
+    --cpc-font-lg:       16px;
+
+    /* Tab-Navigation */
+    --cpc-tab-border-width:  2px;
+    --cpc-tab-active-color:  var(--cpc-primary);
+    --cpc-tab-hover-bg:      #f4f8fb;
+
+    /* Buttons */
+    --cpc-btn-padding:   10px 20px;
+    --cpc-btn-radius:    var(--cpc-radius-sm);
+}
+
+/* ==========================================================
+   PS Community – Gemeinsame Button-Basisklasse
+   Wird von Profil- UND Gruppen-Modul genutzt.
+   ========================================================== */
+.cpc-button,
+.cpc-btn {
+    display:        inline-block;
+    padding:        var(--cpc-btn-padding);
+    background:     var(--cpc-primary);
+    color:          #fff !important;
+    text-decoration: none;
+    border-radius:  var(--cpc-btn-radius);
+    font-weight:    600;
+    border:         none;
+    cursor:         pointer;
+    transition:     background 0.2s ease;
+    line-height:    1.4;
+}
+.cpc-button:hover,
+.cpc-btn:hover {
+    background:     var(--cpc-primary-dark);
+    color:          #fff !important;
+    text-decoration: none;
+}
+.cpc-btn-danger { background: #dc3545; }
+.cpc-btn-danger:hover { background: #c82333; }
+.cpc-btn-secondary { background: #6c757d; }
+.cpc-btn-secondary:hover { background: #5a6268; }
+.cpc-btn-small { padding: 6px 12px; font-size: var(--cpc-font-sm); font-weight: 500; }
+
+/* ==========================================================
+   PS Community – Gemeinsame Tab-Navigation
+   Einheitlicher Underline-Stil für Profil- und Gruppen-Tabs.
+   ========================================================== */
+.cpc-tabs-nav {
+    margin:        20px 0 0 0;
+    border-bottom: var(--cpc-tab-border-width) solid var(--cpc-border);
+    clear:         both;
+}
+
+.cpc-tabs-list {
+    list-style: none !important;
+    margin:     0;
+    padding:    0;
+    display:    flex;
+    flex-wrap:  wrap;
+}
+
+.cpc-tab-item {
+    list-style: none !important;
+    margin:     0 4px -var(--cpc-tab-border-width) 0;
+}
+
+.cpc-tab-link {
+    display:        inline-block;
+    padding:        12px 20px;
+    text-decoration: none;
+    color:          var(--cpc-text-meta);
+    border-bottom:  3px solid transparent;
+    transition:     all 0.2s ease;
+    font-weight:    500;
+    white-space:    nowrap;
+}
+.cpc-tab-link:hover {
+    color:           var(--cpc-primary);
+    text-decoration: none;
+    background:      var(--cpc-tab-hover-bg);
+}
+.cpc-tab-item.active .cpc-tab-link,
+.cpc-tab-link.active {
+    color:            var(--cpc-primary);
+    border-bottom-color: var(--cpc-primary);
+}
+
+.cpc-tab-content-wrapper {
+    padding:    20px 0;
+    min-height: 200px;
+    animation:  cpc-fade-in 0.25s ease;
+}
+
+@keyframes cpc-fade-in {
+    from { opacity: 0; }
+    to   { opacity: 1; }
+}
+
+/* Responsive: Tabs werden vertikal */
+@media screen and (max-width: 768px) {
+    .cpc-tabs-list   { flex-direction: column; }
+    .cpc-tab-item    { margin: 0; border-bottom: 1px solid var(--cpc-border-light); }
+    .cpc-tab-link    { display: block; padding: 15px; border-bottom: none; border-left: 3px solid transparent; }
+    .cpc-tab-item.active .cpc-tab-link { border-left-color: var(--cpc-primary); border-bottom-color: transparent; background: #f7f7f7; }
+}
+
 @font-face
 {
     font-family:'cpc_com';

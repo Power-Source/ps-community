@@ -136,14 +136,13 @@ function cpc_activity_page($atts){
 
 	// Profile header (always visible, above tabs)
     $html .= '<div class="cpc-profile-header-block">';
-	$html .= '<style>.cpc_avatar img { border-radius:0px; }</style>';
-	$html .= cpc_display_name(array('user_id'=>$user_id, 'before'=>'<div id="cpc_display_name" style="font-size:2.5em; line-height:2.5em; margin-bottom:20px;">', 'after'=>'</div>'));
-	$html .= '<div style="overflow:auto;overflow-y:hidden;margin-bottom:15px">';
-    $html .= '<div id="cpc_activity_page_avatar" style="float: left; margin-right: 20px;">';
+	$html .= cpc_display_name(array('user_id'=>$user_id, 'before'=>'<div id="cpc_display_name" class="cpc-profile-display-name">', 'after'=>'</div>'));
+	$html .= '<div class="cpc-profile-header-body">';
+    $html .= '<div id="cpc_activity_page_avatar">';
     if (strpos(CPC_CORE_PLUGINS, 'core-avatar') !== false):
-        $html .= cpc_avatar(array('user_id'=>$user_id, 'change_link'=>1, 'size'=>$user_avatar_size, 'before'=>'<div id="cpc_display_avatar" style="float:left; margin-right:15px;">', 'after'=>'</div>'));
+        $html .= cpc_avatar(array('user_id'=>$user_id, 'change_link'=>1, 'size'=>$user_avatar_size, 'before'=>'<div id="cpc_display_avatar" class="cpc-profile-display-avatar">', 'after'=>'</div>'));
     else:
-        $html .= '<div id="cpc_display_avatar" style="float:left; margin-right:15px;">';
+        $html .= '<div id="cpc_display_avatar" class="cpc-profile-display-avatar">';
             $html .= get_avatar($user_id, $user_avatar_size);
         $html .= '</div>';
     endif;
@@ -163,7 +162,7 @@ function cpc_activity_page($atts){
         endif;
 	$html .= '</div>';
     if (strpos(CPC_CORE_PLUGINS, 'core-friendships') !== false):
-        $html .= '<div id="cpc_display_friend_requests" style="margin-left:10px;float:left;min-width:200px;">';
+        $html .= '<div id="cpc_display_friend_requests" class="cpc-profile-friends-sidebar">';
         $html .= cpc_friends_pending(array('user_id'=>$user_id, 'count' => 10, 'before'=>'<div class="cpc_20px_gap"><div style="font-weight:bold;margin-bottom: 10px">'.$requests_label.'</div>', 'after'=>'</div>'));
         $html .= cpc_friends_add_button(array());
         $html .= '</div>';

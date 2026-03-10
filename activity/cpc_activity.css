@@ -1,5 +1,60 @@
 /* Posts */
 
+/* ================================================
+   Profil-Header-Block
+   Ersetzt inline-styles in cpc_activity_shortcodes.php
+   ================================================ */
+
+.cpc-profile-header-block {
+    clear:     both;
+    max-width: 100%;
+    margin-bottom: 20px;
+}
+
+/* Profilname – ersetzt style="font-size:2.5em;line-height:2.5em;margin-bottom:20px" */
+.cpc-profile-display-name {
+    font-size:     2.5em;
+    line-height:   1.3;
+    margin-bottom: 0.4em;
+    font-weight:   700;
+    color:         var(--cpc-text, #333);
+}
+
+/* Zeile mit Avatar + Meta */
+.cpc-profile-header-body {
+    overflow:      auto;
+    overflow-y:    hidden;
+    margin-bottom: 15px;
+}
+
+/* Avatar-Umschlag */
+#cpc_activity_page_avatar {
+    float:        left;
+    margin-right: 20px;
+}
+
+/* Inneres Avatar-Div */
+.cpc-profile-display-avatar,
+#cpc_display_avatar {
+    float:        left;
+    margin-right: 15px;
+}
+
+/* Verhindert abgerundeten Avatar auf der Profilseite */
+.cpc_avatar img,
+#cpc_display_avatar img {
+    border-radius: 0;
+}
+
+/* Freundschafts-Sidebar */
+.cpc-profile-friends-sidebar {
+    margin-left: 10px;
+    float:       left;
+    min-width:   200px;
+}
+
+/* ================================================ */
+
 #cpc_activity_items {
 	clear: both;
 	-webkit-box-sizing: border-box; /* Safari/Chrome, other WebKit */
@@ -541,81 +596,68 @@
    PROFILE TABS SYSTEM
    ======================================== */
 
+/* Profil-Tab-Nav – Underline-Stil (Vorbild für Gruppen-Tabs) */
 .cpc-profile-tabs-nav {
-    margin: 20px 0 10px 0;
-    border-bottom: 2px solid #ddd;
-    clear: both;
+    margin:        20px 0 0 0;
+    border-bottom: var(--cpc-tab-border-width, 2px) solid var(--cpc-border, #ddd);
+    clear:         both;
 }
 
 .cpc-profile-tabs-list {
-    list-style: none;
-    margin: 0;
-    padding: 0;
-    display: flex;
-    flex-wrap: wrap;
+    list-style: none !important;
+    margin:     0;
+    padding:    0;
+    display:    flex;
+    flex-wrap:  wrap;
 }
 
 .cpc-profile-tab-item {
-    margin: 0 5px -2px 0;
+    list-style: none !important;
+    margin:     0 4px -2px 0;
 }
 
 .cpc-profile-tab-link {
-    display: inline-block;
-    padding: 12px 20px;
+    display:        inline-block;
+    padding:        12px 20px;
     text-decoration: none;
-    color: #555;
-    border-bottom: 3px solid transparent;
-    transition: all 0.2s ease;
-    font-weight: 500;
+    color:          var(--cpc-text-meta, #555);
+    border-bottom:  3px solid transparent;
+    transition:     all 0.2s ease;
+    font-weight:    500;
+    white-space:    nowrap;
 }
 
 .cpc-profile-tab-link:hover {
-    color: #0073aa;
+    color:           var(--cpc-primary, #0073aa);
     text-decoration: none;
+    background:      var(--cpc-tab-hover-bg, #f4f8fb);
 }
 
 .cpc-profile-tab-item.active .cpc-profile-tab-link {
-    color: #0073aa;
-    border-bottom-color: #0073aa;
+    color:               var(--cpc-primary, #0073aa);
+    border-bottom-color: var(--cpc-primary, #0073aa);
 }
 
 .cpc-profile-tab-link .dashicons {
-    font-size: 16px;
-    width: 16px;
-    height: 16px;
-    line-height: 1;
+    font-size:      16px;
+    width:          16px;
+    height:         16px;
+    line-height:    1;
     vertical-align: middle;
-    margin-right: 4px;
+    margin-right:   4px;
 }
 
 .cpc-profile-tab-content-wrapper {
-    padding: 20px 0;
+    padding:    20px 0;
     min-height: 200px;
+    animation:  cpc-fade-in 0.25s ease;
 }
 
-/* Responsive tabs */
 @media screen and (max-width: 768px) {
-    .cpc-profile-tabs-list {
-        flex-direction: column;
-    }
-    
-    .cpc-profile-tab-item {
-        margin: 0;
-        border-bottom: 1px solid #ddd;
-    }
-    
-    .cpc-profile-tab-link {
-        display: block;
-        padding: 15px;
-        border-bottom: none;
-        border-left: 3px solid transparent;
-    }
-    
-    .cpc-profile-tab-item.active .cpc-profile-tab-link {
-        border-left-color: #0073aa;
-        border-bottom-color: transparent;
-        background-color: #f7f7f7;
-    }
+    .cpc-profile-tabs-list  { flex-direction: column; }
+    .cpc-profile-tab-item   { margin: 0; border-bottom: 1px solid var(--cpc-border, #ddd); }
+    .cpc-profile-tab-link   { display: block; padding: 15px; border-bottom: none; border-left: 3px solid transparent; }
+    .cpc-profile-tab-item.active .cpc-profile-tab-link { border-left-color: var(--cpc-primary, #0073aa); border-bottom-color: transparent; background: #f7f7f7; }
 }
 
 /* ========================================

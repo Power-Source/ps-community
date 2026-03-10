@@ -1,3 +1,4 @@
+.cpc-btn-primary { background: var(--cpc-primary, #0073aa); }
 /* PS Community Groups Styles */
 
 /* Notifications */
@@ -196,40 +197,31 @@
 }
 
 .cpc-group-meta {
-    display: flex;
-    gap: 10px;
+    display:    flex;
+    gap:        var(--cpc-space-sm, 10px);
     align-items: center;
-    margin-bottom: 10px;
-    flex-wrap: wrap;
+    margin-bottom: var(--cpc-space-sm, 10px);
+    flex-wrap:  wrap;
+    color:      var(--cpc-text-meta, #666);
+    font-size:  var(--cpc-font-md, 14px);
 }
 
 .cpc-group-type-badge {
-    display: inline-block;
-    padding: 3px 8px;
-    font-size: 12px;
-    border-radius: 3px;
-    background: #f0f0f0;
-    color: #666;
+    display:       inline-block;
+    padding:       3px 8px;
+    font-size:     var(--cpc-font-sm, 12px);
+    border-radius: var(--cpc-radius-sm, 4px);
+    background:    #f0f0f0;
+    color:         var(--cpc-text-meta, #666);
 }
 
-.cpc-group-type-public .cpc-group-type-badge {
-    background: #d4edda;
-    color: #155724;
-}
-
-.cpc-group-type-private .cpc-group-type-badge {
-    background: #fff3cd;
-    color: #856404;
-}
-
-.cpc-group-type-hidden .cpc-group-type-badge {
-    background: #f8d7da;
-    color: #721c24;
-}
+.cpc-group-type-public  .cpc-group-type-badge { background: #d4edda; color: #155724; }
+.cpc-group-type-private .cpc-group-type-badge { background: #fff3cd; color: #856404; }
+.cpc-group-type-hidden  .cpc-group-type-badge { background: #f8d7da; color: #721c24; }
 
 .cpc-group-members {
-    font-size: 13px;
-    color: #666;
+    font-size: var(--cpc-font-sm, 13px);
+    color:     var(--cpc-text-meta, #666);
 }
 
 .cpc-group-description {
@@ -238,74 +230,87 @@
     line-height: 1.5;
 }
 
-/* Join/Leave Buttons */
+/* Join/Leave Buttons – use shared .cpc-btn base */
 .cpc-group-join-btn,
 .cpc-group-leave-btn,
-.cpc-group-pending-btn {
-    display: inline-block;
-    padding: 8px 16px;
-    margin-top: 10px;
-    background: #0073aa;
-    color: #fff !important;
+.cpc-group-pending-btn,
+.cpc-group-invite-btn {
+    display:         inline-block;
+    padding:         8px 18px;
+    margin-top:      var(--cpc-space-sm, 10px);
+    color:           #fff !important;
     text-decoration: none;
-    border-radius: 4px;
-    font-size: 14px;
-    transition: background 0.3s ease;
-    cursor: pointer;
-    border: none;
+    border-radius:   var(--cpc-radius-sm, 4px);
+    font-size:       var(--cpc-font-md, 14px);
+    font-weight:     600;
+    transition:      background 0.2s ease;
+    cursor:          pointer;
+    border:          none;
+    background:      var(--cpc-primary, #0073aa);
 }
 
-.cpc-group-join-btn:hover {
-    background: #005177;
-}
-
-.cpc-group-leave-btn {
-    background: #dc3545;
-}
-
-.cpc-group-leave-btn:hover {
-    background: #c82333;
-}
-
-.cpc-group-pending-btn {
-    background: #6c757d;
-    cursor: default;
-    opacity: 0.7;
-}
-
-.cpc-group-pending-btn:hover {
-    background: #6c757d;
-}
+.cpc-group-join-btn:hover  { background: var(--cpc-primary-dark, #005177); }
+.cpc-group-invite-btn      { background: #5a6268; }
+.cpc-group-invite-btn:hover { background: #494f54; }
+.cpc-group-leave-btn       { background: #dc3545; }
+.cpc-group-leave-btn:hover { background: #c82333; }
+.cpc-group-pending-btn     { background: #6c757d; cursor: default; opacity: 0.7; }
+.cpc-group-pending-btn:hover { background: #6c757d; }
 
 /* Single Group Page */
 .cpc-group-single {
     margin: 20px 0;
 }
 
+/* Group Header – flat layout aligned with profile header */
 .cpc-group-header {
-    display: flex;
-    gap: 20px;
-    margin-bottom: 30px;
-    padding: 20px;
-    background: #fff;
-    border: 1px solid #ddd;
-    border-radius: 8px;
+    display:       flex;
+    gap:           var(--cpc-space-md, 20px);
+    margin-bottom: var(--cpc-space-md, 20px);
+    padding:       0;
+    background:    none;
+    border:        none;
+    border-radius: 0;
+    align-items:   flex-start;
+}
+
+.cpc-group-avatar-large {
+    flex-shrink: 0;
 }
 
 .cpc-group-avatar-large img {
-    border-radius: 8px;
-    max-width: 100%;
-    height: auto;
+    border-radius: var(--cpc-radius-sm, 4px);
+    max-width:     100%;
+    height:        auto;
+    display:       block;
 }
 
 .cpc-group-header-info {
     flex: 1;
+    min-width: 0;
+}
+
+.cpc-group-title {
+    margin:      0 0 8px 0;
+    font-size:   2em;
+    line-height: 1.25;
+    color:       var(--cpc-text, #333);
+}
+
+.cpc-group-title a {
+    color:           var(--cpc-text, #333);
+    text-decoration: none;
+}
+
+.cpc-group-title a:hover {
+    color: var(--cpc-primary, #0073aa);
 }
 
 .cpc-group-actions {
-    margin-top: 15px;
-    display: flex;
-    gap: 10px;
+    margin-top: var(--cpc-space-sm, 10px);
+    display:    flex;
+    gap:        var(--cpc-space-sm, 10px);
+    flex-wrap:  wrap;
 }
 
 .cpc-group-edit-btn {
@@ -322,18 +327,18 @@
     background: #5a6268;
 }
 
-/* Group Members */
-.cpc-group-members {
-    margin: 30px 0;
-    padding: 20px;
-    background: #fff;
-    border: 1px solid #ddd;
-    border-radius: 8px;
+/* Group Members section block */
+.cpc-group-members-section {
+    margin:        var(--cpc-space-lg, 30px) 0;
+    padding:       var(--cpc-space-md, 20px);
+    background:    var(--cpc-bg-subtle, #f9f9f9);
+    border-radius: var(--cpc-radius-sm, 4px);
+    border:        1px solid var(--cpc-border, #ddd);
 }
 
-.cpc-group-members h3 {
-    margin-top: 0;
-    margin-bottom: 20px;
+.cpc-group-members-section h3 {
+    margin-top:    0;
+    margin-bottom: var(--cpc-space-md, 20px);
 }
 
 .cpc-members-grid {
@@ -450,63 +455,73 @@
     border: 1px solid #f5c6cb;
 }
 
-/* Group Tabs */
+/* Group Tabs – aligned with profile tab navigation (underline style) */
 .cpc-group-tabs-nav {
-    margin-bottom: 30px;
-    background: #fff;
-    border: 1px solid #e0e0e0;
-    border-radius: 8px;
-    padding: 4px 8px;
-    box-shadow: 0 4px 12px rgba(0,0,0,0.04);
+    margin:        20px 0 0 0;
+    border-bottom: var(--cpc-tab-border-width, 2px) solid var(--cpc-border, #ddd);
+    background:    none;
+    padding:       0;
+    border-radius: 0;
+    box-shadow:    none;
+    clear:         both;
 }
 
 .cpc-group-tabs-nav .cpc-group-tabs-list {
     list-style: none !important;
-    margin: 0;
-    padding: 0;
-    display: flex;
-    flex-wrap: wrap;
-    gap: 6px;
+    margin:     0;
+    padding:    0;
+    display:    flex;
+    flex-wrap:  wrap;
+    gap:        0;
 }
 
 .cpc-group-tab-item {
-    margin: 0;
+    margin:     0 4px -2px 0;
     list-style: none !important;
 }
 
 .cpc-group-tab-link {
-    display: block;
-    padding: 10px 16px;
-    color: #4b5563;
+    display:        inline-block;
+    padding:        12px 20px;
+    color:          var(--cpc-text-meta, #666);
     text-decoration: none;
-    border-radius: 6px;
-    background: #f8fafc;
-    border: 1px solid transparent;
-    transition: all 0.2s ease;
-    font-weight: 600;
+    border-bottom:  3px solid transparent;
+    border-top:     none;
+    border-left:    none;
+    border-right:   none;
+    border-radius:  0;
+    background:     none;
+    transition:     all 0.2s ease;
+    font-weight:    500;
+    white-space:    nowrap;
 }
 
 .cpc-group-tab-link:hover {
-    color: #0b6ea4;
-    background: #eef2f7;
-    border-color: #d8e2ec;
+    color:           var(--cpc-primary, #0073aa);
+    background:      var(--cpc-tab-hover-bg, #f4f8fb);
+    text-decoration: none;
+    border-bottom-color: transparent;
 }
 
 .cpc-group-tab-item.active .cpc-group-tab-link {
-    color: #0b6ea4;
-    background: #e5f3ff;
-    border-color: #0b6ea4;
-    box-shadow: inset 0 -2px 0 #0b6ea4;
+    color:               var(--cpc-primary, #0073aa);
+    background:          none;
+    border-bottom-color: var(--cpc-primary, #0073aa);
+    box-shadow:          none;
 }
 
 .cpc-group-tabs-content {
-    margin-top: 20px;
-    animation: fadeIn 0.3s ease;
+    padding:    20px 0;
+    min-height: 200px;
+    animation:  cpc-fade-in 0.25s ease;
 }
 
-@keyframes fadeIn {
-    from { opacity: 0; }
-    to { opacity: 1; }
+/* Responsive */
+@media (max-width: 768px) {
+    .cpc-group-tabs-nav .cpc-group-tabs-list { flex-direction: column; }
+    .cpc-group-tab-item { margin: 0; border-bottom: 1px solid var(--cpc-border-light, #e0e0e0); }
+    .cpc-group-tab-link { display: block; padding: 14px 16px; border-bottom: none; border-left: 3px solid transparent; }
+    .cpc-group-tab-item.active .cpc-group-tab-link { border-left-color: var(--cpc-primary, #0073aa); border-bottom-color: transparent; background: #f7f7f7; }
 }
 
 /* Tab Content - Overview */
