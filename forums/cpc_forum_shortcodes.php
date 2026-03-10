@@ -1029,9 +1029,32 @@ function cpc_forum($atts) {
     if (get_option('cpccom_use_styles')):
     	$html .= '<!-- start of cpc_forum styles -->';
         $values = get_option('cpc_styles_'.'cpc_forum') ? get_option('cpc_styles_'.'cpc_forum') : array();
-        $html .= cpc_styles($values, 'cpc_forum', array('.cpc_forum_title_header','.cpc_forum_count_header','.cpc_forum_last_poster_header','.cpc_forum_categories_freshness_header'));
+		$html .= cpc_styles($values, 'cpc_forum', array(
+			'.cpc_forum_posts_header',
+			'.cpc_forum_title_header',
+			'.cpc_forum_count_header',
+			'.cpc_forum_last_poster_header',
+			'.cpc_forum_categories_freshness_header',
+			'.cpc_forum_posts',
+			'.cpc_forum_post',
+			'.cpc_forum_post_unread',
+			'.cpc_forum_title',
+			'.cpc_forum_count',
+			'.cpc_forum_last_poster',
+			'.cpc_forum_freshness',
+		));
         $values = get_option('cpc_styles_'.'cpc_forums') ? get_option('cpc_styles_'.'cpc_forums') : array();
-        $html .= cpc_styles($values, 'cpc_forums', array('.cpc_forums_forum_title', '.cpc_forums_forum_title:hover', '.cpc_forums_forum_title:active'));
+		$html .= cpc_styles($values, 'cpc_forums', array(
+			'.cpc_forum_categories_header',
+			'.cpc_forum_categories_item',
+			'.cpc_forums_forum_title',
+			'.cpc_forums_forum_title:hover',
+			'.cpc_forums_forum_title:active',
+			'.cpc_forum_categories_description',
+			'.cpc_forum_categories_count',
+			'.cpc_forum_categories_last_poster',
+			'.cpc_forum_categories_freshness',
+		));
     	$html .= '<!-- end of cpc_forum styles -->';
     endif;    
     

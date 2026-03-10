@@ -58,6 +58,59 @@ function cpc_groups_register_assets() {
 }
 add_action('wp_enqueue_scripts', 'cpc_groups_register_assets', 0);
 
+function cpc_groups_get_dynamic_styles() {
+	if (!get_option('cpccom_use_styles')) {
+		return '';
+	}
+
+	static $styles_already_added = false;
+	if ($styles_already_added) {
+		return '';
+	}
+	$styles_already_added = true;
+
+	$html = '<!-- start of cpc_groups styles -->';
+
+	$values = get_option('cpc_styles_cpc_groups') ? get_option('cpc_styles_cpc_groups') : array();
+	$html .= cpc_styles($values, 'cpc_groups', array(
+		'.cpc-groups-grid',
+		'.cpc-group-card',
+		'.cpc-group-title',
+		'.cpc-group-title:hover',
+		'.cpc-group-meta',
+		'.cpc-group-description',
+		'.cpc-groups-toolbar',
+		'.cpc-groups-search-input',
+		'.cpc-groups-search-submit',
+		'.cpc-btn-create-group',
+	));
+
+	$values = get_option('cpc_styles_cpc_group_single') ? get_option('cpc_styles_cpc_group_single') : array();
+	$html .= cpc_styles($values, 'cpc_group_single', array(
+		'.cpc-group-header',
+		'.cpc-group-title',
+		'.cpc-group-tabs-nav',
+		'.cpc-group-tab-link',
+		'.cpc-group-tab-link-active',
+		'.cpc-group-tabs-content',
+		'.cpc-group-actions',
+		'.cpc-group-join-btn',
+		'.cpc-group-leave-btn',
+		'.cpc-group-invite-btn',
+	));
+
+	$values = get_option('cpc_styles_cpc_my_groups') ? get_option('cpc_styles_cpc_my_groups') : array();
+	$html .= cpc_styles($values, 'cpc_my_groups', array(
+		'.cpc-my-groups-grid',
+		'.cpc-my-groups-card',
+		'.cpc-group-my-role',
+	));
+
+	$html .= '<!-- end of cpc_groups styles -->';
+
+	return $html;
+}
+
 /* ********** */ /* SHORTCODES */ /* ********** */
 
 /**
@@ -91,7 +144,7 @@ function cpc_groups_list($atts) {
 		'styles' => true,
 	), $atts, 'cpc_groups_list' ) );
 
-	$html = '';
+	$html = cpc_groups_get_dynamic_styles();
 	$html .= '<div class="cpc-groups-list">';
 
 	// Placeholder image for missing avatars (embedded SVG, URL-encoded via rawurlencode)
@@ -113,8 +166,8 @@ function cpc_groups_list($atts) {
 	if ($search && ($search == true || $search == '1' || $search == 'true' || $search == 'on')):
 		$search_term = isset($_GET['group_search']) ? sanitize_text_field($_GET['group_search']) : '';
 		$html .= '<form method="get" action="" class="cpc-groups-search-form">';
-		$html .= '<input type="text" name="group_search" placeholder="'.__('Gruppen durchsuchen...', CPC2_TEXT_DOMAIN).'" value="'.esc_attr($search_term).'" />';
-		$html .= '<input type="submit" value="'.__('Suchen', CPC2_TEXT_DOMAIN).'" />';
+		$html .= '<input type="text" class="cpc-groups-search-input" name="group_search" placeholder="'.__('Gruppen durchsuchen...', CPC2_TEXT_DOMAIN).'" value="'.esc_attr($search_term).'" />';
+		$html .= '<input type="submit" class="cpc-groups-search-submit" value="'.__('Suchen', CPC2_TEXT_DOMAIN).'" />';
 		$html .= '</form>';
 	endif;
 
@@ -275,7 +328,7 @@ function cpc_group_single($atts) {
 		return '<p>'.__('Du hast keine Berechtigung, diese Gruppe zu sehen.', CPC2_TEXT_DOMAIN).'</p>';
 	endif;
 
-	$html = '';
+	$html = cpc_groups_get_dynamic_styles();
 	$group_type = get_post_meta($group_id, 'cpc_group_type', true);
 	if (!$group_type) $group_type = 'public';
 	
@@ -385,7 +438,7 @@ function cpc_group_members($atts) {
 	// Get current blog ID for multisite support
 	$current_blog_id = is_multisite() ? get_current_blog_id() : null;
 
-	$html = '';
+	$html = cpc_groups_get_dynamic_styles();
 	$members = cpc_get_group_members($group_id, 'active', $role, $current_blog_id);
 
 	if ($limit > 0):
@@ -483,19 +536,19 @@ function cpc_my_groups($atts) {
 	// Get current blog ID for multisite support
 	$current_blog_id = is_multisite() ? get_current_blog_id() : null;
 
-	$html = '';
+	$html = cpc_groups_get_dynamic_styles();
 	$groups = cpc_get_user_groups($user_id, 'active', $current_blog_id);
 
 	if ($groups):
 		$html .= '<div class="cpc-my-groups">';
-		$html .= '<div class="cpc-groups-grid cpc-groups-cols-'.$columns.'">';
+		$html .= '<div class="cpc-groups-grid cpc-my-groups-grid cpc-groups-cols-'.$columns.'">';
 
 		foreach ($groups as $group):
 			$group_type = get_post_meta($group->ID, 'cpc_group_type', true);
 			if (!$group_type) $group_type = 'public';
 			$user_role = cpc_get_group_member_role($user_id, $group->ID, $current_blog_id);
 
-			$html .= '<div class="cpc-group-card cpc-group-type-'.$group_type.'">';
+			$html .= '<div class="cpc-group-card cpc-my-groups-card cpc-group-type-'.$group_type.'">';
 			
 			if ($show_avatar):
 				$html .= '<div class="cpc-group-avatar">';
@@ -552,7 +605,7 @@ function cpc_group_create($atts) {
 		'styles' => true,
 	), $atts, 'cpc_group_create' ) );
 
-	$html = '';
+	$html = cpc_groups_get_dynamic_styles();
 	$html .= '<div class="cpc-group-create-form">';
 	$html .= '<form id="cpc-create-group-form" method="post" enctype="multipart/form-data">';
 	
@@ -628,7 +681,7 @@ function cpc_group_join_button($atts) {
 	$is_member = cpc_is_group_member(get_current_user_id(), $group_id, $current_blog_id);
 	$group_type = get_post_meta($group_id, 'cpc_group_type', true);
 
-	$html = '';
+	$html = cpc_groups_get_dynamic_styles();
 	if ($is_member):
 		$html .= '<a href="#" class="cpc-group-leave-btn" data-group-id="'.$group_id.'">'.$leave_text.'</a>';
 	else:
@@ -672,7 +725,7 @@ function cpc_group_leave_button($atts) {
 
 	$is_member = cpc_is_group_member(get_current_user_id(), $group_id, $current_blog_id);
 
-	$html = '';
+	$html = cpc_groups_get_dynamic_styles();
 	if ($is_member):
 		$html .= '<a href="#" class="cpc-group-leave-btn" data-group-id="'.$group_id.'">'.$text.'</a>';
 	endif;

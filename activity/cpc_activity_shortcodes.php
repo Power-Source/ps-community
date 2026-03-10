@@ -95,13 +95,55 @@ function cpc_profile_slot($atts, $content = '') {
     return $html;
 }
 
+function cpc_activity_get_dynamic_styles() {
+    if (!get_option('cpccom_use_styles')) {
+        return '';
+    }
+
+    static $styles_already_added = false;
+    if ($styles_already_added) {
+        return '';
+    }
+    $styles_already_added = true;
+
+    $html = '<!-- start of cpc_activity/profile styles -->';
+
+    $values = get_option('cpc_styles_cpc_profile') ? get_option('cpc_styles_cpc_profile') : array();
+    $html .= cpc_styles($values, 'cpc_profile', array(
+        '.cpc-profile-header-block',
+        '.cpc-profile-display-name',
+        '.cpc-profile-header-body',
+        '.cpc-profile-header-meta',
+        '.cpc-profile-header-right-slot-wrap',
+        '.cpc-profile-tabs-nav',
+        '.cpc-profile-tab-link',
+        '.cpc-profile-tab-link-active',
+        '.cpc-profile-tab-content-wrapper',
+    ));
+
+    $values = get_option('cpc_styles_cpc_activity_feed') ? get_option('cpc_styles_cpc_activity_feed') : array();
+    $html .= cpc_styles($values, 'cpc_activity_feed', array(
+        '.cpc_activity_items',
+        '.cpc_activity_item',
+        '.cpc_activity_content',
+        '.cpc_activity_comments',
+        '.cpc_activity_comment',
+        '.cpc_activity_post_comment',
+        '.cpc_activity_post_comment_div',
+    ));
+
+    $html .= '<!-- end of cpc_activity/profile styles -->';
+
+    return $html;
+}
+
 function cpc_activity_page($atts){
 
 	// Init
 	cpc_activity_init();
 
     global $current_user;
-	$html = '';
+    $html = cpc_activity_get_dynamic_styles();
     
 	// Shortcode parameters
     $values = cpc_get_shortcode_options('cpc_activity_page');
@@ -284,7 +326,7 @@ if ($debug) $debug_html .= 'Start: '.date('Y-m-d H:i:s').'<br />';
 	// Init
 	cpc_activity_init();
 
-	$html = '';
+    $html = cpc_activity_get_dynamic_styles();
 	global $current_user, $wpdb;
     
 	$html .= '<br style="clear:both" />';
@@ -572,7 +614,7 @@ if ($debug) $debug_html .= 'Start: '.date('Y-m-d H:i:s').'<br />';
                 array_multisort($is_sticky_sort, SORT_DESC, $datetime_sort, SORT_DESC, $activity);
 
                 // Output...
-                $html .= '<div id="cpc_activity_items"';
+                $html .= '<div id="cpc_activity_items" class="cpc_activity_items"';
                     if ($hide_until_loaded) $html .= 'style="display:none"';
                     $html .= '>';
 
@@ -592,7 +634,7 @@ if ($debug) $debug_html .= 'Start: '.date('Y-m-d H:i:s').'<br />';
     
                 $html .= '<div id="cpc_activity_post_private_msg">'.__('Keine Aktivität zum Anzeigen...', CPC2_TEXT_DOMAIN).'</div>';
                 $html .= '<div style="display:none" id="cpc_wait_url">'.plugins_url('../css/images/wait.gif', __FILE__).'</div>';
-                $html .= '<div id="cpc_activity_items"></div>';
+                $html .= '<div id="cpc_activity_items" class="cpc_activity_items"></div>';
 
             endif;
 

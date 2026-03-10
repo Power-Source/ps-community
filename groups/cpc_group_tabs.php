@@ -77,11 +77,13 @@ function cpc_render_group_tabs($group_id, $active_tab = 'overview') {
 	foreach ($tabs as $tab_id => $tab_data):
 		$class = 'cpc-group-tab-item';
 		if ($tab_id === $active_tab) $class .= ' active';
+		$link_class = 'cpc-group-tab-link';
+		if ($tab_id === $active_tab) $link_class .= ' cpc-group-tab-link-active';
 		
 		$tab_url = add_query_arg('tab', $tab_id, $current_url);
 		
 		$html .= '<li class="'.$class.'">';
-		$html .= '<a href="'.$tab_url.'" class="cpc-group-tab-link" data-tab="'.$tab_id.'">';
+		$html .= '<a href="'.$tab_url.'" class="'.$link_class.'" data-tab="'.$tab_id.'">';
 		$html .= $tab_data['label'];
 		$html .= '</a>';
 		$html .= '</li>';

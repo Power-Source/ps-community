@@ -97,11 +97,13 @@ function cpc_render_profile_tabs($user_id, $active_tab = 'activity') {
 	foreach ($tabs as $tab_id => $tab_data):
 		$class = 'cpc-profile-tab-item';
 		if ($tab_id === $active_tab) $class .= ' active';
+		$link_class = 'cpc-profile-tab-link';
+		if ($tab_id === $active_tab) $link_class .= ' cpc-profile-tab-link-active';
 		
 		$tab_url = add_query_arg('tab', $tab_id, $profile_url);
 		
 		$html .= '<li class="'.$class.'">';
-		$html .= '<a href="'.esc_url($tab_url).'" class="cpc-profile-tab-link" data-tab="'.esc_attr($tab_id).'">';
+		$html .= '<a href="'.esc_url($tab_url).'" class="'.$link_class.'" data-tab="'.esc_attr($tab_id).'">';
 		
 		// Optional icon support (für später)
 		if (!empty($tab_data['icon'])) {

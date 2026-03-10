@@ -16,6 +16,62 @@ function cpc_friends_init() {
 
 }
 
+function cpc_friends_get_dynamic_styles() {
+	if (!get_option('cpccom_use_styles')) {
+		return '';
+	}
+
+	static $styles_already_added = false;
+	if ($styles_already_added) {
+		return '';
+	}
+	$styles_already_added = true;
+
+	$html = '<!-- start of cpc_friendships styles -->';
+
+	$values = get_option('cpc_styles_cpc_friends') ? get_option('cpc_styles_cpc_friends') : array();
+	$html .= cpc_styles($values, 'cpc_friends', array(
+		'.cpc_friends_friend',
+		'.cpc_friends_friend_avatar_display_name',
+		'.cpc_friends_friend_avatar_last_active',
+		'.cpc_friends_favourite_toggle',
+		'.cpc_friends_count',
+		'.cpc_friends_count_link',
+		'.cpc_friends_private_msg',
+		'.cpc_friends_none_msg',
+		'.cpc_remove_all_friends_link',
+	));
+
+	$values = get_option('cpc_styles_cpc_friends_pending') ? get_option('cpc_styles_cpc_friends_pending') : array();
+	$html .= cpc_styles($values, 'cpc_friends_pending', array(
+		'.cpc_pending_friends',
+		'.cpc_pending_friends_friend',
+		'.cpc_pending_friends_friend_display_name',
+		'.cpc_pending_friends_accept_reject',
+		'.cpc_pending_friends_accept',
+		'.cpc_pending_friends_reject',
+	));
+
+	$values = get_option('cpc_styles_cpc_friends_actions') ? get_option('cpc_styles_cpc_friends_actions') : array();
+	$html .= cpc_styles($values, 'cpc_friends_actions', array(
+		'.cpc_friends_add_button',
+		'.cpc_friends_add',
+		'.cpc_friends_cancel',
+		'.cpc_pending_friends_reject',
+		'.cpc_add_remove_favourite',
+	));
+
+	$values = get_option('cpc_styles_cpc_alerts_friends') ? get_option('cpc_styles_cpc_alerts_friends') : array();
+	$html .= cpc_styles($values, 'cpc_alerts_friends', array(
+		'.cpc_alerts_friends_flag_wrap',
+		'.cpc_alerts_friends_flag_unread_badge',
+	));
+
+	$html .= '<!-- end of cpc_friendships styles -->';
+
+	return $html;
+}
+
 /* ********** */ /* SHORTCODES */ /* ********** */
 
 function cpc_favourite_friend($atts) {
@@ -23,7 +79,7 @@ function cpc_favourite_friend($atts) {
 	// Init
 	cpc_friends_init();
 
-	$html = '';
+	$html = cpc_friends_get_dynamic_styles();
 	global $current_user;
 
 	if (is_user_logged_in()):
@@ -85,7 +141,7 @@ function cpc_friends_status($atts) {
 	// Init
 	cpc_friends_init();
 
-	$html = '';
+	$html = cpc_friends_get_dynamic_styles();
 	global $current_user;
 
 	if (is_user_logged_in()):
@@ -138,7 +194,7 @@ function cpc_friends_add_button($atts) {
 	// Init
 	cpc_friends_init();
 
-	$html = '';
+	$html = cpc_friends_get_dynamic_styles();
 	global $current_user;
 
 	if (is_user_logged_in() && !get_option('cpc_friendships_all')):
@@ -197,7 +253,7 @@ function cpc_friends($atts) {
 	// Init
 	cpc_friends_init();
 
-	$html = '';
+	$html = cpc_friends_get_dynamic_styles();
 	global $current_user;
 
 	// Shortcode parameters
@@ -273,7 +329,7 @@ function cpc_friends($atts) {
         
                 // Show remove all friends option, if on their own page
                 if ($remove_all_friends && $user_id == $current_user->ID)
-                	$html .= '<p><a id="cpc_remove_all_friends" data-sure="'.$remove_all_friends_sure_msg.'" href="javascript:void(0);">'.$remove_all_friends_msg.'</a></p>';
+	                	$html .= '<p><a id="cpc_remove_all_friends" class="cpc_remove_all_friends_link" data-sure="'.$remove_all_friends_sure_msg.'" href="javascript:void(0);">'.$remove_all_friends_msg.'</a></p>';
 
                 // Put into array so they can be sorted
                 $friends = array();
@@ -334,7 +390,9 @@ function cpc_friends($atts) {
 
                         if ($user_can_see_friend):
 
-                            $html .= '<div id="cpc_friends"';
+							$html .= '<div id="cpc_friends" class="cpc_friends_item_wrap';
+								if ($layout == 'fluid') $html .= ' cpc_friends_item_wrap_fluid';
+								$html .= '"';
                                 if ($layout == 'fluid') $html .= ' style="min-width: 235px; float:left;"';
                                 $html .= '>';
 
@@ -347,9 +405,9 @@ function cpc_friends($atts) {
                                 $html .= '<div class="cpc_friends_friend_avatar_display_name">';
                                     $html .= cpc_display_name(array('user_id'=>$friend['friend_id'], 'link'=>$link));
                                     if ($friend['favourite']):
-                                    	$html .= ' <div style="cursor:pointer;float:right;"><img title="'.$friends_tooltip.'" class="cpc_remove_favourite" rel="'.$friend['friend_id'].'" style="height:15px;width:15px;left:5px;top:5px;" src="'.plugins_url('images/star.png', __FILE__).'" /></div>';
+	                                    	$html .= ' <div class="cpc_friends_favourite_toggle" style="cursor:pointer;float:right;"><img title="'.$friends_tooltip.'" class="cpc_remove_favourite" rel="'.$friend['friend_id'].'" style="height:15px;width:15px;left:5px;top:5px;" src="'.plugins_url('images/star.png', __FILE__).'" /></div>';
                                     else:
-                                    	$html .= ' <div style="cursor:pointer;float:right;"><img title="'.$friends_tooltip.'" class="cpc_add_favourite" rel="'.$friend['friend_id'].'" style="height:15px;width:15px;left:5px;top:5px;" src="'.plugins_url('images/star_empty.png', __FILE__).'" /></div>';
+	                                    	$html .= ' <div class="cpc_friends_favourite_toggle" style="cursor:pointer;float:right;"><img title="'.$friends_tooltip.'" class="cpc_add_favourite" rel="'.$friend['friend_id'].'" style="height:15px;width:15px;left:5px;top:5px;" src="'.plugins_url('images/star_empty.png', __FILE__).'" /></div>';
                                     endif;
                                 $html .= '</div>';
                                 if ($show_last_active && $friend['last_active']):
@@ -370,12 +428,12 @@ function cpc_friends($atts) {
                     if ($c == $count) break;		
                 endforeach;
             else:
-                if ($user_id) $html .= '<div id="cpc_friends_none_msg">'.$none.'</div>';
+				if ($user_id) $html .= '<div id="cpc_friends_none_msg" class="cpc_friends_none_msg">'.$none.'</div>';
             endif;
 
         else:
 
-            if ($user_id) $html .= '<div id="cpc_friends_private_msg">'.$private.'</div>';
+			if ($user_id) $html .= '<div id="cpc_friends_private_msg" class="cpc_friends_private_msg">'.$private.'</div>';
 
         endif;
 
@@ -400,7 +458,7 @@ function cpc_friends_pending($atts) {
 	// Init
 	cpc_friends_init();
 
-	$html = '';
+	$html = cpc_friends_get_dynamic_styles();
 	global $current_user;
 
 	// Shortcode parameters
@@ -500,7 +558,7 @@ function cpc_friends_count($atts) {
     // Init
     cpc_friends_init();
 
-    $html = '';
+	$html = cpc_friends_get_dynamic_styles();
     global $current_user;
 
     // Shortcode parameters
@@ -514,7 +572,7 @@ function cpc_friends_count($atts) {
         'after' => '',
     ), $atts, 'cpc_friends_count' ) );    
     
-    $html = '';
+	$html = cpc_friends_get_dynamic_styles();
 
     if (is_user_logged_in()) {	
 
@@ -546,7 +604,7 @@ function cpc_alerts_friends($atts) {
     // Init
     cpc_friends_init();
 
-    $html = '';
+	$html = cpc_friends_get_dynamic_styles();
     global $current_user;
 
     if (is_user_logged_in()) {	
@@ -586,12 +644,12 @@ function cpc_alerts_friends($atts) {
 
         wp_reset_query();
 
-        $html .= '<div id="cpc_alerts_friends_flag" style="width:'.$flag_size.'px; height:'.$flag_size.'px;" >';
+		$html .= '<div id="cpc_alerts_friends_flag" class="cpc_alerts_friends_flag_wrap" style="width:'.$flag_size.'px; height:'.$flag_size.'px;" >';
         $html .= '<a href="'.$flag_url.'">';
         $src = (!$flag_src) ? plugins_url('images/friends'.get_option('cpccom_flag_colors').'.png', __FILE__) : $flag_src;
         $html .= '<img style="width:'.$flag_size.'px; height:'.$flag_size.'px;" src="'.$src.'" />';
         if ($unread_count):
-            $html .= '<div id="cpc_alerts_friends_flag_unread" style="position: absolute; padding-top: '.($flag_pending_size*0.2).'px; line-height:'.($flag_pending_size*0.8).'px; font-size:'.($flag_pending_size*0.8).'px; border-radius: '.$flag_pending_radius.'px; top:'.$flag_pending_top.'px; left:'.$flag_pending_left.'px; width:'.$flag_pending_size.'px; height:'.$flag_pending_size.'px;">'.$unread_count.'</div>';
+			$html .= '<div id="cpc_alerts_friends_flag_unread" class="cpc_alerts_friends_flag_unread_badge" style="position: absolute; padding-top: '.($flag_pending_size*0.2).'px; line-height:'.($flag_pending_size*0.8).'px; font-size:'.($flag_pending_size*0.8).'px; border-radius: '.$flag_pending_radius.'px; top:'.$flag_pending_top.'px; left:'.$flag_pending_left.'px; width:'.$flag_pending_size.'px; height:'.$flag_pending_size.'px;">'.$unread_count.'</div>';
         endif;
         $html .= '</a></div>';
         if (!$flag_url) $html .= '<div class="cpc_error">'.__('Lege flag_url in PS Community->Setup->Standard-Shortcode-Einstellungen (Freunde) oder im Shortcode fest, im Shortcode für den Link, wahrscheinlich auf die Seite mit [cpc-friends] darauf.', CPC2_TEXT_DOMAIN).'</div>';

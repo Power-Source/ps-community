@@ -26,6 +26,40 @@ function cpc_avatar_init() {
     do_action('cpc_avatar_init_hook');
 }
 
+function cpc_avatar_get_dynamic_styles() {
+    if (!get_option('cpccom_use_styles')) {
+        return '';
+    }
+
+    static $styles_already_added = false;
+    if ($styles_already_added) {
+        return '';
+    }
+    $styles_already_added = true;
+
+    $html = '<!-- start of cpc_avatar styles -->';
+
+    $values = get_option('cpc_styles_cpc_avatar') ? get_option('cpc_styles_cpc_avatar') : array();
+    $html .= cpc_styles($values, 'cpc_avatar', array(
+        '.cpc_avatar',
+        '.cpc_avatar_change_link',
+        '.cpc_avatar_upload_effect',
+    ));
+
+    $values = get_option('cpc_styles_cpc_avatar_change') ? get_option('cpc_styles_cpc_avatar_change') : array();
+    $html .= cpc_styles($values, 'cpc_avatar_change', array(
+        '.cpc_avatar_change_step_1',
+        '.cpc_avatar_change_step_2',
+        '.cpc_avatar_upload_button',
+        '.cpc_avatar_crop_button',
+        '.cpc_uploaded_avatar_to_crop',
+    ));
+
+    $html .= '<!-- end of cpc_avatar styles -->';
+
+    return $html;
+}
+
 /* ********** */ /* SHORTCODES */ /* ********** */
 
 function cpc_avatar($atts) {
@@ -34,7 +68,7 @@ function cpc_avatar($atts) {
 	cpc_avatar_init();
 
 	global $current_user;
-	$html = '';
+    $html = cpc_avatar_get_dynamic_styles();
 
 	// Shortcode parameters
 	$values = cpc_get_shortcode_options('cpc_avatar');  
@@ -96,9 +130,9 @@ function cpc_avatar($atts) {
 				if ($change_link):
 					if ($avatar_style == 'popup'):
                         $url = admin_url('admin-ajax.php').'?action=user_avatar_add_photo&step=1&uid='.$current_user->ID.'&modal=1';
-                        $html .= '<a id="user-avatar-link" class="button-secondary" data-psource-modal-open="user-avatar-modal" style="text-decoration: none;opacity:0.7;background-color: #000; color:#fff !important; padding: 3px 8px 3px 8px; position:absolute; bottom:18px; left: 10px;" href="'.$url.'" title="'.$change_avatar_title.'">'.$change_avatar_text.'</a>';
+                        $html .= '<a id="user-avatar-link" class="button-secondary cpc_avatar_change_link" data-psource-modal-open="user-avatar-modal" style="text-decoration: none;opacity:0.7;background-color: #000; color:#fff !important; padding: 3px 8px 3px 8px; position:absolute; bottom:18px; left: 10px;" href="'.$url.'" title="'.$change_avatar_title.'">'.$change_avatar_text.'</a>';
                     else:
-						$html .= '<a id="user-avatar-link" style="text-decoration: none;opacity:0.7;background-color: #000; color:#fff !important; padding: 3px 8px 3px 8px; position:absolute; bottom:18px; left: 10px;" href="'.get_page_link(get_option('cpccom_change_avatar_page')).'?user_id='.$user_id.'&action=change_avatar" title="'.$change_avatar_title.'" >'.$change_avatar_text.'</a>';
+						$html .= '<a id="user-avatar-link" class="cpc_avatar_change_link" style="text-decoration: none;opacity:0.7;background-color: #000; color:#fff !important; padding: 3px 8px 3px 8px; position:absolute; bottom:18px; left: 10px;" href="'.get_page_link(get_option('cpccom_change_avatar_page')).'?user_id='.$user_id.'&action=change_avatar" title="'.$change_avatar_title.'" >'.$change_avatar_text.'</a>';
 					endif;
 				endif;
 				if ($profile_link && !$change_link)
@@ -123,7 +157,7 @@ function cpc_avatar_change_link($atts) {
     cpc_avatar_init();
 
     global $current_user;
-    $html = '';
+    $html = cpc_avatar_get_dynamic_styles();
 
     if (is_user_logged_in()) {
         
@@ -150,9 +184,9 @@ function cpc_avatar_change_link($atts) {
             if ($change_style == 'popup'):
                 // NEU: Modal-Link ohne Thickbox
                 $url = admin_url('admin-ajax.php').'?action=user_avatar_add_photo&step=1&uid='.$current_user->ID.'&modal=1';
-                $html .= '<a id="user-avatar-link" class="button-secondary" data-psource-modal-open="user-avatar-modal" href="'.$url.'" title="'.$change_avatar_title.'">'.$text.'</a>';
+                $html .= '<a id="user-avatar-link" class="button-secondary cpc_avatar_change_link" data-psource-modal-open="user-avatar-modal" href="'.$url.'" title="'.$change_avatar_title.'">'.$text.'</a>';
             else:
-                $html .= '<a href="'.get_page_link(get_option('cpccom_change_avatar_page')).'?user_id='.$user_id.'" title="'.$change_avatar_title.'">'.$text.'</a>';
+                $html .= '<a class="cpc_avatar_change_link" href="'.get_page_link(get_option('cpccom_change_avatar_page')).'?user_id='.$user_id.'" title="'.$change_avatar_title.'">'.$text.'</a>';
             endif;
         endif;
 
@@ -169,7 +203,7 @@ function cpc_avatar_change($atts) {
 	cpc_avatar_init();
 
 	global $current_user;
-	$html = '';
+    $html = cpc_avatar_get_dynamic_styles();
 
     // Shortcode parameters
     $values = cpc_get_shortcode_options('cpc_avatar_change');
@@ -226,13 +260,13 @@ function cpc_avatar_change($atts) {
     
 			if ($step == 1):
 
-                $html .= '<div id="cpc_avatar_change_step_1">'.$step1.'</div>';
+                $html .= '<div id="cpc_avatar_change_step_1" class="cpc_avatar_change_step_1">'.$step1.'</div>';
 				$html .= '<form enctype="multipart/form-data" id="avatarUploadForm" method="POST" action="#" >';
 					$html .= '<input type="hidden" name="cpc_avatar_change_step" value="2" />';
                     $choose = sprintf($choose, $max_file_size);
 					$html .= '<input title="'.$choose.'" type="file" id="avatar_file_upload" name="uploadedfile" style="display:none" /><br /><br />';
 					wp_nonce_field('user-avatar');
-					$html .= '<button class="cpc_button">'.$label.'</button>';
+                    $html .= '<button class="cpc_button cpc_avatar_upload_button">'.$label.'</button>';
 				$html .= '</form>';
 
 			elseif ($step == '2' && $crop):
@@ -382,7 +416,7 @@ function cpc_avatar_change($atts) {
     
                             $html .= '<form id="iframe-crop-form" method="POST" action="#">';
                             $html .= '<input type="hidden" name="cpc_avatar_change_step" value="3" />';
-                            $html .= '<div id="cpc_avatar_change_step_2">'.$step2.'</div>';                        
+                            $html .= '<div id="cpc_avatar_change_step_2" class="cpc_avatar_change_step_2">'.$step2.'</div>';                        
 
                             $page_id = isset($_GET['page_id']) ? '?page_id='.$_GET['page_id'] : '';
                             $page_url = strtok(cpc_curPageURL(), '?').$page_id;
@@ -402,7 +436,7 @@ function cpc_avatar_change($atts) {
                             if (in_array('pixelate', $effects)) $html .= '<a class="cpc_avatar_upload_effect" href="'.$page_url.'cpc_avatar_change_step=2&pixelate_file='.$file.'&url='.$url.'&file_size='.$file_size.'">'.$pixelate.'</a>';
                             if (in_array('sepia', $effects)) $html .= '<a class="cpc_avatar_upload_effect" href="'.$page_url.'cpc_avatar_change_step=2&sepia_file='.$file.'&url='.$url.'&file_size='.$file_size.'">'.$sepia.'</a>';
                             if (in_array('emboss', $effects)) $html .= '<a class="cpc_avatar_upload_effect" href="'.$page_url.'cpc_avatar_change_step=2&emboss_file='.$file.'&url='.$url.'&file_size='.$file_size.'">'.$emboss.'</a>';
-                            $html .= '<div id="cpc_uploaded_avatar_to_crop">';
+                            $html .= '<div id="cpc_uploaded_avatar_to_crop" class="cpc_uploaded_avatar_to_crop">';
                             $html .= '<img src="'.$url.'" id="cpc_upload" width="'.esc_attr($width).'" height="'.esc_attr($height).'" />';
                             $html .= '</div>';
 
@@ -421,7 +455,7 @@ function cpc_avatar_change($atts) {
 
                             $html .= '<input type="hidden" name="oitar" id="oitar" value="'.esc_attr($oitar).'" />';
                             wp_nonce_field('user-avatar');
-                            $html .= '<button class="cpc_button" style="clear:both; margin-top:20px !important; margin-left:20px !important;" id="user-avatar-crop-button">'.__('Zuschneiden', CPC2_TEXT_DOMAIN).'</button>';
+                            $html .= '<button class="cpc_button cpc_avatar_crop_button" style="clear:both; margin-top:20px !important; margin-left:20px !important;" id="user-avatar-crop-button">'.__('Zuschneiden', CPC2_TEXT_DOMAIN).'</button>';
 
                             $html .= '</form>';
 

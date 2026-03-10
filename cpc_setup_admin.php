@@ -3054,6 +3054,10 @@ function cpc_admin_getting_started_styles() {
                                     $cpc_expand_tab = isset($_POST['cpc_expand_tab']) ? $_POST['cpc_expand_tab'] : 'elements';
                                     $tabs = array();
                                     array_push($tabs, array('tab' => 'cpc_option_elements', 'option' => 'elements', 'title' => __('Interface', CPC2_TEXT_DOMAIN)));
+                                    array_push($tabs, array('tab' => 'cpc_option_profile', 'option' => 'profile', 'title' => __('Profil', CPC2_TEXT_DOMAIN)));
+                                    array_push($tabs, array('tab' => 'cpc_option_friendships', 'option' => 'friendships', 'title' => __('Freunde', CPC2_TEXT_DOMAIN)));
+                                    array_push($tabs, array('tab' => 'cpc_option_alerts', 'option' => 'alerts', 'title' => __('Benachrichtigungen', CPC2_TEXT_DOMAIN)));
+                                    array_push($tabs, array('tab' => 'cpc_option_avatar', 'option' => 'avatar', 'title' => __('Avatar', CPC2_TEXT_DOMAIN)));
                                     array_push($tabs, array('tab' => 'cpc_option_forums', 'option' => 'forums', 'title' => __('Foren', CPC2_TEXT_DOMAIN)));
                                     array_push($tabs, array('tab' => 'cpc_option_groups', 'option' => 'groups', 'title' => __('Gruppen', CPC2_TEXT_DOMAIN)));
 
@@ -3084,6 +3088,19 @@ function cpc_admin_getting_started_styles() {
                                     $cpc_expand_shortcode = isset($_POST['cpc_expand_shortcode']) ? $_POST['cpc_expand_shortcode'] : 'cpc_elements_tab';
                                     // Elements
                                     echo cpc_show_style($cpc_expand_tab, $cpc_expand_shortcode, 'elements', 'cpc_elements_tab', __('Elemente', CPC2_TEXT_DOMAIN));
+                                    // Profile
+                                    echo cpc_show_style($cpc_expand_tab, $cpc_expand_shortcode, 'profile', 'cpc_profile_tab', CPC_PREFIX.'-activity-page');
+                                    echo cpc_show_style($cpc_expand_tab, $cpc_expand_shortcode, 'profile', 'cpc_activity_feed_tab', CPC_PREFIX.'-activity');
+                                    // Friendships
+                                    echo cpc_show_style($cpc_expand_tab, $cpc_expand_shortcode, 'friendships', 'cpc_friends_tab', CPC_PREFIX.'-friends');
+                                    echo cpc_show_style($cpc_expand_tab, $cpc_expand_shortcode, 'friendships', 'cpc_friends_pending_tab', CPC_PREFIX.'-friends-pending');
+                                    echo cpc_show_style($cpc_expand_tab, $cpc_expand_shortcode, 'friendships', 'cpc_friends_actions_tab', CPC_PREFIX.'-friends-add-button');
+                                    // Alerts
+                                    echo cpc_show_style($cpc_expand_tab, $cpc_expand_shortcode, 'alerts', 'cpc_alerts_activity_tab', CPC_PREFIX.'-alerts-activity');
+                                    echo cpc_show_style($cpc_expand_tab, $cpc_expand_shortcode, 'alerts', 'cpc_alerts_friends_tab', CPC_PREFIX.'-alerts-friends');
+                                    // Avatar
+                                    echo cpc_show_style($cpc_expand_tab, $cpc_expand_shortcode, 'avatar', 'cpc_avatar_tab', CPC_PREFIX.'-avatar');
+                                    echo cpc_show_style($cpc_expand_tab, $cpc_expand_shortcode, 'avatar', 'cpc_avatar_change_tab', CPC_PREFIX.'-avatar-change');
                                     // Forums
                                     echo cpc_show_style($cpc_expand_tab, $cpc_expand_shortcode, 'forums', 'cpc_forum_tab', CPC_PREFIX.'-forum');
                                     echo cpc_show_style($cpc_expand_tab, $cpc_expand_shortcode, 'forums', 'cpc_forums_tab', CPC_PREFIX.'-forums');
@@ -3111,15 +3128,15 @@ function cpc_admin_getting_started_styles() {
                                 echo '<table class="widefat fixed" cellspacing="0">';
                                 echo cpc_styles_header();
 
-                                    echo cpc_styles_show_values(__('Schaltflächen', CPC2_TEXT_DOMAIN), 'cpc_button', '', '', '', 'off', 'off', $function, $values);
-                                    echo cpc_styles_show_values(__('Schaltflächen (Mouseover)', CPC2_TEXT_DOMAIN), 'cpc_button:hover', '', '', '', 'off', 'off', $function, $values);
-                                    echo cpc_styles_show_values(__('Schaltflächen (Klick)', CPC2_TEXT_DOMAIN), 'cpc_button:active', '', '', '', 'off', 'off', $function, $values);
-                                    echo cpc_styles_show_values(__('Links', CPC2_TEXT_DOMAIN), 'a', '', '', '', 'off', 'off', $function, $values);
-                                    echo cpc_styles_show_values(__('Links (Mouseover)', CPC2_TEXT_DOMAIN), 'a:hover', '', '', '', 'off', 'off', $function, $values);
-                                    echo cpc_styles_show_values(__('Links (Klick)', CPC2_TEXT_DOMAIN), 'a:active', '', '', '', 'off', 'off', $function, $values);
-                                    echo cpc_styles_show_values(__('Überschrift 1', CPC2_TEXT_DOMAIN), 'h1', '', '', '', 'off', 'off', $function, $values);
-                                    echo cpc_styles_show_values(__('Überschrift 2', CPC2_TEXT_DOMAIN), 'h2', '', '', '', 'off', 'off', $function, $values);
-                                    echo cpc_styles_show_values(__('Überschrift 3', CPC2_TEXT_DOMAIN), 'h3', '', '', '', 'off', 'off', $function, $values);
+                                    echo cpc_styles_show_values(__('Schaltflächen', CPC2_TEXT_DOMAIN), 'cpc_button', '#ffffff', '#0073aa', '', 'on', 'off', $function, $values);
+                                    echo cpc_styles_show_values(__('Schaltflächen (Mouseover)', CPC2_TEXT_DOMAIN), 'cpc_button:hover', '#ffffff', '#005177', '', 'on', 'off', $function, $values);
+                                    echo cpc_styles_show_values(__('Schaltflächen (Klick)', CPC2_TEXT_DOMAIN), 'cpc_button:active', '#ffffff', '#003d52', '', 'on', 'off', $function, $values);
+                                    echo cpc_styles_show_values(__('Links', CPC2_TEXT_DOMAIN), 'a', '#0073aa', '', '', 'off', 'off', $function, $values);
+                                    echo cpc_styles_show_values(__('Links (Mouseover)', CPC2_TEXT_DOMAIN), 'a:hover', '#005177', '', '', 'off', 'off', $function, $values);
+                                    echo cpc_styles_show_values(__('Links (Klick)', CPC2_TEXT_DOMAIN), 'a:active', '#003d52', '', '', 'off', 'off', $function, $values);
+                                    echo cpc_styles_show_values(__('Überschrift 1', CPC2_TEXT_DOMAIN), 'h1', '#333333', '', '2.2em', 'on', 'off', $function, $values);
+                                    echo cpc_styles_show_values(__('Überschrift 2', CPC2_TEXT_DOMAIN), 'h2', '#333333', '', '1.8em', 'on', 'off', $function, $values);
+                                    echo cpc_styles_show_values(__('Überschrift 3', CPC2_TEXT_DOMAIN), 'h3', '#333333', '', '1.4em', 'on', 'off', $function, $values);
 
                                 echo '</table>';    
                             echo '</div>';    
@@ -3127,6 +3144,178 @@ function cpc_admin_getting_started_styles() {
                             /* OTHERS */
 
                             do_action('cpc_styles_shortcode_options_hook', $cpc_expand_shortcode);        
+
+
+                            /* ----------------------- PROFILE TAB ----------------------- */
+
+                            // [cpc-activity-page]
+                            $function = 'cpc_profile';
+                            $values = get_option('cpc_styles_'.$function) ? get_option('cpc_styles_'.$function) : array();
+
+                            echo cpc_show_options($cpc_expand_shortcode, 'cpc_profile_tab');
+                                echo '<table class="widefat fixed" cellspacing="0">';
+                                    echo cpc_styles_header();
+
+                                    echo cpc_styles_show_values(__('Profil-Header Block', CPC2_TEXT_DOMAIN), 'cpc-profile-header-block', '#333333', '', '', 'off', 'off', $function, $values);
+                                    echo cpc_styles_show_values(__('Profilname', CPC2_TEXT_DOMAIN), 'cpc-profile-display-name', '#333333', '', '2.4em', 'on', 'off', $function, $values);
+                                    echo cpc_styles_show_values(__('Header-Zeile', CPC2_TEXT_DOMAIN), 'cpc-profile-header-body', '#333333', '', '', 'off', 'off', $function, $values);
+                                    echo cpc_styles_show_values(__('Profil-Meta', CPC2_TEXT_DOMAIN), 'cpc-profile-header-meta', '#666666', '', '', 'off', 'off', $function, $values);
+                                    echo cpc_styles_show_values(__('Tab-Navigation', CPC2_TEXT_DOMAIN), 'cpc-profile-tabs-nav', '#333333', '', '', 'off', 'off', $function, $values);
+                                    echo cpc_styles_show_values(__('Tab-Link', CPC2_TEXT_DOMAIN), 'cpc-profile-tab-link', '#555555', '', '', 'off', 'off', $function, $values);
+                                    echo cpc_styles_show_values(__('Tab-Link (aktiv)', CPC2_TEXT_DOMAIN), 'cpc-profile-tab-link-active', '#0073aa', '', '', 'on', 'off', $function, $values);
+                                    echo cpc_styles_show_values(__('Tab-Inhalt', CPC2_TEXT_DOMAIN), 'cpc-profile-tab-content-wrapper', '#333333', '', '', 'off', 'off', $function, $values);
+
+                                echo '</table>';
+                            echo '</div>';
+
+                            // [cpc-activity]
+                            $function = 'cpc_activity_feed';
+                            $values = get_option('cpc_styles_'.$function) ? get_option('cpc_styles_'.$function) : array();
+
+                            echo cpc_show_options($cpc_expand_shortcode, 'cpc_activity_feed_tab');
+                                echo '<table class="widefat fixed" cellspacing="0">';
+                                    echo cpc_styles_header();
+
+                                    echo cpc_styles_show_values(__('Aktivitäts-Container', CPC2_TEXT_DOMAIN), 'cpc_activity_items', '#333333', '', '', 'off', 'off', $function, $values);
+                                    echo cpc_styles_show_values(__('Aktivitäts-Eintrag', CPC2_TEXT_DOMAIN), 'cpc_activity_item', '#333333', '#ffffff', '', 'off', 'off', $function, $values);
+                                    echo cpc_styles_show_values(__('Aktivitäts-Inhalt', CPC2_TEXT_DOMAIN), 'cpc_activity_content', '#333333', '', '', 'off', 'off', $function, $values);
+                                    echo cpc_styles_show_values(__('Kommentare-Container', CPC2_TEXT_DOMAIN), 'cpc_activity_comments', '#333333', '', '', 'off', 'off', $function, $values);
+                                    echo cpc_styles_show_values(__('Kommentar', CPC2_TEXT_DOMAIN), 'cpc_activity_comment', '#333333', '#f5f5f5', '', 'off', 'off', $function, $values);
+                                    echo cpc_styles_show_values(__('Antwort-Textarea', CPC2_TEXT_DOMAIN), 'cpc_activity_post_comment', '#333333', '#ffffff', '', 'off', 'off', $function, $values);
+
+                                echo '</table>';
+                            echo '</div>';
+
+
+                            /* ----------------------- FRIENDSHIPS TAB ----------------------- */
+
+                            // [cpc-friends]
+                            $function = 'cpc_friends';
+                            $values = get_option('cpc_styles_'.$function) ? get_option('cpc_styles_'.$function) : array();
+
+                            echo cpc_show_options($cpc_expand_shortcode, 'cpc_friends_tab');
+                                echo '<table class="widefat fixed" cellspacing="0">';
+                                    echo cpc_styles_header();
+
+                                    echo cpc_styles_show_values(__('Freund-Eintrag', CPC2_TEXT_DOMAIN), 'cpc_friends_friend', '#333333', '', '', 'off', 'off', $function, $values);
+                                    echo cpc_styles_show_values(__('Name', CPC2_TEXT_DOMAIN), 'cpc_friends_friend_avatar_display_name', '#333333', '', '1.2em', 'on', 'off', $function, $values);
+                                    echo cpc_styles_show_values(__('Zuletzt aktiv', CPC2_TEXT_DOMAIN), 'cpc_friends_friend_avatar_last_active', '#666666', '', '1em', 'off', 'off', $function, $values);
+                                    echo cpc_styles_show_values(__('Favorit-Toggle', CPC2_TEXT_DOMAIN), 'cpc_friends_favourite_toggle', '#0073aa', '', '', 'off', 'off', $function, $values);
+                                    echo cpc_styles_show_values(__('Counter', CPC2_TEXT_DOMAIN), 'cpc_friends_count', '#333333', '', '', 'on', 'off', $function, $values);
+                                    echo cpc_styles_show_values(__('Keine Freunde Meldung', CPC2_TEXT_DOMAIN), 'cpc_friends_none_msg', '#666666', '', '', 'off', 'off', $function, $values);
+                                    echo cpc_styles_show_values(__('Private Meldung', CPC2_TEXT_DOMAIN), 'cpc_friends_private_msg', '#666666', '', '', 'off', 'off', $function, $values);
+                                    echo cpc_styles_show_values(__('Alle entfernen Link', CPC2_TEXT_DOMAIN), 'cpc_remove_all_friends_link', '#dc3545', '', '', 'off', 'off', $function, $values);
+
+                                echo '</table>';
+                            echo '</div>';
+
+                            // [cpc-friends-pending]
+                            $function = 'cpc_friends_pending';
+                            $values = get_option('cpc_styles_'.$function) ? get_option('cpc_styles_'.$function) : array();
+
+                            echo cpc_show_options($cpc_expand_shortcode, 'cpc_friends_pending_tab');
+                                echo '<table class="widefat fixed" cellspacing="0">';
+                                    echo cpc_styles_header();
+
+                                    echo cpc_styles_show_values(__('Pending Container', CPC2_TEXT_DOMAIN), 'cpc_pending_friends', '#333333', '', '', 'off', 'off', $function, $values);
+                                    echo cpc_styles_show_values(__('Pending Eintrag', CPC2_TEXT_DOMAIN), 'cpc_pending_friends_friend', '#333333', '', '', 'off', 'off', $function, $values);
+                                    echo cpc_styles_show_values(__('Pending Name', CPC2_TEXT_DOMAIN), 'cpc_pending_friends_friend_display_name', '#333333', '', '', 'on', 'off', $function, $values);
+                                    echo cpc_styles_show_values(__('Pending Buttons Wrap', CPC2_TEXT_DOMAIN), 'cpc_pending_friends_accept_reject', '#333333', '', '', 'off', 'off', $function, $values);
+                                    echo cpc_styles_show_values(__('Button Akzeptieren', CPC2_TEXT_DOMAIN), 'cpc_pending_friends_accept', '#ffffff', '#0073aa', '', 'on', 'off', $function, $values);
+                                    echo cpc_styles_show_values(__('Button Ablehnen', CPC2_TEXT_DOMAIN), 'cpc_pending_friends_reject', '#ffffff', '#dc3545', '', 'on', 'off', $function, $values);
+
+                                echo '</table>';
+                            echo '</div>';
+
+                            // [cpc-friends-add-button] / [cpc-favourite-friend]
+                            $function = 'cpc_friends_actions';
+                            $values = get_option('cpc_styles_'.$function) ? get_option('cpc_styles_'.$function) : array();
+
+                            echo cpc_show_options($cpc_expand_shortcode, 'cpc_friends_actions_tab');
+                                echo '<table class="widefat fixed" cellspacing="0">';
+                                    echo cpc_styles_header();
+
+                                    echo cpc_styles_show_values(__('Action Container', CPC2_TEXT_DOMAIN), 'cpc_friends_add_button', '#333333', '', '', 'off', 'off', $function, $values);
+                                    echo cpc_styles_show_values(__('Button Freund hinzufügen', CPC2_TEXT_DOMAIN), 'cpc_friends_add', '#ffffff', '#0073aa', '', 'on', 'off', $function, $values);
+                                    echo cpc_styles_show_values(__('Button Freund kündigen', CPC2_TEXT_DOMAIN), 'cpc_friends_cancel', '#ffffff', '#dc3545', '', 'on', 'off', $function, $values);
+                                    echo cpc_styles_show_values(__('Button Pending ablehnen', CPC2_TEXT_DOMAIN), 'cpc_pending_friends_reject', '#ffffff', '#6c757d', '', 'on', 'off', $function, $values);
+                                    echo cpc_styles_show_values(__('Favorit Link/Button', CPC2_TEXT_DOMAIN), 'cpc_add_remove_favourite', '#0073aa', '', '', 'off', 'off', $function, $values);
+
+                                echo '</table>';
+                            echo '</div>';
+
+
+                            /* ----------------------- ALERTS TAB ----------------------- */
+
+                            // [cpc-alerts-activity]
+                            $function = 'cpc_alerts_activity';
+                            $values = get_option('cpc_styles_'.$function) ? get_option('cpc_styles_'.$function) : array();
+
+                            echo cpc_show_options($cpc_expand_shortcode, 'cpc_alerts_activity_tab');
+                                echo '<table class="widefat fixed" cellspacing="0">';
+                                    echo cpc_styles_header();
+
+                                    echo cpc_styles_show_values(__('Dropdown Wrap', CPC2_TEXT_DOMAIN), 'cpc_alerts_dropdown_wrap', '#333333', '', '', 'off', 'off', $function, $values);
+                                    echo cpc_styles_show_values(__('Dropdown Select', CPC2_TEXT_DOMAIN), 'cpc_alerts_activity_select', '#333333', '#ffffff', '', 'off', 'off', $function, $values);
+                                    echo cpc_styles_show_values(__('List Item', CPC2_TEXT_DOMAIN), 'cpc_alerts_list_item', '#333333', '', '', 'off', 'off', $function, $values);
+                                    echo cpc_styles_show_values(__('List Link', CPC2_TEXT_DOMAIN), 'cpc_alerts_list_item_link', '#0073aa', '', '', 'off', 'off', $function, $values);
+                                    echo cpc_styles_show_values(__('Delete Icon', CPC2_TEXT_DOMAIN), 'cpc_alerts_list_item_delete', '#dc3545', '', '', 'off', 'off', $function, $values);
+                                    echo cpc_styles_show_values(__('Flag Wrap', CPC2_TEXT_DOMAIN), 'cpc_alerts_flag_wrap', '#333333', '', '', 'off', 'off', $function, $values);
+                                    echo cpc_styles_show_values(__('Flag Unread Badge', CPC2_TEXT_DOMAIN), 'cpc_alerts_flag_unread_badge', '#ffffff', '#ff0000', '', 'on', 'off', $function, $values);
+                                    echo cpc_styles_show_values(__('Alle gelesen Link', CPC2_TEXT_DOMAIN), 'cpc_mark_all_as_read_div', '#0073aa', '', '', 'off', 'off', $function, $values);
+                                    echo cpc_styles_show_values(__('Alle löschen Link', CPC2_TEXT_DOMAIN), 'cpc_alerts_delete_all_div', '#dc3545', '', '', 'off', 'off', $function, $values);
+
+                                echo '</table>';
+                            echo '</div>';
+
+                            // [cpc-alerts-friends]
+                            $function = 'cpc_alerts_friends';
+                            $values = get_option('cpc_styles_'.$function) ? get_option('cpc_styles_'.$function) : array();
+
+                            echo cpc_show_options($cpc_expand_shortcode, 'cpc_alerts_friends_tab');
+                                echo '<table class="widefat fixed" cellspacing="0">';
+                                    echo cpc_styles_header();
+
+                                    echo cpc_styles_show_values(__('Friends Flag Wrap', CPC2_TEXT_DOMAIN), 'cpc_alerts_friends_flag_wrap', '#333333', '', '', 'off', 'off', $function, $values);
+                                    echo cpc_styles_show_values(__('Friends Unread Badge', CPC2_TEXT_DOMAIN), 'cpc_alerts_friends_flag_unread_badge', '#ffffff', '#ff0000', '', 'on', 'off', $function, $values);
+
+                                echo '</table>';
+                            echo '</div>';
+
+
+                            /* ----------------------- AVATAR TAB ----------------------- */
+
+                            // [cpc-avatar]
+                            $function = 'cpc_avatar';
+                            $values = get_option('cpc_styles_'.$function) ? get_option('cpc_styles_'.$function) : array();
+
+                            echo cpc_show_options($cpc_expand_shortcode, 'cpc_avatar_tab');
+                                echo '<table class="widefat fixed" cellspacing="0">';
+                                    echo cpc_styles_header();
+
+                                    echo cpc_styles_show_values(__('Avatar Container', CPC2_TEXT_DOMAIN), 'cpc_avatar', '#333333', '', '', 'off', 'off', $function, $values);
+                                    echo cpc_styles_show_values(__('Avatar Change Link', CPC2_TEXT_DOMAIN), 'cpc_avatar_change_link', '#ffffff', '#000000', '', 'on', 'off', $function, $values);
+                                    echo cpc_styles_show_values(__('Upload Effekt-Link', CPC2_TEXT_DOMAIN), 'cpc_avatar_upload_effect', '#0073aa', '', '', 'off', 'off', $function, $values);
+
+                                echo '</table>';
+                            echo '</div>';
+
+                            // [cpc-avatar-change]
+                            $function = 'cpc_avatar_change';
+                            $values = get_option('cpc_styles_'.$function) ? get_option('cpc_styles_'.$function) : array();
+
+                            echo cpc_show_options($cpc_expand_shortcode, 'cpc_avatar_change_tab');
+                                echo '<table class="widefat fixed" cellspacing="0">';
+                                    echo cpc_styles_header();
+
+                                    echo cpc_styles_show_values(__('Change Step 1', CPC2_TEXT_DOMAIN), 'cpc_avatar_change_step_1', '#333333', '', '', 'off', 'off', $function, $values);
+                                    echo cpc_styles_show_values(__('Change Step 2', CPC2_TEXT_DOMAIN), 'cpc_avatar_change_step_2', '#333333', '', '', 'off', 'off', $function, $values);
+                                    echo cpc_styles_show_values(__('Upload Button', CPC2_TEXT_DOMAIN), 'cpc_avatar_upload_button', '#ffffff', '#0073aa', '', 'on', 'off', $function, $values);
+                                    echo cpc_styles_show_values(__('Crop Button', CPC2_TEXT_DOMAIN), 'cpc_avatar_crop_button', '#ffffff', '#0073aa', '', 'on', 'off', $function, $values);
+                                    echo cpc_styles_show_values(__('Crop Wrap', CPC2_TEXT_DOMAIN), 'cpc_uploaded_avatar_to_crop', '#333333', '', '', 'off', 'off', $function, $values);
+
+                                echo '</table>';
+                            echo '</div>';
 
                         
                             /* ----------------------- FORUMS TAB ----------------------- */
@@ -3139,10 +3328,18 @@ function cpc_admin_getting_started_styles() {
                                 echo '<table class="widefat fixed" cellspacing="0">';
                                     echo cpc_styles_header();
 
-                                    echo cpc_styles_show_values(__('Themen-Header', CPC2_TEXT_DOMAIN), 'cpc_forum_title_header', '', '', '', 'off', 'off', $function, $values);
-                                    echo cpc_styles_show_values(__('Antworten-Header', CPC2_TEXT_DOMAIN), 'cpc_forum_count_header', '', '', '', 'off', 'off', $function, $values);
-                                    echo cpc_styles_show_values(__('Letzter Poster-Header', CPC2_TEXT_DOMAIN), 'cpc_forum_last_poster_header', '', '', '', 'off', 'off', $function, $values);
-                                    echo cpc_styles_show_values(__('Neueste-Header', CPC2_TEXT_DOMAIN), 'cpc_forum_categories_freshness_header', '', '', '', 'off', 'off', $function, $values);
+                                    echo cpc_styles_show_values(__('Themen-Header', CPC2_TEXT_DOMAIN), 'cpc_forum_title_header', '#333333', '#f9f9f9', '', 'on', 'off', $function, $values);
+                                    echo cpc_styles_show_values(__('Antworten-Header', CPC2_TEXT_DOMAIN), 'cpc_forum_count_header', '#333333', '#f9f9f9', '', 'on', 'off', $function, $values);
+                                    echo cpc_styles_show_values(__('Letzter Poster-Header', CPC2_TEXT_DOMAIN), 'cpc_forum_last_poster_header', '#333333', '#f9f9f9', '', 'on', 'off', $function, $values);
+                                    echo cpc_styles_show_values(__('Neueste-Header', CPC2_TEXT_DOMAIN), 'cpc_forum_categories_freshness_header', '#333333', '#f9f9f9', '', 'on', 'off', $function, $values);
+                                    echo cpc_styles_show_values(__('Posts Header Wrap', CPC2_TEXT_DOMAIN), 'cpc_forum_posts_header', '#333333', '', '', 'off', 'off', $function, $values);
+                                    echo cpc_styles_show_values(__('Posts Container', CPC2_TEXT_DOMAIN), 'cpc_forum_posts', '#333333', '', '', 'off', 'off', $function, $values);
+                                    echo cpc_styles_show_values(__('Post Row', CPC2_TEXT_DOMAIN), 'cpc_forum_post', '#333333', '#ffffff', '', 'off', 'off', $function, $values);
+                                    echo cpc_styles_show_values(__('Post ungelesen', CPC2_TEXT_DOMAIN), 'cpc_forum_post_unread', '#333333', '#f5f5f5', '', 'on', 'off', $function, $values);
+                                    echo cpc_styles_show_values(__('Titel-Spalte', CPC2_TEXT_DOMAIN), 'cpc_forum_title', '#333333', '', '', 'off', 'off', $function, $values);
+                                    echo cpc_styles_show_values(__('Antworten-Spalte', CPC2_TEXT_DOMAIN), 'cpc_forum_count', '#666666', '', '', 'off', 'off', $function, $values);
+                                    echo cpc_styles_show_values(__('Letzter Poster-Spalte', CPC2_TEXT_DOMAIN), 'cpc_forum_last_poster', '#666666', '', '', 'off', 'off', $function, $values);
+                                    echo cpc_styles_show_values(__('Neueste-Spalte', CPC2_TEXT_DOMAIN), 'cpc_forum_freshness', '#666666', '', '', 'off', 'off', $function, $values);
 
                                 echo '</table>';    
                             echo '</div>';    
@@ -3155,9 +3352,15 @@ function cpc_admin_getting_started_styles() {
                                 echo '<table class="widefat fixed" cellspacing="0">';
                                     echo cpc_styles_header();
 
-                                    echo cpc_styles_show_values(__('Forumtitel', CPC2_TEXT_DOMAIN),                'cpc_forums_forum_title',                   '', '', '', 'off', 'off', $function, $values, '');
-                                    echo cpc_styles_show_values(__('Forumtitel (Mouseover)', CPC2_TEXT_DOMAIN),   'cpc_forums_forum_title:hover',                   '', '', '', 'off', 'off', $function, $values, '');
-                                    echo cpc_styles_show_values(__('Forumtitel (Klick)', CPC2_TEXT_DOMAIN),        'cpc_forums_forum_title:active',                   '', '', '', 'off', 'off', $function, $values, sprintf(__('If Forum Title is styled, it would be best to <a href="%s">turn off "Top level as links"</a> via the [cpc-forums] shortcode.', CPC2_TEXT_DOMAIN), admin_url( 'admin.php?page=cpc_com_shortcodes' )));
+                                    echo cpc_styles_show_values(__('Forumtitel', CPC2_TEXT_DOMAIN),                'cpc_forums_forum_title',                   '#333333', '', '', 'on', 'off', $function, $values, '');
+                                    echo cpc_styles_show_values(__('Forumtitel (Mouseover)', CPC2_TEXT_DOMAIN),   'cpc_forums_forum_title:hover',             '#0073aa', '', '', 'on', 'off', $function, $values, '');
+                                    echo cpc_styles_show_values(__('Forumtitel (Klick)', CPC2_TEXT_DOMAIN),        'cpc_forums_forum_title:active',            '#005177', '', '', 'on', 'off', $function, $values, sprintf(__('If Forum Title is styled, it would be best to <a href="%s">turn off "Top level as links"</a> via the [cpc-forums] shortcode.', CPC2_TEXT_DOMAIN), admin_url( 'admin.php?page=cpc_com_shortcodes' )));
+                                    echo cpc_styles_show_values(__('Kategorien Header', CPC2_TEXT_DOMAIN),         'cpc_forum_categories_header',              '#333333', '#f9f9f9', '', 'on', 'off', $function, $values);
+                                    echo cpc_styles_show_values(__('Kategorien Item', CPC2_TEXT_DOMAIN),           'cpc_forum_categories_item',                '#333333', '#ffffff', '', 'off', 'off', $function, $values);
+                                    echo cpc_styles_show_values(__('Kategorien Beschreibung', CPC2_TEXT_DOMAIN),   'cpc_forum_categories_description',         '#666666', '', '', 'off', 'off', $function, $values);
+                                    echo cpc_styles_show_values(__('Kategorien Count', CPC2_TEXT_DOMAIN),          'cpc_forum_categories_count',               '#666666', '', '', 'off', 'off', $function, $values);
+                                    echo cpc_styles_show_values(__('Kategorien Letzter Poster', CPC2_TEXT_DOMAIN), 'cpc_forum_categories_last_poster',         '#666666', '', '', 'off', 'off', $function, $values);
+                                    echo cpc_styles_show_values(__('Kategorien Neueste', CPC2_TEXT_DOMAIN),        'cpc_forum_categories_freshness',           '#666666', '', '', 'off', 'off', $function, $values);
 
                                 echo '</table>';    
                             echo '</div>';    
@@ -3172,12 +3375,16 @@ function cpc_admin_getting_started_styles() {
                                 echo '<table class="widefat fixed" cellspacing="0">';
                                     echo cpc_styles_header();
 
-                                    echo cpc_styles_show_values(__('Gruppen-Container', CPC2_TEXT_DOMAIN), 'cpc_groups_grid', '', '', '', 'off', 'off', $function, $values);
-                                    echo cpc_styles_show_values(__('Gruppen-Karte', CPC2_TEXT_DOMAIN), 'cpc_group_card', '', '', '', 'off', 'off', $function, $values);
-                                    echo cpc_styles_show_values(__('Gruppen-Titel', CPC2_TEXT_DOMAIN), 'cpc_group_card_title', '', '', '', 'off', 'off', $function, $values);
-                                    echo cpc_styles_show_values(__('Gruppen-Titel (Mouseover)', CPC2_TEXT_DOMAIN), 'cpc_group_card_title:hover', '', '', '', 'off', 'off', $function, $values);
-                                    echo cpc_styles_show_values(__('Gruppen-Meta', CPC2_TEXT_DOMAIN), 'cpc_group_meta', '', '', '', 'off', 'off', $function, $values);
-                                    echo cpc_styles_show_values(__('Gruppen-Beschreibung', CPC2_TEXT_DOMAIN), 'cpc_group_description', '', '', '', 'off', 'off', $function, $values);
+                                    echo cpc_styles_show_values(__('Gruppen-Grid', CPC2_TEXT_DOMAIN), 'cpc-groups-grid', '#333333', '', '', 'off', 'off', $function, $values);
+                                    echo cpc_styles_show_values(__('Gruppen-Karte', CPC2_TEXT_DOMAIN), 'cpc-group-card', '#333333', '#ffffff', '', 'off', 'off', $function, $values);
+                                    echo cpc_styles_show_values(__('Gruppen-Titel', CPC2_TEXT_DOMAIN), 'cpc-group-title', '#333333', '', '', 'on', 'off', $function, $values);
+                                    echo cpc_styles_show_values(__('Gruppen-Titel (Mouseover)', CPC2_TEXT_DOMAIN), 'cpc-group-title:hover', '#0073aa', '', '', 'off', 'off', $function, $values);
+                                    echo cpc_styles_show_values(__('Gruppen-Meta', CPC2_TEXT_DOMAIN), 'cpc-group-meta', '#666666', '', '', 'off', 'off', $function, $values);
+                                    echo cpc_styles_show_values(__('Gruppen-Beschreibung', CPC2_TEXT_DOMAIN), 'cpc-group-description', '#666666', '', '', 'off', 'off', $function, $values);
+                                    echo cpc_styles_show_values(__('Toolbar', CPC2_TEXT_DOMAIN), 'cpc-groups-toolbar', '#333333', '#f9f9f9', '', 'off', 'off', $function, $values);
+                                    echo cpc_styles_show_values(__('Suche (Input)', CPC2_TEXT_DOMAIN), 'cpc-groups-search-input', '#333333', '#ffffff', '', 'off', 'off', $function, $values);
+                                    echo cpc_styles_show_values(__('Suche (Button)', CPC2_TEXT_DOMAIN), 'cpc-groups-search-submit', '#ffffff', '#0073aa', '', 'on', 'off', $function, $values);
+                                    echo cpc_styles_show_values(__('Button "Neue Gruppe"', CPC2_TEXT_DOMAIN), 'cpc-btn-create-group', '#ffffff', '#0073aa', '', 'on', 'off', $function, $values);
 
                                 echo '</table>';    
                             echo '</div>';    
@@ -3190,10 +3397,16 @@ function cpc_admin_getting_started_styles() {
                                 echo '<table class="widefat fixed" cellspacing="0">';
                                     echo cpc_styles_header();
 
-                                    echo cpc_styles_show_values(__('Gruppen-Header', CPC2_TEXT_DOMAIN), 'cpc_group_header', '', '', '', 'off', 'off', $function, $values);
-                                    echo cpc_styles_show_values(__('Gruppen-Titel', CPC2_TEXT_DOMAIN), 'cpc_group_header h1', '', '', '', 'off', 'off', $function, $values);
-                                    echo cpc_styles_show_values(__('Gruppen-Inhalt', CPC2_TEXT_DOMAIN), 'cpc_group_content', '', '', '', 'off', 'off', $function, $values);
-                                    echo cpc_styles_show_values(__('Gruppen-Aktionen', CPC2_TEXT_DOMAIN), 'cpc_group_actions', '', '', '', 'off', 'off', $function, $values);
+                                    echo cpc_styles_show_values(__('Gruppen-Header', CPC2_TEXT_DOMAIN), 'cpc-group-header', '#333333', '', '', 'off', 'off', $function, $values);
+                                    echo cpc_styles_show_values(__('Gruppen-Titel', CPC2_TEXT_DOMAIN), 'cpc-group-title', '#333333', '', '', 'on', 'off', $function, $values);
+                                    echo cpc_styles_show_values(__('Tabs-Navigation', CPC2_TEXT_DOMAIN), 'cpc-group-tabs-nav', '#333333', '', '', 'off', 'off', $function, $values);
+                                    echo cpc_styles_show_values(__('Tab-Link', CPC2_TEXT_DOMAIN), 'cpc-group-tab-link', '#666666', '', '', 'off', 'off', $function, $values);
+                                    echo cpc_styles_show_values(__('Tab-Link (aktiv)', CPC2_TEXT_DOMAIN), 'cpc-group-tab-link-active', '#0073aa', '', '', 'on', 'off', $function, $values);
+                                    echo cpc_styles_show_values(__('Tab-Inhalt', CPC2_TEXT_DOMAIN), 'cpc-group-tabs-content', '#333333', '', '', 'off', 'off', $function, $values);
+                                    echo cpc_styles_show_values(__('Gruppen-Aktionen', CPC2_TEXT_DOMAIN), 'cpc-group-actions', '#333333', '', '', 'off', 'off', $function, $values);
+                                    echo cpc_styles_show_values(__('Button "Beitreten"', CPC2_TEXT_DOMAIN), 'cpc-group-join-btn', '#ffffff', '#0073aa', '', 'on', 'off', $function, $values);
+                                    echo cpc_styles_show_values(__('Button "Verlassen"', CPC2_TEXT_DOMAIN), 'cpc-group-leave-btn', '#ffffff', '#dc3545', '', 'on', 'off', $function, $values);
+                                    echo cpc_styles_show_values(__('Button "Freunde einladen"', CPC2_TEXT_DOMAIN), 'cpc-group-invite-btn', '#ffffff', '#6c757d', '', 'on', 'off', $function, $values);
 
                                 echo '</table>';    
                             echo '</div>';    
@@ -3206,9 +3419,9 @@ function cpc_admin_getting_started_styles() {
                                 echo '<table class="widefat fixed" cellspacing="0">';
                                     echo cpc_styles_header();
 
-                                    echo cpc_styles_show_values(__('Meine Gruppen Grid', CPC2_TEXT_DOMAIN), 'cpc_my_groups_grid', '', '', '', 'off', 'off', $function, $values);
-                                    echo cpc_styles_show_values(__('Gruppen-Karte', CPC2_TEXT_DOMAIN), 'cpc_group_card', '', '', '', 'off', 'off', $function, $values);
-                                    echo cpc_styles_show_values(__('Rollen-Badge', CPC2_TEXT_DOMAIN), 'cpc_group_role_badge', '', '', '', 'off', 'off', $function, $values);
+                                    echo cpc_styles_show_values(__('Meine Gruppen Grid', CPC2_TEXT_DOMAIN), 'cpc-my-groups-grid', '#333333', '', '', 'off', 'off', $function, $values);
+                                    echo cpc_styles_show_values(__('Gruppen-Karte', CPC2_TEXT_DOMAIN), 'cpc-my-groups-card', '#333333', '#ffffff', '', 'off', 'off', $function, $values);
+                                    echo cpc_styles_show_values(__('Rollen-Hinweis', CPC2_TEXT_DOMAIN), 'cpc-group-my-role', '#666666', '', '', 'off', 'off', $function, $values);
 
                                 echo '</table>';    
                             echo '</div>';    

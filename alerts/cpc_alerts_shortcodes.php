@@ -19,6 +19,37 @@ function cpc_alerts_init() {
 	do_action('cpc_alerts_init_hook');
 }
 
+function cpc_alerts_get_dynamic_styles() {
+    if (!get_option('cpccom_use_styles')) {
+        return '';
+    }
+
+    static $styles_already_added = false;
+    if ($styles_already_added) {
+        return '';
+    }
+    $styles_already_added = true;
+
+    $html = '<!-- start of cpc_alerts styles -->';
+
+    $values = get_option('cpc_styles_cpc_alerts_activity') ? get_option('cpc_styles_cpc_alerts_activity') : array();
+    $html .= cpc_styles($values, 'cpc_alerts_activity', array(
+        '.cpc_alerts_dropdown_wrap',
+        '.cpc_alerts_activity_select',
+        '.cpc_alerts_list_item',
+        '.cpc_alerts_list_item_link',
+        '.cpc_alerts_list_item_delete',
+        '.cpc_alerts_flag_wrap',
+        '.cpc_alerts_flag_unread_badge',
+        '.cpc_mark_all_as_read_div',
+        '.cpc_alerts_delete_all_div',
+    ));
+
+    $html .= '<!-- end of cpc_alerts styles -->';
+
+    return $html;
+}
+
 
 /* ********** */ /* SHORTCODES */ /* ********** */
 
@@ -28,7 +59,7 @@ function cpc_alerts_activity($atts) {
 	cpc_alerts_init();
 
 	global $current_user;
-	$html = '';
+    $html = cpc_alerts_get_dynamic_styles();
 
 	if ( is_user_logged_in() ):
 
@@ -97,8 +128,8 @@ function cpc_alerts_activity($atts) {
     
             if ($list):
 
-                $html .= '<div style="max-width:100%">';
-                    $html .= "<select name='cpc_alerts_activity' id='cpc_alerts_activity' rel='".$delete_on_click."' style='width:100%'>";
+                $html .= '<div class="cpc_alerts_dropdown_wrap" style="max-width:100%">';
+                    $html .= "<select name='cpc_alerts_activity' id='cpc_alerts_activity' class='cpc_alerts_activity_select' rel='".$delete_on_click."' style='width:100%'>";
                     if ($unread == 1):
                         $html .= '<option value="count">'.$labels[0].'</option>';
                         $html .= '<option data-url="make_all_read">'.$make_all_read_text.'</option>';
@@ -121,7 +152,7 @@ function cpc_alerts_activity($atts) {
                 $html .= '</div>';
 
             else:
-                $html .= "<select name='cpc_alerts_activity' id='cpc_alerts_activity' rel='".$delete_on_click."' style='width:100%'>";
+                $html .= "<select name='cpc_alerts_activity' id='cpc_alerts_activity' class='cpc_alerts_activity_select' rel='".$delete_on_click."' style='width:100%'>";
                     $html .= '<option value="">'.$no_activity_text.'</option>';
                 $html .= "</select>";
             endif;
@@ -131,12 +162,12 @@ function cpc_alerts_activity($atts) {
         // Flag
         if ($style == 'flag'):
     
-            $html .= '<div id="cpc_alerts_flag" style="width:'.$flag_size.'px; height:'.$flag_size.'px;" >';
+            $html .= '<div id="cpc_alerts_flag" class="cpc_alerts_flag_wrap" style="width:'.$flag_size.'px; height:'.$flag_size.'px;" >';
             $html .= '<a href="'.$flag_url.'">';
             $src = (!$flag_src) ? plugins_url('images/flag'.get_option('cpccom_flag_colors').'.png', __FILE__) : $flag_src;
             $html .= '<img style="width:'.$flag_size.'px; height:'.$flag_size.'px;" src="'.$src.'" />';
             if ($unread):
-                $html .= '<div id="cpc_alerts_flag_unread" style="position: absolute; padding-top: '.($flag_unread_size*0.2).'px; line-height:'.($flag_unread_size*0.8).'px; font-size:'.($flag_unread_size*0.8).'px; border-radius: '.$flag_unread_radius.'px; top:'.$flag_unread_top.'px; left:'.$flag_unread_left.'px; width:'.$flag_unread_size.'px; height:'.$flag_unread_size.'px;">'.$unread.'</div>';
+                $html .= '<div id="cpc_alerts_flag_unread" class="cpc_alerts_flag_unread_badge" style="position: absolute; padding-top: '.($flag_unread_size*0.2).'px; line-height:'.($flag_unread_size*0.8).'px; font-size:'.($flag_unread_size*0.8).'px; border-radius: '.$flag_unread_radius.'px; top:'.$flag_unread_top.'px; left:'.$flag_unread_left.'px; width:'.$flag_unread_size.'px; height:'.$flag_unread_size.'px;">'.$unread.'</div>';
             endif;
             $html .= '</a></div>';
             if (!$flag_url) $html .= '<div class="cpc_error">'.__('Lege flag_url im Shortcode fest', CPC2_TEXT_DOMAIN).'</div>';
@@ -150,8 +181,8 @@ function cpc_alerts_activity($atts) {
 
                 $html .= '<div id="cpc_alerts_list">';
 
-                    if ($unread) $html .= '<div id="cpc_mark_all_as_read_div"><a href="javascript:void(0);" id="cpc_make_all_read">'.$make_all_read_text.'</a></div>';
-                    $html .= '<div id="cpc_alerts_delete_all_div"><a href="javascript:void(0);" id="cpc_alerts_delete_all">'.$delete_all_text.'</a></div>';
+                    if ($unread) $html .= '<div id="cpc_mark_all_as_read_div" class="cpc_mark_all_as_read_div"><a href="javascript:void(0);" id="cpc_make_all_read">'.$make_all_read_text.'</a></div>';
+                    $html .= '<div id="cpc_alerts_delete_all_div" class="cpc_alerts_delete_all_div"><a href="javascript:void(0);" id="cpc_alerts_delete_all">'.$delete_all_text.'</a></div>';
 
                     foreach ($list as $alert):
 
