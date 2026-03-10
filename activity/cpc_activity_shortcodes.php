@@ -579,8 +579,8 @@ if ($debug) $debug_html .= 'Start: '.date('Y-m-d H:i:s').'<br />';
 
                     $html .= '<div id="cpc_activity_ajax_div"><img style="width:20px;height:20px;" src="'.plugins_url('../css/images/wait.gif', __FILE__).'" /></div>';
 
-                    $html .= '<div style="display:none" id="cpc_atts_array">'.serialize($atts).'</div>';
-                    $html .= '<div style="display:none" id="cpc_activity_array">'.serialize($activity).'</div>';
+                    $html .= '<div style="display:none" id="cpc_atts_array">'.wp_json_encode($atts).'</div>';
+                    $html .= '<div style="display:none" id="cpc_activity_array">'.wp_json_encode($activity).'</div>';
                     $html .= '<div style="display:none" id="cpc_this_user">'.$this_user.'</div>';
                     $html .= '<div style="display:none" id="cpc_user_id">'.$user_id.'</div>';
                     $html .= '<div style="display:none" id="cpc_wait_url">'.plugins_url('../css/images/wait.gif', __FILE__).'</div>';

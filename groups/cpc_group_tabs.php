@@ -152,14 +152,19 @@ function cpc_render_group_tab_overview($group_id, $atts = array()) {
 	
 	// Get activity posts for this group
 	$args = array(
-		'post_type' => 'cpc_activity',
-		'posts_per_page' => $posts_per_page,
-		'paged' => $current_page,
-		'post_status' => 'publish',
-		'meta_key' => 'cpc_activity_group_id',
-		'meta_value' => $group_id,
-		'orderby' => 'date',
-		'order' => 'DESC',
+		'post_type'              => 'cpc_activity',
+		'posts_per_page'         => $posts_per_page,
+		'paged'                  => $current_page,
+		'post_status'            => 'publish',
+		'meta_key'               => 'cpc_activity_group_id',
+		'meta_value'             => $group_id,
+		'orderby'                => 'date',
+		'order'                  => 'DESC',
+		// Performance: no_found_rows excluded intentionally — pagination needs max_num_pages
+		'update_post_meta_cache' => false,
+		'update_post_term_cache' => false,
+		'suppress_filters'       => true,
+		'ignore_sticky_posts'    => true,
 	);
 	
 	$activity_query = new WP_Query($args);
@@ -664,16 +669,22 @@ function cpc_render_group_tab_settings($group_id, $atts = array()) {
  */
 function cpc_get_group_activity($group_id, $limit = 10) {
 	$args = array(
-		'post_type' => 'cpc_activity',
-		'posts_per_page' => $limit,
-		'meta_query' => array(
+		'post_type'              => 'cpc_activity',
+		'posts_per_page'         => $limit,
+		'post_status'            => 'publish',
+		'meta_query'             => array(
 			array(
-				'key' => 'cpc_activity_group_id',
+				'key'   => 'cpc_activity_group_id',
 				'value' => $group_id,
 			),
 		),
-		'orderby' => 'date',
-		'order' => 'DESC',
+		'orderby'                => 'date',
+		'order'                  => 'DESC',
+		'no_found_rows'          => true,
+		'update_post_meta_cache' => false,
+		'update_post_term_cache' => false,
+		'suppress_filters'       => true,
+		'ignore_sticky_posts'    => true,
 	);
 	
 	$query = new WP_Query($args);

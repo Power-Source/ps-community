@@ -14,6 +14,7 @@ function cpc_usermeta_init() {
     if (!$cpc_strength_array) $cpc_strength_array = array('Weak','Poor','Good','Strong','Mismatch');
 	wp_localize_script('cpc-usermeta-js', 'cpc_usermeta', array(
         'ajaxurl' => admin_url( 'admin-ajax.php' ),
+        'nonce'     => wp_create_nonce( 'cpc-usermeta-nonce' ),
         'animation' => $cpc_comfile_tab_animation,
         'score1' => stripslashes($cpc_strength_array[0]),
         'score2' => stripslashes($cpc_strength_array[1]),

@@ -256,16 +256,21 @@ function cpc_ajax_update_member_role() {
 
 	// Get membership
 	$args = array(
-		'post_type' => 'cpc_group_members',
-		'posts_per_page' => 1,
-		'post_status' => 'publish',
-		'meta_query' => array(
+		'post_type'              => 'cpc_group_members',
+		'posts_per_page'         => 1,
+		'post_status'            => 'publish',
+		'fields'                 => 'ids',
+		'no_found_rows'          => true,
+		'update_post_meta_cache' => false,
+		'update_post_term_cache' => false,
+		'suppress_filters'       => true,
+		'meta_query'             => array(
 			array(
-				'key' => 'cpc_member_user_id',
+				'key'   => 'cpc_member_user_id',
 				'value' => $member_id,
 			),
 			array(
-				'key' => 'cpc_member_group_id',
+				'key'   => 'cpc_member_group_id',
 				'value' => $group_id,
 			),
 		),
@@ -276,7 +281,7 @@ function cpc_ajax_update_member_role() {
 		wp_send_json_error(array('message' => __('Mitgliedschaft nicht gefunden.', CPC2_TEXT_DOMAIN)));
 	}
 
-	update_post_meta($membership[0]->ID, 'cpc_member_role', $new_role);
+	update_post_meta((int) $membership[0], 'cpc_member_role', $new_role);
 
 	wp_send_json_success(array('message' => __('Rolle erfolgreich aktualisiert.', CPC2_TEXT_DOMAIN)));
 }
@@ -336,20 +341,25 @@ function cpc_ajax_approve_member() {
 
 	// Get membership
 	$args = array(
-		'post_type' => 'cpc_group_members',
-		'posts_per_page' => 1,
-		'post_status' => 'publish',
-		'meta_query' => array(
+		'post_type'              => 'cpc_group_members',
+		'posts_per_page'         => 1,
+		'post_status'            => 'publish',
+		'fields'                 => 'ids',
+		'no_found_rows'          => true,
+		'update_post_meta_cache' => false,
+		'update_post_term_cache' => false,
+		'suppress_filters'       => true,
+		'meta_query'             => array(
 			array(
-				'key' => 'cpc_member_user_id',
+				'key'   => 'cpc_member_user_id',
 				'value' => $member_id,
 			),
 			array(
-				'key' => 'cpc_member_group_id',
+				'key'   => 'cpc_member_group_id',
 				'value' => $group_id,
 			),
 			array(
-				'key' => 'cpc_member_status',
+				'key'   => 'cpc_member_status',
 				'value' => 'pending',
 			),
 		),
@@ -360,7 +370,7 @@ function cpc_ajax_approve_member() {
 		wp_send_json_error(array('message' => __('Ausstehende Mitgliedschaft nicht gefunden.', CPC2_TEXT_DOMAIN)));
 	}
 
-	update_post_meta($membership[0]->ID, 'cpc_member_status', 'active');
+	update_post_meta((int) $membership[0], 'cpc_member_status', 'active');
 	cpc_update_group_member_count($group_id);
 
 	do_action('cpc_member_approved', $member_id, $group_id);
@@ -660,11 +670,6 @@ function cpc_ajax_save_group_permissions() {
 	
 	$group_id = isset($_POST['group_id']) ? intval($_POST['group_id']) : 0;
 	$current_user_id = get_current_user_id();
-	
-	// Debug
-	$is_admin = cpc_is_group_admin($current_user_id, $group_id);
-	$role = cpc_get_group_member_role($current_user_id, $group_id);
-	error_log("DEBUG save_permissions: user_id=$current_user_id, group_id=$group_id, is_admin=$is_admin, role=$role");
 	
 	// Check if user is group admin (or WordPress admin as fallback)
 	if (!cpc_is_group_admin($current_user_id, $group_id) && !current_user_can('manage_options')) {

@@ -2,6 +2,21 @@
 
 /* Library of group helper functions */
 
+function cpc_groups_fast_query_args($args, $ids_only = false) {
+	$defaults = array(
+		'no_found_rows' => true,
+		'update_post_meta_cache' => false,
+		'update_post_term_cache' => false,
+		'cache_results' => false,
+		'suppress_filters' => true,
+		'ignore_sticky_posts' => true,
+	);
+	if ($ids_only) {
+		$defaults['fields'] = 'ids';
+	}
+	return wp_parse_args($args, $defaults);
+}
+
 /**
  * Get group member count
  */
@@ -28,6 +43,7 @@ function cpc_get_group_member_count($group_id, $blog_id = null) {
 			),
 		),
 	);
+	$args = cpc_groups_fast_query_args($args, true);
 	$members = get_posts($args);
 	$count = count($members);
 	
@@ -80,6 +96,7 @@ function cpc_is_group_member($user_id, $group_id, $blog_id = null) {
 			),
 		),
 	);
+	$args = cpc_groups_fast_query_args($args, true);
 	$membership = get_posts($args);
 	$is_member = !empty($membership);
 	
@@ -119,11 +136,12 @@ function cpc_get_group_member_role($user_id, $group_id, $blog_id = null) {
 			),
 		),
 	);
+	$args = cpc_groups_fast_query_args($args, true);
 	$membership = get_posts($args);
 	$role = false;
 	
 	if (!empty($membership)) {
-		$role = get_post_meta($membership[0]->ID, 'cpc_member_role', true);
+		$role = get_post_meta((int) $membership[0], 'cpc_member_role', true);
 	}
 	
 	// Fallback: Check if user is group creator/author
@@ -264,10 +282,11 @@ function cpc_remove_group_member($user_id, $group_id, $blog_id = null) {
 			),
 		),
 	);
+	$args = cpc_groups_fast_query_args($args, true);
 	$membership = get_posts($args);
 
 	if (!empty($membership)) {
-		wp_delete_post($membership[0]->ID, true);
+		wp_delete_post((int) $membership[0], true);
 		
 		// Update group member count
 		cpc_update_group_member_count($group_id);
@@ -320,6 +339,8 @@ function cpc_get_user_groups($user_id, $status = 'active', $blog_id = null) {
 		);
 	}
 
+	$args = cpc_groups_fast_query_args($args, true);
+
 	$memberships = get_posts($args);
 	
 	if (empty($memberships)) {
@@ -330,7 +351,7 @@ function cpc_get_user_groups($user_id, $status = 'active', $blog_id = null) {
 	}
 
 	// OPTIMIZATION: Load all group_ids in batch (1 query instead of N)
-	$membership_ids = array_map('absint', wp_list_pluck($memberships, 'ID'));
+	$membership_ids = array_map('absint', $memberships);
 	
 	$meta_results = $wpdb->get_results(
 		"SELECT post_id, meta_value FROM {$wpdb->postmeta} 
@@ -349,12 +370,12 @@ function cpc_get_user_groups($user_id, $status = 'active', $blog_id = null) {
 	$groups = array();
 	if (!empty($group_ids)) {
 		// OPTIMIZATION: Load all groups in ONE query instead of N get_post() calls
-		$groups = get_posts(array(
+		$groups = get_posts(cpc_groups_fast_query_args(array(
 			'post_type' => 'cpc_group',
 			'post_status' => 'publish',
 			'posts_per_page' => -1,
 			'include' => array_unique($group_ids),
-		));
+		), false));
 	}
 
 	if ($switched) {
@@ -403,6 +424,8 @@ function cpc_get_group_members($group_id, $status = 'active', $role = '', $blog_
 		);
 	}
 
+	$args = cpc_groups_fast_query_args($args, true);
+
 	$memberships = get_posts($args);
 	$members = array();
 
@@ -426,7 +449,7 @@ function cpc_get_group_members($group_id, $status = 'active', $role = '', $blog_
 	}
 
 	// OPTIMIZATION: Load all metadata in batch instead of per-member queries
-	$membership_ids = array_map('absint', wp_list_pluck($memberships, 'ID'));
+	$membership_ids = array_map('absint', $memberships);
 	
 	// Get all meta at once (1 query instead of N*3 queries)
 	$meta_results = $wpdb->get_results(
@@ -445,9 +468,10 @@ function cpc_get_group_members($group_id, $status = 'active', $role = '', $blog_
 
 	// Collect all user IDs first
 	$user_ids = array();
-	foreach ($memberships as $membership) {
-		$user_id = isset($meta_map[$membership->ID]['cpc_member_user_id']) 
-			? absint($meta_map[$membership->ID]['cpc_member_user_id']) 
+	foreach ($memberships as $membership_id) {
+		$membership_id = (int) $membership_id;
+		$user_id = isset($meta_map[$membership_id]['cpc_member_user_id']) 
+			? absint($meta_map[$membership_id]['cpc_member_user_id']) 
 			: 0;
 		if ($user_id > 0) {
 			$user_ids[] = $user_id;
@@ -471,9 +495,10 @@ function cpc_get_group_members($group_id, $status = 'active', $role = '', $blog_
 	}
 
 	// Build final members array with cached data
-	foreach ($memberships as $membership) {
-		$user_id = isset($meta_map[$membership->ID]['cpc_member_user_id']) 
-			? absint($meta_map[$membership->ID]['cpc_member_user_id']) 
+	foreach ($memberships as $membership_id) {
+		$membership_id = (int) $membership_id;
+		$user_id = isset($meta_map[$membership_id]['cpc_member_user_id']) 
+			? absint($meta_map[$membership_id]['cpc_member_user_id']) 
 			: 0;
 		
 		if ($user_id > 0 && isset($users_map[$user_id])) {
@@ -485,9 +510,9 @@ function cpc_get_group_members($group_id, $status = 'active', $role = '', $blog_
 				continue;
 			}
 			$member_user = clone $user;
-			$member_user->membership_id = $membership->ID;
-			$member_user->member_role = $meta_map[$membership->ID]['cpc_member_role'] ?? 'member';
-			$member_user->member_joined = $meta_map[$membership->ID]['cpc_member_joined'] ?? '';
+			$member_user->membership_id = $membership_id;
+			$member_user->member_role = $meta_map[$membership_id]['cpc_member_role'] ?? 'member';
+			$member_user->member_joined = $meta_map[$membership_id]['cpc_member_joined'] ?? '';
 			$members[] = $member_user;
 		}
 	}
@@ -553,6 +578,8 @@ function cpc_get_groups_by_type($type = 'public', $limit = -1, $blog_id = null) 
 		);
 	}
 
+	$args = cpc_groups_fast_query_args($args, false);
+
 	$groups = get_posts($args);
 	
 	if ($switched) {
@@ -575,7 +602,7 @@ function cpc_search_groups($search_term, $type = '', $blog_id = null) {
 	
 	$args = array(
 		'post_type' => 'cpc_group',
-		'posts_per_page' => -1,
+		'posts_per_page' => 100,
 		'post_status' => 'publish',
 		's' => $search_term,
 	);
@@ -588,6 +615,8 @@ function cpc_search_groups($search_term, $type = '', $blog_id = null) {
 			),
 		);
 	}
+
+	$args = cpc_groups_fast_query_args($args, false);
 
 	$groups = get_posts($args);
 	
@@ -611,7 +640,7 @@ function cpc_get_pending_membership_requests($group_id, $blog_id = null) {
 	
 	$args = array(
 		'post_type' => 'cpc_group_members',
-		'posts_per_page' => -1,
+		'posts_per_page' => 500,
 		'post_status' => 'publish',
 		'meta_query' => array(
 			array(
@@ -624,6 +653,7 @@ function cpc_get_pending_membership_requests($group_id, $blog_id = null) {
 			),
 		),
 	);
+	$args = cpc_groups_fast_query_args($args, false);
 	
 	$requests = get_posts($args);
 	
@@ -667,6 +697,7 @@ function cpc_get_membership_request($group_id, $user_id, $blog_id = null) {
 			),
 		),
 	);
+	$args = cpc_groups_fast_query_args($args, false);
 	
 	$results = get_posts($args);
 	$result = !empty($results) ? $results[0] : null;
