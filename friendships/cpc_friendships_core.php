@@ -3,17 +3,41 @@
 if (is_admin()) add_action('admin_enqueue_scripts', 'cpc_friendships_admin_init');
 function cpc_friendships_admin_init() {
 	wp_enqueue_script('cpc-friendship-js', plugins_url('cpc_friends.js', __FILE__), array('jquery'));	
-	wp_localize_script('cpc-friendship-js', 'cpc_friendships_ajax', array( 'ajaxurl' => admin_url( 'admin-ajax.php' ) ));
+    wp_localize_script('cpc-friendship-js', 'cpc_friendships_ajax', array(
+        'ajaxurl' => admin_url( 'admin-ajax.php' ),
+        'nonce' => wp_create_nonce('cpc-friendship-nonce')
+    ));
 }
 
 
 add_action( 'wp_ajax_nopriv_cpc_get_users', 'cpc_get_users_ajax' ); // Logged out
 add_action( 'wp_ajax_cpc_get_users', 'cpc_get_users_ajax' ); // Logged in 
+
+function cpc_friendships_ajax_rate_limited($scope, $max_requests = 30, $window_seconds = 60) {
+    $user_part = is_user_logged_in() ? ('u:' . get_current_user_id()) : ('ip:' . md5(isset($_SERVER['REMOTE_ADDR']) ? $_SERVER['REMOTE_ADDR'] : 'guest'));
+    $key = 'cpc_rl_fr_' . md5($scope . '|' . $user_part);
+    $count = (int) get_transient($key);
+    if ($count >= $max_requests) {
+        return true;
+    }
+    set_transient($key, $count + 1, $window_seconds);
+    return false;
+}
+
 function cpc_get_users_ajax() {
 
+    check_ajax_referer('cpc-friendship-nonce', 'security');
+    if (!is_user_logged_in() && cpc_friendships_ajax_rate_limited('get_users', 20, 60)) {
+        wp_send_json_error(array());
+    }
+
 	global $wpdb;
-	$term = isset($_POST['term']) ? $_POST['term'] : '';
-	$sql = "SELECT ID, user_login FROM ".$wpdb->base_prefix."users WHERE user_login like '%%%s%%' ORDER BY user_login";
+    $term = isset($_POST['term']) ? sanitize_text_field(wp_unslash($_POST['term'])) : '';
+    if (mb_strlen($term) < 2) {
+        echo json_encode(array());
+        exit;
+    }
+    $sql = "SELECT ID, user_login FROM ".$wpdb->base_prefix."users WHERE user_login like '%%%s%%' ORDER BY user_login LIMIT 20";
 	$rows = $wpdb->get_results($wpdb->prepare($sql, $term));
 
 	$return_arr = array();

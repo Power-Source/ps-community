@@ -63,12 +63,24 @@ add_action( 'wp_ajax_cpc_remove_favourite', 'cpc_remove_favourite' );
 
 function cpc_add_favourite() {
 
+	check_ajax_referer('cpc-friendship-nonce', 'security');
+	if (!is_user_logged_in()) {
+		wp_die('forbidden');
+	}
+
 	global $current_user;
-	$the_user = get_user_by('id', $_POST['user_id']);
+	$user_id = isset($_POST['user_id']) ? absint($_POST['user_id']) : 0;
+	if (!$user_id || $user_id === (int)$current_user->ID) {
+		wp_die('invalid_user');
+	}
+	$the_user = get_user_by('id', $user_id);
+	if (!$the_user) {
+		wp_die('user_not_found');
+	}
 
     $post = array(
     	'post_title'     => $current_user->user_login.' - '.$the_user->user_login,
-		'post_name'	=> sanitize_title_with_dashes($member1->user_login.' '.$member2->user_login),      
+		'post_name'	=> sanitize_title_with_dashes($current_user->user_login.' '.$the_user->user_login),      
 		'post_status'    => 'publish',
 		'post_type'      => 'cpc_favourite_friend',
 		'post_author'    => $current_user->ID,
@@ -78,7 +90,7 @@ function cpc_add_favourite() {
     $new_id = wp_insert_post( $post );
     if ($new_id):
 		update_post_meta( $new_id, 'cpc_favourite_member1', $current_user->ID );
-		update_post_meta( $new_id, 'cpc_favourite_member2', $_POST['user_id'] );
+		update_post_meta( $new_id, 'cpc_favourite_member2', $user_id );
 		update_post_meta( $new_id, 'cpc_favourite_friendship_since', date('Y-m-d H:i:s') );
 	endif;
 
@@ -88,9 +100,18 @@ function cpc_add_favourite() {
 
 function cpc_remove_favourite() {
 
-	global $current_user;
+	check_ajax_referer('cpc-friendship-nonce', 'security');
+	if (!is_user_logged_in()) {
+		wp_die('forbidden');
+	}
 
-	$friendship = cpc_is_a_favourite_friend($current_user->ID, $_POST['user_id']);
+	global $current_user;
+	$user_id = isset($_POST['user_id']) ? absint($_POST['user_id']) : 0;
+	if (!$user_id) {
+		wp_die('invalid_user');
+	}
+
+	$friendship = cpc_is_a_favourite_friend($current_user->ID, $user_id);
 	if ($friendship):
 		wp_delete_post($friendship['ID'], true);
 	endif;

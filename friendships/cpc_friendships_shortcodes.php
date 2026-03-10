@@ -6,6 +6,7 @@ function cpc_friends_init() {
 	wp_enqueue_script('cpc-friendship-js', plugins_url('cpc_friends.js', __FILE__), array('jquery'));	
 	wp_localize_script('cpc-friendship-js', 'cpc_friendships_ajax', array( 
 		'ajaxurl' => admin_url( 'admin-ajax.php' ),
+        'nonce' => wp_create_nonce('cpc-friendship-nonce'),
         'fav_on' => plugins_url('images/star.png', __FILE__),
         'fav_off' => plugins_url('images/star_empty.png', __FILE__),
 	));

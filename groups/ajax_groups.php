@@ -370,7 +370,23 @@ function cpc_ajax_approve_member() {
 // Load group tab content via AJAX
 add_action('wp_ajax_cpc_load_group_tab', 'cpc_ajax_load_group_tab');
 add_action('wp_ajax_nopriv_cpc_load_group_tab', 'cpc_ajax_load_group_tab');
+
+function cpc_groups_ajax_rate_limited($scope, $max_requests = 30, $window_seconds = 60) {
+	$user_part = is_user_logged_in() ? ('u:' . get_current_user_id()) : ('ip:' . md5(isset($_SERVER['REMOTE_ADDR']) ? $_SERVER['REMOTE_ADDR'] : 'guest'));
+	$key = 'cpc_rl_grp_' . md5($scope . '|' . $user_part);
+	$count = (int) get_transient($key);
+	if ($count >= $max_requests) {
+		return true;
+	}
+	set_transient($key, $count + 1, $window_seconds);
+	return false;
+}
+
 function cpc_ajax_load_group_tab() {
+	if (!is_user_logged_in() && cpc_groups_ajax_rate_limited('load_group_tab', 25, 60)) {
+		wp_send_json_error(array('message' => 'Rate limit exceeded'));
+	}
+
 	check_ajax_referer('cpc_groups_nonce', 'nonce');
 	
 	if (!isset($_POST['group_id']) || !isset($_POST['tab'])) {
@@ -390,6 +406,12 @@ function cpc_ajax_load_group_tab() {
 	$group = get_post($group_id);
 	if (!$group || $group->post_type !== 'cpc_group') {
 		wp_send_json_error(array('message' => 'Gruppe nicht gefunden'));
+	}
+
+	$available_tabs = cpc_get_group_tabs($group_id, get_current_user_id());
+	$allowed_tab_ids = array_keys($available_tabs);
+	if (!in_array($tab, $allowed_tab_ids, true)) {
+		wp_send_json_error(array('message' => 'Ungültiger Tab'));
 	}
 	
 	// Check if user can view group

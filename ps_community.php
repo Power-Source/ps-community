@@ -421,8 +421,11 @@ function cpc_init() {
                 'nonce' => wp_create_nonce('cpc-friendship-nonce')
             ) );		
         endif;
-	    wp_enqueue_script('cpc-admin-js', plugins_url('js/cpc.admin.js', __FILE__), array('jquery'));
-		wp_localize_script( 'cpc-admin-js', 'cpc_ajax', array( 'ajaxurl' => admin_url( 'admin-ajax.php' ) ) );		
+        wp_enqueue_script('cpc-admin-js', plugins_url('js/cpc.admin.js', __FILE__), array('jquery'));
+        wp_localize_script( 'cpc-admin-js', 'cpc_ajax', array(
+            'ajaxurl' => admin_url( 'admin-ajax.php' ),
+            'nonce' => wp_create_nonce('cpc-admin-nonce')
+        ) );		
 		wp_enqueue_style('cpc-admin-css', plugins_url('css/cpc_admin.css', __FILE__), 'css');		
     else:
         // Core CPC JS

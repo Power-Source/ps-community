@@ -16,6 +16,7 @@ jQuery(document).ready(function() {
                 {
                     item : item,
                     action : 'cpc_toggle_main_menu',
+                    security : cpc_ajax.nonce
                 },
                 function(response) {
                     location.reload();
@@ -34,6 +35,7 @@ jQuery(document).ready(function() {
             cpc_ajax.ajaxurl,
             {
                 action : 'cpc_hide_welcome_header_toggle',
+                security : cpc_ajax.nonce
             },
             function(response) {}   
         );         
@@ -44,6 +46,7 @@ jQuery(document).ready(function() {
             cpc_ajax.ajaxurl,
             {
                 action : 'cpc_hide_admin_links_toggle',
+                security : cpc_ajax.nonce
             },
             function(response) {
                 location.reload();
@@ -55,6 +58,7 @@ jQuery(document).ready(function() {
             cpc_ajax.ajaxurl,
             {
                 action : 'cpc_hide_admin_links_toggle',
+                security : cpc_ajax.nonce
             },
             function(response) {
                 location.reload();
@@ -150,6 +154,7 @@ jQuery(document).ready(function() {
                 {
                     action : 'cpc_shortcode_options_save',
                     data: {arr: arr},
+                    security : cpc_ajax.nonce
                 },
                 function(response) {
                     if (response != '') { alert(response) };
@@ -183,6 +188,7 @@ jQuery(document).ready(function() {
                 cpc_ajax.ajaxurl,
                 {
                     action : 'cpc_styles_enable',
+                    security : cpc_ajax.nonce
                 },
                 function(response) {
                     location.reload();
@@ -197,6 +203,7 @@ jQuery(document).ready(function() {
                 cpc_ajax.ajaxurl,
                 {
                     action : 'cpc_styles_disable',
+                    security : cpc_ajax.nonce
                 },
                 function(response) {
                     location.reload();
@@ -257,6 +264,7 @@ jQuery(document).ready(function() {
                 {
                     action : 'cpc_styles_options_save',
                     data: {arr: arr},
+                    security : cpc_ajax.nonce
                 },
                 function(response) {
                     if (response != '') { alert(response) };

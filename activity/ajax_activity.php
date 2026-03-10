@@ -15,33 +15,72 @@ add_action( 'wp_ajax_nopriv_cpc_return_activity_posts', 'cpc_return_activity_pos
 add_action( 'wp_ajax_cpc_load_profile_tab', 'cpc_load_profile_tab_ajax' ); 
 add_action( 'wp_ajax_nopriv_cpc_load_profile_tab', 'cpc_load_profile_tab_ajax' );  // Logged out
 
+function cpc_parse_request_array($raw) {
+    if (is_array($raw)) {
+        return $raw;
+    }
+    if (!is_string($raw) || $raw === '') {
+        return array();
+    }
+
+    $str = stripslashes($raw);
+
+    $json = json_decode($str, true);
+    if (json_last_error() === JSON_ERROR_NONE && is_array($json)) {
+        return $json;
+    }
+
+    $value = @unserialize($str, array('allowed_classes' => false));
+    if ($value !== false && is_array($value)) {
+        return $value;
+    }
+
+    if ($str === 'a:0:{}') {
+        return array();
+    }
+
+    return array();
+}
+
+function cpc_activity_ajax_rate_limited($scope, $max_requests = 60, $window_seconds = 60) {
+    $user_part = is_user_logged_in() ? ('u:' . get_current_user_id()) : ('ip:' . md5(isset($_SERVER['REMOTE_ADDR']) ? $_SERVER['REMOTE_ADDR'] : 'guest'));
+    $key = 'cpc_rl_act_' . md5($scope . '|' . $user_part);
+    $count = (int) get_transient($key);
+    if ($count >= $max_requests) {
+        return true;
+    }
+    set_transient($key, $count + 1, $window_seconds);
+    return false;
+}
+
 /* RETURN ACTIVITY */
 function cpc_return_activity_posts() {
+
+	if (!is_user_logged_in() && cpc_activity_ajax_rate_limited('return_activity_posts', 40, 60)) {
+		status_header(429);
+		echo '';
+		exit;
+	}
 
 	global $current_user;
     $items = '';
 
-    $data = $_POST['data'];
-    $arr = $data['arr'];
-    $atts = $data['atts'];
-    $user_id = $_POST['user_id'];
-    $nonce = $_POST['nonce'];
+    $data = isset($_POST['data']) && is_array($_POST['data']) ? $_POST['data'] : array();
+    $arr = isset($data['arr']) ? $data['arr'] : array();
+    $atts = isset($data['atts']) ? $data['atts'] : array();
+    $user_id = isset($_POST['user_id']) ? absint($_POST['user_id']) : 0;
+    $nonce = isset($_POST['nonce']) ? sanitize_text_field(wp_unslash($_POST['nonce'])) : '';
     
     $nonce_check = wp_verify_nonce( $nonce, 'cpc_get_activity_nonce_'.$user_id );
 
     if ($nonce_check):
     
-        // Sichere Deserialization mit Validierung
-        $arr = @unserialize(stripslashes($arr));
-        if ($arr !== false && is_array($arr)) {
+        $arr = cpc_parse_request_array($arr);
+        if (!empty($arr)) {
 
             if ($arr):
 
-                // Sichere Deserialization mit Validierung
-                $atts = @unserialize(stripslashes($atts));
-                if ($atts === false || !is_array($atts)) {
-                    $atts = array();
-                }
+                $atts = cpc_parse_request_array($atts);
 
                 // Get shortcode parameters
                 $values = cpc_get_shortcode_options('cpc_activity');    
@@ -73,9 +112,9 @@ function cpc_return_activity_posts() {
 
                 $shown_count = 0;
                 $array_count = 0;
-                $page_size = $_POST['page'];
-                $start = $_POST['start'];
-                $this_user = $_POST['this_user'];
+                $page_size = isset($_POST['page']) ? max(1, min(100, intval($_POST['page']))) : 10;
+                $start = isset($_POST['start']) ? max(0, intval($_POST['start'])) : 0;
+                $this_user = isset($_POST['this_user']) ? absint($_POST['this_user']) : 0;
 
                 $shown = array();
 
@@ -375,6 +414,11 @@ function cpc_return_activity_posts() {
 
 /* LOAD PROFILE TAB */
 function cpc_load_profile_tab_ajax() {
+    if (!is_user_logged_in() && cpc_activity_ajax_rate_limited('load_profile_tab', 30, 60)) {
+        wp_send_json_error(array('message' => 'Rate limit exceeded'));
+        exit;
+    }
+
     // Verify nonce for security
     $nonce = isset($_POST['nonce']) ? $_POST['nonce'] : '';
     $user_id = isset($_POST['user_id']) ? intval($_POST['user_id']) : 0;

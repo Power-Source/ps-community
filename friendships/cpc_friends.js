@@ -14,7 +14,7 @@ jQuery(document).ready(function() {
                 {
                     action : 'cpc_add_favourite',
                     user_id: jQuery(this).data('user_id'),
-                    security : cpc_ajax.nonce
+					security : cpc_friendships_ajax.nonce
                 },
                 function(response) {
                 }   
@@ -26,7 +26,7 @@ jQuery(document).ready(function() {
                 {
                     action : 'cpc_remove_favourite',
                     user_id: jQuery(this).data('user_id'),
-                    security : cpc_ajax.nonce
+					security : cpc_friendships_ajax.nonce
                 },
                 function(response) {
                 }   
@@ -47,7 +47,7 @@ jQuery(document).ready(function() {
 		    {
 		        action : 'cpc_add_favourite',
 		        user_id: jQuery(this).attr('rel'),
-		        security : cpc_ajax.nonce
+		        security : cpc_friendships_ajax.nonce
 		    },
 		    function(response) {
 		    }   
@@ -66,7 +66,7 @@ jQuery(document).ready(function() {
 		    {
 		        action : 'cpc_remove_favourite',
 		        user_id: jQuery(this).attr('rel'),
-		        security : cpc_ajax.nonce
+		        security : cpc_friendships_ajax.nonce
 		    },
 		    function(response) {
 		    }   
@@ -81,13 +81,14 @@ jQuery(document).ready(function() {
 
 		if (jQuery("#cpc_favourite_member1").val() == '') {
 			jQuery("#cpc_favourite_member1").select2({
-			    minimumInputLength: 1,
+			    minimumInputLength: 2,
 			    query: function (query) {
 					jQuery.post(
 					    cpc_friendships_ajax.ajaxurl,
 					    {
 					        action : 'cpc_get_users',
-					        term : query.term
+					        term : query.term,
+					        security : cpc_friendships_ajax.nonce
 					    },
 					    function(response) {
 					    	var json = JSON.parse(response);
@@ -105,13 +106,14 @@ jQuery(document).ready(function() {
 
 		if (jQuery("#cpc_favourite_member2").val() == '') {
 			jQuery("#cpc_favourite_member2").select2({
-			    minimumInputLength: 1,
+			    minimumInputLength: 2,
 			    query: function (query) {
 					jQuery.post(
 					    cpc_friendships_ajax.ajaxurl,
 					    {
 					        action : 'cpc_get_users',
-					        term : query.term
+					        term : query.term,
+					        security : cpc_friendships_ajax.nonce
 					    },
 					    function(response) {
 					    	var json = JSON.parse(response);
@@ -136,13 +138,14 @@ jQuery(document).ready(function() {
 
 		if (jQuery("#cpc_member1").val() == '') {
 			jQuery("#cpc_member1").select2({
-			    minimumInputLength: 1,
+			    minimumInputLength: 2,
 			    query: function (query) {
 					jQuery.post(
 					    cpc_friendships_ajax.ajaxurl,
 					    {
 					        action : 'cpc_get_users',
-					        term : query.term
+					        term : query.term,
+					        security : cpc_friendships_ajax.nonce
 					    },
 					    function(response) {
 					    	var json = JSON.parse(response);
@@ -160,13 +163,14 @@ jQuery(document).ready(function() {
 
 		if (jQuery("#cpc_member2").val() == '') {
 			jQuery("#cpc_member2").select2({
-			    minimumInputLength: 1,
+			    minimumInputLength: 2,
 			    query: function (query) {
 					jQuery.post(
 					    cpc_friendships_ajax.ajaxurl,
 					    {
 					        action : 'cpc_get_users',
-					        term : query.term
+					        term : query.term,
+					        security : cpc_friendships_ajax.nonce
 					    },
 					    function(response) {
 					    	var json = JSON.parse(response);

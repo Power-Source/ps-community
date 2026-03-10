@@ -210,11 +210,11 @@ function cpc_display_array($arrayname,$tab="&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp",$ind
  $curtab ="";
  $returnvalues = "";
 
- while(list($key, $value) = each($arrayname)) {
+ foreach ($arrayname as $key => $value) {
   for($i=0; $i<$indent; $i++) {
    $curtab .= $tab;
    }
-  if (is_array($value) && strpos($value, $search) !== false) {
+	if (is_array($value)) {
    $returnvalues .= "$curtab$key : Array: <br />$curtab{<br />\n";
    $returnvalues .= cpc_display_array($value,$tab,$indent+1)."$curtab}<br />\n";
    }

@@ -8,11 +8,26 @@ add_action( 'wp_ajax_cpc_hide_welcome_header_toggle', 'cpc_hide_welcome_header_t
 add_action( 'wp_ajax_cpc_hide_admin_links_toggle', 'cpc_hide_admin_links_toggle' ); 
 add_action( 'wp_ajax_cpc_toggle_main_menu', 'cpc_toggle_main_menu' ); 
 
+function cpc_admin_ajax_guard() {
+    if ( ! is_user_logged_in() || ! current_user_can('manage_options') ) {
+        wp_die('forbidden');
+    }
+    check_ajax_referer('cpc-admin-nonce', 'security');
+}
+
 /* TOGGLE SHOW ON MAIN MENU */
 function cpc_toggle_main_menu() {
 
-    $item = $_POST['item'];
+    cpc_admin_ajax_guard();
+
+    $item = isset($_POST['item']) ? sanitize_key($_POST['item']) : '';
+    if ($item === '') {
+        wp_die('invalid_item');
+    }
     $admin_favs = get_option('cpc_admin_favs');
+    if (!is_array($admin_favs)) {
+        $admin_favs = array();
+    }
     if (!in_array($item, $admin_favs)):
         $admin_favs[] = $item;
     echo "added ".$item;
@@ -22,7 +37,6 @@ function cpc_toggle_main_menu() {
             echo "removed ".$item;
         }    
     endif;
-    var_dump($admin_favs);
     update_option('cpc_admin_favs', $admin_favs);
     
     exit;
@@ -30,6 +44,8 @@ function cpc_toggle_main_menu() {
 
 /* TOGGLE SETUP PAGE ADMIN LINKS */
 function cpc_hide_admin_links_toggle() {
+
+    cpc_admin_ajax_guard();
 
     if (get_option('cpc_core_admin_icons')):
         delete_option('cpc_core_admin_icons'); // show them on setup page (not on menu)
@@ -42,6 +58,8 @@ function cpc_hide_admin_links_toggle() {
 /* TOGGLE SETUP PAGE WELCOME HEADER */
 function cpc_hide_welcome_header_toggle() {
 
+    cpc_admin_ajax_guard();
+
     if (get_option('cpc_show_welcome_header')):
         delete_option('cpc_show_welcome_header');
     else:
@@ -52,10 +70,8 @@ function cpc_hide_welcome_header_toggle() {
 
 /* SAVE SHORTCODE OPTIONS */
 function cpc_shortcode_options_save() {
-    
-    global $current_user;
-    
-    if ( is_user_logged_in() && current_user_can('manage_options')) {
+
+    cpc_admin_ajax_guard();
 
         $data = $_POST['data'];
         $arr = $data['arr'];
@@ -103,18 +119,14 @@ function cpc_shortcode_options_save() {
         // store values
         update_option('cpc_shortcode_options_'.$function, $values);
         
-    }
-    
     exit;
     
 }
 
 /* SAVE STYLES OPTIONS */
 function cpc_styles_options_save() {
-    
-    global $current_user;
-    
-    if ( is_user_logged_in() && current_user_can('manage_options')) {
+
+    cpc_admin_ajax_guard();
 
         $data = $_POST['data'];
         $arr = $data['arr'];
@@ -145,18 +157,18 @@ function cpc_styles_options_save() {
         
         update_option('cpc_styles_'.$function, $values);
         
-    }
-    
     exit;
     
 }
 
 function cpc_styles_enable() {
+    cpc_admin_ajax_guard();
     update_option('cpccom_use_styles', true);
     exit;
 }
 
 function cpc_styles_disable() {
+    cpc_admin_ajax_guard();
     delete_option('cpccom_use_styles');
     exit;
 }
