@@ -3,9 +3,10 @@
 add_action('cpc_admin_quick_start_hook', 'cpc_admin_quick_start_profile');
 function cpc_admin_quick_start_profile() {
 
-	global $wpdb;
-	$sql = "SELECT * FROM ".$wpdb->prefix."posts WHERE post_content LIKE '%s'";
-	if (!($wpdb->get_results($wpdb->prepare($sql, '%[cpc_activity%')))):
+	$profile_page = cpc_admin_get_valid_page_id('cpccom_profile_page');
+	$edit_profile_page = cpc_admin_get_valid_page_id('cpccom_edit_profile_page');
+	$change_avatar_page = cpc_admin_get_valid_page_id('cpccom_change_avatar_page');
+	if (!$profile_page || !$edit_profile_page || !$change_avatar_page):
 
 		echo '<div style="margin-right:10px; float:left">';
 		echo '<form action="" method="POST">';
@@ -34,8 +35,7 @@ function cpc_admin_quick_start_profile_save($the_post) {
 		  'comment_status' => 'closed',
 		);  
 
-		$new_id = wp_insert_post( $post );
-		update_option('cpccom_profile_page', $new_id);
+		$new_id = cpc_admin_create_standard_page('cpccom_profile_page', $post, CPC_PREFIX.'-activity-page');
 
 		// Edit Profile Page
 		$post = array(
@@ -48,8 +48,7 @@ function cpc_admin_quick_start_profile_save($the_post) {
 		  'comment_status' => 'closed',
 		);  
 
-		$new_edit_profile_id = wp_insert_post( $post );
-		update_option('cpccom_edit_profile_page', $new_edit_profile_id);
+		$new_edit_profile_id = cpc_admin_create_standard_page('cpccom_edit_profile_page', $post, CPC_PREFIX.'-usermeta-change');
 
 		// Change Avatar Page
 		$post = array(
@@ -62,8 +61,7 @@ function cpc_admin_quick_start_profile_save($the_post) {
 		  'comment_status' => 'closed',
 		);  
 
-		$new_change_avatar_id = wp_insert_post( $post );
-		update_option('cpccom_change_avatar_page', $new_change_avatar_id);		
+		$new_change_avatar_id = cpc_admin_create_standard_page('cpccom_change_avatar_page', $post, CPC_PREFIX.'-avatar-change');		
 
 		// Friends Page
 		$post = array(
@@ -76,7 +74,12 @@ function cpc_admin_quick_start_profile_save($the_post) {
 		  'comment_status' => 'closed',
 		);  
 
-		$new_friends_id = wp_insert_post( $post );
+		$new_friends_id = cpc_admin_create_standard_page('', $post, CPC_PREFIX.'-friends');
+
+		if (is_wp_error($new_id) || is_wp_error($new_edit_profile_id) || is_wp_error($new_change_avatar_id) || is_wp_error($new_friends_id)) {
+			echo '<div class="cpc_error">'.__('Mindestens eine Profil-Standardseite konnte nicht erstellt werden.', CPC2_TEXT_DOMAIN).'</div>';
+			return;
+		}
 
 		echo '<div class="cpc_success">'.sprintf(__('Profilseite (%s) hinzugefügt. [<a href="%s">view</a>]', CPC2_TEXT_DOMAIN), get_permalink($new_id), get_permalink($new_id)).'<br />';
 		echo sprintf(__('Profil bearbeiten-Seite (%s) hinzugefügt. [<a href="%s">view</a>]', CPC2_TEXT_DOMAIN), get_permalink($new_edit_profile_id), get_permalink($new_edit_profile_id)).'<br />';
@@ -107,9 +110,9 @@ function cpc_admin_getting_started_profile() {
 			<td scope="row"><label for="profile_page"><?php echo __('Profilseite', CPC2_TEXT_DOMAIN); ?></label></td>
 			<td>
 				<p style="margin-bottom:5px"><strong><?php echo __('Deine Profilseite darf keine übergeordnete Seite haben.', CPC2_TEXT_DOMAIN); ?></strong></p>
+				<?php $profile_page = cpc_admin_get_valid_page_id('cpccom_profile_page'); ?>
 				<select name="profile_page">
 				 <?php 
-				  $profile_page = get_option('cpccom_profile_page');
 				  if (!$profile_page) echo '<option value="0">'.__('Seite auswählen...', CPC2_TEXT_DOMAIN).'</option>';
 				  if ($profile_page) echo '<option value="0">'.__('Zurücksetzen...', CPC2_TEXT_DOMAIN).'</option>';						
 				  $pages = get_pages(); 
@@ -123,6 +126,9 @@ function cpc_admin_getting_started_profile() {
 				  }
 				 ?>						
 				</select>
+				<?php if (!$profile_page) { ?>
+				<button type="submit" name="cpccom_create_page" value="profile_page" class="button-secondary" style="margin-left:8px;"><?php echo __('Seite erstellen', CPC2_TEXT_DOMAIN); ?></button>
+				<?php } ?>
 				<span class="description"><?php echo __('ClassicPress-Seite, zu der Profillinks führen.', CPC2_TEXT_DOMAIN); ?>
 				<?php if ($profile_page) {
 					echo ' [<a href="post.php?post='.$profile_page.'&action=edit">'.__('bearbeiten', CPC2_TEXT_DOMAIN).'</a>';
@@ -135,9 +141,9 @@ function cpc_admin_getting_started_profile() {
 			<tr valign="top"> 
 			<td scope="row"><label for="edit_profile_page"><?php echo __('Profilseite bearbeiten', CPC2_TEXT_DOMAIN); ?></label></td>
 			<td>
+				<?php $profile_page = cpc_admin_get_valid_page_id('cpccom_edit_profile_page'); ?>
 				<select name="edit_profile_page">
 				 <?php 
-				  $profile_page = get_option('cpccom_edit_profile_page');
 				  if (!$profile_page) echo '<option value="0">'.__('Seite auswählen...', CPC2_TEXT_DOMAIN).'</option>';
 				  if ($profile_page) echo '<option value="0">'.__('Zurücksetzen...', CPC2_TEXT_DOMAIN).'</option>';						
 				  $pages = get_pages(); 
@@ -151,6 +157,9 @@ function cpc_admin_getting_started_profile() {
 				  }
 				 ?>						
 				</select>
+				<?php if (!$profile_page) { ?>
+				<button type="submit" name="cpccom_create_page" value="edit_profile_page" class="button-secondary" style="margin-left:8px;"><?php echo __('Seite erstellen', CPC2_TEXT_DOMAIN); ?></button>
+				<?php } ?>
 				<span class="description"><?php echo __('ClassicPress-Seite, auf der Benutzer ihr Profil bearbeiten können.', CPC2_TEXT_DOMAIN); ?>
 				<?php if ($profile_page) {
 					echo ' [<a href="post.php?post='.$profile_page.'&action=edit">'.__('bearbeiten', CPC2_TEXT_DOMAIN).'</a>';
@@ -162,9 +171,9 @@ function cpc_admin_getting_started_profile() {
 			<tr valign="top"> 
 			<td scope="row"><label for="change_avatar_page"><?php echo __('Avatar-Seite ändern', CPC2_TEXT_DOMAIN); ?></label></td>
 			<td>
+				<?php $profile_page = cpc_admin_get_valid_page_id('cpccom_change_avatar_page'); ?>
 				<select name="change_avatar_page">
 				 <?php 
-				  $profile_page = get_option('cpccom_change_avatar_page');
 				  if (!$profile_page) echo '<option value="0">'.__('Seite auswählen...', CPC2_TEXT_DOMAIN).'</option>';
 				  if ($profile_page) echo '<option value="0">'.__('Zurücksetzen...', CPC2_TEXT_DOMAIN).'</option>';						
 				  $pages = get_pages(); 
@@ -178,6 +187,9 @@ function cpc_admin_getting_started_profile() {
 				  }
 				 ?>						
 				</select>
+				<?php if (!$profile_page) { ?>
+				<button type="submit" name="cpccom_create_page" value="change_avatar_page" class="button-secondary" style="margin-left:8px;"><?php echo __('Seite erstellen', CPC2_TEXT_DOMAIN); ?></button>
+				<?php } ?>
 				<span class="description"><?php echo __('ClassicPress-Seite, auf der Benutzer ihren Avatar ändern können.', CPC2_TEXT_DOMAIN); ?>
 				<?php if ($profile_page) {
 					echo ' [<a href="post.php?post='.$profile_page.'&action=edit">'.__('bearbeiten', CPC2_TEXT_DOMAIN).'</a>';
@@ -271,6 +283,48 @@ function cpc_admin_getting_started_profile() {
 
 add_action( 'cpc_admin_setup_form_save_hook', 'cpc_comfile_admin_options_save', 10, 1 );
 function cpc_comfile_admin_options_save ($the_post) {
+
+	$create_page = isset($the_post['cpccom_create_page']) ? sanitize_key($the_post['cpccom_create_page']) : '';
+	if ($create_page === 'profile_page') {
+		$the_post['profile_page'] = cpc_admin_create_standard_page('cpccom_profile_page', array(
+			'post_content'   => '['.CPC_PREFIX.'-user-exists-content]['.CPC_PREFIX.'-is-friend-content]['.CPC_PREFIX.'-activity-page][/'.CPC_PREFIX.'-is-friend-content][/'.CPC_PREFIX.'-user-exists-content]',
+			'post_name'      => 'profile',
+			'post_title'     => __('Profil', CPC2_TEXT_DOMAIN),
+			'post_status'    => 'publish',
+			'post_type'      => 'page',
+			'ping_status'    => 'closed',
+			'comment_status' => 'closed',
+		), CPC_PREFIX.'-activity-page');
+	}
+	if ($create_page === 'edit_profile_page') {
+		$the_post['edit_profile_page'] = cpc_admin_create_standard_page('cpccom_edit_profile_page', array(
+			'post_content'   => '['.CPC_PREFIX.'-usermeta-change]',
+			'post_name'      => 'edit-profile',
+			'post_title'     => __('Profil bearbeiten', CPC2_TEXT_DOMAIN),
+			'post_status'    => 'publish',
+			'post_type'      => 'page',
+			'ping_status'    => 'closed',
+			'comment_status' => 'closed',
+		), CPC_PREFIX.'-usermeta-change');
+	}
+	if ($create_page === 'change_avatar_page') {
+		$the_post['change_avatar_page'] = cpc_admin_create_standard_page('cpccom_change_avatar_page', array(
+			'post_content'   => '['.CPC_PREFIX.'-avatar-change]',
+			'post_name'      => 'change-avatar',
+			'post_title'     => __('Avatar ändern', CPC2_TEXT_DOMAIN),
+			'post_status'    => 'publish',
+			'post_type'      => 'page',
+			'ping_status'    => 'closed',
+			'comment_status' => 'closed',
+		), CPC_PREFIX.'-avatar-change');
+	}
+
+	if (($create_page === 'profile_page' && is_wp_error($the_post['profile_page']))
+		|| ($create_page === 'edit_profile_page' && is_wp_error($the_post['edit_profile_page']))
+		|| ($create_page === 'change_avatar_page' && is_wp_error($the_post['change_avatar_page']))) {
+		echo '<div class="cpc_error">'.__('Die gewünschte Profil-Standardseite konnte nicht erstellt werden.', CPC2_TEXT_DOMAIN).'</div>';
+		return;
+	}
 
 	if (isset($the_post['profile_page']) && $the_post['profile_page'] > 0):
 		update_option('cpccom_profile_page', $the_post['profile_page']);

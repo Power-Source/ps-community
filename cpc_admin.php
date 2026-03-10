@@ -110,6 +110,62 @@ function cpc_menu() {
 
 }
 
+function cpc_admin_get_valid_page_id($option_name) {
+
+    $page_id = absint(get_option($option_name));
+    if (!$page_id) {
+        return 0;
+    }
+
+    $page = get_post($page_id);
+    if (!$page || $page->post_type !== 'page' || in_array($page->post_status, array('trash', 'auto-draft'), true)) {
+        delete_option($option_name);
+        return 0;
+    }
+
+    return $page_id;
+
+}
+
+function cpc_admin_create_standard_page($option_name, $post, $required_shortcode = '') {
+
+    $page_id = $option_name ? cpc_admin_get_valid_page_id($option_name) : 0;
+    if ($page_id) {
+        return $page_id;
+    }
+
+    $existing = !empty($post['post_name']) ? get_page_by_path($post['post_name'], OBJECT, 'page') : false;
+    if ($existing && !in_array($existing->post_status, array('trash', 'auto-draft'), true)) {
+        if (!$required_shortcode || has_shortcode($existing->post_content, $required_shortcode) || trim($existing->post_content) === '') {
+            $update_post = array('ID' => $existing->ID);
+            if (trim($existing->post_content) === '' && !empty($post['post_content'])) {
+                $update_post['post_content'] = $post['post_content'];
+            }
+            if (empty($existing->post_title) && !empty($post['post_title'])) {
+                $update_post['post_title'] = $post['post_title'];
+            }
+            if ($existing->post_status !== 'publish') {
+                $update_post['post_status'] = 'publish';
+            }
+            if (count($update_post) > 1) {
+                wp_update_post($update_post);
+            }
+            if ($option_name) {
+                update_option($option_name, $existing->ID);
+            }
+            return $existing->ID;
+        }
+    }
+
+    $new_id = wp_insert_post($post, true);
+    if (!is_wp_error($new_id) && $option_name) {
+        update_option($option_name, $new_id);
+    }
+
+    return $new_id;
+
+}
+
 
 
 function cpc_add_external_link_admin_submenu() {
@@ -407,10 +463,14 @@ function cpccom_setup() {
 		// Show and hide header
 		echo '<div style="float:right"><a id="cpc_hide_welcome_header" style="text-decoration:none;" href="javascript:void(0); return false;">'.__('Willkommen ein-/ausblenden', CPC2_TEXT_DOMAIN).'</a></div>';
 
-		// Check that profile pages are set up
-		if (!get_option('cpccom_profile_page')):
-			echo '<div class="cpc_error">'.__('Du musst die Profilseiten unter "Profilseite" unten festlegen...', CPC2_TEXT_DOMAIN).'</div>';
-		endif;
+        // Check that profile pages are set up
+        $missing_profile_pages = array();
+        if (!cpc_admin_get_valid_page_id('cpccom_profile_page')) $missing_profile_pages[] = __('Profilseite', CPC2_TEXT_DOMAIN);
+        if (!cpc_admin_get_valid_page_id('cpccom_edit_profile_page')) $missing_profile_pages[] = __('Profilseite bearbeiten', CPC2_TEXT_DOMAIN);
+        if (!cpc_admin_get_valid_page_id('cpccom_change_avatar_page')) $missing_profile_pages[] = __('Avatar-Seite ändern', CPC2_TEXT_DOMAIN);
+        if (!empty($missing_profile_pages)):
+            echo '<div class="cpc_error">'.sprintf(__('Folgende Profilseiten fehlen oder sind ungültig: %s. Bitte unten festlegen oder neu erstellen.', CPC2_TEXT_DOMAIN), esc_html(implode(', ', $missing_profile_pages))).'</div>';
+        endif;
 
 		// Quick start hook
 		echo '<div style="width: 300px; float: left; font-size:1.8em; margin-bottom:15px;">'.__('Schnellstart', CPC2_TEXT_DOMAIN).'</div>';
@@ -759,7 +819,7 @@ function __cpc_com_uninstall_delete () {
     $wpdb->query($sql);
 	echo __('ok', CPC2_TEXT_DOMAIN).'<br />';
     // delete other options
-    $sql = "DELETE FROM ".$wpdb->prefix."options WHERE option_name like 'cpc_%'";
+    $sql = "DELETE FROM ".$wpdb->prefix."options WHERE option_name like 'cpc_%' OR option_name like 'cpccom_%'";
     echo __('Removing application options', CPC2_TEXT_DOMAIN).'... '; 
     $wpdb->query($sql);
 	echo __('ok', CPC2_TEXT_DOMAIN).'<br />';

@@ -4,7 +4,7 @@ Tags: wp community, social network, social networking, social media, cp-communit
 Requires at least: 4.9
 Tested up to: 6.8.1
 ClassicPress: 2.6.0
-Stable tag: 1.0.8
+Stable tag: 1.0.9
 License URI: https://www.gnu.org/licenses/gpl-2.0.html
 
 == Description ==

@@ -206,9 +206,9 @@ function cpc_admin_getting_started_groups() {
 		<tr valign="top"> 
 			<td scope="row"><label for="groups_page"><?php echo __('Gruppen-Übersichtsseite', CPC2_TEXT_DOMAIN); ?></label></td>
 			<td>
+				<?php $groups_page = cpc_admin_get_valid_page_id('cpccom_groups_page'); ?>
 				<select name="groups_page">
 				 <?php 
-				  $groups_page = get_option('cpccom_groups_page');
 				  if (!$groups_page) echo '<option value="0">'.__('Seite auswählen...', CPC2_TEXT_DOMAIN).'</option>';
 				  if ($groups_page) echo '<option value="0">'.__('Zurücksetzen...', CPC2_TEXT_DOMAIN).'</option>';						
 				  $pages = get_pages(); 
@@ -222,6 +222,9 @@ function cpc_admin_getting_started_groups() {
 				  }
 				 ?>						
 				</select>
+				<?php if (!$groups_page) { ?>
+				<button type="submit" name="cpccom_create_page" value="groups_page" class="button-secondary" style="margin-left:8px;"><?php echo __('Seite erstellen', CPC2_TEXT_DOMAIN); ?></button>
+				<?php } ?>
 				<span class="description"><?php echo __('ClassicPress-Seite, die alle Gruppen anzeigt (automatisch: [cpc-groups]).', CPC2_TEXT_DOMAIN); ?>
 				<?php if ($groups_page) {
 					echo ' [<a href="post.php?post='.$groups_page.'&action=edit">'.__('bearbeiten', CPC2_TEXT_DOMAIN).'</a>';
@@ -234,9 +237,9 @@ function cpc_admin_getting_started_groups() {
 		<tr valign="top"> 
 			<td scope="row"><label for="group_single_page"><?php echo __('Einzelgruppen-Seite', CPC2_TEXT_DOMAIN); ?></label></td>
 			<td>
+				<?php $single_page = cpc_admin_get_valid_page_id('cpccom_group_single_page'); ?>
 				<select name="group_single_page">
 				 <?php 
-				  $single_page = get_option('cpccom_group_single_page');
 				  if (!$single_page) echo '<option value="0">'.__('Seite auswählen...', CPC2_TEXT_DOMAIN).'</option>';
 				  if ($single_page) echo '<option value="0">'.__('Zurücksetzen...', CPC2_TEXT_DOMAIN).'</option>';						
 				  $pages = get_pages(); 
@@ -250,6 +253,9 @@ function cpc_admin_getting_started_groups() {
 				  }
 				 ?>						
 				</select>
+				<?php if (!$single_page) { ?>
+				<button type="submit" name="cpccom_create_page" value="group_single_page" class="button-secondary" style="margin-left:8px;"><?php echo __('Seite erstellen', CPC2_TEXT_DOMAIN); ?></button>
+				<?php } ?>
 				<span class="description"><?php echo __('ClassicPress-Seite für einzelne Gruppenansicht (automatisch: [cpc-group-single]).', CPC2_TEXT_DOMAIN); ?>
 				<?php if ($single_page) {
 					echo ' [<a href="post.php?post='.$single_page.'&action=edit">'.__('bearbeiten', CPC2_TEXT_DOMAIN).'</a>';
@@ -262,9 +268,9 @@ function cpc_admin_getting_started_groups() {
 		<tr valign="top"> 
 			<td scope="row"><label for="group_create_page"><?php echo __('Gruppe erstellen Seite', CPC2_TEXT_DOMAIN); ?></label></td>
 			<td>
+				<?php $create_page = cpc_admin_get_valid_page_id('cpccom_group_create_page'); ?>
 				<select name="group_create_page">
 				 <?php 
-				  $create_page = get_option('cpccom_group_create_page');
 				  if (!$create_page) echo '<option value="0">'.__('Seite auswählen...', CPC2_TEXT_DOMAIN).'</option>';
 				  if ($create_page) echo '<option value="0">'.__('Zurücksetzen...', CPC2_TEXT_DOMAIN).'</option>';						
 				  $pages = get_pages(); 
@@ -278,6 +284,9 @@ function cpc_admin_getting_started_groups() {
 				  }
 				 ?>						
 				</select>
+				<?php if (!$create_page) { ?>
+				<button type="submit" name="cpccom_create_page" value="group_create_page" class="button-secondary" style="margin-left:8px;"><?php echo __('Seite erstellen', CPC2_TEXT_DOMAIN); ?></button>
+				<?php } ?>
 				<span class="description"><?php echo __('ClassicPress-Seite zum Erstellen neuer Gruppen (automatisch: [cpc-group-create]).', CPC2_TEXT_DOMAIN); ?>
 				<?php if ($create_page) {
 					echo ' [<a href="post.php?post='.$create_page.'&action=edit">'.__('bearbeiten', CPC2_TEXT_DOMAIN).'</a>';
@@ -290,9 +299,9 @@ function cpc_admin_getting_started_groups() {
 		<tr valign="top"> 
 			<td scope="row"><label for="my_groups_page"><?php echo __('Meine Gruppen Seite', CPC2_TEXT_DOMAIN); ?></label></td>
 			<td>
+				<?php $my_page = cpc_admin_get_valid_page_id('cpccom_my_groups_page'); ?>
 				<select name="my_groups_page">
 				 <?php 
-				  $my_page = get_option('cpccom_my_groups_page');
 				  if (!$my_page) echo '<option value="0">'.__('Seite auswählen...', CPC2_TEXT_DOMAIN).'</option>';
 				  if ($my_page) echo '<option value="0">'.__('Zurücksetzen...', CPC2_TEXT_DOMAIN).'</option>';						
 				  $pages = get_pages(); 
@@ -306,6 +315,9 @@ function cpc_admin_getting_started_groups() {
 				  }
 				 ?>						
 				</select>
+				<?php if (!$my_page) { ?>
+				<button type="submit" name="cpccom_create_page" value="my_groups_page" class="button-secondary" style="margin-left:8px;"><?php echo __('Seite erstellen', CPC2_TEXT_DOMAIN); ?></button>
+				<?php } ?>
 				<span class="description"><?php echo __('ClassicPress-Seite für Benutzer-Gruppen (automatisch: [cpc-my-groups]).', CPC2_TEXT_DOMAIN); ?>
 				<?php if ($my_page) {
 					echo ' [<a href="post.php?post='.$my_page.'&action=edit">'.__('bearbeiten', CPC2_TEXT_DOMAIN).'</a>';
@@ -409,27 +421,81 @@ function cpc_admin_getting_started_groups() {
 // Save groups settings
 add_action('cpc_admin_setup_form_save_hook', 'cpc_admin_getting_started_groups_save', 20, 2);
 function cpc_admin_getting_started_groups_save($the_post) {
+
+	$create_page = isset($the_post['cpccom_create_page']) ? sanitize_key($the_post['cpccom_create_page']) : '';
+	if ($create_page === 'groups_page') {
+		$the_post['groups_page'] = cpc_admin_create_standard_page('cpccom_groups_page', array(
+			'post_content'   => '['.CPC_PREFIX.'-groups]',
+			'post_name'      => 'groups',
+			'post_title'     => __('Gruppen', CPC2_TEXT_DOMAIN),
+			'post_status'    => 'publish',
+			'post_type'      => 'page',
+			'ping_status'    => 'closed',
+			'comment_status' => 'closed',
+		), CPC_PREFIX.'-groups');
+	}
+	if ($create_page === 'group_single_page') {
+		$the_post['group_single_page'] = cpc_admin_create_standard_page('cpccom_group_single_page', array(
+			'post_content'   => '['.CPC_PREFIX.'-group-single]',
+			'post_name'      => 'group',
+			'post_title'     => __('Gruppe', CPC2_TEXT_DOMAIN),
+			'post_status'    => 'publish',
+			'post_type'      => 'page',
+			'ping_status'    => 'closed',
+			'comment_status' => 'closed',
+		), CPC_PREFIX.'-group-single');
+	}
+	if ($create_page === 'group_create_page') {
+		$the_post['group_create_page'] = cpc_admin_create_standard_page('cpccom_group_create_page', array(
+			'post_content'   => '['.CPC_PREFIX.'-group-create]',
+			'post_name'      => 'create-group',
+			'post_title'     => __('Gruppe erstellen', CPC2_TEXT_DOMAIN),
+			'post_status'    => 'publish',
+			'post_type'      => 'page',
+			'ping_status'    => 'closed',
+			'comment_status' => 'closed',
+		), CPC_PREFIX.'-group-create');
+	}
+	if ($create_page === 'my_groups_page') {
+		$the_post['my_groups_page'] = cpc_admin_create_standard_page('cpccom_my_groups_page', array(
+			'post_content'   => '['.CPC_PREFIX.'-my-groups]',
+			'post_name'      => 'my-groups',
+			'post_title'     => __('Meine Gruppen', CPC2_TEXT_DOMAIN),
+			'post_status'    => 'publish',
+			'post_type'      => 'page',
+			'ping_status'    => 'closed',
+			'comment_status' => 'closed',
+		), CPC_PREFIX.'-my-groups');
+	}
+
+	if (($create_page === 'groups_page' && is_wp_error($the_post['groups_page']))
+		|| ($create_page === 'group_single_page' && is_wp_error($the_post['group_single_page']))
+		|| ($create_page === 'group_create_page' && is_wp_error($the_post['group_create_page']))
+		|| ($create_page === 'my_groups_page' && is_wp_error($the_post['my_groups_page']))) {
+		echo '<div class="cpc_error">'.__('Die gewünschte Gruppen-Standardseite konnte nicht erstellt werden.', CPC2_TEXT_DOMAIN).'</div>';
+		return;
+	}
 	
 	// Seitenauswahl speichern
-	if (isset($the_post['groups_page'])):
+	if (isset($the_post['groups_page']) && $the_post['groups_page'] > 0):
 		update_option('cpccom_groups_page', $the_post['groups_page']);
 	else:
 		delete_option('cpccom_groups_page');
 	endif;
 
-	if (isset($the_post['group_single_page'])):
+	if (isset($the_post['group_single_page']) && $the_post['group_single_page'] > 0):
 		update_option('cpccom_group_single_page', $the_post['group_single_page']);
 	else:
 		delete_option('cpccom_group_single_page');
 	endif;
 
-	if (isset($the_post['group_create_page'])):
+	if (isset($the_post['group_create_page']) && $the_post['group_create_page'] > 0):
 		update_option('cpccom_group_create_page', $the_post['group_create_page']);
 	else:
 		delete_option('cpccom_group_create_page');
 	endif;
 
-	if (isset($the_post['my_groups_page'])):
+	if (isset($the_post['my_groups_page']) && $the_post['my_groups_page'] > 0):
 		update_option('cpccom_my_groups_page', $the_post['my_groups_page']);
 	else:
 		delete_option('cpccom_my_groups_page');
@@ -471,9 +537,11 @@ function cpc_admin_getting_started_groups_save($the_post) {
 add_action('cpc_admin_quick_start_hook', 'cpc_admin_quick_start_groups');
 function cpc_admin_quick_start_groups() {
 
-	global $wpdb;
-	$sql = "SELECT * FROM ".$wpdb->prefix."posts WHERE post_content LIKE '%s'";
-	if (!($wpdb->get_results($wpdb->prepare($sql, '%[cpc-groups%')))):
+	$groups_page = cpc_admin_get_valid_page_id('cpccom_groups_page');
+	$group_single_page = cpc_admin_get_valid_page_id('cpccom_group_single_page');
+	$group_create_page = cpc_admin_get_valid_page_id('cpccom_group_create_page');
+	$my_groups_page = cpc_admin_get_valid_page_id('cpccom_my_groups_page');
+	if (!$groups_page || !$group_single_page || !$group_create_page || !$my_groups_page):
 
 		echo '<div style="margin-right:10px; float:left">';
 		echo '<form action="" method="POST">';
@@ -502,8 +570,7 @@ function cpc_admin_quick_start_groups_save($the_post) {
 		  'comment_status' => 'closed',
 		);  
 
-		$new_id = wp_insert_post( $post );
-		update_option('cpccom_groups_page', $new_id);
+		$groups_page_id = cpc_admin_create_standard_page('cpccom_groups_page', $post, CPC_PREFIX.'-groups');
 
 		// Group Single Page
 		$post = array(
@@ -516,8 +583,7 @@ function cpc_admin_quick_start_groups_save($the_post) {
 		  'comment_status' => 'closed',
 		);  
 
-		$new_id = wp_insert_post( $post );
-		update_option('cpccom_group_single_page', $new_id);
+		$group_single_page_id = cpc_admin_create_standard_page('cpccom_group_single_page', $post, CPC_PREFIX.'-group-single');
 
 		// Create Group Page
 		$post = array(
@@ -530,8 +596,7 @@ function cpc_admin_quick_start_groups_save($the_post) {
 		  'comment_status' => 'closed',
 		);  
 
-		$new_id = wp_insert_post( $post );
-		update_option('cpccom_group_create_page', $new_id);
+		$group_create_page_id = cpc_admin_create_standard_page('cpccom_group_create_page', $post, CPC_PREFIX.'-group-create');
 
 		// My Groups Page
 		$post = array(
@@ -544,8 +609,11 @@ function cpc_admin_quick_start_groups_save($the_post) {
 		  'comment_status' => 'closed',
 		);  
 
-		$new_id = wp_insert_post( $post );
-		update_option('cpccom_my_groups_page', $new_id);
+		$my_groups_page_id = cpc_admin_create_standard_page('cpccom_my_groups_page', $post, CPC_PREFIX.'-my-groups');
+
+		if (is_wp_error($groups_page_id) || is_wp_error($group_single_page_id) || is_wp_error($group_create_page_id) || is_wp_error($my_groups_page_id)) {
+			echo '<div class="cpc_error">'.__('Mindestens eine Gruppen-Standardseite konnte nicht erstellt werden.', CPC2_TEXT_DOMAIN).'</div>';
+		}
 
 	endif;
 }
