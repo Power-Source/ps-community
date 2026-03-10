@@ -3,201 +3,236 @@
  * Provides smooth tab navigation without page reload
  */
 jQuery(document).ready(function($) {
+var cpcLoadedExternalScripts = {};
 
-	function cpcInjectTabAssets(stylesHtml, scriptsHtml) {
-		if (stylesHtml) {
-			var $styleContainer = $('<div>').html(stylesHtml);
-			var $styles = $styleContainer.find('link[rel="stylesheet"]');
-			$styles.each(function() {
-				var href = $(this).attr('href');
-				if (href && $('head link[rel="stylesheet"][href="' + href + '"]').length === 0) {
-					$('head').append($(this).clone());
-				}
-			});
+function cpcAssetHash(content) {
+var hash = 0, i, chr;
+if (!content) { return '0'; }
+for (i = 0; i < content.length; i++) {
+chr = content.charCodeAt(i);
+hash = ((hash << 5) - hash) + chr;
+hash |= 0;
+}
+return String(hash);
+}
 
-			$styleContainer.find('style').each(function() {
-				var cssText = $(this).html();
-				if (!cssText) return;
-				if ($('head style[data-cpc-inline-style="' + btoa(unescape(encodeURIComponent(cssText))).slice(0, 32) + '"]').length) {
-					return;
-				}
-				var $inlineStyle = $('<style type="text/css"></style>').text(cssText);
-				$inlineStyle.attr('data-cpc-inline-style', btoa(unescape(encodeURIComponent(cssText))).slice(0, 32));
-				$('head').append($inlineStyle);
-			});
-		}
+function cpcResolvedPromise() {
+return $.Deferred().resolve().promise();
+}
 
-		if (scriptsHtml) {
-			var $scriptContainer = $('<div>').html(scriptsHtml);
+function cpcLoadExternalScript(src) {
+if (!src) { return cpcResolvedPromise(); }
+if (cpcLoadedExternalScripts[src]) { return cpcLoadedExternalScripts[src]; }
+if ($('script[src="' + src + '"]').length) {
+cpcLoadedExternalScripts[src] = cpcResolvedPromise();
+return cpcLoadedExternalScripts[src];
+}
+var loader = $.Deferred();
+var script = document.createElement('script');
+script.src = src;
+script.async = false;
+script.onload  = function() { loader.resolve(); };
+script.onerror = function() { loader.reject(); };
+document.body.appendChild(script);
+cpcLoadedExternalScripts[src] = loader.promise();
+return cpcLoadedExternalScripts[src];
+}
 
-			$scriptContainer.find('script[src]').each(function() {
-				var src = $(this).attr('src');
-				if (src && $('script[src="' + src + '"]').length === 0) {
-					var script = document.createElement('script');
-					script.src = src;
-					script.async = false;
-					document.body.appendChild(script);
-				}
-			});
+// Inject <link rel="stylesheet"> tags into <head> using regex (avoids jQuery DOM stripping)
+function cpcInjectStyles(stylesHtml) {
+if (!stylesHtml || !stylesHtml.trim()) { return; }
+var linkRe = /<link[^>]+rel=["']stylesheet["'][^>]*>/gi;
+var hrefRe = /href=["']([^"']+)["']/i;
+var idRe   = /id=["']([^"']+)["']/i;
+var match;
+while ((match = linkRe.exec(stylesHtml)) !== null) {
+var tag = match[0];
+var hrefMatch = hrefRe.exec(tag);
+if (!hrefMatch) { continue; }
+var href = hrefMatch[1];
+var hrefBase = href.split('?')[0];
+var already = false;
+$('head link[rel="stylesheet"]').each(function() {
+if (($(this).attr('href') || '').split('?')[0] === hrefBase) {
+already = true; return false;
+}
+});
+if (already) { continue; }
+var linkEl = document.createElement('link');
+linkEl.rel = 'stylesheet';
+linkEl.href = href;
+linkEl.media = 'all';
+var idMatch = idRe.exec(tag);
+if (idMatch) { linkEl.id = idMatch[1]; }
+document.head.appendChild(linkEl);
+}
+}
 
-			$scriptContainer.find('script:not([src])').each(function() {
-				var inlineJs = $(this).html();
-				if (inlineJs && $.trim(inlineJs).length) {
-					$.globalEval(inlineJs);
-				}
-			});
-		}
-	}
+// Inject scripts using DOMParser (avoids jQuery stripping inline scripts), returns Promise
+function cpcInjectScripts(scriptsHtml) {
+var chain = cpcResolvedPromise();
+if (!scriptsHtml || !scriptsHtml.trim()) { return chain; }
+var parser = new DOMParser();
+var doc = parser.parseFromString('<body>' + scriptsHtml + '</body>', 'text/html');
+var scriptEls = doc.body.querySelectorAll('script');
+Array.prototype.forEach.call(scriptEls, function(el) {
+var src = el.getAttribute('src');
+var inlineJs = el.textContent || el.innerHTML;
+chain = chain.then(function() {
+if (src) { return cpcLoadExternalScript(src); }
+if (!inlineJs || !inlineJs.trim()) { return cpcResolvedPromise(); }
+var h = cpcAssetHash(inlineJs);
+if ($('body script[data-cpc-inline="' + h + '"]').length) { return cpcResolvedPromise(); }
+var marker = document.createElement('script');
+marker.type = 'text/plain';
+marker.setAttribute('data-cpc-inline', h);
+document.body.appendChild(marker);
+try { $.globalEval(inlineJs); } catch(e) { }
+return cpcResolvedPromise();
+});
+});
+return chain;
+}
 
-	function cpcExtractAssetsFromTabHtml(tabHtml) {
-		var result = {
-			html: tabHtml || '',
-			styles: '',
-			scripts: ''
-		};
+// Extract <link>, <style>, <script> from HTML using regex – does NOT strip them via jQuery
+function cpcExtractAssetsFromHtml(html) {
+if (!html || typeof html !== 'string') { return { html: html || '', styles: '', scripts: '' }; }
+var stylesArr = [], scriptsArr = [];
+html = html.replace(/<link[^>]+rel=["']stylesheet["'][^>]*\/?>/gi, function(m) { stylesArr.push(m); return ''; });
+html = html.replace(/<style[\s\S]*?<\/style>/gi,                   function(m) { stylesArr.push(m); return ''; });
+html = html.replace(/<script[\s\S]*?<\/script>/gi,                  function(m) { scriptsArr.push(m); return ''; });
+return { html: html, styles: stylesArr.join('\n'), scripts: scriptsArr.join('\n') };
+}
 
-		if (!tabHtml || typeof tabHtml !== 'string') {
-			return result;
-		}
+function cpcFixJobboardExpertLayout() {
+var $avatars = $('.jbp-pro-list .expert-avatar');
+if (!$avatars.length) { return; }
 
-		var $container = $('<div>').html(tabHtml);
-		var styleParts = [];
-		var scriptParts = [];
+$avatars.each(function() {
+var $avatar = $(this);
+var width = $avatar.outerWidth();
+if (width > 0) {
+$avatar.css('height', width + 'px');
+}
+});
 
-		$container.find('link[rel="stylesheet"], style').each(function() {
-			styleParts.push($(this).prop('outerHTML'));
-			$(this).remove();
-		});
+$('.jbp-pro-list .expert-avatar img').off('load.cpcJobboard').on('load.cpcJobboard', function() {
+var $avatar = $(this).closest('.expert-avatar');
+var width = $avatar.outerWidth();
+if (width > 0) {
+$avatar.css('height', width + 'px');
+}
+});
+}
 
-		$container.find('script').each(function() {
-			scriptParts.push($(this).prop('outerHTML'));
-			$(this).remove();
-		});
+function cpcInitLoadedTab(tab) {
+if (tab === 'activity' && typeof cpc_get_ajax_activity === 'function') {
+var pageSize = $('#cpc_page_size').html();
+if (!pageSize) { pageSize = 10; }
+if ($('#cpc_activity_ajax_div').length) {
+$('#cpc_activity_ajax_div').html('');
+cpc_get_ajax_activity(0, pageSize, 'replace');
+}
+$('#cpc_activity_items').show();
+$('#cpc_activity_post_div').show();
+$('.cpc_activity_settings').show();
+$('#cpc_activity_post_button').prop('disabled', false);
+}
 
-		result.html = $container.html();
-		result.styles = styleParts.join('\n');
-		result.scripts = scriptParts.join('\n');
+if (tab === 'jobboard') {
+setTimeout(cpcFixJobboardExpertLayout, 10);
+setTimeout(cpcFixJobboardExpertLayout, 250);
+}
 
-		return result;
-	}
+$(document).trigger('cpc_profile_tab_loaded', [tab]);
+}
 
-	function cpcInitLoadedTab(tab) {
-		if (tab === 'activity' && typeof cpc_get_ajax_activity === 'function') {
-			var pageSize = $('#cpc_page_size').html();
-			if (!pageSize) pageSize = 10;
-			if ($('#cpc_activity_ajax_div').length) {
-				$('#cpc_activity_ajax_div').html('');
-				cpc_get_ajax_activity(0, pageSize, 'replace');
-			}
-			$('#cpc_activity_items').show();
-			$('#cpc_activity_post_div').show();
-			$('.cpc_activity_settings').show();
-			$('#cpc_activity_post_button').prop('disabled', false);
-		}
+$('body').on('click', '.cpc-profile-tab-link', function(e) {
+e.preventDefault();
 
-		$(document).trigger('cpc_profile_tab_loaded', [tab]);
-	}
-	
-	// Profile Tab AJAX Switching
-	$('body').on('click', '.cpc-profile-tab-link', function(e) {
-		e.preventDefault();
-		
-		var $link = $(this);
-		var $currentItem = $link.closest('.cpc-profile-tab-item');
-		var $tabList = $link.closest('.cpc-profile-tabs-list');
-		var tab = $link.data('tab');
-		var userId = $tabList.data('user-id');
-		var nonce = $tabList.data('nonce');
-		var $contentWrapper = $('.cpc-profile-tab-content-wrapper');
-		
-		// Don't reload if already active
-		if ($currentItem.hasClass('active')) {
-			return false;
-		}
-		
-		// Update active state
-		$tabList.find('.cpc-profile-tab-item').removeClass('active');
-		$currentItem.addClass('active');
-		
-		// Show loading state
-		$contentWrapper.addClass('loading').css('opacity', '0.5');
-		
-		// Update URL without reload
-		if (history.pushState) {
-			var newUrl = $link.attr('href');
-			history.pushState({tab: tab}, '', newUrl);
-		}
-		
-		// Load tab content via AJAX
-		$.ajax({
-			url: cpc_activity_ajax.ajaxurl,
-			type: 'POST',
-			data: {
-				action: 'cpc_load_profile_tab',
-				tab: tab,
-				user_id: userId,
-				nonce: nonce,
-				atts: {}
-			},
-				success: function(response) {
-				var tabHtml = '';
-				var stylesHtml = '';
-				var scriptsHtml = '';
-				var parsed = response;
+var $link           = $(this);
+var $currentItem    = $link.closest('.cpc-profile-tab-item');
+var $tabList        = $link.closest('.cpc-profile-tabs-list');
+var tab             = $link.data('tab');
+var userId          = $tabList.data('user-id');
+var nonce           = $tabList.data('nonce');
+var $contentWrapper = $('.cpc-profile-tab-content-wrapper');
 
-				if (typeof response === 'string') {
-					try {
-						parsed = JSON.parse(response);
-					} catch (err) {
-						parsed = null;
-					}
-				}
+if ($currentItem.hasClass('active')) { return false; }
 
-				if (parsed && parsed.success && parsed.data && typeof parsed.data.content !== 'undefined') {
-					tabHtml = parsed.data.content;
-					stylesHtml = parsed.data.styles || '';
-					scriptsHtml = parsed.data.scripts || '';
-				} else if (typeof response === 'string' && response.length) {
-					// Fallback: use raw response when JSON is not parseable
-					tabHtml = response;
-				}
+$tabList.find('.cpc-profile-tab-item').removeClass('active');
+$currentItem.addClass('active');
+$contentWrapper.addClass('loading').css('opacity', '0.5');
 
-				if (tabHtml !== '') {
-					var extractedAssets = cpcExtractAssetsFromTabHtml(tabHtml);
-					cpcInjectTabAssets((stylesHtml || '') + extractedAssets.styles, (scriptsHtml || '') + extractedAssets.scripts);
+if (history.pushState) {
+history.pushState({tab: tab}, '', $link.attr('href'));
+}
 
-					// Fade out, replace content, fade in
-					$contentWrapper.fadeOut(200, function() {
-						$(this).html(extractedAssets.html);
-						$(this).removeClass('loading').css('opacity', '1').fadeIn(300, function() {
-							cpcInitLoadedTab(tab);
-						});
-					});
-				} else {
-					$contentWrapper.removeClass('loading').css('opacity', '1');
-					$contentWrapper.html('<div class="cpc-error">Tab-Inhalt konnte nicht geladen werden.</div>');
-				}
-			},
-			error: function(xhr) {
-				$contentWrapper.removeClass('loading').css('opacity', '1');
+$.ajax({
+url:  cpc_activity_ajax.ajaxurl,
+type: 'POST',
+data: { action: 'cpc_load_profile_tab', tab: tab, user_id: userId, nonce: nonce, atts: {} },
+success: function(response) {
+var tabHtml = '', stylesHtml = '', scriptsHtml = '';
+var parsed  = response;
 
-				if (xhr && xhr.responseText) {
-					$contentWrapper.html(xhr.responseText);
-				} else {
-					$contentWrapper.html('<div class="cpc-error">Tab-Inhalt konnte nicht geladen werden.</div>');
-				}
-			}
-		});
-		
-		return false;
-	});
-	
-	// Handle browser back/forward buttons
-	$(window).on('popstate', function(e) {
-		if (e.originalEvent.state && e.originalEvent.state.tab) {
-			// Reload page on back/forward for now (could be made smoother)
-			window.location.reload();
-		}
-	});
-	
+if (typeof response === 'string') {
+try { parsed = JSON.parse(response); } catch(e) { parsed = null; }
+}
+
+if (parsed && parsed.success && parsed.data && typeof parsed.data.content !== 'undefined') {
+tabHtml     = parsed.data.content  || '';
+stylesHtml  = parsed.data.styles   || '';
+scriptsHtml = parsed.data.scripts  || '';
+} else if (typeof response === 'string' && response.length) {
+tabHtml = response;
+}
+
+if (!tabHtml) {
+$contentWrapper.removeClass('loading').css('opacity', '1');
+$contentWrapper.html('<div class="cpc-error">Tab-Inhalt konnte nicht geladen werden.</div>');
+return;
+}
+
+var extracted = cpcExtractAssetsFromHtml(tabHtml);
+
+// 1. Inject styles into <head> before content swap
+cpcInjectStyles(stylesHtml + '\n' + extracted.styles);
+
+// 2. Swap content, then load scripts
+$contentWrapper.fadeOut(200, function() {
+var $w = $(this);
+$w.html(extracted.html);
+if (tab === 'jobboard') {
+cpcFixJobboardExpertLayout();
+}
+
+$w.removeClass('loading').css('opacity', '1').fadeIn(300, function() {
+$.when(
+cpcInjectScripts(scriptsHtml + '\n' + extracted.scripts)
+).always(function() {
+cpcInitLoadedTab(tab);
+if (tab === 'jobboard') {
+cpcFixJobboardExpertLayout();
+}
+});
+});
+});
+},
+error: function(xhr) {
+$contentWrapper.removeClass('loading').css('opacity', '1');
+$contentWrapper.html(
+xhr && xhr.responseText ? xhr.responseText : '<div class="cpc-error">Tab-Inhalt konnte nicht geladen werden.</div>'
+);
+}
+});
+
+return false;
+});
+
+$(window).on('popstate', function(e) {
+if (e.originalEvent.state && e.originalEvent.state.tab) {
+window.location.reload();
+}
+});
 });
