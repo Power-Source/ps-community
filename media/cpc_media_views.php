@@ -20,7 +20,11 @@ function cpc_media_add_group_tab($tabs, $group_id, $user_id) {
         return $tabs;
     }
 
-    if (cpc_can_view_group($user_id, $group_id)) {
+        if (!get_post_meta($group_id, 'cpc_group_has_media', true)) {
+            return $tabs;
+        }
+
+        if (cpc_can_view_group($user_id, $group_id)) {
         $tabs['gallery'] = array(
             'label' => __('Galerien', CPC2_TEXT_DOMAIN),
             'icon' => 'format-gallery',

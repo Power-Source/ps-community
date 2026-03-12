@@ -401,6 +401,58 @@ function cpc_render_group_tab_settings($group_id, $atts = array()) {
 	$html .= '</form>';
 	
 	// Forum Settings (only if forum module is active)
+	// Module Settings (Medien, Dokumente, Projekte)
+	$has_modules = (function_exists('cpc_media_is_enabled') && cpc_media_is_enabled())
+	             || (function_exists('cpc_docs_is_enabled') && cpc_docs_is_enabled())
+	             || (function_exists('cpc_projects_is_enabled') && cpc_projects_is_enabled());
+
+	if ($has_modules):
+		$html .= '<hr>';
+		$html .= '<h3>'.__('Optionale Module', CPC2_TEXT_DOMAIN).'</h3>';
+		$html .= '<form class="cpc-group-modules-form" data-group-id="'.$group_id.'">';
+		$html .= wp_nonce_field('cpc_groups_nonce', 'cpc_groups_nonce', true, false);
+
+		if (function_exists('cpc_media_is_enabled') && cpc_media_is_enabled()):
+			$has_media = (bool)get_post_meta($group_id, 'cpc_group_has_media', true);
+			$html .= '<div class="cpc-form-field">';
+			$html .= '<label>';
+			$html .= '<input type="checkbox" name="enable_media" id="enable_media" '.checked($has_media, true, false).'> ';
+			$html .= '<span class="dashicons dashicons-format-gallery" style="vertical-align:middle;"></span> ';
+			$html .= __('Galerien / Medien für diese Gruppe aktivieren', CPC2_TEXT_DOMAIN);
+			$html .= '</label>';
+			$html .= '<p class="description">'.__('Zeigt den Galerien-Tab und erlaubt Medien-Uploads in dieser Gruppe. Hinweis: Das Aktivitätsstream-Album ist davon unabhängig und bleibt erhalten.', CPC2_TEXT_DOMAIN).'</p>';
+			$html .= '</div>';
+		endif;
+
+		if (function_exists('cpc_docs_is_enabled') && cpc_docs_is_enabled()):
+			$has_docs = (bool)get_post_meta($group_id, 'cpc_group_has_docs', true);
+			$html .= '<div class="cpc-form-field">';
+			$html .= '<label>';
+			$html .= '<input type="checkbox" name="enable_docs" id="enable_docs" '.checked($has_docs, true, false).'> ';
+			$html .= '<span class="dashicons dashicons-media-document" style="vertical-align:middle;"></span> ';
+			$html .= __('Dokumente für diese Gruppe aktivieren', CPC2_TEXT_DOMAIN);
+			$html .= '</label>';
+			$html .= '<p class="description">'.__('Zeigt den Dokumente-Tab in dieser Gruppe.', CPC2_TEXT_DOMAIN).'</p>';
+			$html .= '</div>';
+		endif;
+
+		if (function_exists('cpc_projects_is_enabled') && cpc_projects_is_enabled()):
+			$has_projects = (bool)get_post_meta($group_id, 'cpc_group_has_projects', true);
+			$html .= '<div class="cpc-form-field">';
+			$html .= '<label>';
+			$html .= '<input type="checkbox" name="enable_projects" id="enable_projects" '.checked($has_projects, true, false).'> ';
+			$html .= '<span class="dashicons dashicons-portfolio" style="vertical-align:middle;"></span> ';
+			$html .= __('Projekte für diese Gruppe aktivieren', CPC2_TEXT_DOMAIN);
+			$html .= '</label>';
+			$html .= '<p class="description">'.__('Zeigt den Projekte-Tab und ermöglicht Projektverwaltung in dieser Gruppe.', CPC2_TEXT_DOMAIN).'</p>';
+			$html .= '</div>';
+		endif;
+
+		$html .= '<button type="submit" class="cpc-btn cpc-btn-primary">'.__('Module speichern', CPC2_TEXT_DOMAIN).'</button>';
+		$html .= '</form>';
+	endif;
+
+	// Forum Settings (only if forum module is active)
 	if (function_exists('cpc_forum_page')):
 		$html .= '<hr>';
 		$html .= '<h3>'.__('Forum-Einstellungen', CPC2_TEXT_DOMAIN).'</h3>';

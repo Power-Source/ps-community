@@ -965,6 +965,46 @@ jQuery(document).ready(function($) {
             }
         });
     });
+
+    // Save optional group module settings (media/docs/projects)
+    $(document).on('submit', '.cpc-group-modules-form', function(e) {
+        e.preventDefault();
+
+        var form = $(this);
+        var groupId = form.data('group-id');
+        var submitBtn = form.find('button[type="submit"]');
+
+        submitBtn.prop('disabled', true).text('Speichern...');
+
+        $.ajax({
+            url: cpc_groups_ajax.ajaxurl,
+            type: 'POST',
+            data: {
+                action: 'cpc_save_group_module_settings',
+                nonce: cpc_groups_ajax.nonce,
+                group_id: groupId,
+                enable_media: form.find('#enable_media').is(':checked') ? 1 : 0,
+                enable_docs: form.find('#enable_docs').is(':checked') ? 1 : 0,
+                enable_projects: form.find('#enable_projects').is(':checked') ? 1 : 0
+            },
+            success: function(response) {
+                submitBtn.prop('disabled', false).text('Module speichern');
+
+                if (response.success) {
+                    cpc_show_notification(response.data.message, 'success');
+                    setTimeout(function() {
+                        location.reload();
+                    }, 250);
+                } else {
+                    cpc_show_notification(response.data.message, 'error');
+                }
+            },
+            error: function() {
+                cpc_show_notification('Fehler beim Speichern der Modul-Einstellungen', 'error');
+                submitBtn.prop('disabled', false).text('Module speichern');
+            }
+        });
+    });
     
     // Change member role
     $(document).on('change', '.cpc-change-member-role', function() {

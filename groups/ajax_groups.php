@@ -120,6 +120,42 @@ function cpc_ajax_post_group_activity() {
 }
 
 add_action('wp_ajax_cpc_save_group_settings', 'cpc_ajax_save_group_settings');
+add_action('wp_ajax_cpc_save_group_module_settings', 'cpc_ajax_save_group_module_settings');
+
+function cpc_ajax_save_group_module_settings() {
+	check_ajax_referer('cpc_groups_nonce', 'nonce');
+
+	if (!is_user_logged_in()) {
+		wp_send_json_error(array('message' => __('Du musst angemeldet sein.', CPC2_TEXT_DOMAIN)));
+	}
+
+	$group_id = isset($_POST['group_id']) ? (int)$_POST['group_id'] : 0;
+	if (!$group_id) {
+		wp_send_json_error(array('message' => __('Ungültige Gruppe.', CPC2_TEXT_DOMAIN)));
+	}
+
+	if (!cpc_is_group_admin(get_current_user_id(), $group_id)) {
+		wp_send_json_error(array('message' => __('Keine Berechtigung.', CPC2_TEXT_DOMAIN)));
+	}
+
+	if (function_exists('cpc_media_is_enabled') && cpc_media_is_enabled()) {
+		$enable_media = !empty($_POST['enable_media']);
+		update_post_meta($group_id, 'cpc_group_has_media', (bool)$enable_media);
+	}
+
+	if (function_exists('cpc_docs_is_enabled') && cpc_docs_is_enabled()) {
+		$enable_docs = !empty($_POST['enable_docs']);
+		update_post_meta($group_id, 'cpc_group_has_docs', (bool)$enable_docs);
+	}
+
+	if (function_exists('cpc_projects_is_enabled') && cpc_projects_is_enabled()) {
+		$enable_projects = !empty($_POST['enable_projects']);
+		update_post_meta($group_id, 'cpc_group_has_projects', (bool)$enable_projects);
+	}
+
+	wp_send_json_success(array('message' => __('Modul-Einstellungen gespeichert.', CPC2_TEXT_DOMAIN)));
+}
+
 function cpc_ajax_save_group_settings() {
 	check_ajax_referer('cpc_groups_nonce', 'nonce');
 
@@ -311,6 +347,10 @@ function cpc_ajax_create_group() {
 	update_post_meta($group_id, 'cpc_group_type', $group_type);
 	update_post_meta($group_id, 'cpc_group_creator', $user_id);
 	update_post_meta($group_id, 'cpc_group_updated', current_time('timestamp'));
+	// Optional modules are disabled by default per new group.
+	update_post_meta($group_id, 'cpc_group_has_media', false);
+	update_post_meta($group_id, 'cpc_group_has_docs', false);
+	update_post_meta($group_id, 'cpc_group_has_projects', false);
 
 	// Add creator as admin member
 	cpc_add_group_member($user_id, $group_id, 'admin', 'active', $current_blog_id);

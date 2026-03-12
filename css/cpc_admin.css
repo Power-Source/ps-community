@@ -174,7 +174,23 @@
     margin-right: 10px;
 }
 
-.cpc_manage_icons .cpc_icon_profile:before {
+    #cpc_admin_getting_started_media_div:before {
+        font: normal 20px/1 'dashicons';
+        content:'\f161';
+        margin-right: 10px;
+    }
+    #cpc_admin_getting_started_docs_div:before {
+        font: normal 20px/1 'dashicons';
+        content:'\f497';
+        margin-right: 10px;
+    }
+    #cpc_admin_getting_started_projects_div:before {
+        font: normal 20px/1 'dashicons';
+        content:'\f322';
+        margin-right: 10px;
+    }
+
+    .cpc_manage_icons .cpc_icon_profile:before {
     content:'\f110';
 }
 .cpc_manage_icons .cpc_icon_rewards:before {

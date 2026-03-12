@@ -20,7 +20,11 @@ function cpc_docs_add_group_tab($tabs, $group_id, $user_id) {
         return $tabs;
     }
 
-    if (function_exists('cpc_can_view_group') && cpc_can_view_group($user_id, $group_id)) {
+        if (!get_post_meta($group_id, 'cpc_group_has_docs', true)) {
+            return $tabs;
+        }
+
+        if (function_exists('cpc_can_view_group') && cpc_can_view_group($user_id, $group_id)) {
         $tabs['docs'] = array(
             'label' => cpc_docs_get_group_tab_name(),
             'icon' => 'media-document',

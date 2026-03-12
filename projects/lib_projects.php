@@ -1,7 +1,7 @@
 <?php
 
 function cpc_projects_is_enabled() {
-    return (bool)get_option('cpc_projects_module_enabled', 1);
+    return (bool)get_option('cpc_projects_module_enabled', 0);
 }
 
 function cpc_projects_show_profile_create_form() {

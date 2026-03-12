@@ -1,7 +1,7 @@
 <?php
 
 function cpc_docs_is_enabled() {
-    return (bool)get_option('cpc_docs_module_enabled', 1);
+    return (bool)get_option('cpc_docs_module_enabled', 0);
 }
 
 function cpc_docs_get_directory_page_id() {
