@@ -6,6 +6,50 @@
     background: #f7fafc;
 }
 
+.cpc_docs_create_toggle {
+    display: grid;
+    gap: 12px;
+    margin-bottom: 6px;
+}
+
+.cpc_docs_create_summary {
+    list-style: none;
+    display: inline-flex;
+    align-items: center;
+    width: fit-content;
+    cursor: pointer;
+}
+
+.cpc_docs_create_summary::-webkit-details-marker {
+    display: none;
+}
+
+.cpc_docs_create_toggle:not([open]) .cpc_docs_create_form {
+    display: none;
+}
+
+.cpc_docs_create_form {
+    background: linear-gradient(180deg, #fbfcfd 0%, #f3f6f9 100%);
+    border: 1px solid #d8e0e8;
+    border-radius: 14px;
+    padding: 16px;
+    box-shadow: 0 10px 24px rgba(27, 39, 51, 0.05);
+}
+
+.cpc_docs_create_form label {
+    display: block;
+    font-weight: 600;
+    margin-bottom: 6px;
+}
+
+.cpc_docs_create_form input[type="text"],
+.cpc_docs_create_form textarea,
+.cpc_docs_create_form select,
+.cpc_docs_create_form input[type="file"] {
+    width: 100%;
+    box-sizing: border-box;
+}
+
 .bp-docs-container .doc-title {
     display: inline-block;
     font-weight: 400;
@@ -40,6 +84,22 @@
     margin: 0;
 }
 
+.cpc_doc_breadcrumbs,
+.cpc_docs_loop_breadcrumbs {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+    align-items: center;
+    margin: 0 0 12px;
+    color: #607284;
+    font-size: 13px;
+}
+
+.cpc_doc_breadcrumbs .sep,
+.cpc_docs_loop_breadcrumbs .sep {
+    color: #9aa9b8;
+}
+
 .cpc_doc_actions .cpc_button.active {
     background: #f3f3f3;
     border-color: #c9c9c9;
@@ -52,6 +112,59 @@
     margin-top: 18px;
     padding-top: 14px;
     border-top: 1px solid #ddd;
+}
+
+.cpc_doc_relations {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 12px;
+    margin-top: 16px;
+}
+
+.cpc_doc_relation_block {
+    padding: 14px;
+    border: 1px solid #d9e2ea;
+    border-radius: 12px;
+    background: #f8fbfd;
+}
+
+.cpc_doc_relation_block h3 {
+    margin: 0 0 8px;
+    font-size: 14px;
+}
+
+.cpc_doc_children_list {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+}
+
+.cpc_doc_children_list li + li {
+    margin-top: 6px;
+}
+
+.cpc_doc_siblings_nav {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+}
+
+.cpc_doc_siblings_nav .prev-sibling,
+.cpc_doc_siblings_nav .next-sibling {
+    display: inline-block;
+    padding: 8px 10px;
+    background: #fff;
+    border: 1px solid #ccd6e0;
+    border-radius: 6px;
+    font-size: 13px;
+    text-decoration: none;
+    transition: all 0.2s ease;
+}
+
+.cpc_doc_siblings_nav .prev-sibling:hover,
+.cpc_doc_siblings_nav .next-sibling:hover {
+    background: #f0f4f8;
+    border-color: #9ba9b8;
 }
 
 .doc-is-locked {
@@ -99,6 +212,54 @@
     margin-top: 12px;
 }
 
+#doc-meta {
+    margin-top: 16px;
+}
+
+.doc-meta-box {
+    margin-top: 10px;
+}
+
+.doc-meta-box .toggle-switch {
+    display: block;
+    font-size: 14px;
+    border-radius: 4px;
+    border: 1px solid #ccc;
+    background: #f3f3f3;
+    padding: 8px 12px;
+    cursor: pointer;
+    font-weight: 600;
+}
+
+.doc-meta-box .toggle-switch::-webkit-details-marker {
+    display: none;
+}
+
+.doc-meta-box .toggle-content {
+    border: 1px solid #ccc;
+    border-top: none;
+    padding: 8px 10px;
+    background: #fff;
+}
+
+.doc-meta-box .toggle-table {
+    width: 100%;
+    border-collapse: collapse;
+}
+
+.doc-meta-box .toggle-table td {
+    padding: 8px;
+    vertical-align: top;
+}
+
+.doc-meta-box .desc-column {
+    width: 42%;
+}
+
+.doc-meta-box .content-column {
+    width: 58%;
+}
+
 .cpc_doc_history_table {
     width: 100%;
     border-collapse: collapse;
@@ -130,6 +291,57 @@
     border: 1px solid #ddd;
     font-family: monospace;
     vertical-align: top;
+}
+
+.cpc_doc_single #comments,
+.cpc_doc_single .comments-area {
+    margin-top: 18px;
+    padding-top: 14px;
+    border-top: 1px solid #ddd;
+}
+
+.cpc_doc_single .comment-list {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+}
+
+.cpc_doc_single .comment-list li {
+    margin: 0 0 12px;
+    padding: 12px;
+    border: 1px solid #e2e8ef;
+    border-radius: 10px;
+    background: #fff;
+}
+
+.cpc_doc_single .comment-meta {
+    margin-bottom: 8px;
+    font-size: 12px;
+    color: #607284;
+}
+
+.cpc_doc_single .comment-content p:last-child {
+    margin-bottom: 0;
+}
+
+.cpc_doc_single #respond {
+    margin-top: 18px;
+    padding: 16px;
+    border: 1px solid #d9e2ea;
+    border-radius: 12px;
+    background: #f8fbfd;
+}
+
+.cpc_doc_single #respond input[type="text"],
+.cpc_doc_single #respond input[type="email"],
+.cpc_doc_single #respond input[type="url"],
+.cpc_doc_single #respond textarea {
+    width: 100%;
+    box-sizing: border-box;
+    border: 1px solid #ccd6e0;
+    border-radius: 8px;
+    padding: 8px 10px;
+    background: #fff;
 }
 
 .cpc_docs_notice_success {
@@ -198,12 +410,85 @@
     font-weight: 600;
 }
 
+.cpc_docs_directory_table {
+    width: 100%;
+    border-collapse: collapse;
+    background: #fff;
+}
+
+.cpc_docs_directory_table th,
+.cpc_docs_directory_table td {
+    padding: 8px;
+    border-bottom: 1px solid #e6ebf0;
+    vertical-align: top;
+}
+
+.cpc_docs_directory_table tbody tr:nth-child(even) {
+    background: #f8fafc;
+}
+
+.cpc_docs_directory_table .attachment-clip-cell {
+    width: 34px;
+    text-align: center;
+    color: #6c7f92;
+}
+
+.cpc_docs_folder_browser .folder-row {
+    background: #f3f7fb;
+}
+
+.cpc_docs_folder_browser .folder-row-name {
+    font-weight: 600;
+}
+
+.cpc_docs_folder_title,
+.cpc_docs_doc_title,
+.cpc_docs_folder_browser .up-one-folder {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.cpc_docs_folder_meta {
+    margin-top: 4px;
+    color: #607284;
+    font-size: 12px;
+    font-weight: 400;
+}
+
+.cpc_docs_directory_table .row-actions {
+    visibility: hidden;
+    margin-top: 4px;
+    font-size: 12px;
+}
+
+.cpc_docs_directory_table tr:hover .row-actions {
+    visibility: visible;
+}
+
+.cpc_docs_directory_table .author-cell,
+.cpc_docs_directory_table .edited-date-cell {
+    width: 150px;
+    color: #607284;
+    font-size: 13px;
+}
+
 @media (max-width: 900px) {
     .cpc_docs_directory_filters {
         grid-template-columns: 1fr;
     }
 
-    .cpc_docs_edit_grid {
+    .cpc_docs_edit_grid,
+    .cpc_doc_relations {
         grid-template-columns: 1fr;
+    }
+
+    .cpc_docs_directory_table .author-cell,
+    .cpc_docs_directory_table .edited-date-cell {
+        display: none;
+    }
+
+    .cpc_docs_directory_table .row-actions {
+        visibility: visible;
     }
 }

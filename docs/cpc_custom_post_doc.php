@@ -30,5 +30,17 @@ function cpc_custom_post_doc() {
     );
 
     register_post_type('cpc_doc', $args);
+
+    register_taxonomy('cpc_doc_tag', 'cpc_doc', array(
+        'hierarchical' => false,
+        'labels' => array(
+            'name' => __('Dokument-Tags', CPC2_TEXT_DOMAIN),
+            'singular_name' => __('Dokument-Tag', CPC2_TEXT_DOMAIN),
+        ),
+        'show_ui' => true,
+        'show_admin_column' => true,
+        'query_var' => true,
+        'rewrite' => array('slug' => 'cpc-doc-tag'),
+    ));
 }
 add_action('init', 'cpc_custom_post_doc', 20);

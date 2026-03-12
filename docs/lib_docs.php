@@ -421,6 +421,191 @@ function cpc_docs_get_parent_options($component, $component_id, $exclude_doc_id 
     return array_values($docs);
 }
 
+function cpc_docs_doc_matches_context($doc, $component, $component_id) {
+    if (!$doc || $doc->post_type !== 'cpc_doc') {
+        return false;
+    }
+
+    return cpc_docs_get_component($doc->ID) === sanitize_key((string)$component)
+        && cpc_docs_get_component_id($doc->ID) === (int)$component_id;
+}
+
+function cpc_docs_get_ancestor_ids($doc_id) {
+    $doc_id = (int)$doc_id;
+    if ($doc_id <= 0) {
+        return array();
+    }
+
+    $ancestor_ids = array();
+    $seen = array($doc_id => true);
+    $parent_id = (int)wp_get_post_parent_id($doc_id);
+
+    while ($parent_id > 0 && empty($seen[$parent_id])) {
+        $parent = get_post($parent_id);
+        if (!$parent || $parent->post_type !== 'cpc_doc') {
+            break;
+        }
+
+        $ancestor_ids[] = $parent_id;
+        $seen[$parent_id] = true;
+        $parent_id = (int)$parent->post_parent;
+    }
+
+    return array_reverse($ancestor_ids);
+}
+
+function cpc_docs_get_child_docs($doc_id, $args = array()) {
+    $doc_id = (int)$doc_id;
+    if ($doc_id <= 0) {
+        return array();
+    }
+
+    $defaults = array(
+        'post_type' => 'cpc_doc',
+        'post_status' => 'publish',
+        'posts_per_page' => 200,
+        'post_parent' => $doc_id,
+        'orderby' => 'menu_order title',
+        'order' => 'ASC',
+    );
+
+    return get_posts(wp_parse_args($args, $defaults));
+}
+
+function cpc_docs_validate_parent_id($parent_id, $component, $component_id, $doc_id = 0) {
+    $parent_id = (int)$parent_id;
+    $doc_id = (int)$doc_id;
+    $component = sanitize_key((string)$component);
+    $component_id = (int)$component_id;
+
+    if ($parent_id <= 0) {
+        return 0;
+    }
+
+    if ($doc_id > 0 && $parent_id === $doc_id) {
+        return 0;
+    }
+
+    $parent = get_post($parent_id);
+    if (!$parent || $parent->post_type !== 'cpc_doc' || !cpc_docs_doc_matches_context($parent, $component, $component_id)) {
+        return 0;
+    }
+
+    if ($doc_id > 0) {
+        $ancestor_ids = cpc_docs_get_ancestor_ids($parent_id);
+        if (in_array($doc_id, $ancestor_ids, true)) {
+            return 0;
+        }
+    }
+
+    return $parent_id;
+}
+
+function cpc_docs_get_sibling_docs($doc_id, $args = array()) {
+    $doc = get_post((int)$doc_id);
+    if (!$doc || $doc->post_type !== 'cpc_doc') {
+        return array();
+    }
+
+    $parent_id = (int)$doc->post_parent;
+    $defaults = array(
+        'post_type' => 'cpc_doc',
+        'post_status' => 'publish',
+        'posts_per_page' => 500,
+        'post_parent' => $parent_id,
+        'orderby' => 'menu_order title',
+        'order' => 'ASC',
+    );
+
+    return get_posts(wp_parse_args($args, $defaults));
+}
+
+function cpc_docs_get_prev_sibling($doc_id) {
+    $doc = get_post((int)$doc_id);
+    if (!$doc || $doc->post_type !== 'cpc_doc') {
+        return null;
+    }
+
+    $siblings = cpc_docs_get_sibling_docs($doc_id);
+    $previous = null;
+
+    foreach ($siblings as $sibling) {
+        if ((int)$sibling->ID === (int)$doc_id) {
+            return $previous;
+        }
+        if (cpc_docs_user_can_view_doc($sibling->ID)) {
+            $previous = $sibling;
+        }
+    }
+
+    return null;
+}
+
+function cpc_docs_get_next_sibling($doc_id) {
+    $doc = get_post((int)$doc_id);
+    if (!$doc || $doc->post_type !== 'cpc_doc') {
+        return null;
+    }
+
+    $siblings = cpc_docs_get_sibling_docs($doc_id);
+    $found = false;
+
+    foreach ($siblings as $sibling) {
+        if ($found && cpc_docs_user_can_view_doc($sibling->ID)) {
+            return $sibling;
+        }
+        if ((int)$sibling->ID === (int)$doc_id) {
+            $found = true;
+        }
+    }
+
+    return null;
+}
+
+function cpc_docs_is_folder($doc_id) {
+    $doc = get_post((int)$doc_id);
+    if (!$doc || $doc->post_type !== 'cpc_doc') {
+        return false;
+    }
+
+    // A document is considered a folder if it has no content (empty post_content)
+    return empty(trim($doc->post_content));
+}
+
+function cpc_docs_set_doc_tags($doc_id, $tags_csv) {
+    $doc_id = (int)$doc_id;
+    if ($doc_id <= 0) {
+        return;
+    }
+
+    $tags_csv = trim((string)$tags_csv);
+    if ($tags_csv === '') {
+        wp_set_post_terms($doc_id, array(), 'cpc_doc_tag', false);
+        return;
+    }
+
+    $parts = array_map('trim', explode(',', $tags_csv));
+    $parts = array_filter($parts, function($tag) {
+        return $tag !== '';
+    });
+
+    if (empty($parts)) {
+        wp_set_post_terms($doc_id, array(), 'cpc_doc_tag', false);
+        return;
+    }
+
+    wp_set_post_terms($doc_id, array_values($parts), 'cpc_doc_tag', false);
+}
+
+function cpc_docs_get_doc_tags_string($doc_id) {
+    $terms = wp_get_post_terms((int)$doc_id, 'cpc_doc_tag', array('fields' => 'names'));
+    if (is_wp_error($terms) || empty($terms)) {
+        return '';
+    }
+
+    return implode(', ', $terms);
+}
+
 function cpc_docs_upload_files_to_doc($doc_id, $field_name = 'cpc_docs_attachments', $author_id = 0) {
     $doc_id = (int)$doc_id;
     $author_id = (int)$author_id;
@@ -551,18 +736,32 @@ function cpc_docs_handle_frontend_requests() {
         $title = isset($_POST['cpc_docs_title']) ? sanitize_text_field(wp_unslash($_POST['cpc_docs_title'])) : '';
         $content = isset($_POST['cpc_docs_content']) ? wp_kses_post(wp_unslash($_POST['cpc_docs_content'])) : '';
         $status = isset($_POST['cpc_docs_status']) ? sanitize_key(wp_unslash($_POST['cpc_docs_status'])) : 'public';
+        $is_folder = isset($_POST['cpc_docs_is_folder']) ? (bool)wp_unslash($_POST['cpc_docs_is_folder']) : false;
 
         $parent_id = isset($_POST['cpc_docs_parent_id']) ? (int)$_POST['cpc_docs_parent_id'] : 0;
+        $tags = isset($_POST['cpc_docs_tags']) ? sanitize_text_field(wp_unslash($_POST['cpc_docs_tags'])) : '';
 
         if (!cpc_docs_user_can_create_for_context($component, $component_id)) {
             wp_safe_redirect(add_query_arg('cpc_docs_notice', 'denied', $redirect));
             exit;
         }
 
-        if ($title === '' || $content === '') {
+        if ($title === '') {
             wp_safe_redirect(add_query_arg('cpc_docs_notice', 'invalid', $redirect));
             exit;
         }
+
+        if (!$is_folder && $content === '') {
+            wp_safe_redirect(add_query_arg('cpc_docs_notice', 'invalid', $redirect));
+            exit;
+        }
+
+        // For folders, content is always empty
+        if ($is_folder) {
+            $content = '';
+        }
+
+        $parent_id = cpc_docs_validate_parent_id($parent_id, $component, $component_id, 0);
 
         $doc_id = wp_insert_post(array(
             'post_type' => 'cpc_doc',
@@ -571,7 +770,7 @@ function cpc_docs_handle_frontend_requests() {
             'post_title' => $title,
             'post_content' => $content,
             'comment_status' => 'open',
-            'post_parent' => max(0, $parent_id),
+            'post_parent' => $parent_id,
         ), true);
 
         if (is_wp_error($doc_id) || !$doc_id) {
@@ -580,6 +779,7 @@ function cpc_docs_handle_frontend_requests() {
         }
 
         cpc_docs_set_doc_meta($doc_id, $component, $component_id, $status);
+        cpc_docs_set_doc_tags($doc_id, $tags);
         cpc_docs_upload_files_to_doc($doc_id, 'cpc_docs_attachments', get_current_user_id());
 
         wp_safe_redirect(add_query_arg(array('cpc_docs_notice' => 'created', 'cpc_docs_doc_id' => $doc_id), $redirect));
@@ -605,20 +805,35 @@ function cpc_docs_handle_frontend_requests() {
         $component = cpc_docs_get_component($doc_id);
         $component_id = cpc_docs_get_component_id($doc_id);
         $parent_id = isset($_POST['cpc_docs_parent_id']) ? (int)$_POST['cpc_docs_parent_id'] : 0;
+        $tags = isset($_POST['cpc_docs_tags']) ? sanitize_text_field(wp_unslash($_POST['cpc_docs_tags'])) : '';
+        $is_folder = isset($_POST['cpc_docs_is_folder']) ? (bool)wp_unslash($_POST['cpc_docs_is_folder']) : false;
 
-        if ($title === '' || $content === '') {
+        if ($title === '') {
             wp_safe_redirect(add_query_arg('cpc_docs_notice', 'invalid', $redirect));
             exit;
         }
+
+        if (!$is_folder && $content === '') {
+            wp_safe_redirect(add_query_arg('cpc_docs_notice', 'invalid', $redirect));
+            exit;
+        }
+
+        // For folders, content is always empty
+        if ($is_folder) {
+            $content = '';
+        }
+
+        $parent_id = cpc_docs_validate_parent_id($parent_id, $component, $component_id, $doc_id);
 
         wp_update_post(array(
             'ID' => $doc_id,
             'post_title' => $title,
             'post_content' => $content,
-            'post_parent' => max(0, ($parent_id === $doc_id ? 0 : $parent_id)),
+            'post_parent' => $parent_id,
         ));
 
         cpc_docs_set_doc_meta($doc_id, $component, $component_id, $status);
+        cpc_docs_set_doc_tags($doc_id, $tags);
         cpc_docs_upload_files_to_doc($doc_id, 'cpc_docs_attachments', (int)$doc->post_author);
         cpc_docs_release_edit_lock($doc_id, get_current_user_id(), false);
 
@@ -657,10 +872,32 @@ function cpc_docs_handle_frontend_requests() {
 
     if ($action === 'delete_doc') {
         $doc_id = isset($_POST['cpc_docs_doc_id']) ? (int)$_POST['cpc_docs_doc_id'] : 0;
+        $doc = get_post($doc_id);
 
-        if (!$doc_id || !cpc_docs_user_can_manage_doc($doc_id)) {
+        if (!$doc_id || !$doc || $doc->post_type !== 'cpc_doc' || !cpc_docs_user_can_manage_doc($doc_id)) {
             wp_safe_redirect(add_query_arg('cpc_docs_notice', 'denied', $redirect));
             exit;
+        }
+
+        if (cpc_docs_is_folder($doc_id)) {
+            $children = get_posts(array(
+                'post_type' => 'cpc_doc',
+                'post_parent' => $doc_id,
+                'post_status' => array('publish', 'draft', 'pending', 'private'),
+                'numberposts' => -1,
+                'fields' => 'ids',
+                'no_found_rows' => true,
+            ));
+
+            if (!empty($children)) {
+                $new_parent = (int)$doc->post_parent;
+                foreach ($children as $child_id) {
+                    wp_update_post(array(
+                        'ID' => (int)$child_id,
+                        'post_parent' => $new_parent,
+                    ));
+                }
+            }
         }
 
         cpc_docs_release_edit_lock($doc_id, get_current_user_id(), true);
@@ -668,6 +905,133 @@ function cpc_docs_handle_frontend_requests() {
         wp_safe_redirect(add_query_arg('cpc_docs_notice', 'deleted', $redirect));
         exit;
     }
+}
+
+function cpc_docs_load_folder_contents_ajax() {
+    if (!cpc_docs_is_enabled() || empty($_GET['cpc_docs_folder'])) {
+        wp_send_json_error(array('message' => 'Invalid request'));
+    }
+
+    $folder_id = isset($_GET['cpc_docs_folder']) ? (int)$_GET['cpc_docs_folder'] : 0;
+    $component = isset($_GET['cpc_docs_component']) ? sanitize_key(wp_unslash($_GET['cpc_docs_component'])) : '';
+    $status = isset($_GET['cpc_docs_status']) ? sanitize_key(wp_unslash($_GET['cpc_docs_status'])) : '';
+    $search = isset($_GET['cpc_docs_q']) ? sanitize_text_field(wp_unslash($_GET['cpc_docs_q'])) : '';
+
+    if (is_admin()) {
+        wp_send_json_error(array('message' => 'Not allowed'));
+    }
+
+    if (!function_exists('cpc_docs_render_docs_table')) {
+        wp_send_json_error(array('message' => 'Function not found'));
+    }
+
+    $docs = cpc_docs_get_docs(array(
+        'posts_per_page' => 250,
+        'orderby' => 'menu_order title',
+        'order' => 'ASC',
+    ));
+
+    if ($component !== '') {
+        $docs = array_filter($docs, function($doc) use ($component) {
+            return cpc_docs_get_component($doc->ID) === $component;
+        });
+    }
+
+    if ($status !== '') {
+        $docs = array_filter($docs, function($doc) use ($status) {
+            return cpc_docs_get_status($doc->ID) === $status;
+        });
+    }
+
+    if ($search !== '') {
+        $docs = array_filter($docs, function($doc) use ($search) {
+            $search_lower = strtolower($search);
+            return stripos($doc->post_title, $search_lower) !== false
+                || stripos($doc->post_content, $search_lower) !== false;
+        });
+    }
+
+    ob_start();
+
+    $grouped = array();
+    foreach ($docs as $doc) {
+        $parent_id = (int)$doc->post_parent;
+        if (!isset($grouped[$parent_id])) {
+            $grouped[$parent_id] = array();
+        }
+        $grouped[$parent_id][] = $doc;
+    }
+
+    $current_items = isset($grouped[$folder_id]) ? $grouped[$folder_id] : array();
+
+    if ($folder_id > 0) {
+        $parent_folder_id = (int)wp_get_post_parent_id($folder_id);
+        echo '<tr class="folder-row cpc_docs_up_row">';
+        echo '<td class="attachment-clip-cell"></td>';
+        echo '<td class="title-cell folder-row-name"><a class="up-one-folder" href="#"><span class="dashicons dashicons-category"></span>..</a></td>';
+        echo '<td class="author-cell"></td>';
+        echo '<td class="edited-date-cell"></td>';
+        echo '</tr>';
+    }
+
+    $rendered = 0;
+    foreach ($current_items as $doc) {
+        if (!cpc_docs_user_can_view_doc($doc->ID)) {
+            continue;
+        }
+
+        $child_count = isset($grouped[$doc->ID]) ? count($grouped[$doc->ID]) : 0;
+        if ($child_count > 0) {
+            $can_manage = cpc_docs_user_can_manage_doc($doc->ID);
+            $has_attachments = !empty(cpc_docs_get_doc_attachments($doc->ID));
+
+            echo '<tr class="folder-row cpc_docs_folder_row" data-folder-id="'.(int)$doc->ID.'">';
+            echo '<td class="attachment-clip-cell">'.($has_attachments ? '<span class="dashicons dashicons-paperclip"></span>' : '').'</td>';
+            echo '<td class="title-cell folder-row-name">';
+            echo '<span class="cpc_docs_folder_title toggle-folder-link"><span class="dashicons dashicons-category"></span><a href="#">'.esc_html($doc->post_title).'</a></span>';
+            echo '<div class="cpc_docs_folder_meta">'.sprintf(esc_html__('%d Unterdokumente', CPC2_TEXT_DOMAIN), (int)$child_count).'</div>';
+            echo '<div class="row-actions">';
+            echo '<a href="'.esc_url(get_permalink($doc)).'">'.esc_html__('Ansehen', CPC2_TEXT_DOMAIN).'</a>';
+            if ($can_manage) {
+                echo ' | <a href="'.esc_url(cpc_docs_get_edit_link($doc->ID)).'">'.esc_html__('Bearbeiten', CPC2_TEXT_DOMAIN).'</a>';
+                echo ' | <a href="'.esc_url(cpc_docs_get_history_link($doc->ID)).'">'.esc_html__('Verlauf', CPC2_TEXT_DOMAIN).'</a>';
+            }
+            echo '</div>';
+            echo '</td>';
+            echo '<td class="author-cell">'.esc_html(get_the_author_meta('display_name', $doc->post_author)).'</td>';
+            echo '<td class="edited-date-cell">'.esc_html(get_the_modified_date('', $doc)).'</td>';
+            echo '</tr>';
+        } else {
+            $can_manage = cpc_docs_user_can_manage_doc($doc->ID);
+            $has_attachments = !empty(cpc_docs_get_doc_attachments($doc->ID));
+
+            echo '<tr>';
+            echo '<td class="attachment-clip-cell">'.($has_attachments ? '<span class="dashicons dashicons-paperclip"></span>' : '').'</td>';
+            echo '<td class="title-cell">';
+            echo '<span class="cpc_docs_doc_title"><span class="dashicons dashicons-media-document"></span><a href="'.esc_url(get_permalink($doc)).'">'.esc_html($doc->post_title).'</a></span>';
+            echo '<div class="row-actions">';
+            echo '<a href="'.esc_url(get_permalink($doc)).'">'.esc_html__('Ansehen', CPC2_TEXT_DOMAIN).'</a>';
+            if ($can_manage) {
+                echo ' | <a href="'.esc_url(cpc_docs_get_edit_link($doc->ID)).'">'.esc_html__('Bearbeiten', CPC2_TEXT_DOMAIN).'</a>';
+                echo ' | <a href="'.esc_url(cpc_docs_get_history_link($doc->ID)).'">'.esc_html__('Verlauf', CPC2_TEXT_DOMAIN).'</a>';
+            }
+            echo '</div>';
+            echo '</td>';
+            echo '<td class="author-cell">'.esc_html(get_the_author_meta('display_name', $doc->post_author)).'</td>';
+            echo '<td class="edited-date-cell">'.esc_html(get_the_modified_date('', $doc)).'</td>';
+            echo '</tr>';
+        }
+
+        $rendered++;
+    }
+
+    if ($rendered === 0) {
+        echo '<tr class="no-docs-row"><td class="attachment-clip-cell"></td><td class="title-cell">'.esc_html__('Keine Dokumente gefunden.', CPC2_TEXT_DOMAIN).'</td><td class="author-cell"></td><td class="edited-date-cell"></td></tr>';
+    }
+
+    $html = ob_get_clean();
+
+    wp_send_json_success(array('html' => $html));
 }
 
 function cpc_docs_notice_message($code) {

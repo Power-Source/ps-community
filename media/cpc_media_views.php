@@ -73,7 +73,11 @@ function cpc_media_render_create_gallery_form($component, $component_id, $defaul
 
     $default_status = cpc_media_get_default_gallery_status($component);
 
+    $button_label = ($component === 'groups') ? __('Album hinzufuegen', CPC2_TEXT_DOMAIN) : __('Album hinzufuegen', CPC2_TEXT_DOMAIN);
+
     $html = '';
+    $html .= '<details class="cpc_media_create_gallery_toggle">';
+    $html .= '<summary class="cpc_button cpc_media_primary_button cpc_media_create_gallery_summary">'.esc_html($button_label).'</summary>';
     $html .= '<form method="post" class="cpc_media_create_gallery_form mpp-form mpp-form-stacked">';
     $html .= '<input type="hidden" name="cpc_media_action" value="create_gallery" />';
     $html .= '<input type="hidden" name="cpc_media_component" value="'.esc_attr($component).'" />';
@@ -98,6 +102,7 @@ function cpc_media_render_create_gallery_form($component, $component_id, $defaul
     $html .= '</div>';
     $html .= '<div class="cpc_media_form_submit"><button type="submit" class="cpc_button cpc_media_primary_button">'.esc_html__('Galerie erstellen', CPC2_TEXT_DOMAIN).'</button></div>';
     $html .= '</form>';
+    $html .= '</details>';
 
     return $html;
 }

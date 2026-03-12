@@ -16,6 +16,27 @@
     box-shadow: 0 10px 24px rgba(27, 39, 51, 0.05);
 }
 
+.cpc_media_create_gallery_toggle {
+    display: grid;
+    gap: 12px;
+}
+
+.cpc_media_create_gallery_summary {
+    list-style: none;
+    display: inline-flex;
+    align-items: center;
+    width: fit-content;
+    cursor: pointer;
+}
+
+.cpc_media_create_gallery_summary::-webkit-details-marker {
+    display: none;
+}
+
+.cpc_media_create_gallery_toggle:not([open]) .cpc_media_create_gallery_form {
+    display: none;
+}
+
 .cpc_media_form_grid {
     display: grid;
     grid-template-columns: minmax(0, 2fr) minmax(220px, 1fr);
