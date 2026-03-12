@@ -984,7 +984,6 @@ jQuery(document).ready(function($) {
                 nonce: cpc_groups_ajax.nonce,
                 group_id: groupId,
                 enable_media: form.find('#enable_media').is(':checked') ? 1 : 0,
-                enable_docs: form.find('#enable_docs').is(':checked') ? 1 : 0,
                 enable_projects: form.find('#enable_projects').is(':checked') ? 1 : 0
             },
             success: function(response) {

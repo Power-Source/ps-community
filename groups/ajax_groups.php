@@ -143,11 +143,6 @@ function cpc_ajax_save_group_module_settings() {
 		update_post_meta($group_id, 'cpc_group_has_media', (bool)$enable_media);
 	}
 
-	if (function_exists('cpc_docs_is_enabled') && cpc_docs_is_enabled()) {
-		$enable_docs = !empty($_POST['enable_docs']);
-		update_post_meta($group_id, 'cpc_group_has_docs', (bool)$enable_docs);
-	}
-
 	if (function_exists('cpc_projects_is_enabled') && cpc_projects_is_enabled()) {
 		$enable_projects = !empty($_POST['enable_projects']);
 		update_post_meta($group_id, 'cpc_group_has_projects', (bool)$enable_projects);
@@ -349,7 +344,6 @@ function cpc_ajax_create_group() {
 	update_post_meta($group_id, 'cpc_group_updated', current_time('timestamp'));
 	// Optional modules are disabled by default per new group.
 	update_post_meta($group_id, 'cpc_group_has_media', false);
-	update_post_meta($group_id, 'cpc_group_has_docs', false);
 	update_post_meta($group_id, 'cpc_group_has_projects', false);
 
 	// Add creator as admin member

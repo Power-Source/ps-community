@@ -3,7 +3,7 @@
 Plugin Name: PS Community
 Plugin URI: https://power-source.github.io/ps-community/
 Description: Füge Deiner ClassicPress-Webseite schnell und einfach ein soziales Netzwerk hinzu!
-Version: 1.0.9
+Version: 1.1.0
 Author: PSOURCE
 Author URI: https://github.com/Power-Source
 License: GPLv2 or later
@@ -317,7 +317,7 @@ require_once('media/cpc_media.php');
 
 // Docs
 if (strpos(CPC_CORE_PLUGINS, 'core-profile') !== false || strpos(CPC_CORE_PLUGINS, 'core-groups') !== false):
-    require_once('docs/cpc_docs.php');
+    require_once('cpc_docs/cpc_docs.php');
 endif;
 
 // Projects
@@ -353,7 +353,7 @@ add_action( 'wp_footer', 'cpc_add_wait_modal_box' );
 function cpc_update_routine() {
 		
 	global $wpdb;
-	$new_version = '1.0.9';
+	$new_version = '1.1.0';
 //echo get_option('cp_community_ver').'<br />';
 //echo $new_version.'<br />';
 	$do_update = (is_blog_admin() && current_user_can('manage_options') && get_option('cp_community_ver') != $new_version);

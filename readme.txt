@@ -39,6 +39,12 @@ Kein Problem! Ändere ganz einfach den gesamten Text, den Deine Benutzer sehen, 
 * Mediathek mit Tabs (Galerien/Medien), Suche, Typ-Filter und Pagination
 * Automatisches Rendern der Mediathek auf der konfigurierten Seite (ohne zusaetzlichen Shortcode)
 * Einzelne Galerie-Seiten rendern nun den kompletten Galerieinhalt direkt auf der Single-View
+* Gruppenmodule Medien und Projekte sind global standardmaessig deaktiviert und koennen im Admin gezielt aktiviert werden
+* Bei Gruppenerstellung sind Medien und Projekte standardmaessig deaktiviert und koennen pro Gruppe optional im Einstellungen-Tab aktiviert werden
+* Gruppen-Einstellungen um neue Sektion "Optionale Module" (Medien/Projekte) inkl. AJAX-Speicherung erweitert
+* Gruppen-Tabs fuer Medien und Projekte respektieren jetzt konsequent die jeweilige pro-Gruppen-Aktivierung
+* Admin-Einstellungstabs fuer Medien, Dokumente und Projekte mit aussagekraeftigen Dashicons versehen
+* Projekte: "Projekt oeffnen" bleibt im Gruppen-Kontext und rendert die Projekt-Detailansicht im Gruppen-Tab statt ausserhalb auf der CPT-URL
 
 = 1.0.9 =
 
