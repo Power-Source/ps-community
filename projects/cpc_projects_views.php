@@ -251,6 +251,7 @@ function cpc_projects_render_task_panel($project_id) {
             $html .= '<span class="cpc_projects_task_title">'.esc_html($task->title).'</span>';
             $html .= '</label>';
             $html .= '<span class="cpc_projects_task_priority priority-'.(int)$task->priority.'">'.esc_html(cpc_projects_render_task_priority_label($task->priority)).'</span>';
+            $html .= '<span class="cpc_projects_task_status status-'.esc_attr($is_done ? 'done' : 'open').'">'.esc_html($is_done ? __('Erledigt', CPC2_TEXT_DOMAIN) : __('Offen', CPC2_TEXT_DOMAIN)).'</span>';
 
             $task_meta_bits = array();
             if (!empty($task->deadline)) {
@@ -292,8 +293,11 @@ function cpc_projects_render_task_panel($project_id) {
                     $deadline_value = wp_date('Y-m-d\\TH:i', strtotime((string)$task->deadline));
                 }
 
+                $html .= '<div class="cpc_projects_task_actions">';
                 $html .= '<button type="button" class="cpc_projects_task_delete cpc_projects_inline_link" data-task-id="'.(int)$task->id.'">'.esc_html__('Loeschen', CPC2_TEXT_DOMAIN).'</button>';
-                $html .= ' <button type="button" class="cpc_projects_task_edit_toggle cpc_projects_inline_link" data-task-id="'.(int)$task->id.'">'.esc_html__('Bearbeiten', CPC2_TEXT_DOMAIN).'</button>';
+                $html .= '<button type="button" class="cpc_projects_task_edit_toggle cpc_projects_inline_link" data-task-id="'.(int)$task->id.'">'.esc_html__('Bearbeiten', CPC2_TEXT_DOMAIN).'</button>';
+                $html .= '<button type="button" class="cpc_projects_task_details_toggle cpc_projects_inline_link" data-task-id="'.(int)$task->id.'">'.esc_html__('Details', CPC2_TEXT_DOMAIN).'</button>';
+                $html .= '</div>';
 
                 $html .= '<form class="cpc_projects_task_edit_form" data-project-id="'.(int)$project_id.'" data-task-id="'.(int)$task->id.'" style="display:none">';
                 $html .= '<label class="cpc_projects_task_field_label">'.esc_html__('Titel', CPC2_TEXT_DOMAIN).'</label>';
@@ -332,7 +336,11 @@ function cpc_projects_render_task_panel($project_id) {
             $task_completer = !empty($task->completed_by) ? get_user_by('id', (int)$task->completed_by) : false;
             $task_events = cpc_projects_get_task_events($project_id, (int)$task->id, 20);
 
-            $html .= '<button type="button" class="cpc_projects_task_details_toggle cpc_projects_inline_link" data-task-id="'.(int)$task->id.'">'.esc_html__('Details', CPC2_TEXT_DOMAIN).'</button>';
+            if (!$can_manage) {
+                $html .= '<div class="cpc_projects_task_actions">';
+                $html .= '<button type="button" class="cpc_projects_task_details_toggle cpc_projects_inline_link" data-task-id="'.(int)$task->id.'">'.esc_html__('Details', CPC2_TEXT_DOMAIN).'</button>';
+                $html .= '</div>';
+            }
             $html .= '<div class="cpc_projects_task_details" data-task-id="'.(int)$task->id.'" style="display:none">';
             $html .= '<div class="cpc_projects_task_details_meta">';
             $html .= '<div><strong>'.esc_html__('Erstellt', CPC2_TEXT_DOMAIN).':</strong> '.esc_html(wp_date(get_option('date_format').' '.get_option('time_format'), strtotime((string)$task->date_added))).'</div>';
@@ -397,6 +405,9 @@ function cpc_projects_render_task_panel($project_id) {
                     $author_name = $comment->comment_author ? $comment->comment_author : __('Mitglied', CPC2_TEXT_DOMAIN);
                     $time = sprintf(__('vor %s', CPC2_TEXT_DOMAIN), human_time_diff(strtotime($comment->comment_date_gmt), current_time('timestamp', 1)));
                     $html .= '<li class="cpc_projects_task_comment_item">';
+                    $html .= '<div class="cpc_projects_task_comment_layout">';
+                    $html .= '<div class="cpc_projects_task_comment_avatar">'.get_avatar((int)$comment->user_id, 34).'</div>';
+                    $html .= '<div class="cpc_projects_task_comment_content">';
                     $current_uid_comment = get_current_user_id();
                     $can_delete_comment  = $can_manage || ((int)$comment->user_id === $current_uid_comment && $current_uid_comment > 0);
                     $html .= '<div class="cpc_projects_task_comment_meta">';
@@ -427,6 +438,8 @@ function cpc_projects_render_task_panel($project_id) {
                         $html .= '</div>';
                     }
 
+                    $html .= '</div>';
+                    $html .= '</div>';
                     $html .= '</li>';
                 }
                 $html .= '</ul>';

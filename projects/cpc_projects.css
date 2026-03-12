@@ -811,4 +811,264 @@
     align-items: flex-start;
     gap: 8px;
 }
+
+/* ---- Original-like visual pass: toolbar, tasks, badges, discussion, KPI cards ---- */
+.cpc_projects_task_panel {
+    margin-top: 14px;
+    border: 1px solid #d8e1ea;
+    border-radius: 12px;
+    background: #fff;
+    padding: 14px;
+}
+
+.cpc_projects_task_heading {
+    margin: 0 0 12px;
+    font-size: 15px;
+    font-weight: 700;
+    color: #243447;
+}
+
+.cpc_projects_task_filters {
+    grid-template-columns: minmax(220px, 2fr) repeat(4, minmax(140px, 1fr));
+    gap: 8px;
+    margin-bottom: 12px;
+}
+
+.cpc_projects_task_filters input,
+.cpc_projects_task_filters select,
+.cpc_projects_task_form input,
+.cpc_projects_task_form select,
+.cpc_projects_task_form textarea,
+.cpc_projects_task_edit_form input,
+.cpc_projects_task_edit_form select,
+.cpc_projects_task_edit_form textarea {
+    border: 1px solid #cfd9e2;
+    border-radius: 8px;
+    padding: 8px 10px;
+    background: #fff;
+}
+
+.cpc_projects_task_form {
+    border: 1px solid #e2e9f0;
+    border-radius: 10px;
+    background: linear-gradient(180deg, #fbfcfd 0%, #f5f8fb 100%);
+    padding: 12px;
+    margin-bottom: 12px;
+}
+
+.cpc_projects_add_task_btn {
+    min-height: 38px;
+    font-weight: 600;
+}
+
+.cpc_projects_task_item {
+    border: 1px solid #e2e8f0;
+    border-radius: 10px;
+    padding: 12px;
+    background: #fff;
+    box-shadow: 0 1px 0 rgba(26, 43, 61, 0.04);
+}
+
+.cpc_projects_task_item:hover {
+    background: #f8fbfe;
+    border-color: #d6e1eb;
+}
+
+.cpc_projects_task_item.is-done {
+    background: #f9fafb;
+}
+
+.cpc_projects_task_toggle_wrap {
+    margin-bottom: 6px;
+}
+
+.cpc_projects_task_title {
+    font-size: 14px;
+    font-weight: 600;
+    color: #1f3245;
+}
+
+.cpc_projects_task_priority,
+.cpc_projects_task_status {
+    display: inline-block;
+    font-size: 11px;
+    border-radius: 999px;
+    padding: 3px 10px;
+    border: 1px solid #ccd6e0;
+    margin: 0 6px 6px 0;
+    font-weight: 600;
+    letter-spacing: 0.02em;
+}
+
+.cpc_projects_task_priority.priority-1 {
+    background: #eef5ec;
+    border-color: #b7d8ad;
+    color: #2f5e2a;
+}
+
+.cpc_projects_task_priority.priority-2 {
+    background: #fff5e8;
+    border-color: #e7bf82;
+    color: #8d5b1a;
+}
+
+.cpc_projects_task_priority.priority-3 {
+    background: #fff0f0;
+    border-color: #e1a7a7;
+    color: #8b2d2d;
+}
+
+.cpc_projects_task_status.status-open {
+    background: #eaf2ff;
+    border-color: #b7cbef;
+    color: #2a4f8f;
+}
+
+.cpc_projects_task_status.status-done {
+    background: #fff1ea;
+    border-color: #efbfa8;
+    color: #964222;
+}
+
+.cpc_projects_task_meta {
+    margin: 2px 0 8px;
+    color: #5d7286;
+}
+
+.cpc_projects_task_actions {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px;
+    margin: 6px 0 2px;
+}
+
+.cpc_projects_inline_link {
+    text-decoration: none;
+    font-weight: 600;
+}
+
+.cpc_projects_inline_link:hover {
+    text-decoration: underline;
+}
+
+.cpc_projects_task_details {
+    margin-top: 10px;
+    padding: 10px;
+    border: 1px solid #dbe4ed;
+    border-radius: 8px;
+    background: #f8fbfd;
+}
+
+.cpc_projects_task_comments {
+    margin-top: 10px;
+    padding-top: 10px;
+    border-top: 1px dashed #d2dde8;
+}
+
+.cpc_projects_discussion_heading {
+    margin: 4px 0 8px;
+}
+
+.cpc_projects_task_comment_item {
+    border: 1px solid #dfe7ef;
+    border-radius: 8px;
+    background: #f7fafd;
+    padding: 8px 10px;
+}
+
+.cpc_projects_task_comment_form textarea {
+    min-height: 72px;
+}
+
+.cpc_projects_ataglance {
+    border-radius: 12px;
+    padding: 14px 16px;
+    gap: 10px 14px;
+}
+
+.cpc_projects_ataglance_item {
+    border: 1px solid #d6e2ee;
+    border-radius: 10px;
+    padding: 9px 12px;
+    background: #fff;
+    min-width: 86px;
+}
+
+.cpc_projects_ataglance_num {
+    font-size: 26px;
+}
+
+@media (max-width: 980px) {
+    .cpc_projects_task_filters {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+}
+
+@media (max-width: 782px) {
+    .cpc_projects_task_filters {
+        grid-template-columns: 1fr;
+    }
+
+    .cpc_projects_task_form_row {
+        grid-template-columns: 1fr;
+    }
+
+    .cpc_projects_add_task_btn {
+        width: 100%;
+    }
+}
+
+/* ---- Final polish (TaskBreaker-like): legacy tabs, status colors, discussion avatar layout ---- */
+.cpc_projects_single_nav {
+    gap: 0;
+    border-bottom: 1px solid #d8dfe6;
+    margin-bottom: 16px;
+}
+
+.cpc_projects_single_nav_link {
+    margin-right: -1px;
+    border-radius: 0;
+    border: 1px solid #d8dfe6;
+    background: #efefef;
+    color: #2a3d50;
+    padding: 9px 16px;
+}
+
+.cpc_projects_single_nav_link.is-active {
+    background: #fff;
+    border-bottom-color: #fff;
+    color: #2a3d50;
+    position: relative;
+    top: 1px;
+}
+
+.cpc_projects_task_status.status-open {
+    background: #3f51b5;
+    border-color: #3f51b5;
+    color: #fff;
+}
+
+.cpc_projects_task_status.status-done {
+    background: #ff5722;
+    border-color: #ff5722;
+    color: #fff;
+}
+
+.cpc_projects_task_comment_layout {
+    display: grid;
+    grid-template-columns: 40px minmax(0, 1fr);
+    gap: 10px;
+    align-items: start;
+}
+
+.cpc_projects_task_comment_avatar img {
+    width: 34px;
+    height: 34px;
+    border-radius: 50%;
+    display: block;
+}
+
+.cpc_projects_task_comment_content {
+    min-width: 0;
+}
 }
