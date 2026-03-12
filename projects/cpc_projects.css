@@ -1071,4 +1071,17 @@
 .cpc_projects_task_comment_content {
     min-width: 0;
 }
+
+/* Zurueck-Link oberhalb der Single-Projekt-Ansicht im Gruppen-Tab */
+.cpc_projects_back_link {
+    margin: 0 0 12px;
+}
+.cpc_projects_back_link a {
+    color: #3f51b5;
+    text-decoration: none;
+    font-size: .875rem;
+}
+.cpc_projects_back_link a:hover {
+    text-decoration: underline;
+}
 }

@@ -47,6 +47,137 @@ function cpc_projects_add_group_tab($tabs, $group_id, $user_id) {
 }
 add_filter('cpc_group_tabs', 'cpc_projects_add_group_tab', 20, 3);
 
+/**
+ * Gibt die korrekte URL fuer ein Projekt zurueck.
+ * Gruppontext → Gruppen-Tab-URL mit cpc_project_id-Parameter.
+ * Sonst → Standard-CPT-Permalink.
+ */
+function cpc_projects_get_project_url($project_id) {
+    $project_id = (int)$project_id;
+    if (!$project_id) {
+        return '';
+    }
+    $component    = cpc_projects_get_component($project_id);
+    $component_id = cpc_projects_get_component_id($project_id);
+
+    if ($component === 'groups' && $component_id > 0 && function_exists('cpc_get_group_link')) {
+        $group_link = cpc_get_group_link($component_id);
+        if ($group_link) {
+            return add_query_arg(
+                array('tab' => 'projects', 'cpc_project_id' => $project_id),
+                remove_query_arg(array('tab', 'cpc_project_id'), $group_link)
+            );
+        }
+    }
+
+    return get_permalink($project_id);
+}
+
+/**
+ * Rendert die komplette Detail-Ansicht eines einzelnen Projekts (Tabs: Uebersicht, Tasks, Aktivitaet, Einstellungen).
+ * Wird sowohl vom CPT-Einzel-Template als auch vom Gruppen-Tab genutzt.
+ */
+function cpc_projects_render_single_project_html($project_id, $args = array()) {
+    $args = wp_parse_args($args, array(
+        'back_url' => '',
+    ));
+
+    $project_id = (int)$project_id;
+    if (!$project_id || !cpc_projects_user_can_view_project($project_id)) {
+        return '<p>' . esc_html__('Keine Berechtigung.', CPC2_TEXT_DOMAIN) . '</p>';
+    }
+
+    $project    = get_post($project_id);
+    if (!$project) {
+        return '';
+    }
+
+    $can_manage = cpc_projects_user_can_manage_project($project_id);
+    $progress   = cpc_projects_get_task_progress($project_id);
+
+    $events = cpc_projects_get_project_events($project_id, 60);
+    $events_html = '';
+    if (!empty($events)) {
+        $events_html .= '<ul class="cpc_projects_single_events">';
+        foreach ($events as $event) {
+            $who  = $event->comment_author ? $event->comment_author : __('Mitglied', CPC2_TEXT_DOMAIN);
+            $when = sprintf(__('vor %s', CPC2_TEXT_DOMAIN), human_time_diff(strtotime($event->comment_date_gmt), current_time('timestamp', 1)));
+            $events_html .= '<li><strong>' . esc_html($who) . '</strong> <span>' . esc_html($when) . '</span><div>' . esc_html(wp_strip_all_tags((string)$event->comment_content)) . '</div></li>';
+        }
+        $events_html .= '</ul>';
+    } else {
+        $events_html .= '<p>' . esc_html__('Noch keine Events vorhanden.', CPC2_TEXT_DOMAIN) . '</p>';
+    }
+
+    $html = '';
+    if (!empty($args['back_url'])) {
+        $html .= '<p class="cpc_projects_back_link"><a href="' . esc_url($args['back_url']) . '">&larr; ' . esc_html__('Alle Projekte', CPC2_TEXT_DOMAIN) . '</a></p>';
+    }
+    $html .= '<div class="cpc_projects_single">';
+    $html .= '<h2 class="cpc_projects_single_title">' . esc_html(get_the_title($project_id)) . '</h2>';
+    $html .= '<div class="cpc_projects_single_nav">';
+    $html .= '<button type="button" class="cpc_projects_single_nav_link is-active" data-target="overview">' . esc_html__('Uebersicht', CPC2_TEXT_DOMAIN) . '</button>';
+    $html .= '<button type="button" class="cpc_projects_single_nav_link" data-target="tasks">' . esc_html__('Tasks', CPC2_TEXT_DOMAIN) . '</button>';
+    $html .= '<button type="button" class="cpc_projects_single_nav_link" data-target="activity">' . esc_html__('Aktivitaet', CPC2_TEXT_DOMAIN) . '</button>';
+    if ($can_manage) {
+        $html .= '<button type="button" class="cpc_projects_single_nav_link" data-target="settings">' . esc_html__('Einstellungen', CPC2_TEXT_DOMAIN) . '</button>';
+    }
+    $html .= '</div>';
+
+    $html .= '<section class="cpc_projects_single_section is-active" data-section="overview">';
+    if ((int)$progress['total'] > 0) {
+        $html .= '<div class="cpc_projects_ataglance">';
+        $html .= '<div class="cpc_projects_ataglance_item"><span class="cpc_projects_ataglance_num">' . (int)$progress['total'] . '</span><span class="cpc_projects_ataglance_label">' . esc_html__('Gesamt', CPC2_TEXT_DOMAIN) . '</span></div>';
+        $html .= '<div class="cpc_projects_ataglance_item"><span class="cpc_projects_ataglance_num cpc_projects_ataglance_done">' . (int)$progress['completed'] . '</span><span class="cpc_projects_ataglance_label">' . esc_html__('Erledigt', CPC2_TEXT_DOMAIN) . '</span></div>';
+        $html .= '<div class="cpc_projects_ataglance_item"><span class="cpc_projects_ataglance_num cpc_projects_ataglance_open">' . (int)$progress['remaining'] . '</span><span class="cpc_projects_ataglance_label">' . esc_html__('Offen', CPC2_TEXT_DOMAIN) . '</span></div>';
+        $html .= '<div class="cpc_projects_ataglance_bar">' . cpc_projects_render_project_progress($project_id) . '</div>';
+        $html .= '</div>';
+    }
+    $html .= '<div class="cpc_projects_single_content">' . wp_kses_post($project->post_content) . '</div>';
+    $html .= '</section>';
+
+    $html .= '<section class="cpc_projects_single_section" data-section="tasks">';
+    $html .= cpc_projects_render_task_panel($project_id);
+    $html .= '</section>';
+
+    $html .= '<section class="cpc_projects_single_section" data-section="activity">';
+    $html .= $events_html;
+    $html .= '</section>';
+
+    if ($can_manage) {
+        $current_status = cpc_projects_get_status($project_id);
+        $html .= '<section class="cpc_projects_single_section" data-section="settings">';
+        $html .= '<div class="cpc_projects_settings_panel">';
+        $html .= '<div class="cpc_projects_settings_notice" style="display:none"></div>';
+        $html .= '<form class="cpc_projects_settings_form" data-project-id="' . (int)$project_id . '">';
+        $html .= '<div class="cpc_projects_form_grid">';
+        $html .= '<label>' . esc_html__('Titel', CPC2_TEXT_DOMAIN) . '</label>';
+        $html .= '<input type="text" name="title" value="' . esc_attr(get_the_title($project_id)) . '" required />';
+        $html .= '<label>' . esc_html__('Beschreibung', CPC2_TEXT_DOMAIN) . '</label>';
+        $html .= '<textarea name="description" rows="6">' . esc_textarea($project->post_content) . '</textarea>';
+        $html .= '<label>' . esc_html__('Sichtbarkeit', CPC2_TEXT_DOMAIN) . '</label>';
+        $html .= '<select name="status">';
+        $html .= '<option value="public"' . selected($current_status, 'public', false) . '>' . esc_html__('Oeffentlich', CPC2_TEXT_DOMAIN) . '</option>';
+        $html .= '<option value="members"' . selected($current_status, 'members', false) . '>' . esc_html__('Nur Mitglieder', CPC2_TEXT_DOMAIN) . '</option>';
+        $html .= '<option value="private"' . selected($current_status, 'private', false) . '>' . esc_html__('Privat', CPC2_TEXT_DOMAIN) . '</option>';
+        $html .= '</select>';
+        $html .= '</div>';
+        $html .= '<p><button type="submit" class="cpc_button">' . esc_html__('Projekt aktualisieren', CPC2_TEXT_DOMAIN) . '</button></p>';
+        $html .= '</form>';
+        $html .= '<hr class="cpc_projects_settings_divider" />';
+        $html .= '<div class="cpc_projects_settings_danger">';
+        $html .= '<p class="cpc_projects_settings_danger_hint">' . esc_html__('Projekt und alle Tasks dauerhaft loeschen. Diese Aktion kann nicht rueckgaengig gemacht werden.', CPC2_TEXT_DOMAIN) . '</p>';
+        $html .= '<button type="button" class="cpc_button cpc_button_danger cpc_projects_delete_project_btn" data-project-id="' . (int)$project_id . '">' . esc_html__('Projekt loeschen', CPC2_TEXT_DOMAIN) . '</button>';
+        $html .= '</div>';
+        $html .= '</div>';
+        $html .= '</section>';
+    }
+
+    $html .= '</div>';
+
+    return $html;
+}
+
 function cpc_projects_render_notice_html() {
     if (empty($_GET['cpc_projects_notice'])) {
         return '';
@@ -584,14 +715,14 @@ function cpc_projects_render_projects_list($projects, $args = array()) {
         $excerpt = wp_trim_words(wp_strip_all_tags((string)$project->post_content), 24);
         $html .= '<li class="cpc_projects_item taskbreaker-project-item">';
         $html .= '<div class="cpc_projects_item_wrap taskbreaker-project-item-wrap">';
-        $html .= '<div class="task_breaker-project-title"><h4 class="cpc_projects_item_title"><a href="'.esc_url(get_permalink($project)).'">'.esc_html($project->post_title).'</a></h4></div>';
+        $html .= '<div class="task_breaker-project-title"><h4 class="cpc_projects_item_title"><a href="'.esc_url(cpc_projects_get_project_url($project->ID)).'">'.esc_html($project->post_title).'</a></h4></div>';
         $html .= '<div class="task_breaker-project-meta">'.cpc_projects_render_project_progress($project->ID).'</div>';
         if ($excerpt !== '') {
             $html .= '<p class="cpc_projects_item_excerpt task_breaker-project-excerpt">'.esc_html($excerpt).'</p>';
         }
         $html .= '<div class="cpc_projects_item_meta">'.esc_html(get_the_date('', $project)).'</div>';
         $html .= '<div class="task_breaker-project-author">'.cpc_projects_render_project_owner_line($project).'</div>';
-        $html .= '<div class="cpc_projects_item_actions"><a class="cpc_button" href="'.esc_url(get_permalink($project)).'">'.esc_html__('Projekt oeffnen', CPC2_TEXT_DOMAIN).'</a></div>';
+        $html .= '<div class="cpc_projects_item_actions"><a class="cpc_button" href="'.esc_url(cpc_projects_get_project_url($project->ID)).'">'.esc_html__('Projekt oeffnen', CPC2_TEXT_DOMAIN).'</a></div>';
         if (!empty($args['show_tasks'])) {
             $html .= cpc_projects_render_task_panel($project->ID);
         }
@@ -683,6 +814,27 @@ function cpc_projects_render_group_tab_content($html, $group_id, $shortcode_atts
         return '<p>'.esc_html__('Keine Berechtigung.', CPC2_TEXT_DOMAIN).'</p>';
     }
 
+    // — Einzelprojekt-Detailansicht —
+    $single_project_id = isset($_GET['cpc_project_id']) ? (int)$_GET['cpc_project_id'] : 0;
+    if ($single_project_id > 0) {
+        // Sicherheitscheck: Projekt muss wirklich zu dieser Gruppe gehoeren
+        $component    = cpc_projects_get_component($single_project_id);
+        $component_id = cpc_projects_get_component_id($single_project_id);
+        if ($component === 'groups' && $component_id === $group_id) {
+            $back_url = add_query_arg(
+                'tab', 'projects',
+                remove_query_arg(array('cpc_project_id', 'cpc_paged'), function_exists('cpc_get_group_link') ? cpc_get_group_link($group_id) : cpc_curPageURL())
+            );
+            $html = '';
+            $html .= cpc_projects_render_notice_html();
+            $html .= '<div class="cpc_projects_group_tab">';
+            $html .= cpc_projects_render_single_project_html($single_project_id, array('back_url' => $back_url));
+            $html .= '</div>';
+            return $html;
+        }
+    }
+
+    // — Projektliste —
     $projects = cpc_projects_get_projects(array(
         'component' => 'groups',
         'component_id' => $group_id,
@@ -695,9 +847,9 @@ function cpc_projects_render_group_tab_content($html, $group_id, $shortcode_atts
     $html .= '<h3>'.esc_html__('Gruppen-Projekte', CPC2_TEXT_DOMAIN).'</h3>';
     $html .= cpc_projects_render_create_form('groups', $group_id);
     $paged_g   = isset($_GET['cpc_paged']) ? max(1, (int)$_GET['cpc_paged']) : 1;
-    $tab_url_g = add_query_arg('cpc_projects_tab', 'projects', cpc_curPageURL());
+    $tab_url_g = add_query_arg('tab', 'projects', remove_query_arg(array('cpc_paged', 'cpc_project_id'), function_exists('cpc_get_group_link') ? cpc_get_group_link($group_id) : cpc_curPageURL()));
     $html .= cpc_projects_render_projects_list($projects, array(
-        'show_tasks'     => true,
+        'show_tasks'     => false,
         'page'           => $paged_g,
         'per_page'       => 10,
         'pagination_url' => $tab_url_g,

@@ -990,7 +990,7 @@ function cpc_projects_get_task_url($project_id, $task_id = 0) {
         return '';
     }
 
-    $url = get_permalink($project_id);
+    $url = function_exists('cpc_projects_get_project_url') ? cpc_projects_get_project_url($project_id) : get_permalink($project_id);
     if (!$url) {
         return '';
     }
