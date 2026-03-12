@@ -309,3 +309,25 @@ function cpc_media_render_group_tab_content($html, $group_id, $shortcode_atts) {
     return $html;
 }
 add_filter('cpc_group_tab_content_gallery', 'cpc_media_render_group_tab_content', 20, 3);
+
+function cpc_media_render_single_gallery_content($content) {
+    if (!cpc_media_is_enabled()) {
+        return $content;
+    }
+
+    if (!is_singular('cpc_gallery') || !in_the_loop() || !is_main_query()) {
+        return $content;
+    }
+
+    $gallery = get_post();
+    if (!$gallery || $gallery->post_type !== 'cpc_gallery') {
+        return $content;
+    }
+
+    if (!cpc_media_user_can_view_gallery($gallery->ID)) {
+        return '<p>'.esc_html__('Keine Berechtigung.', CPC2_TEXT_DOMAIN).'</p>';
+    }
+
+    return cpc_media_render_notice_html().cpc_media_render_gallery_block($gallery);
+}
+add_filter('the_content', 'cpc_media_render_single_gallery_content', 20);

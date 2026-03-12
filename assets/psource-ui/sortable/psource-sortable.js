@@ -258,9 +258,12 @@ class PSourceSortable {
             
             if (targetItem) {
                 const targetRect = targetItem.getBoundingClientRect();
-                const middle = targetRect.top + targetRect.height / 2;
-                
-                if (clientY < middle) {
+                const middleY = targetRect.top + targetRect.height / 2;
+                const middleX = targetRect.left + targetRect.width / 2;
+                const sameRow = Math.abs(clientY - middleY) < (targetRect.height / 2);
+
+                // For grids, use horizontal split inside same row; otherwise vertical split.
+                if ((sameRow && clientX < middleX) || (!sameRow && clientY < middleY)) {
                     targetItem.parentNode.insertBefore(this.placeholder, targetItem);
                 } else {
                     targetItem.parentNode.insertBefore(this.placeholder, targetItem.nextSibling);
@@ -270,6 +273,49 @@ class PSourceSortable {
                 if (newIndex !== this.currentIndex) {
                     this.currentIndex = newIndex;
                     
+                    if (this.options.change) {
+                        this.options.change.call(this, originalEvent, {
+                            item: this.dragElement,
+                            placeholder: this.placeholder
+                        });
+                    }
+                }
+            } else if (this.element.contains(elementUnder) || elementUnder === this.element) {
+                // Fallback for container gaps: place before nearest item or at the end.
+                const candidates = items.filter(item => item !== this.dragElement);
+
+                if (!candidates.length) {
+                    this.element.appendChild(this.placeholder);
+                } else {
+                    let nearest = null;
+                    let nearestDist = Number.POSITIVE_INFINITY;
+
+                    for (let item of candidates) {
+                        const rect = item.getBoundingClientRect();
+                        const cx = rect.left + (rect.width / 2);
+                        const cy = rect.top + (rect.height / 2);
+                        const dx = clientX - cx;
+                        const dy = clientY - cy;
+                        const dist = (dx * dx) + (dy * dy);
+
+                        if (dist < nearestDist) {
+                            nearestDist = dist;
+                            nearest = item;
+                        }
+                    }
+
+                    if (nearest) {
+                        const rect = nearest.getBoundingClientRect();
+                        const before = clientY < (rect.top + rect.height / 2) || clientX < (rect.left + rect.width / 2);
+                        nearest.parentNode.insertBefore(this.placeholder, before ? nearest : nearest.nextSibling);
+                    } else {
+                        this.element.appendChild(this.placeholder);
+                    }
+                }
+
+                const newIndex = this.getPlaceholderIndex();
+                if (newIndex !== this.currentIndex) {
+                    this.currentIndex = newIndex;
                     if (this.options.change) {
                         this.options.change.call(this, originalEvent, {
                             item: this.dragElement,
