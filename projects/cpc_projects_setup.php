@@ -44,6 +44,32 @@ function cpc_admin_getting_started_projects() {
     echo '</tr>';
 
     echo '<tr class="form-field">';
+    echo '<td scope="row" valign="top"><label>'.__('Erlaubte Attachment-Endungen', CPC2_TEXT_DOMAIN).'</label></td>';
+    echo '<td><input type="text" name="cpc_projects_comment_allowed_exts" value="'.esc_attr(implode(',', cpc_projects_comment_allowed_extensions())).'" class="regular-text" />';
+    echo '<span class="description">'.__('Kommagetrennt, z.B. jpg,png,pdf,zip,mp4', CPC2_TEXT_DOMAIN).'</span></td>';
+    echo '</tr>';
+
+    echo '<tr class="form-field">';
+    echo '<td scope="row" valign="top"><label>'.__('Max. Bild-Size (MB)', CPC2_TEXT_DOMAIN).'</label></td>';
+    echo '<td><input type="number" min="1" max="200" name="cpc_projects_comment_max_attachment_mb_image" value="'.(int)cpc_projects_comment_attachment_type_limit_mb('image').'" class="small-text" style="max-width:80px;" /></td>';
+    echo '</tr>';
+
+    echo '<tr class="form-field">';
+    echo '<td scope="row" valign="top"><label>'.__('Max. Video-Size (MB)', CPC2_TEXT_DOMAIN).'</label></td>';
+    echo '<td><input type="number" min="1" max="200" name="cpc_projects_comment_max_attachment_mb_video" value="'.(int)cpc_projects_comment_attachment_type_limit_mb('video').'" class="small-text" style="max-width:80px;" /></td>';
+    echo '</tr>';
+
+    echo '<tr class="form-field">';
+    echo '<td scope="row" valign="top"><label>'.__('Max. Audio-Size (MB)', CPC2_TEXT_DOMAIN).'</label></td>';
+    echo '<td><input type="number" min="1" max="200" name="cpc_projects_comment_max_attachment_mb_audio" value="'.(int)cpc_projects_comment_attachment_type_limit_mb('audio').'" class="small-text" style="max-width:80px;" /></td>';
+    echo '</tr>';
+
+    echo '<tr class="form-field">';
+    echo '<td scope="row" valign="top"><label>'.__('Max. Dokument-Size (MB)', CPC2_TEXT_DOMAIN).'</label></td>';
+    echo '<td><input type="number" min="1" max="200" name="cpc_projects_comment_max_attachment_mb_document" value="'.(int)cpc_projects_comment_attachment_type_limit_mb('document').'" class="small-text" style="max-width:80px;" /></td>';
+    echo '</tr>';
+
+    echo '<tr class="form-field">';
     echo '<td scope="row" valign="top"><label>'.__('Alerts bei Task-Events', CPC2_TEXT_DOMAIN).'</label></td>';
     echo '<td><input type="checkbox" style="width:20px; height:20px;" name="cpc_projects_alerts_enabled" '.(cpc_projects_alerts_enabled() ? 'CHECKED' : '').' /></td>';
     echo '</tr>';
@@ -97,6 +123,19 @@ function cpc_admin_projects_save($the_post) {
 
     if (isset($the_post['cpc_projects_comment_max_attachment_mb'])) {
         update_option('cpc_projects_comment_max_attachment_mb', max(1, min(50, (int)$the_post['cpc_projects_comment_max_attachment_mb'])));
+    }
+
+    if (isset($the_post['cpc_projects_comment_allowed_exts'])) {
+        $exts = strtolower((string)$the_post['cpc_projects_comment_allowed_exts']);
+        $exts = preg_replace('/[^a-z0-9,]/', '', $exts);
+        update_option('cpc_projects_comment_allowed_exts', $exts);
+    }
+
+    foreach (array('image', 'video', 'audio', 'document') as $bucket) {
+        $key = 'cpc_projects_comment_max_attachment_mb_'.$bucket;
+        if (isset($the_post[$key])) {
+            update_option($key, max(1, min(200, (int)$the_post[$key])));
+        }
     }
 
     if (isset($the_post['cpc_projects_alerts_enabled'])) {

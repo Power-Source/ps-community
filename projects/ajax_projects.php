@@ -6,6 +6,7 @@ add_action('wp_ajax_cpc_projects_toggle_task', 'cpc_projects_ajax_toggle_task');
 add_action('wp_ajax_cpc_projects_delete_task', 'cpc_projects_ajax_delete_task');
 add_action('wp_ajax_cpc_projects_add_comment', 'cpc_projects_ajax_add_comment');
 add_action('wp_ajax_cpc_projects_update_task', 'cpc_projects_ajax_update_task');
+add_action('wp_ajax_cpc_projects_delete_comment_attachment', 'cpc_projects_ajax_delete_comment_attachment');
 
 function cpc_projects_ajax_verify() {
 	if (!is_user_logged_in()) {
@@ -192,5 +193,27 @@ function cpc_projects_ajax_add_comment() {
 		'comment_id' => (int)$comment_id,
 		'attachment_ids' => $attachment_ids,
 		'tasks_html' => cpc_projects_render_task_panel((int)$task->project_id),
+	));
+}
+
+function cpc_projects_ajax_delete_comment_attachment() {
+	cpc_projects_ajax_verify();
+
+	$attachment_id = isset($_POST['attachment_id']) ? (int)$_POST['attachment_id'] : 0;
+	if ($attachment_id <= 0) {
+		wp_send_json_error(array('message' => __('Ungueltige Datei.', CPC2_TEXT_DOMAIN)), 400);
+	}
+
+	$project_id = (int)get_post_meta($attachment_id, 'cpc_project_id', true);
+	if ($project_id <= 0 || !cpc_projects_user_can_view_project($project_id)) {
+		wp_send_json_error(array('message' => __('Keine Berechtigung.', CPC2_TEXT_DOMAIN)), 403);
+	}
+
+	if (!cpc_projects_delete_comment_attachment($attachment_id, get_current_user_id())) {
+		wp_send_json_error(array('message' => __('Datei konnte nicht geloescht werden.', CPC2_TEXT_DOMAIN)), 500);
+	}
+
+	wp_send_json_success(array(
+		'tasks_html' => cpc_projects_render_task_panel($project_id),
 	));
 }

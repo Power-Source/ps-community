@@ -114,6 +114,19 @@ function cpc_projects_render_task_panel($project_id) {
     $html .= '<option value="open">'.esc_html__('Offen', CPC2_TEXT_DOMAIN).'</option>';
     $html .= '<option value="done">'.esc_html__('Erledigt', CPC2_TEXT_DOMAIN).'</option>';
     $html .= '</select>';
+    $html .= '<select class="cpc_projects_task_filter_priority">';
+    $html .= '<option value="all">'.esc_html__('Alle Prioritaeten', CPC2_TEXT_DOMAIN).'</option>';
+    $html .= '<option value="1">'.esc_html__('Normal', CPC2_TEXT_DOMAIN).'</option>';
+    $html .= '<option value="2">'.esc_html__('Hoch', CPC2_TEXT_DOMAIN).'</option>';
+    $html .= '<option value="3">'.esc_html__('Kritisch', CPC2_TEXT_DOMAIN).'</option>';
+    $html .= '</select>';
+    $html .= '<select class="cpc_projects_task_filter_assignee">';
+    $html .= '<option value="all">'.esc_html__('Alle Zuweisungen', CPC2_TEXT_DOMAIN).'</option>';
+    foreach ($assignable_users as $assign_user) {
+        $html .= '<option value="'.(int)$assign_user->ID.'">'.esc_html($assign_user->display_name).'</option>';
+    }
+    $html .= '</select>';
+    $html .= '<label class="cpc_projects_task_filter_overdue_wrap"><input type="checkbox" class="cpc_projects_task_filter_overdue" value="1" /> '.esc_html__('Nur ueberfaellig', CPC2_TEXT_DOMAIN).'</label>';
     $html .= '</div>';
 
     if ($can_manage) {
@@ -148,7 +161,10 @@ function cpc_projects_render_task_panel($project_id) {
             $is_done = ((string)$task->status === 'done');
             $item_class = 'cpc_projects_task_item'.($is_done ? ' is-done' : '');
             $task_title_attr = strtolower(wp_strip_all_tags((string)$task->title));
-            $html .= '<li id="cpc-project-task-'.(int)$task->id.'" class="'.esc_attr($item_class).'" data-task-id="'.(int)$task->id.'" data-task-status="'.esc_attr($is_done ? 'done' : 'open').'" data-task-title="'.esc_attr($task_title_attr).'">';
+            $task_assigned_csv = implode(',', array_map('intval', cpc_projects_get_task_assigned_user_ids($task)));
+            $deadline_ts = !empty($task->deadline) ? (int)strtotime((string)$task->deadline) : 0;
+            $is_overdue = ($deadline_ts > 0 && !$is_done && $deadline_ts < current_time('timestamp', 1)) ? '1' : '0';
+            $html .= '<li id="cpc-project-task-'.(int)$task->id.'" class="'.esc_attr($item_class).'" data-task-id="'.(int)$task->id.'" data-task-status="'.esc_attr($is_done ? 'done' : 'open').'" data-task-title="'.esc_attr($task_title_attr).'" data-task-priority="'.(int)$task->priority.'" data-task-assigned="'.esc_attr($task_assigned_csv).'" data-task-overdue="'.esc_attr($is_overdue).'">';
             $html .= '<label class="cpc_projects_task_toggle_wrap">';
             if ($can_manage) {
                 $html .= '<input class="cpc_projects_task_toggle" type="checkbox" '.checked($is_done, true, false).' data-task-id="'.(int)$task->id.'" />';
@@ -212,6 +228,39 @@ function cpc_projects_render_task_panel($project_id) {
             }
 
             $comments = cpc_projects_get_task_comments($project_id, (int)$task->id, array('limit' => 30));
+
+            $task_creator = get_user_by('id', (int)$task->user_id);
+            $task_completer = !empty($task->completed_by) ? get_user_by('id', (int)$task->completed_by) : false;
+            $task_events = cpc_projects_get_task_events($project_id, (int)$task->id, 20);
+
+            $html .= '<button type="button" class="cpc_projects_task_details_toggle cpc_projects_inline_link" data-task-id="'.(int)$task->id.'">'.esc_html__('Details', CPC2_TEXT_DOMAIN).'</button>';
+            $html .= '<div class="cpc_projects_task_details" data-task-id="'.(int)$task->id.'" style="display:none">';
+            $html .= '<div class="cpc_projects_task_details_meta">';
+            $html .= '<div><strong>'.esc_html__('Erstellt', CPC2_TEXT_DOMAIN).':</strong> '.esc_html(wp_date(get_option('date_format').' '.get_option('time_format'), strtotime((string)$task->date_added))).'</div>';
+            $html .= '<div><strong>'.esc_html__('Zuletzt geaendert', CPC2_TEXT_DOMAIN).':</strong> '.esc_html(wp_date(get_option('date_format').' '.get_option('time_format'), strtotime((string)$task->date_updated))).'</div>';
+            if ($task_creator) {
+                $html .= '<div><strong>'.esc_html__('Ersteller', CPC2_TEXT_DOMAIN).':</strong> '.esc_html($task_creator->display_name).'</div>';
+            }
+            if ($task_completer) {
+                $html .= '<div><strong>'.esc_html__('Abgeschlossen von', CPC2_TEXT_DOMAIN).':</strong> '.esc_html($task_completer->display_name).'</div>';
+            }
+            $html .= '<div><strong>'.esc_html__('Kommentare', CPC2_TEXT_DOMAIN).':</strong> '.(int)count($comments).'</div>';
+            $html .= '</div>';
+
+            if (!empty($task_events)) {
+                $html .= '<div class="cpc_projects_task_event_history">';
+                $html .= '<h6>'.esc_html__('Verlauf', CPC2_TEXT_DOMAIN).'</h6>';
+                $html .= '<ul>';
+                foreach ($task_events as $event) {
+                    $event_author = $event->comment_author ? $event->comment_author : __('Mitglied', CPC2_TEXT_DOMAIN);
+                    $event_time = sprintf(__('vor %s', CPC2_TEXT_DOMAIN), human_time_diff(strtotime($event->comment_date_gmt), current_time('timestamp', 1)));
+                    $html .= '<li><span class="cpc_projects_task_event_meta"><strong>'.esc_html($event_author).'</strong> - '.esc_html($event_time).'</span> '.esc_html(wp_strip_all_tags((string)$event->comment_content)).'</li>';
+                }
+                $html .= '</ul>';
+                $html .= '</div>';
+            }
+            $html .= '</div>';
+
             $html .= '<div class="cpc_projects_task_comments" data-task-id="'.(int)$task->id.'">';
             if (!empty($comments)) {
                 $html .= '<ul class="cpc_projects_task_comment_list">';
@@ -235,6 +284,9 @@ function cpc_projects_render_task_panel($project_id) {
                                 $file_name = basename((string)$file_url);
                             }
                             $html .= '<a class="cpc_projects_task_comment_attachment" href="'.esc_url($file_url).'" target="_blank" rel="noopener">'.esc_html($file_name).'</a>';
+                            if (cpc_projects_user_can_delete_comment_attachment($attachment_id, get_current_user_id())) {
+                                $html .= '<button type="button" class="cpc_projects_comment_attachment_delete cpc_projects_inline_link" data-attachment-id="'.(int)$attachment_id.'">'.esc_html__('Datei loeschen', CPC2_TEXT_DOMAIN).'</button>';
+                            }
                         }
                         $html .= '</div>';
                     }

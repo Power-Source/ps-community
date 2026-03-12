@@ -220,6 +220,40 @@
     gap: 5px;
 }
 
+.cpc_projects_single {
+    margin: 12px 0;
+}
+
+.cpc_projects_single_nav {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+    margin: 0 0 14px;
+}
+
+.cpc_projects_single_nav_link {
+    display: inline-block;
+    padding: 8px 12px;
+    border-radius: 5px;
+    border: 1px solid #ccd0d4;
+    background: #fff;
+    text-decoration: none;
+}
+
+.cpc_projects_single_nav_link.is-active {
+    background: #2271b1;
+    border-color: #2271b1;
+    color: #fff;
+}
+
+.cpc_projects_single_section {
+    display: none;
+}
+
+.cpc_projects_single_section.is-active {
+    display: block;
+}
+
 .cpc_projects_task_comment_item {
     background: #fff;
     border: 1px solid #e2e8f0;
@@ -246,6 +280,7 @@
     display: flex;
     flex-wrap: wrap;
     gap: 6px;
+    align-items: center;
 }
 
 .cpc_projects_task_comment_attachment {
@@ -259,6 +294,46 @@
 
 .cpc_projects_task_comment_files {
     font-size: 12px;
+}
+
+.cpc_projects_task_details {
+    margin-top: 8px;
+    padding: 8px;
+    border: 1px solid #dbe4ed;
+    border-radius: 8px;
+    background: #f7fafd;
+}
+
+.cpc_projects_task_details_meta {
+    display: grid;
+    gap: 3px;
+    font-size: 12px;
+    color: #5f7386;
+}
+
+.cpc_projects_task_event_history {
+    margin-top: 8px;
+}
+
+.cpc_projects_task_event_history h6 {
+    margin: 0 0 4px;
+    font-size: 12px;
+}
+
+.cpc_projects_task_event_history ul {
+    margin: 0;
+    padding-left: 16px;
+    display: grid;
+    gap: 4px;
+}
+
+.cpc_projects_task_event_history li {
+    font-size: 12px;
+    color: #4b5f72;
+}
+
+.cpc_projects_task_event_meta {
+    color: #6a7e91;
 }
 
 .cpc_projects_task_comment_form {

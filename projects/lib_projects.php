@@ -39,6 +39,55 @@ function cpc_projects_task_comment_max_attachment_mb() {
     return $size;
 }
 
+function cpc_projects_comment_allowed_extensions() {
+    $raw = (string)get_option('cpc_projects_comment_allowed_exts', 'jpg,jpeg,png,gif,webp,pdf,zip,txt,doc,docx,xls,xlsx,csv,mp3,mp4');
+    $parts = array_map('trim', explode(',', strtolower($raw)));
+    $parts = array_values(array_unique(array_filter($parts, function($ext) {
+        return (bool)preg_match('/^[a-z0-9]+$/', $ext);
+    })));
+
+    if (empty($parts)) {
+        $parts = array('jpg', 'jpeg', 'png', 'gif', 'pdf', 'zip', 'txt');
+    }
+
+    return $parts;
+}
+
+function cpc_projects_comment_attachment_type_limit_mb($type) {
+    $type = sanitize_key((string)$type);
+    $defaults = array(
+        'image' => 10,
+        'video' => 40,
+        'audio' => 20,
+        'document' => 15,
+    );
+
+    $option_key = 'cpc_projects_comment_max_attachment_mb_'.$type;
+    $value = (int)get_option($option_key, isset($defaults[$type]) ? $defaults[$type] : 10);
+    if ($value < 1) {
+        $value = 1;
+    }
+    if ($value > 200) {
+        $value = 200;
+    }
+
+    return $value;
+}
+
+function cpc_projects_get_attachment_bucket_for_mime($mime_type) {
+    $mime_type = (string)$mime_type;
+    if (strpos($mime_type, 'image/') === 0) {
+        return 'image';
+    }
+    if (strpos($mime_type, 'video/') === 0) {
+        return 'video';
+    }
+    if (strpos($mime_type, 'audio/') === 0) {
+        return 'audio';
+    }
+    return 'document';
+}
+
 function cpc_projects_db_version() {
     return '1.1.0';
 }
@@ -1106,8 +1155,72 @@ function cpc_projects_notify_task_event($project_id, $task, $event_type, $actor_
     }
 
     cpc_projects_insert_task_activity($actor_id, $project_id, $task_id, $activity_text, $event_type);
+    cpc_projects_add_task_event($project_id, $task_id, $actor_id, $event_type, $message);
 
     do_action('cpc_projects_task_event', $event_type, $project_id, $task_id, $actor_id, $recipients, $message);
+}
+
+function cpc_projects_add_task_event($project_id, $task_id, $user_id, $event_type, $message = '') {
+    $project_id = (int)$project_id;
+    $task_id = (int)$task_id;
+    $user_id = (int)$user_id;
+    $event_type = sanitize_key((string)$event_type);
+    $message = trim((string)$message);
+
+    if ($project_id <= 0 || $task_id <= 0 || $user_id <= 0 || $event_type === '' || $message === '') {
+        return 0;
+    }
+
+    $user = get_user_by('id', $user_id);
+    if (!$user) {
+        return 0;
+    }
+
+    $comment_id = wp_insert_comment(array(
+        'comment_post_ID' => $project_id,
+        'comment_author' => $user->display_name,
+        'comment_author_email' => $user->user_email,
+        'comment_author_url' => '',
+        'comment_content' => wp_kses_post($message),
+        'comment_type' => 'cpc_project_task_event',
+        'comment_parent' => 0,
+        'user_id' => $user_id,
+        'comment_approved' => 1,
+    ));
+
+    if (!$comment_id) {
+        return 0;
+    }
+
+    add_comment_meta($comment_id, 'cpc_project_task_id', $task_id, true);
+    add_comment_meta($comment_id, 'cpc_project_task_event_type', $event_type, true);
+
+    return (int)$comment_id;
+}
+
+function cpc_projects_get_task_events($project_id, $task_id, $limit = 25) {
+    $project_id = (int)$project_id;
+    $task_id = (int)$task_id;
+    $limit = max(1, min(200, (int)$limit));
+
+    if ($project_id <= 0 || $task_id <= 0) {
+        return array();
+    }
+
+    return get_comments(array(
+        'post_id' => $project_id,
+        'status' => 'approve',
+        'type' => 'cpc_project_task_event',
+        'number' => $limit,
+        'order' => 'DESC',
+        'meta_query' => array(
+            array(
+                'key' => 'cpc_project_task_id',
+                'value' => $task_id,
+                'type' => 'NUMERIC',
+            ),
+        ),
+    ));
 }
 
 function cpc_projects_get_comment_attachment_ids($comment_id) {
@@ -1142,6 +1255,7 @@ function cpc_projects_add_comment_attachments($project_id, $task_id, $comment_id
 
     $created_ids = array();
     $max_bytes = cpc_projects_task_comment_max_attachment_mb() * 1024 * 1024;
+    $allowed_exts = cpc_projects_comment_allowed_extensions();
     $names = is_array($files['name']) ? $files['name'] : array($files['name']);
 
     foreach ($names as $index => $name) {
@@ -1166,6 +1280,19 @@ function cpc_projects_add_comment_attachments($project_id, $task_id, $comment_id
             continue;
         }
 
+        $file_type = wp_check_filetype((string)$single['name']);
+        $ext = isset($file_type['ext']) ? strtolower((string)$file_type['ext']) : '';
+        $mime_type = isset($file_type['type']) ? (string)$file_type['type'] : '';
+        if ($ext === '' || !in_array($ext, $allowed_exts, true)) {
+            continue;
+        }
+
+        $bucket = cpc_projects_get_attachment_bucket_for_mime($mime_type);
+        $bucket_max = cpc_projects_comment_attachment_type_limit_mb($bucket) * 1024 * 1024;
+        if ($bucket_max > 0 && (int)$single['size'] > $bucket_max) {
+            continue;
+        }
+
         $uploaded = wp_handle_upload($single, array('test_form' => false));
         if (!is_array($uploaded) || !empty($uploaded['error']) || empty($uploaded['file']) || empty($uploaded['url'])) {
             continue;
@@ -1176,6 +1303,7 @@ function cpc_projects_add_comment_attachments($project_id, $task_id, $comment_id
             'post_title' => sanitize_text_field(pathinfo((string)$single['name'], PATHINFO_FILENAME)),
             'post_content' => '',
             'post_status' => 'inherit',
+            'post_author' => get_current_user_id(),
             'post_parent' => $project_id,
         ), $uploaded['file'], $project_id);
 
@@ -1200,4 +1328,81 @@ function cpc_projects_add_comment_attachments($project_id, $task_id, $comment_id
     }
 
     return $created_ids;
+}
+
+function cpc_projects_user_can_delete_comment_attachment($attachment_id, $user_id = 0) {
+    $attachment_id = (int)$attachment_id;
+    if ($attachment_id <= 0) {
+        return false;
+    }
+
+    if (!$user_id) {
+        $user_id = get_current_user_id();
+    }
+    $user_id = (int)$user_id;
+    if ($user_id <= 0) {
+        return false;
+    }
+
+    if (current_user_can('manage_options')) {
+        return true;
+    }
+
+    $project_id = (int)get_post_meta($attachment_id, 'cpc_project_id', true);
+    $comment_id = (int)get_post_meta($attachment_id, 'cpc_project_task_comment_id', true);
+
+    if ($project_id > 0 && cpc_projects_user_can_manage_project($project_id, $user_id)) {
+        return true;
+    }
+
+    $attachment = get_post($attachment_id);
+    if ($attachment && (int)$attachment->post_author === $user_id) {
+        return true;
+    }
+
+    if ($comment_id > 0) {
+        $comment = get_comment($comment_id);
+        if ($comment && (int)$comment->user_id === $user_id) {
+            return true;
+        }
+    }
+
+    return false;
+}
+
+function cpc_projects_delete_comment_attachment($attachment_id, $user_id = 0) {
+    $attachment_id = (int)$attachment_id;
+    if ($attachment_id <= 0 || !cpc_projects_user_can_delete_comment_attachment($attachment_id, $user_id)) {
+        return false;
+    }
+
+    $comment_id = (int)get_post_meta($attachment_id, 'cpc_project_task_comment_id', true);
+    if ($comment_id > 0) {
+        $ids = cpc_projects_get_comment_attachment_ids($comment_id);
+        if (!empty($ids)) {
+            $ids = array_values(array_filter($ids, function($id) use ($attachment_id) {
+                return (int)$id !== $attachment_id;
+            }));
+            update_comment_meta($comment_id, 'cpc_project_task_attachment_ids', $ids);
+        }
+    }
+
+    return (bool)wp_delete_attachment($attachment_id, true);
+}
+
+function cpc_projects_get_project_events($project_id, $limit = 80) {
+    $project_id = (int)$project_id;
+    $limit = max(1, min(300, (int)$limit));
+
+    if ($project_id <= 0) {
+        return array();
+    }
+
+    return get_comments(array(
+        'post_id' => $project_id,
+        'status' => 'approve',
+        'type' => 'cpc_project_task_event',
+        'number' => $limit,
+        'order' => 'DESC',
+    ));
 }
