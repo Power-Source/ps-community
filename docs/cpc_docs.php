@@ -16,6 +16,20 @@ function cpc_docs_enqueue_assets() {
 }
 add_action('wp_enqueue_scripts', 'cpc_docs_enqueue_assets', 20);
 
+function cpc_docs_archive_template_include($template) {
+    if (!cpc_docs_is_enabled() || !is_post_type_archive('cpc_doc')) {
+        return $template;
+    }
+
+    $archive_template = __DIR__.'/archive-cpc_doc.php';
+    if (file_exists($archive_template)) {
+        return $archive_template;
+    }
+
+    return $template;
+}
+add_filter('template_include', 'cpc_docs_archive_template_include', 50);
+
 function cpc_docs_handle_ajax_load_folder() {
     if (!cpc_docs_is_enabled()) {
         wp_send_json_error(array('message' => 'Docs not enabled'));
