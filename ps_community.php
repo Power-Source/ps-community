@@ -311,6 +311,10 @@ if (strpos(CPC_CORE_PLUGINS, 'core-groups') !== false):
 else:
     // Groups not loaded
 endif;
+
+// Media / galleries
+require_once('media/cpc_media.php');
+
 // Admin
 if (is_admin()):
 	require_once('cpc_admin.php');
