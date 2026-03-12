@@ -148,9 +148,9 @@ function cpc_media_render_gallery_block($gallery) {
     $html .= '<div class="cpc_media_gallery_shell">';
     $html .= '<div class="cpc_media_gallery_cover_wrap">';
     if ($cover_url) {
-        $html .= '<div class="cpc_media_gallery_cover"><img src="'.esc_url($cover_url).'" alt="'.esc_attr($gallery->post_title).'" /></div>';
+        $html .= '<div class="cpc_media_gallery_cover cpc_media_lightbox_trigger" data-gallery-id="'.esc_attr($gallery_id).'" role="button" tabindex="0"><img src="'.esc_url($cover_url).'" alt="'.esc_attr($gallery->post_title).'" /></div>';
     } else {
-        $html .= '<div class="cpc_media_gallery_cover cpc_media_gallery_cover_empty"><span>'.esc_html__('Keine Vorschau', CPC2_TEXT_DOMAIN).'</span></div>';
+        $html .= '<div class="cpc_media_gallery_cover cpc_media_gallery_cover_empty cpc_media_lightbox_trigger" data-gallery-id="'.esc_attr($gallery_id).'" role="button" tabindex="0"><span>'.esc_html__('Keine Vorschau', CPC2_TEXT_DOMAIN).'</span></div>';
     }
 
     if ($preview_items) {
@@ -185,23 +185,36 @@ function cpc_media_render_gallery_block($gallery) {
 
     if ($can_manage) {
         $html .= '<div class="cpc_media_gallery_actions">';
-        $html .= '<button type="button" class="cpc_button cpc_media_edit_gallery_btn">'.esc_html__('Galerie bearbeiten', CPC2_TEXT_DOMAIN).'</button> ';
+        $html .= '<button type="button" class="cpc_button cpc_media_btn_secondary cpc_media_edit_gallery_btn"><span class="dashicons dashicons-edit"></span> '.esc_html__('Bearbeiten', CPC2_TEXT_DOMAIN).'</button>';
         if (cpc_media_cover_selector_enabled()) {
-            $html .= '<button type="button" class="cpc_button cpc_media_cover_gallery_btn">'.esc_html__('Cover waehlen', CPC2_TEXT_DOMAIN).'</button> ';
+            $html .= '<button type="button" class="cpc_button cpc_media_btn_secondary cpc_media_cover_gallery_btn"><span class="dashicons dashicons-image-filter"></span> '.esc_html__('Cover', CPC2_TEXT_DOMAIN).'</button>';
         }
-        $html .= '<button type="button" class="cpc_button cpc_media_delete_gallery_btn">'.esc_html__('Galerie loeschen', CPC2_TEXT_DOMAIN).'</button>';
+        $html .= '<button type="button" class="cpc_button cpc_media_btn_secondary cpc_media_btn_danger cpc_media_delete_gallery_btn"><span class="dashicons dashicons-trash"></span> '.esc_html__('Löschen', CPC2_TEXT_DOMAIN).'</button>';
         $html .= '</div>';
 
-        $html .= '<form class="cpc_media_edit_gallery_form" style="display:none; margin-top:8px;">';
-        $html .= '<input type="text" name="title" value="'.esc_attr($gallery->post_title).'" style="max-width:420px;width:100%;" />';
-        $html .= '<textarea name="description" rows="3" style="max-width:420px;width:100%; margin-top:6px;">'.esc_textarea($gallery->post_content).'</textarea>';
-        $html .= '<div style="margin-top:6px;display:flex;gap:10px;flex-wrap:wrap;">';
-        $html .= '<label>'.esc_html__('Status', CPC2_TEXT_DOMAIN).' '.cpc_media_render_status_select_html('status', $status, $component).'</label>';
-        $html .= '<label>'.esc_html__('Typ', CPC2_TEXT_DOMAIN).' <select name="type"><option value="photo"'.selected(cpc_media_get_gallery_type($gallery_id), 'photo', false).'>'.esc_html__('Bilder', CPC2_TEXT_DOMAIN).'</option><option value="video"'.selected(cpc_media_get_gallery_type($gallery_id), 'video', false).'>'.esc_html__('Videos', CPC2_TEXT_DOMAIN).'</option><option value="audio"'.selected(cpc_media_get_gallery_type($gallery_id), 'audio', false).'>'.esc_html__('Audio', CPC2_TEXT_DOMAIN).'</option><option value="doc"'.selected(cpc_media_get_gallery_type($gallery_id), 'doc', false).'>'.esc_html__('Dokumente', CPC2_TEXT_DOMAIN).'</option></select></label>';
+        $html .= '<form class="cpc_media_edit_gallery_form" style="display:none; margin-top:12px; padding:14px; background:#f9f9f9; border-radius:4px; border:1px solid #ddd;">';
+        $html .= '<h5 style="margin:0 0 12px 0; font-size:14px;">'.esc_html__('Galerie bearbeiten', CPC2_TEXT_DOMAIN).'</h5>';
+        $html .= '<div>';
+        $html .= '<label style="display:block; margin-bottom:8px; font-weight:600; font-size:12px;">'.esc_html__('Titel', CPC2_TEXT_DOMAIN).'</label>';
+        $html .= '<input type="text" name="title" value="'.esc_attr($gallery->post_title).'" style="max-width:100%; width:100%; padding:8px; border:1px solid #ddd; border-radius:3px;" />';
         $html .= '</div>';
-        $html .= '<div style="margin-top:6px;">';
-        $html .= '<button type="submit" class="cpc_button">'.esc_html__('Speichern', CPC2_TEXT_DOMAIN).'</button> ';
-        $html .= '<button type="button" class="cpc_button cpc_media_cancel_edit_gallery_btn">'.esc_html__('Abbrechen', CPC2_TEXT_DOMAIN).'</button>';
+        $html .= '<div style="margin-top:10px;">';
+        $html .= '<label style="display:block; margin-bottom:8px; font-weight:600; font-size:12px;">'.esc_html__('Beschreibung', CPC2_TEXT_DOMAIN).'</label>';
+        $html .= '<textarea name="description" rows="3" style="max-width:100%; width:100%; padding:8px; border:1px solid #ddd; border-radius:3px; font-family:inherit;">'.esc_textarea($gallery->post_content).'</textarea>';
+        $html .= '</div>';
+        $html .= '<div style="margin-top:10px; display:grid; grid-template-columns:1fr 1fr; gap:10px;">';
+        $html .= '<div>';
+        $html .= '<label style="display:block; margin-bottom:6px; font-weight:600; font-size:12px;">'.esc_html__('Status', CPC2_TEXT_DOMAIN).'</label>';
+        $html .= cpc_media_render_status_select_html('status', $status, $component);
+        $html .= '</div>';
+        $html .= '<div>';
+        $html .= '<label style="display:block; margin-bottom:6px; font-weight:600; font-size:12px;">'.esc_html__('Typ', CPC2_TEXT_DOMAIN).'</label>';
+        $html .= '<select name="type" style="width:100%; padding:8px; border:1px solid #ddd; border-radius:3px;"><option value="photo"'.selected(cpc_media_get_gallery_type($gallery_id), 'photo', false).'>'.esc_html__('Bilder', CPC2_TEXT_DOMAIN).'</option><option value="video"'.selected(cpc_media_get_gallery_type($gallery_id), 'video', false).'>'.esc_html__('Videos', CPC2_TEXT_DOMAIN).'</option><option value="audio"'.selected(cpc_media_get_gallery_type($gallery_id), 'audio', false).'>'.esc_html__('Audio', CPC2_TEXT_DOMAIN).'</option><option value="doc"'.selected(cpc_media_get_gallery_type($gallery_id), 'doc', false).'>'.esc_html__('Dokumente', CPC2_TEXT_DOMAIN).'</option></select>';
+        $html .= '</div>';
+        $html .= '</div>';
+        $html .= '<div style="margin-top:12px; display:flex; gap:6px;">';
+        $html .= '<button type="submit" class="cpc_button cpc_media_btn_primary"><span class="dashicons dashicons-yes"></span> '.esc_html__('Speichern', CPC2_TEXT_DOMAIN).'</button>';
+        $html .= '<button type="button" class="cpc_button cpc_media_btn_secondary cpc_media_cancel_edit_gallery_btn"><span class="dashicons dashicons-no"></span> '.esc_html__('Abbrechen', CPC2_TEXT_DOMAIN).'</button>';
         $html .= '</div>';
         $html .= '</form>';
 

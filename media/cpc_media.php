@@ -16,12 +16,13 @@ function cpc_media_enqueue_assets() {
     wp_enqueue_style('magnificpopup-css', 'https://cdnjs.cloudflare.com/ajax/libs/magnific-popup.js/1.1.0/magnific-popup.min.css', array(), '1.1.0');
     wp_enqueue_script('magnificpopup-js', 'https://cdnjs.cloudflare.com/ajax/libs/magnific-popup.js/1.1.0/jquery.magnific-popup.min.js', array('jquery'), '1.1.0', true);
 
-    // jQuery UI for sortable (reorder)
-    wp_enqueue_script('jquery-ui-sortable');
+    // PSource Sortable (native drag/drop - replacement for deprecated jQuery UI sortable)
+    wp_enqueue_style('psource-sortable-css', plugins_url('../assets/psource-ui/sortable/psource-sortable.css', __FILE__), array(), '1.0.0');
+    wp_enqueue_script('psource-sortable-js', plugins_url('../assets/psource-ui/sortable/psource-sortable.js', __FILE__), array(), '1.0.0', true);
 
     // CPC Media Assets
     wp_enqueue_style('cpc-media-css', plugins_url('cpc_media.css', __FILE__), array('magnificpopup-css'), '1.0.0');
-    wp_enqueue_script('cpc-media-js', plugins_url('cpc_media.js', __FILE__), array('jquery', 'magnificpopup-js', 'jquery-ui-sortable'), '1.0.0', true);
+    wp_enqueue_script('cpc-media-js', plugins_url('cpc_media.js', __FILE__), array('jquery', 'magnificpopup-js', 'psource-sortable-js'), '1.0.0', true);
 
     wp_localize_script('cpc-media-js', 'cpc_media_ajax', array(
         'ajaxurl' => admin_url('admin-ajax.php'),

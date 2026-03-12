@@ -1427,6 +1427,67 @@ function cpc_media_cover_selector_enabled() {
 }
 
 /**
+ * Get gallery grid columns setting
+ */
+function cpc_media_get_gallery_grid_columns() {
+    return max(1, min(6, (int)apply_filters('cpc_media_gallery_grid_columns', (int)get_option('cpc_media_gallery_grid_columns', 3))));
+}
+
+/**
+ * Get max file size in MB
+ */
+function cpc_media_get_max_file_size() {
+    return max(1, min(500, (int)apply_filters('cpc_media_max_file_size', (int)get_option('cpc_media_max_file_size', 50))));
+}
+
+/**
+ * Get thumbnail quality percentage
+ */
+function cpc_media_get_thumbnail_quality() {
+    return max(40, min(100, (int)apply_filters('cpc_media_thumbnail_quality', (int)get_option('cpc_media_thumbnail_quality', 85))));
+}
+
+/**
+ * Get allowed media types
+ */
+function cpc_media_get_allowed_types() {
+    $types = get_option('cpc_media_allowed_types', array('image', 'video', 'audio', 'document'));
+    if (empty($types)) {
+        $types = array('image', 'video', 'audio', 'document');
+    }
+    return apply_filters('cpc_media_allowed_types', $types);
+}
+
+/**
+ * Check if media type is allowed
+ */
+function cpc_media_is_type_allowed($type) {
+    $allowed = cpc_media_get_allowed_types();
+    return in_array($type, $allowed, true);
+}
+
+/**
+ * Check if lightbox auto-play is enabled
+ */
+function cpc_media_lightbox_autoplay() {
+    return (bool)apply_filters('cpc_media_lightbox_autoplay', (bool)get_option('cpc_media_lightbox_autoplay', 0));
+}
+
+/**
+ * Check if lightbox loop is enabled
+ */
+function cpc_media_lightbox_loop() {
+    return (bool)apply_filters('cpc_media_lightbox_loop', (bool)get_option('cpc_media_lightbox_loop', 1));
+}
+
+/**
+ * Check if item descriptions should be shown
+ */
+function cpc_media_show_item_descriptions() {
+    return (bool)apply_filters('cpc_media_show_item_descriptions', (bool)get_option('cpc_media_show_item_descriptions', 1));
+}
+
+/**
  * Get thumbnail URL for media item
  * Used for preview strips, cover selectors, etc.
  */
@@ -1481,6 +1542,38 @@ function cpc_media_get_item_url($media_id) {
     }
 
     return '';
+}
+
+/**
+ * Get normalized media item type
+ */
+function cpc_media_get_item_type($media_id) {
+    $media_id = (int)$media_id;
+    $media = get_post($media_id);
+    if (!$media || $media->post_type !== 'cpc_media') {
+        return 'doc';
+    }
+
+    $type = sanitize_key((string)get_post_meta($media_id, 'cpc_media_type', true));
+
+    // Backward compatibility for alternate labels.
+    if ($type === 'image') {
+        $type = 'photo';
+    }
+    if ($type === 'document') {
+        $type = 'doc';
+    }
+
+    if (in_array($type, array('photo', 'video', 'audio', 'doc'), true)) {
+        return $type;
+    }
+
+    $mime_type = cpc_media_get_media_mime_type($media_id);
+    if ($mime_type) {
+        return cpc_media_map_mime_to_type($mime_type, 'doc');
+    }
+
+    return 'doc';
 }
 
 /**

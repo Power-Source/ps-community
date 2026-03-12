@@ -332,7 +332,7 @@
      */
 
     // Initialize lightbox on click
-    $(document).on('click', '.cpc_media_lightbox_trigger, .cpc_gallery_list .cpc_gallery_list_cover', function(e) {
+    $(document).on('click', '.cpc_media_lightbox_trigger, .cpc_gallery_list .cpc_gallery_list_cover, .cpc_media_gallery_cover', function(e) {
         e.preventDefault();
         
         var $item = $(this).closest('.cpc_gallery_item, .cpc_gallery_list_item');
@@ -348,6 +348,14 @@
 
         if (galleryId) {
             openGalleryLightbox(galleryId, mediaId);
+        }
+    });
+
+    // Keyboard activation for non-anchor trigger elements
+    $(document).on('keydown', '.cpc_media_lightbox_trigger[role="button"]', function(e) {
+        if (e.key === 'Enter' || e.key === ' ') {
+            e.preventDefault();
+            $(this).trigger('click');
         }
     });
 
@@ -538,13 +546,14 @@
         $(this).closest('.cpc_media_cover_selector_form').hide();
     });
 
-    // Reorder functionality
-    $(document).on('sortupdate', '.cpc_gallery_items.cpc_media_sortable', function() {
-        var $gallery = $(this).closest('.cpc_media_gallery_block');
+    // Reorder functionality handler
+    function handleSortableUpdate(sortableInstance) {
+        var $container = $(sortableInstance.element);
+        var $gallery = $container.closest('.cpc_media_gallery_block');
         var galleryId = $gallery.data('gallery-id');
         var order = [];
 
-        $gallery.find('.cpc_gallery_item').each(function(idx) {
+        $container.find('.cpc_gallery_item').each(function(idx) {
             var mediaId = parseInt($(this).data('media-id'), 10);
             if (mediaId) {
                 order.push(mediaId);
@@ -567,39 +576,35 @@
         }).fail(function(xhr) {
             console.error('Reorder failed:', xhr);
         });
-    });
+    }
 
-    $(function() {
-        syncRedirectField($(document));
-
-        // Initialize jQuery UI sortable if reorder is enabled and available
-        if (typeof $.fn.sortable === 'function' && cpc_media_ajax.reorder_enabled) {
-            $('.cpc_gallery_items.cpc_media_sortable').sortable({
-                items: '.cpc_gallery_item',
-                handle: '.cpc_gallery_item_drag_handle',
-                placeholder: 'cpc_gallery_item_placeholder',
-                tolerance: 'pointer',
-                update: function() {
-                    $(this).trigger('sortupdate');
+    function initializeSortable() {
+        // Initialize PSourceSortable if reorder is enabled and available
+        if (typeof window.psourceSortable === 'function' && cpc_media_ajax.reorder_enabled) {
+            document.querySelectorAll('.cpc_gallery_items.cpc_media_sortable').forEach(function(container) {
+                if (!container._psourceSortableInit) {
+                    container._psourceSortableInit = true;
+                    new PSourceSortable(container, {
+                        items: '.cpc_gallery_item',
+                        handle: '.cpc_gallery_item_drag_handle',
+                        placeholder: 'cpc_gallery_item_placeholder',
+                        tolerance: 'pointer',
+                        update: function() {
+                            handleSortableUpdate(this);
+                        }
+                    });
                 }
             });
         }
+    }
+
+    $(function() {
+        syncRedirectField($(document));
+        initializeSortable();
     });
 
     $(document).on('cpc_profile_tab_loaded', function() {
         syncRedirectField($(document));
-        
-        // Reinitialize sortable if needed
-        if (typeof $.fn.sortable === 'function' && cpc_media_ajax.reorder_enabled) {
-            $('.cpc_gallery_items.cpc_media_sortable').sortable({
-                items: '.cpc_gallery_item',
-                handle: '.cpc_gallery_item_drag_handle',
-                placeholder: 'cpc_gallery_item_placeholder',
-                tolerance: 'pointer',
-                update: function() {
-                    $(this).trigger('sortupdate');
-                }
-            });
-        }
+        initializeSortable();
     });
 })(jQuery);

@@ -52,9 +52,9 @@ function cpc_gallery_list($atts) {
         $status = cpc_media_get_gallery_status($gallery->ID);
         $type = cpc_media_get_gallery_type($gallery->ID);
 
-        $html .= '<div class="cpc_gallery_list_item mpp-gallery-card">';
+        $html .= '<div class="cpc_gallery_list_item mpp-gallery-card" data-gallery-id="'.esc_attr($gallery->ID).'">';
         if ($cover_url) {
-            $html .= '<a class="cpc_gallery_list_cover" href="'.esc_url(get_permalink($gallery)).'"><img src="'.esc_url($cover_url).'" alt="'.esc_attr($gallery->post_title).'" /></a>';
+            $html .= '<a class="cpc_gallery_list_cover cpc_media_lightbox_trigger" data-gallery-id="'.esc_attr($gallery->ID).'" href="'.esc_url(get_permalink($gallery)).'"><img src="'.esc_url($cover_url).'" alt="'.esc_attr($gallery->post_title).'" /></a>';
         }
         $html .= '<div class="cpc_gallery_list_body">';
         $html .= '<div class="cpc_gallery_list_badges"><span class="cpc_media_gallery_badge cpc_media_gallery_badge_type">'.esc_html(cpc_media_get_gallery_type_label($type)).'</span><span class="cpc_media_gallery_badge cpc_media_gallery_badge_status">'.esc_html(cpc_media_get_gallery_status_label($status, $component)).'</span></div>';
@@ -139,23 +139,30 @@ function cpc_media_render_media_item_html($item) {
     }
     $html .= '</div>';
     $html .= '<div class="cpc_gallery_item_title">'.esc_html($item->post_title).'</div>';
-    if (!empty($item->post_content)) {
+    if (!empty($item->post_content) && cpc_media_show_item_descriptions()) {
         $html .= '<div class="cpc_gallery_item_desc">'.esc_html($item->post_content).'</div>';
     }
     $html .= '</div>';
 
     if ($can_manage) {
-        $html .= '<div class="cpc_gallery_item_actions">';
-        $html .= '<button type="button" class="cpc_button cpc_media_edit_media_btn">'.esc_html__('Bearbeiten', CPC2_TEXT_DOMAIN).'</button> ';
-        $html .= '<button type="button" class="cpc_button cpc_media_delete_media_btn">'.esc_html__('Loeschen', CPC2_TEXT_DOMAIN).'</button>';
+        $html .= '<div class="cpc_gallery_item_actions" style="display:flex; gap:8px; flex-wrap:wrap; margin-top:8px;">';
+        $html .= '<button type="button" class="cpc_button cpc_media_btn_secondary cpc_media_edit_media_btn"><span class="dashicons dashicons-edit"></span> '.esc_html__('Bearbeiten', CPC2_TEXT_DOMAIN).'</button>';
+        $html .= '<button type="button" class="cpc_button cpc_media_btn_secondary cpc_media_btn_danger cpc_media_delete_media_btn"><span class="dashicons dashicons-trash"></span> '.esc_html__('Löschen', CPC2_TEXT_DOMAIN).'</button>';
         $html .= '</div>';
 
-        $html .= '<form class="cpc_media_edit_media_form" style="display:none; margin-top:6px;">';
-        $html .= '<input type="text" name="title" value="'.esc_attr($item->post_title).'" style="width:100%;max-width:360px;" />';
-        $html .= '<textarea name="description" rows="2" style="width:100%;max-width:360px; margin-top:4px;">'.esc_textarea($item->post_content).'</textarea>';
-        $html .= '<div style="margin-top:4px;">';
-        $html .= '<button type="submit" class="cpc_button">'.esc_html__('Speichern', CPC2_TEXT_DOMAIN).'</button> ';
-        $html .= '<button type="button" class="cpc_button cpc_media_cancel_edit_media_btn">'.esc_html__('Abbrechen', CPC2_TEXT_DOMAIN).'</button>';
+        $html .= '<form class="cpc_media_edit_media_form" style="display:none; margin-top:12px; padding:14px; background:#f9f9f9; border-radius:4px; border:1px solid #ddd;">';
+        $html .= '<h5 style="margin:0 0 12px 0; font-size:14px;">'.esc_html__('Medien-Element bearbeiten', CPC2_TEXT_DOMAIN).'</h5>';
+        $html .= '<div>';
+        $html .= '<label style="display:block; margin-bottom:8px; font-weight:600; font-size:12px;">'.esc_html__('Titel', CPC2_TEXT_DOMAIN).'</label>';
+        $html .= '<input type="text" name="title" value="'.esc_attr($item->post_title).'" style="width:100%; padding:8px; border:1px solid #ddd; border-radius:3px; box-sizing:border-box;" />';
+        $html .= '</div>';
+        $html .= '<div style="margin-top:10px;">';
+        $html .= '<label style="display:block; margin-bottom:8px; font-weight:600; font-size:12px;">'.esc_html__('Beschreibung', CPC2_TEXT_DOMAIN).'</label>';
+        $html .= '<textarea name="description" rows="3" style="width:100%; padding:8px; border:1px solid #ddd; border-radius:3px; box-sizing:border-box; font-family:inherit;">'.esc_textarea($item->post_content).'</textarea>';
+        $html .= '</div>';
+        $html .= '<div style="margin-top:12px; display:flex; gap:6px;">';
+        $html .= '<button type="submit" class="cpc_button cpc_media_btn_primary"><span class="dashicons dashicons-yes"></span> '.esc_html__('Speichern', CPC2_TEXT_DOMAIN).'</button>';
+        $html .= '<button type="button" class="cpc_button cpc_media_btn_secondary cpc_media_cancel_edit_media_btn"><span class="dashicons dashicons-no"></span> '.esc_html__('Abbrechen', CPC2_TEXT_DOMAIN).'</button>';
         $html .= '</div>';
         $html .= '</form>';
     }
@@ -188,7 +195,13 @@ function cpc_gallery_items($atts) {
 
     $can_manage = cpc_media_user_can_manage_gallery($gallery_id);
     $layout = cpc_media_get_gallery_layout();
+    $grid_cols = cpc_media_get_gallery_grid_columns();
     $css_classes = 'cpc_gallery_items cpc_gallery_items_'.$layout;
+    
+    // Add column class for grid layout
+    if ($layout === 'grid') {
+        $css_classes .= ' cpc_gallery_cols_'.intval($grid_cols);
+    }
     
     // Add sortable class if user can manage
     if ($can_manage) {

@@ -22,7 +22,9 @@ function cpc_custom_post_gallery() {
         'description' => 'Holds PS Community gallery data',
         'public' => true,
         'exclude_from_search' => false,
-        'show_in_menu' => get_option('cpc_core_admin_icons') ? 'cpc_com' : true,
+        // Keep edit UI available via direct URL, but hide the left admin menu entry.
+        'show_ui' => true,
+        'show_in_menu' => false,
         'publicly_queryable' => true,
         'has_archive' => false,
         'hierarchical' => false,
