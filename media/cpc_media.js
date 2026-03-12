@@ -484,9 +484,17 @@
 
     // Cover selector functionality
     $(document).on('click', '.cpc_media_cover_selector input[type="radio"]', function() {
-        var $selector = $(this).closest('.cpc_media_cover_selector');
-        var galleryId = $selector.data('gallery-id');
-        var mediaId = parseInt($(this).val(), 10);
+        var $clicked = $(this);
+        var $selectedLabel = $clicked.closest('label');
+        var $localSelector = $clicked.closest('.cpc_media_cover_selector');
+        var $selectorHost = $localSelector.closest('.cpc_media_cover_selector[data-gallery-id]');
+
+        if (!$selectorHost.length) {
+            $selectorHost = $clicked.closest('.cpc_media_cover_selector_form').find('.cpc_media_cover_selector[data-gallery-id]').first();
+        }
+
+        var galleryId = parseInt($selectorHost.data('gallery-id'), 10) || 0;
+        var mediaId = parseInt($clicked.val(), 10);
 
         if (!galleryId || !mediaId) {
             return;
@@ -494,6 +502,7 @@
 
         $.post(cpc_media_ajax.ajaxurl, {
             action: 'cpc_media_set_gallery_cover',
+            nonce: cpc_media_ajax.nonce,
             gallery_id: galleryId,
             media_id: mediaId
         }).done(function(resp) {
@@ -503,13 +512,16 @@
             }
 
             // Update radio button selection styling
-            $selector.find('label').removeClass('cpc_media_cover_selected');
-            $(this).closest('label').addClass('cpc_media_cover_selected');
+            $selectorHost.find('label').removeClass('cpc_media_cover_selected');
+            $selectedLabel.addClass('cpc_media_cover_selected');
 
             // Update gallery cover preview
             if (resp.data && resp.data.cover_url) {
-                var $gallery = $selector.closest('.cpc_media_gallery_block');
-                $gallery.find('.cpc_media_gallery_cover_wrap img').attr('src', resp.data.cover_url);
+                var $gallery = $selectorHost.closest('.cpc_media_gallery_block');
+                var $coverImage = $gallery.find('.cpc_media_gallery_cover > img').first();
+                if ($coverImage.length) {
+                    $coverImage.attr('src', resp.data.cover_url);
+                }
             }
         }).fail(function(xhr) {
             console.error('Set cover failed:', xhr);
@@ -535,6 +547,7 @@
         if (!$selector.html()) {
             $.post(cpc_media_ajax.ajaxurl, {
                 action: 'cpc_media_get_cover_selector',
+                nonce: cpc_media_ajax.nonce,
                 gallery_id: galleryId
             }).done(function(resp) {
                 resp = normalizeAjaxResponse(resp);

@@ -472,31 +472,35 @@ function cpc_docs_get_doc_attachments($doc_id) {
     return $attachments ? array_values($attachments) : array();
 }
 
-function cpc_docs_get_edit_link($doc_id) {
+function cpc_docs_get_edit_link($doc_id, $base_url = '') {
     $doc_id = (int)$doc_id;
     if ($doc_id <= 0) {
         return '';
     }
+
+    $target = $base_url !== '' ? $base_url : get_permalink($doc_id);
 
     return add_query_arg(array(
         'cpc_docs_action' => 'edit',
         'cpc_docs_doc_id' => $doc_id,
-    ), get_permalink($doc_id));
+    ), $target);
 }
 
-function cpc_docs_get_history_link($doc_id) {
+function cpc_docs_get_history_link($doc_id, $base_url = '') {
     $doc_id = (int)$doc_id;
     if ($doc_id <= 0) {
         return '';
     }
 
+    $target = $base_url !== '' ? $base_url : get_permalink($doc_id);
+
     return add_query_arg(array(
         'cpc_docs_action' => 'history',
         'cpc_docs_doc_id' => $doc_id,
-    ), get_permalink($doc_id));
+    ), $target);
 }
 
-function cpc_docs_get_history_compare_link($doc_id, $from_id, $to_id) {
+function cpc_docs_get_history_compare_link($doc_id, $from_id, $to_id, $base_url = '') {
     $doc_id = (int)$doc_id;
     $from_id = (int)$from_id;
     $to_id = (int)$to_id;
@@ -504,12 +508,14 @@ function cpc_docs_get_history_compare_link($doc_id, $from_id, $to_id) {
         return '';
     }
 
+    $target = $base_url !== '' ? $base_url : get_permalink($doc_id);
+
     return add_query_arg(array(
         'cpc_docs_action' => 'history',
         'cpc_docs_doc_id' => $doc_id,
         'cpc_docs_compare_from' => $from_id,
         'cpc_docs_compare_to' => $to_id,
-    ), get_permalink($doc_id));
+    ), $target);
 }
 
 function cpc_docs_get_lock_timeout() {

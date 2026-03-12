@@ -30,6 +30,45 @@
     display: none;
 }
 
+.cpc_docs_profile_tab,
+.cpc_docs_group_tab {
+    position: relative;
+}
+
+.cpc_docs_profile_tab .cpc_docs_create_toggle,
+.cpc_docs_group_tab .cpc_docs_create_toggle {
+    float: right;
+    margin: 0 0 14px 14px;
+}
+
+.cpc_docs_profile_tab .cpc_docs_create_summary,
+.cpc_docs_group_tab .cpc_docs_create_summary {
+    background: #2271b1;
+    border: 1px solid #1b5d8f;
+    border-radius: 6px;
+    color: #fff;
+    font-weight: 600;
+    line-height: 1.2;
+    padding: 8px 14px;
+    text-decoration: none;
+}
+
+.cpc_docs_profile_tab .cpc_docs_create_summary:hover,
+.cpc_docs_group_tab .cpc_docs_create_summary:hover,
+.cpc_docs_profile_tab .cpc_docs_create_summary:focus,
+.cpc_docs_group_tab .cpc_docs_create_summary:focus {
+    background: #135e96;
+    border-color: #114f7e;
+    color: #fff;
+}
+
+.cpc_docs_profile_tab .cpc_docs_create_toggle[open],
+.cpc_docs_group_tab .cpc_docs_create_toggle[open] {
+    float: none;
+    clear: both;
+    margin: 0 0 16px;
+}
+
 .cpc_docs_create_toggle:not([open]) .cpc_docs_create_form {
     display: none;
 }
@@ -86,6 +125,23 @@
     box-sizing: border-box;
 }
 
+.cpc_docs_create_editor_wrap .wp-editor-wrap,
+.cpc_docs_create_editor_wrap .wp-editor-container {
+    width: 100%;
+}
+
+.cpc_docs_create_editor_wrap textarea.cpc_docs_create_editor {
+    min-height: 420px;
+}
+
+.cpc_docs_create_editor_wrap .mce-edit-area iframe {
+    min-height: 420px;
+}
+
+#doc-form .mce-edit-area iframe {
+    min-height: 380px;
+}
+
 .cpc_docs_inline_form {
     display: inline;
     margin: 0;
@@ -110,6 +166,15 @@
 }
 
 @media (max-width: 782px) {
+    .cpc_docs_profile_tab .cpc_docs_create_toggle,
+    .cpc_docs_group_tab .cpc_docs_create_toggle,
+    .cpc_docs_profile_tab .cpc_docs_create_toggle[open],
+    .cpc_docs_group_tab .cpc_docs_create_toggle[open] {
+        float: none;
+        clear: both;
+        margin: 0 0 12px;
+    }
+
     .cpc_docs_folder_manage_forms {
         grid-template-columns: 1fr;
     }

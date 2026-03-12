@@ -671,7 +671,11 @@ function cpc_media_show_gallery_descriptions() {
 }
 
 function cpc_media_get_gallery_cover_url($gallery_id) {
-    $cover_id = (int)get_post_meta((int)$gallery_id, 'cpc_gallery_cover_id', true);
+    $gallery_id = (int)$gallery_id;
+    $cover_id = (int)get_post_meta($gallery_id, 'cpc_media_gallery_cover_id', true);
+    if ($cover_id <= 0) {
+        $cover_id = (int)get_post_meta($gallery_id, 'cpc_gallery_cover_id', true);
+    }
     if ($cover_id > 0) {
         $cover_url = cpc_media_get_media_file_url($cover_id);
         if ($cover_url) {
@@ -2255,7 +2259,11 @@ function cpc_media_render_lightbox_content($media) {
  * Get gallery cover ID
  */
 function cpc_media_get_gallery_cover_id($gallery_id) {
+    $gallery_id = (int)$gallery_id;
     $cover_id = (int)get_post_meta($gallery_id, 'cpc_media_gallery_cover_id', true);
+    if ($cover_id <= 0) {
+        $cover_id = (int)get_post_meta($gallery_id, 'cpc_gallery_cover_id', true);
+    }
     if ($cover_id > 0 && get_post($cover_id)) {
         return $cover_id;
     }
@@ -2272,6 +2280,9 @@ function cpc_media_set_gallery_cover($gallery_id, $media_id) {
     if (!get_post($media_id) || !get_post($gallery_id)) {
         return false;
     }
+
+    // Keep both keys in sync for backward compatibility with older data.
     update_post_meta($gallery_id, 'cpc_media_gallery_cover_id', (int)$media_id);
+    update_post_meta($gallery_id, 'cpc_gallery_cover_id', (int)$media_id);
     return true;
 }

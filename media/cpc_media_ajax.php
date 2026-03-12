@@ -301,6 +301,8 @@ function cpc_media_ajax_fetch_media() {
  * Set gallery cover image
  */
 function cpc_media_ajax_set_gallery_cover() {
+    cpc_media_ajax_verify();
+
     $gallery_id = isset($_POST['gallery_id']) ? (int)$_POST['gallery_id'] : 0;
     $media_id = isset($_POST['media_id']) ? (int)$_POST['media_id'] : 0;
     $user_id = get_current_user_id();
@@ -315,7 +317,7 @@ function cpc_media_ajax_set_gallery_cover() {
         wp_send_json_error(array('message' => __('Medium nicht in dieser Galerie.', CPC2_TEXT_DOMAIN)), 400);
     }
 
-    update_post_meta($gallery_id, 'cpc_media_gallery_cover_id', $media_id);
+    cpc_media_set_gallery_cover($gallery_id, $media_id);
     do_action('cpc_media_gallery_cover_changed', $gallery_id, $media_id);
 
     $cover_url = cpc_media_get_gallery_cover_url($gallery_id);
@@ -330,6 +332,8 @@ function cpc_media_ajax_set_gallery_cover() {
  * Get cover selector HTML for gallery management
  */
 function cpc_media_ajax_get_cover_selector() {
+    cpc_media_ajax_verify();
+
     $gallery_id = isset($_POST['gallery_id']) ? (int)$_POST['gallery_id'] : 0;
     $user_id = get_current_user_id();
 
@@ -338,6 +342,9 @@ function cpc_media_ajax_get_cover_selector() {
     }
 
     $current_cover_id = (int)get_post_meta($gallery_id, 'cpc_media_gallery_cover_id', true);
+    if ($current_cover_id <= 0) {
+        $current_cover_id = (int)get_post_meta($gallery_id, 'cpc_gallery_cover_id', true);
+    }
     $items = cpc_media_get_gallery_items($gallery_id, array('posts_per_page' => 12));
 
     $html = '<div class="cpc_media_cover_selector">';
