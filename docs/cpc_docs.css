@@ -12,6 +12,12 @@
     margin-bottom: 6px;
 }
 
+.cpc_docs_folder_manage_toggle {
+    display: grid;
+    gap: 12px;
+    margin-bottom: 16px;
+}
+
 .cpc_docs_create_summary {
     list-style: none;
     display: inline-flex;
@@ -28,12 +34,42 @@
     display: none;
 }
 
+.cpc_docs_folder_manage_toggle:not([open]) .cpc_docs_folder_manage_forms {
+    display: none;
+}
+
 .cpc_docs_create_form {
     background: linear-gradient(180deg, #fbfcfd 0%, #f3f6f9 100%);
     border: 1px solid #d8e0e8;
     border-radius: 14px;
     padding: 16px;
     box-shadow: 0 10px 24px rgba(27, 39, 51, 0.05);
+}
+
+.cpc_docs_folder_manage_forms {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 12px;
+}
+
+.cpc_docs_folder_manage_form {
+    background: #f8fbfd;
+    border: 1px solid #d8e0e8;
+    border-radius: 12px;
+    padding: 14px;
+    display: grid;
+    gap: 8px;
+}
+
+.cpc_docs_folder_manage_form h4 {
+    margin: 0 0 4px;
+    font-size: 14px;
+}
+
+.cpc_docs_folder_manage_form input[type="text"],
+.cpc_docs_folder_manage_form select {
+    width: 100%;
+    box-sizing: border-box;
 }
 
 .cpc_docs_create_form label {
@@ -48,6 +84,35 @@
 .cpc_docs_create_form input[type="file"] {
     width: 100%;
     box-sizing: border-box;
+}
+
+.cpc_docs_inline_form {
+    display: inline;
+    margin: 0;
+}
+
+.cpc_docs_inline_button {
+    background: none;
+    border: 0;
+    color: #2271b1;
+    text-decoration: underline;
+    padding: 0;
+    cursor: pointer;
+    font: inherit;
+}
+
+.cpc_docs_inline_button:hover {
+    color: #135e96;
+}
+
+.cpc_docs_no_attachments .attachment-clip-cell {
+    display: none;
+}
+
+@media (max-width: 782px) {
+    .cpc_docs_folder_manage_forms {
+        grid-template-columns: 1fr;
+    }
 }
 
 .bp-docs-container .doc-title {
@@ -280,6 +345,45 @@
     margin: 12px 0 14px;
 }
 
+.cpc_doc_history_compare_form {
+    margin: 8px 0 14px;
+    padding: 12px;
+    border: 1px solid #d9e2ea;
+    border-radius: 10px;
+    background: #f8fbfd;
+}
+
+.cpc_doc_history_compare_grid {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 10px;
+    margin-bottom: 10px;
+}
+
+.cpc_doc_history_compare_grid label {
+    display: block;
+    font-weight: 600;
+    margin-bottom: 4px;
+}
+
+.cpc_doc_history_compare_grid select {
+    width: 100%;
+}
+
+.cpc_doc_history_diff_meta {
+    display: flex;
+    gap: 12px;
+    flex-wrap: wrap;
+    margin-bottom: 8px;
+    font-size: 13px;
+    color: #4d6277;
+}
+
+.cpc_doc_history_diff h5 {
+    margin: 10px 0 6px;
+    font-size: 13px;
+}
+
 .cpc_doc_history_diff table.diff {
     width: 100%;
     border-collapse: collapse;
@@ -291,6 +395,36 @@
     border: 1px solid #ddd;
     font-family: monospace;
     vertical-align: top;
+}
+
+.cpc_docs_access_badges {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 6px;
+    margin: 8px 0 6px;
+}
+
+.cpc_docs_badge {
+    display: inline-block;
+    font-size: 11px;
+    line-height: 1;
+    padding: 5px 7px;
+    border-radius: 999px;
+    border: 1px solid #d4dde7;
+    background: #f4f8fb;
+    color: #4e6478;
+}
+
+.cpc_docs_badge_status {
+    background: #eaf4ff;
+    border-color: #c6dcf8;
+    color: #1f4f85;
+}
+
+@media (max-width: 782px) {
+    .cpc_doc_history_compare_grid {
+        grid-template-columns: 1fr;
+    }
 }
 
 .cpc_doc_single #comments,

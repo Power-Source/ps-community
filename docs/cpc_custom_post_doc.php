@@ -25,7 +25,7 @@ function cpc_custom_post_doc() {
         'publicly_queryable' => true,
         'has_archive' => true,
         'hierarchical' => true,
-        'rewrite' => array('slug' => 'docs', 'with_front' => false),
+        'rewrite' => array('slug' => cpc_docs_get_slug(), 'with_front' => false),
         'supports' => array('title', 'editor', 'excerpt', 'revisions', 'comments', 'author', 'page-attributes'),
     );
 

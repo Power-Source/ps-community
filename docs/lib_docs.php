@@ -8,6 +8,34 @@ function cpc_docs_get_directory_page_id() {
     return max(0, (int)get_option('cpc_docs_directory_page', 0));
 }
 
+function cpc_docs_get_slug() {
+    $slug = sanitize_title((string)get_option('cpc_docs_slug', 'docs'));
+    return $slug !== '' ? $slug : 'docs';
+}
+
+function cpc_docs_get_directory_title() {
+    $title = trim((string)get_option('cpc_docs_directory_title', 'Dokumente-Verzeichnis'));
+    return $title !== '' ? $title : __('Dokumente-Verzeichnis', CPC2_TEXT_DOMAIN);
+}
+
+function cpc_docs_get_user_tab_name() {
+    $label = trim((string)get_option('cpc_docs_user_tab_name', 'Dokumente'));
+    return $label !== '' ? $label : __('Dokumente', CPC2_TEXT_DOMAIN);
+}
+
+function cpc_docs_get_group_tab_name() {
+    $label = trim((string)get_option('cpc_docs_group_tab_name', 'Dokumente'));
+    return $label !== '' ? $label : __('Dokumente', CPC2_TEXT_DOMAIN);
+}
+
+function cpc_docs_get_directory_excerpt_length() {
+    return max(0, min(120, (int)get_option('cpc_docs_directory_excerpt_length', 18)));
+}
+
+function cpc_docs_enable_attachments() {
+    return (bool)get_option('cpc_docs_enable_attachments', 1);
+}
+
 function cpc_docs_get_directory_items_per_page() {
     return max(6, min(60, (int)get_option('cpc_docs_directory_items_per_page', 12)));
 }
@@ -59,6 +87,128 @@ function cpc_docs_normalize_status($status, $component = 'members') {
     return isset($options[$status]) ? $status : 'public';
 }
 
+function cpc_docs_get_permission_defaults($component = 'members') {
+    if ($component === 'groups') {
+        return array(
+            'edit' => 'group_adminmod',
+            'manage' => 'group_adminmod',
+            'read_comments' => 'group_members',
+            'post_comments' => 'group_members',
+            'view_history' => 'group_members',
+        );
+    }
+
+    return array(
+        'edit' => 'author',
+        'manage' => 'author',
+        'read_comments' => 'loggedin',
+        'post_comments' => 'loggedin',
+        'view_history' => 'loggedin',
+    );
+}
+
+function cpc_docs_get_permission_options($component = 'members') {
+    $base = array(
+        'anyone' => __('Jeder', CPC2_TEXT_DOMAIN),
+        'loggedin' => __('Angemeldete', CPC2_TEXT_DOMAIN),
+        'author' => __('Nur Autor', CPC2_TEXT_DOMAIN),
+    );
+
+    if ($component === 'groups') {
+        return $base + array(
+            'group_members' => __('Gruppenmitglieder', CPC2_TEXT_DOMAIN),
+            'group_adminmod' => __('Gruppen-Admins/Mods', CPC2_TEXT_DOMAIN),
+        );
+    }
+
+    return $base;
+}
+
+function cpc_docs_normalize_permission($permission, $component = 'members', $field = 'edit') {
+    $permission = sanitize_key((string)$permission);
+    $options = cpc_docs_get_permission_options($component);
+    $defaults = cpc_docs_get_permission_defaults($component);
+    $fallback = isset($defaults[$field]) ? $defaults[$field] : (isset($defaults['edit']) ? $defaults['edit'] : 'author');
+    return isset($options[$permission]) ? $permission : $fallback;
+}
+
+function cpc_docs_get_doc_permission($doc_id, $field, $component = '') {
+    $doc_id = (int)$doc_id;
+    $field = sanitize_key((string)$field);
+    $allowed_fields = array('edit', 'manage', 'read_comments', 'post_comments', 'view_history');
+    if ($doc_id <= 0 || !in_array($field, $allowed_fields, true)) {
+        return '';
+    }
+
+    if ($component === '') {
+        $component = cpc_docs_get_component($doc_id);
+    }
+
+    $stored = sanitize_key((string)get_post_meta($doc_id, 'cpc_doc_perm_'.$field, true));
+    if ($stored !== '') {
+        return cpc_docs_normalize_permission($stored, $component, $field);
+    }
+
+    $defaults = cpc_docs_get_permission_defaults($component);
+    return isset($defaults[$field]) ? $defaults[$field] : '';
+}
+
+function cpc_docs_set_doc_permissions($doc_id, $component, $permissions = array()) {
+    $doc_id = (int)$doc_id;
+    if ($doc_id <= 0) {
+        return;
+    }
+
+    $fields = array('edit', 'manage', 'read_comments', 'post_comments', 'view_history');
+    $defaults = cpc_docs_get_permission_defaults($component);
+
+    foreach ($fields as $field) {
+        $value = isset($permissions[$field]) ? $permissions[$field] : (isset($defaults[$field]) ? $defaults[$field] : 'author');
+        update_post_meta($doc_id, 'cpc_doc_perm_'.$field, cpc_docs_normalize_permission($value, $component, $field));
+    }
+}
+
+function cpc_docs_user_matches_permission($doc_id, $permission, $user_id = 0) {
+    $doc = get_post((int)$doc_id);
+    if (!$doc || $doc->post_type !== 'cpc_doc') {
+        return false;
+    }
+
+    if (!$user_id) {
+        $user_id = get_current_user_id();
+    }
+
+    $permission = sanitize_key((string)$permission);
+    $component = cpc_docs_get_component($doc_id);
+    $component_id = cpc_docs_get_component_id($doc_id);
+
+    if ($permission === 'anyone') {
+        return true;
+    }
+
+    if ($permission === 'loggedin') {
+        return (bool)$user_id;
+    }
+
+    if ($permission === 'author') {
+        return (int)$doc->post_author === (int)$user_id;
+    }
+
+    if ($component === 'groups' && $component_id > 0) {
+        if ($permission === 'group_members') {
+            return function_exists('cpc_is_group_member') && cpc_is_group_member($user_id, $component_id);
+        }
+
+        if ($permission === 'group_adminmod') {
+            $is_admin = function_exists('cpc_is_group_admin') && cpc_is_group_admin($user_id, $component_id);
+            $is_mod = function_exists('cpc_is_group_moderator') && cpc_is_group_moderator($user_id, $component_id);
+            return $is_admin || $is_mod;
+        }
+    }
+
+    return false;
+}
+
 function cpc_docs_user_can_create_for_context($component, $component_id, $user_id = 0) {
     if (!$user_id) {
         $user_id = get_current_user_id();
@@ -104,19 +254,26 @@ function cpc_docs_user_can_manage_doc($doc_id, $user_id = 0) {
         return true;
     }
 
-    $component = cpc_docs_get_component($doc->ID);
-    $component_id = cpc_docs_get_component_id($doc->ID);
+    $manage_permission = cpc_docs_get_doc_permission($doc->ID, 'manage', cpc_docs_get_component($doc->ID));
+    return cpc_docs_user_matches_permission($doc->ID, $manage_permission, $user_id);
+}
 
-    if ($component === 'groups' && $component_id > 0) {
-        if (function_exists('cpc_is_group_admin') && cpc_is_group_admin($user_id, $component_id)) {
-            return true;
-        }
-        if (function_exists('cpc_is_group_moderator') && cpc_is_group_moderator($user_id, $component_id)) {
-            return true;
-        }
+function cpc_docs_user_can_edit_doc($doc_id, $user_id = 0) {
+    $doc = get_post((int)$doc_id);
+    if (!$doc || $doc->post_type !== 'cpc_doc') {
+        return false;
     }
 
-    return false;
+    if (!$user_id) {
+        $user_id = get_current_user_id();
+    }
+
+    if (current_user_can('manage_options') || (int)$doc->post_author === (int)$user_id) {
+        return true;
+    }
+
+    $edit_permission = cpc_docs_get_doc_permission($doc->ID, 'edit', cpc_docs_get_component($doc->ID));
+    return cpc_docs_user_matches_permission($doc->ID, $edit_permission, $user_id);
 }
 
 function cpc_docs_user_can_view_doc($doc_id, $user_id = 0) {
@@ -170,6 +327,72 @@ function cpc_docs_user_can_view_doc($doc_id, $user_id = 0) {
     }
 
     return false;
+}
+
+function cpc_docs_user_can_view_history($doc_id, $user_id = 0) {
+    if (!cpc_docs_user_can_view_doc($doc_id, $user_id)) {
+        return false;
+    }
+
+    $doc = get_post((int)$doc_id);
+    if (!$doc || $doc->post_type !== 'cpc_doc') {
+        return false;
+    }
+
+    if (!$user_id) {
+        $user_id = get_current_user_id();
+    }
+
+    if (current_user_can('manage_options') || (int)$doc->post_author === (int)$user_id) {
+        return true;
+    }
+
+    $perm = cpc_docs_get_doc_permission($doc_id, 'view_history', cpc_docs_get_component($doc_id));
+    return cpc_docs_user_matches_permission($doc_id, $perm, $user_id);
+}
+
+function cpc_docs_user_can_read_comments($doc_id, $user_id = 0) {
+    if (!cpc_docs_user_can_view_doc($doc_id, $user_id)) {
+        return false;
+    }
+
+    $doc = get_post((int)$doc_id);
+    if (!$doc || $doc->post_type !== 'cpc_doc') {
+        return false;
+    }
+
+    if (!$user_id) {
+        $user_id = get_current_user_id();
+    }
+
+    if (current_user_can('manage_options') || (int)$doc->post_author === (int)$user_id) {
+        return true;
+    }
+
+    $perm = cpc_docs_get_doc_permission($doc_id, 'read_comments', cpc_docs_get_component($doc_id));
+    return cpc_docs_user_matches_permission($doc_id, $perm, $user_id);
+}
+
+function cpc_docs_user_can_post_comments($doc_id, $user_id = 0) {
+    if (!cpc_docs_user_can_read_comments($doc_id, $user_id)) {
+        return false;
+    }
+
+    $doc = get_post((int)$doc_id);
+    if (!$doc || $doc->post_type !== 'cpc_doc') {
+        return false;
+    }
+
+    if (!$user_id) {
+        $user_id = get_current_user_id();
+    }
+
+    if (current_user_can('manage_options') || (int)$doc->post_author === (int)$user_id) {
+        return true;
+    }
+
+    $perm = cpc_docs_get_doc_permission($doc_id, 'post_comments', cpc_docs_get_component($doc_id));
+    return cpc_docs_user_matches_permission($doc_id, $perm, $user_id);
 }
 
 function cpc_docs_get_docs($args = array()) {
@@ -229,10 +452,11 @@ function cpc_docs_build_safe_redirect() {
     return home_url('/');
 }
 
-function cpc_docs_set_doc_meta($doc_id, $component, $component_id, $status) {
+function cpc_docs_set_doc_meta($doc_id, $component, $component_id, $status, $permissions = array()) {
     update_post_meta($doc_id, 'cpc_doc_component', sanitize_key($component));
     update_post_meta($doc_id, 'cpc_doc_component_id', (int)$component_id);
     update_post_meta($doc_id, 'cpc_doc_status', cpc_docs_normalize_status($status, $component));
+    cpc_docs_set_doc_permissions($doc_id, $component, is_array($permissions) ? $permissions : array());
 }
 
 function cpc_docs_get_doc_attachments($doc_id) {
@@ -730,16 +954,12 @@ function cpc_docs_handle_frontend_requests() {
         exit;
     }
 
-    if ($action === 'create_doc') {
+    if ($action === 'folder_create') {
         $component = isset($_POST['cpc_docs_component']) ? sanitize_key(wp_unslash($_POST['cpc_docs_component'])) : 'members';
         $component_id = isset($_POST['cpc_docs_component_id']) ? (int)$_POST['cpc_docs_component_id'] : 0;
-        $title = isset($_POST['cpc_docs_title']) ? sanitize_text_field(wp_unslash($_POST['cpc_docs_title'])) : '';
-        $content = isset($_POST['cpc_docs_content']) ? wp_kses_post(wp_unslash($_POST['cpc_docs_content'])) : '';
+        $title = isset($_POST['cpc_docs_folder_title']) ? sanitize_text_field(wp_unslash($_POST['cpc_docs_folder_title'])) : '';
         $status = isset($_POST['cpc_docs_status']) ? sanitize_key(wp_unslash($_POST['cpc_docs_status'])) : 'public';
-        $is_folder = isset($_POST['cpc_docs_is_folder']) ? (bool)wp_unslash($_POST['cpc_docs_is_folder']) : false;
-
         $parent_id = isset($_POST['cpc_docs_parent_id']) ? (int)$_POST['cpc_docs_parent_id'] : 0;
-        $tags = isset($_POST['cpc_docs_tags']) ? sanitize_text_field(wp_unslash($_POST['cpc_docs_tags'])) : '';
 
         if (!cpc_docs_user_can_create_for_context($component, $component_id)) {
             wp_safe_redirect(add_query_arg('cpc_docs_notice', 'denied', $redirect));
@@ -751,14 +971,112 @@ function cpc_docs_handle_frontend_requests() {
             exit;
         }
 
-        if (!$is_folder && $content === '') {
+        $parent_id = cpc_docs_validate_parent_id($parent_id, $component, $component_id, 0);
+
+        $doc_id = wp_insert_post(array(
+            'post_type' => 'cpc_doc',
+            'post_status' => 'publish',
+            'post_author' => get_current_user_id(),
+            'post_title' => $title,
+            'post_content' => '',
+            'comment_status' => 'open',
+            'post_parent' => $parent_id,
+        ), true);
+
+        if (is_wp_error($doc_id) || !$doc_id) {
+            wp_safe_redirect(add_query_arg('cpc_docs_notice', 'failed', $redirect));
+            exit;
+        }
+
+        cpc_docs_set_doc_meta($doc_id, $component, $component_id, $status);
+
+        wp_safe_redirect(add_query_arg(array('cpc_docs_notice' => 'created', 'cpc_docs_doc_id' => $doc_id), $redirect));
+        exit;
+    }
+
+    if ($action === 'folder_rename') {
+        $folder_id = isset($_POST['cpc_docs_folder_id']) ? (int)$_POST['cpc_docs_folder_id'] : 0;
+        $new_title = isset($_POST['cpc_docs_folder_new_title']) ? sanitize_text_field(wp_unslash($_POST['cpc_docs_folder_new_title'])) : '';
+        $folder = get_post($folder_id);
+
+        if (!$folder || $folder->post_type !== 'cpc_doc' || !cpc_docs_is_folder($folder_id) || !cpc_docs_user_can_manage_doc($folder_id)) {
+            wp_safe_redirect(add_query_arg('cpc_docs_notice', 'denied', $redirect));
+            exit;
+        }
+
+        if ($new_title === '') {
             wp_safe_redirect(add_query_arg('cpc_docs_notice', 'invalid', $redirect));
             exit;
         }
 
-        // For folders, content is always empty
-        if ($is_folder) {
-            $content = '';
+        wp_update_post(array(
+            'ID' => $folder_id,
+            'post_title' => $new_title,
+        ));
+
+        wp_safe_redirect(add_query_arg(array('cpc_docs_notice' => 'updated', 'cpc_docs_doc_id' => $folder_id), $redirect));
+        exit;
+    }
+
+    if ($action === 'folder_delete') {
+        $folder_id = isset($_POST['cpc_docs_folder_id']) ? (int)$_POST['cpc_docs_folder_id'] : 0;
+        $folder = get_post($folder_id);
+
+        if (!$folder || $folder->post_type !== 'cpc_doc' || !cpc_docs_is_folder($folder_id) || !cpc_docs_user_can_manage_doc($folder_id)) {
+            wp_safe_redirect(add_query_arg('cpc_docs_notice', 'denied', $redirect));
+            exit;
+        }
+
+        $children = get_posts(array(
+            'post_type' => 'cpc_doc',
+            'post_parent' => $folder_id,
+            'post_status' => array('publish', 'draft', 'pending', 'private'),
+            'numberposts' => -1,
+            'fields' => 'ids',
+            'no_found_rows' => true,
+        ));
+
+        if (!empty($children)) {
+            $new_parent = (int)$folder->post_parent;
+            foreach ($children as $child_id) {
+                wp_update_post(array(
+                    'ID' => (int)$child_id,
+                    'post_parent' => $new_parent,
+                ));
+            }
+        }
+
+        cpc_docs_release_edit_lock($folder_id, get_current_user_id(), true);
+        wp_delete_post($folder_id, true);
+        wp_safe_redirect(add_query_arg('cpc_docs_notice', 'deleted', $redirect));
+        exit;
+    }
+
+    if ($action === 'create_doc') {
+        $component = isset($_POST['cpc_docs_component']) ? sanitize_key(wp_unslash($_POST['cpc_docs_component'])) : 'members';
+        $component_id = isset($_POST['cpc_docs_component_id']) ? (int)$_POST['cpc_docs_component_id'] : 0;
+        $title = isset($_POST['cpc_docs_title']) ? sanitize_text_field(wp_unslash($_POST['cpc_docs_title'])) : '';
+        $content = isset($_POST['cpc_docs_content']) ? wp_kses_post(wp_unslash($_POST['cpc_docs_content'])) : '';
+        $status = isset($_POST['cpc_docs_status']) ? sanitize_key(wp_unslash($_POST['cpc_docs_status'])) : 'public';
+
+        $parent_id = isset($_POST['cpc_docs_parent_id']) ? (int)$_POST['cpc_docs_parent_id'] : 0;
+        $tags = isset($_POST['cpc_docs_tags']) ? sanitize_text_field(wp_unslash($_POST['cpc_docs_tags'])) : '';
+        $permissions = array(
+            'edit' => isset($_POST['cpc_docs_perm_edit']) ? sanitize_key(wp_unslash($_POST['cpc_docs_perm_edit'])) : '',
+            'manage' => isset($_POST['cpc_docs_perm_manage']) ? sanitize_key(wp_unslash($_POST['cpc_docs_perm_manage'])) : '',
+            'read_comments' => isset($_POST['cpc_docs_perm_read_comments']) ? sanitize_key(wp_unslash($_POST['cpc_docs_perm_read_comments'])) : '',
+            'post_comments' => isset($_POST['cpc_docs_perm_post_comments']) ? sanitize_key(wp_unslash($_POST['cpc_docs_perm_post_comments'])) : '',
+            'view_history' => isset($_POST['cpc_docs_perm_view_history']) ? sanitize_key(wp_unslash($_POST['cpc_docs_perm_view_history'])) : '',
+        );
+
+        if (!cpc_docs_user_can_create_for_context($component, $component_id)) {
+            wp_safe_redirect(add_query_arg('cpc_docs_notice', 'denied', $redirect));
+            exit;
+        }
+
+        if ($title === '' || $content === '') {
+            wp_safe_redirect(add_query_arg('cpc_docs_notice', 'invalid', $redirect));
+            exit;
         }
 
         $parent_id = cpc_docs_validate_parent_id($parent_id, $component, $component_id, 0);
@@ -778,9 +1096,11 @@ function cpc_docs_handle_frontend_requests() {
             exit;
         }
 
-        cpc_docs_set_doc_meta($doc_id, $component, $component_id, $status);
+        cpc_docs_set_doc_meta($doc_id, $component, $component_id, $status, $permissions);
         cpc_docs_set_doc_tags($doc_id, $tags);
-        cpc_docs_upload_files_to_doc($doc_id, 'cpc_docs_attachments', get_current_user_id());
+        if (cpc_docs_enable_attachments()) {
+            cpc_docs_upload_files_to_doc($doc_id, 'cpc_docs_attachments', get_current_user_id());
+        }
 
         wp_safe_redirect(add_query_arg(array('cpc_docs_notice' => 'created', 'cpc_docs_doc_id' => $doc_id), $redirect));
         exit;
@@ -789,7 +1109,7 @@ function cpc_docs_handle_frontend_requests() {
     if ($action === 'update_doc') {
         $doc_id = isset($_POST['cpc_docs_doc_id']) ? (int)$_POST['cpc_docs_doc_id'] : 0;
         $doc = get_post($doc_id);
-        if (!$doc || $doc->post_type !== 'cpc_doc' || !cpc_docs_user_can_manage_doc($doc_id)) {
+        if (!$doc || $doc->post_type !== 'cpc_doc' || !cpc_docs_user_can_edit_doc($doc_id)) {
             wp_safe_redirect(add_query_arg('cpc_docs_notice', 'denied', $redirect));
             exit;
         }
@@ -806,20 +1126,21 @@ function cpc_docs_handle_frontend_requests() {
         $component_id = cpc_docs_get_component_id($doc_id);
         $parent_id = isset($_POST['cpc_docs_parent_id']) ? (int)$_POST['cpc_docs_parent_id'] : 0;
         $tags = isset($_POST['cpc_docs_tags']) ? sanitize_text_field(wp_unslash($_POST['cpc_docs_tags'])) : '';
-        $is_folder = isset($_POST['cpc_docs_is_folder']) ? (bool)wp_unslash($_POST['cpc_docs_is_folder']) : false;
+        $doc_is_folder = cpc_docs_is_folder($doc_id);
+        $permissions = array(
+            'edit' => isset($_POST['cpc_docs_perm_edit']) ? sanitize_key(wp_unslash($_POST['cpc_docs_perm_edit'])) : cpc_docs_get_doc_permission($doc_id, 'edit', $component),
+            'manage' => isset($_POST['cpc_docs_perm_manage']) ? sanitize_key(wp_unslash($_POST['cpc_docs_perm_manage'])) : cpc_docs_get_doc_permission($doc_id, 'manage', $component),
+            'read_comments' => isset($_POST['cpc_docs_perm_read_comments']) ? sanitize_key(wp_unslash($_POST['cpc_docs_perm_read_comments'])) : cpc_docs_get_doc_permission($doc_id, 'read_comments', $component),
+            'post_comments' => isset($_POST['cpc_docs_perm_post_comments']) ? sanitize_key(wp_unslash($_POST['cpc_docs_perm_post_comments'])) : cpc_docs_get_doc_permission($doc_id, 'post_comments', $component),
+            'view_history' => isset($_POST['cpc_docs_perm_view_history']) ? sanitize_key(wp_unslash($_POST['cpc_docs_perm_view_history'])) : cpc_docs_get_doc_permission($doc_id, 'view_history', $component),
+        );
 
-        if ($title === '') {
+        if ($title === '' || (!$doc_is_folder && $content === '')) {
             wp_safe_redirect(add_query_arg('cpc_docs_notice', 'invalid', $redirect));
             exit;
         }
 
-        if (!$is_folder && $content === '') {
-            wp_safe_redirect(add_query_arg('cpc_docs_notice', 'invalid', $redirect));
-            exit;
-        }
-
-        // For folders, content is always empty
-        if ($is_folder) {
+        if ($doc_is_folder) {
             $content = '';
         }
 
@@ -832,9 +1153,11 @@ function cpc_docs_handle_frontend_requests() {
             'post_parent' => $parent_id,
         ));
 
-        cpc_docs_set_doc_meta($doc_id, $component, $component_id, $status);
+        cpc_docs_set_doc_meta($doc_id, $component, $component_id, $status, $permissions);
         cpc_docs_set_doc_tags($doc_id, $tags);
-        cpc_docs_upload_files_to_doc($doc_id, 'cpc_docs_attachments', (int)$doc->post_author);
+        if (cpc_docs_enable_attachments()) {
+            cpc_docs_upload_files_to_doc($doc_id, 'cpc_docs_attachments', (int)$doc->post_author);
+        }
         cpc_docs_release_edit_lock($doc_id, get_current_user_id(), false);
 
         wp_safe_redirect(add_query_arg(array('cpc_docs_notice' => 'updated', 'cpc_docs_doc_id' => $doc_id), get_permalink($doc_id)));
@@ -915,6 +1238,8 @@ function cpc_docs_load_folder_contents_ajax() {
     $folder_id = isset($_GET['cpc_docs_folder']) ? (int)$_GET['cpc_docs_folder'] : 0;
     $component = isset($_GET['cpc_docs_component']) ? sanitize_key(wp_unslash($_GET['cpc_docs_component'])) : '';
     $status = isset($_GET['cpc_docs_status']) ? sanitize_key(wp_unslash($_GET['cpc_docs_status'])) : '';
+    $perm_edit = isset($_GET['cpc_docs_perm_edit']) ? sanitize_key(wp_unslash($_GET['cpc_docs_perm_edit'])) : '';
+    $perm_history = isset($_GET['cpc_docs_perm_history']) ? sanitize_key(wp_unslash($_GET['cpc_docs_perm_history'])) : '';
     $search = isset($_GET['cpc_docs_q']) ? sanitize_text_field(wp_unslash($_GET['cpc_docs_q'])) : '';
 
     if (is_admin()) {
@@ -951,6 +1276,18 @@ function cpc_docs_load_folder_contents_ajax() {
         });
     }
 
+    if ($perm_edit !== '') {
+        $docs = array_filter($docs, function($doc) use ($perm_edit) {
+            return cpc_docs_get_doc_permission($doc->ID, 'edit', cpc_docs_get_component($doc->ID)) === $perm_edit;
+        });
+    }
+
+    if ($perm_history !== '') {
+        $docs = array_filter($docs, function($doc) use ($perm_history) {
+            return cpc_docs_get_doc_permission($doc->ID, 'view_history', cpc_docs_get_component($doc->ID)) === $perm_history;
+        });
+    }
+
     ob_start();
 
     $grouped = array();
@@ -975,6 +1312,7 @@ function cpc_docs_load_folder_contents_ajax() {
     }
 
     $rendered = 0;
+    $current_url = cpc_docs_get_current_request_url();
     foreach ($current_items as $doc) {
         if (!cpc_docs_user_can_view_doc($doc->ID)) {
             continue;
@@ -983,18 +1321,35 @@ function cpc_docs_load_folder_contents_ajax() {
         $child_count = isset($grouped[$doc->ID]) ? count($grouped[$doc->ID]) : 0;
         if ($child_count > 0) {
             $can_manage = cpc_docs_user_can_manage_doc($doc->ID);
-            $has_attachments = !empty(cpc_docs_get_doc_attachments($doc->ID));
+            $can_edit = cpc_docs_user_can_edit_doc($doc->ID);
+            $can_history = cpc_docs_user_can_view_history($doc->ID);
+            $has_attachments = cpc_docs_enable_attachments() && !empty(cpc_docs_get_doc_attachments($doc->ID));
 
             echo '<tr class="folder-row cpc_docs_folder_row" data-folder-id="'.(int)$doc->ID.'">';
             echo '<td class="attachment-clip-cell">'.($has_attachments ? '<span class="dashicons dashicons-paperclip"></span>' : '').'</td>';
             echo '<td class="title-cell folder-row-name">';
             echo '<span class="cpc_docs_folder_title toggle-folder-link"><span class="dashicons dashicons-category"></span><a href="#">'.esc_html($doc->post_title).'</a></span>';
             echo '<div class="cpc_docs_folder_meta">'.sprintf(esc_html__('%d Unterdokumente', CPC2_TEXT_DOMAIN), (int)$child_count).'</div>';
+            if (function_exists('cpc_docs_render_access_badges')) {
+                echo cpc_docs_render_access_badges($doc->ID);
+            }
             echo '<div class="row-actions">';
             echo '<a href="'.esc_url(get_permalink($doc)).'">'.esc_html__('Ansehen', CPC2_TEXT_DOMAIN).'</a>';
-            if ($can_manage) {
+            if ($can_edit) {
                 echo ' | <a href="'.esc_url(cpc_docs_get_edit_link($doc->ID)).'">'.esc_html__('Bearbeiten', CPC2_TEXT_DOMAIN).'</a>';
+            }
+            if ($can_history) {
                 echo ' | <a href="'.esc_url(cpc_docs_get_history_link($doc->ID)).'">'.esc_html__('Verlauf', CPC2_TEXT_DOMAIN).'</a>';
+            }
+            if ($can_manage) {
+                echo ' | <a href="#cpc_docs_folder_manage_panel" class="cpc_docs_rename_folder_link" data-folder-id="'.(int)$doc->ID.'" data-folder-title="'.esc_attr($doc->post_title).'">'.esc_html__('Umbenennen', CPC2_TEXT_DOMAIN).'</a>';
+                echo ' | <form method="post" class="cpc_docs_inline_form">';
+                echo '<input type="hidden" name="cpc_docs_action" value="folder_delete" />';
+                echo '<input type="hidden" name="cpc_docs_folder_id" value="'.(int)$doc->ID.'" />';
+                echo '<input type="hidden" name="cpc_docs_nonce" value="'.esc_attr(wp_create_nonce('cpc_docs_frontend_action')).'" />';
+                echo '<input type="hidden" name="cpc_docs_redirect" value="'.esc_url($current_url).'" />';
+                echo '<button type="submit" class="cpc_docs_inline_button" onclick="return confirm(\''.esc_js(__('Ordner wirklich loeschen? Unterordner werden in den Parent verschoben.', CPC2_TEXT_DOMAIN)).'\');">'.esc_html__('Loeschen', CPC2_TEXT_DOMAIN).'</button>';
+                echo '</form>';
             }
             echo '</div>';
             echo '</td>';
@@ -1003,16 +1358,23 @@ function cpc_docs_load_folder_contents_ajax() {
             echo '</tr>';
         } else {
             $can_manage = cpc_docs_user_can_manage_doc($doc->ID);
-            $has_attachments = !empty(cpc_docs_get_doc_attachments($doc->ID));
+            $can_edit = cpc_docs_user_can_edit_doc($doc->ID);
+            $can_history = cpc_docs_user_can_view_history($doc->ID);
+            $has_attachments = cpc_docs_enable_attachments() && !empty(cpc_docs_get_doc_attachments($doc->ID));
 
             echo '<tr>';
             echo '<td class="attachment-clip-cell">'.($has_attachments ? '<span class="dashicons dashicons-paperclip"></span>' : '').'</td>';
             echo '<td class="title-cell">';
             echo '<span class="cpc_docs_doc_title"><span class="dashicons dashicons-media-document"></span><a href="'.esc_url(get_permalink($doc)).'">'.esc_html($doc->post_title).'</a></span>';
+            if (function_exists('cpc_docs_render_access_badges')) {
+                echo cpc_docs_render_access_badges($doc->ID);
+            }
             echo '<div class="row-actions">';
             echo '<a href="'.esc_url(get_permalink($doc)).'">'.esc_html__('Ansehen', CPC2_TEXT_DOMAIN).'</a>';
-            if ($can_manage) {
+            if ($can_edit) {
                 echo ' | <a href="'.esc_url(cpc_docs_get_edit_link($doc->ID)).'">'.esc_html__('Bearbeiten', CPC2_TEXT_DOMAIN).'</a>';
+            }
+            if ($can_history) {
                 echo ' | <a href="'.esc_url(cpc_docs_get_history_link($doc->ID)).'">'.esc_html__('Verlauf', CPC2_TEXT_DOMAIN).'</a>';
             }
             echo '</div>';
@@ -1050,6 +1412,53 @@ function cpc_docs_notice_message($code) {
 
     return isset($map[$code]) ? $map[$code] : '';
 }
+
+function cpc_docs_filter_comments_open($open, $post_id) {
+    $post = get_post((int)$post_id);
+    if (!$post || $post->post_type !== 'cpc_doc') {
+        return $open;
+    }
+
+    return cpc_docs_user_can_post_comments($post_id);
+}
+add_filter('comments_open', 'cpc_docs_filter_comments_open', 20, 2);
+
+function cpc_docs_filter_comments_array($comments, $post_id) {
+    $post = get_post((int)$post_id);
+    if (!$post || $post->post_type !== 'cpc_doc') {
+        return $comments;
+    }
+
+    if (!cpc_docs_user_can_read_comments($post_id)) {
+        return array();
+    }
+
+    return $comments;
+}
+add_filter('comments_array', 'cpc_docs_filter_comments_array', 20, 2);
+
+function cpc_docs_preprocess_comment($commentdata) {
+    if (empty($commentdata['comment_post_ID'])) {
+        return $commentdata;
+    }
+
+    $post_id = (int)$commentdata['comment_post_ID'];
+    $post = get_post($post_id);
+    if (!$post || $post->post_type !== 'cpc_doc') {
+        return $commentdata;
+    }
+
+    if (!cpc_docs_user_can_post_comments($post_id)) {
+        wp_die(
+            esc_html__('Keine Berechtigung zum Kommentieren dieses Dokuments.', CPC2_TEXT_DOMAIN),
+            esc_html__('Keine Berechtigung', CPC2_TEXT_DOMAIN),
+            array('response' => 403)
+        );
+    }
+
+    return $commentdata;
+}
+add_filter('preprocess_comment', 'cpc_docs_preprocess_comment', 20);
 
 function cpc_docs_get_associated_group_id_from_source($source_doc_id) {
     $terms = get_the_terms((int)$source_doc_id, 'bp_docs_associated_item');

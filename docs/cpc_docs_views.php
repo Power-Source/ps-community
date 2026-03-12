@@ -6,7 +6,7 @@ function cpc_docs_add_profile_tab($tabs, $user_id, $viewer_id) {
     }
 
     $tabs['docs'] = array(
-        'label' => __('Dokumente', CPC2_TEXT_DOMAIN),
+        'label' => cpc_docs_get_user_tab_name(),
         'icon' => 'media-document',
         'priority' => 24,
     );
@@ -22,7 +22,7 @@ function cpc_docs_add_group_tab($tabs, $group_id, $user_id) {
 
     if (function_exists('cpc_can_view_group') && cpc_can_view_group($user_id, $group_id)) {
         $tabs['docs'] = array(
-            'label' => __('Dokumente', CPC2_TEXT_DOMAIN),
+            'label' => cpc_docs_get_group_tab_name(),
             'icon' => 'media-document',
             'priority' => 23,
         );
@@ -50,11 +50,14 @@ function cpc_docs_render_notice_html() {
 }
 
 function cpc_docs_render_create_form($component, $component_id) {
+        $attachments_enabled = cpc_docs_enable_attachments();
     if (!cpc_docs_user_can_create_for_context($component, $component_id)) {
         return '';
     }
 
     $options = cpc_docs_get_status_options($component);
+    $permission_options = cpc_docs_get_permission_options($component);
+    $permission_defaults = cpc_docs_get_permission_defaults($component);
 
     $html = '';
     $parent_options = cpc_docs_get_parent_options($component, $component_id, 0);
@@ -71,14 +74,8 @@ function cpc_docs_render_create_form($component, $component_id) {
     $html .= '<input type="hidden" name="cpc_docs_redirect" value="'.esc_url(cpc_curPageURL()).'" />';
 
     $html .= '<div style="display:grid; gap:8px;">';
-    $html .= '<div>';
-    $html .= '<label style="display:flex; gap:8px; align-items:center; cursor:pointer;">';
-    $html .= '<input type="checkbox" name="cpc_docs_is_folder" class="cpc_docs_is_folder_toggle" value="1" />';
-    $html .= '<span>'.esc_html__('Ordner (Inhalt optional)', CPC2_TEXT_DOMAIN).'</span>';
-    $html .= '</label>';
-    $html .= '</div>';
-    $html .= '<input type="text" name="cpc_docs_title" placeholder="'.esc_attr__('Titel oder Ordnername', CPC2_TEXT_DOMAIN).'" required />';
-    $html .= '<textarea name="cpc_docs_content" class="cpc_docs_content_field" rows="5" placeholder="'.esc_attr__('Dokumentinhalt', CPC2_TEXT_DOMAIN).'"></textarea>';
+    $html .= '<input type="text" name="cpc_docs_title" placeholder="'.esc_attr__('Titel', CPC2_TEXT_DOMAIN).'" required />';
+    $html .= '<textarea name="cpc_docs_content" class="cpc_docs_content_field" rows="5" placeholder="'.esc_attr__('Dokumentinhalt', CPC2_TEXT_DOMAIN).'" required></textarea>';
     $html .= '<div style="display:grid; gap:8px; grid-template-columns:minmax(0,1fr) minmax(0,1fr);">';
     $html .= '<div>';
     $html .= '<label>'.esc_html__('Parent', CPC2_TEXT_DOMAIN).'</label>';
@@ -89,10 +86,12 @@ function cpc_docs_render_create_form($component, $component_id) {
     }
     $html .= '</select>';
     $html .= '</div>';
-    $html .= '<div>';
-    $html .= '<label>'.esc_html__('Attachments', CPC2_TEXT_DOMAIN).'</label>';
-    $html .= '<input type="file" name="cpc_docs_attachments[]" multiple />';
-    $html .= '</div>';
+    if ($attachments_enabled) {
+        $html .= '<div>';
+        $html .= '<label>'.esc_html__('Attachments', CPC2_TEXT_DOMAIN).'</label>';
+        $html .= '<input type="file" name="cpc_docs_attachments[]" multiple />';
+        $html .= '</div>';
+    }
     $html .= '</div>';
     $html .= '<div style="display:flex; gap:8px; align-items:center; flex-wrap:wrap;">';
     $html .= '<label>'.esc_html__('Sichtbarkeit', CPC2_TEXT_DOMAIN).':</label>';
@@ -101,10 +100,112 @@ function cpc_docs_render_create_form($component, $component_id) {
         $html .= '<option value="'.esc_attr($value).'">'.esc_html($label).'</option>';
     }
     $html .= '</select>';
-    $html .= '<button type="submit" class="cpc_button">'.esc_html__('Erstellen', CPC2_TEXT_DOMAIN).'</button>';
+    $html .= '</div>';
+
+    $html .= '<div style="display:grid; gap:8px; grid-template-columns:repeat(2,minmax(0,1fr));">';
+    $perm_fields = array(
+        'edit' => __('Bearbeiten', CPC2_TEXT_DOMAIN),
+        'manage' => __('Verwalten', CPC2_TEXT_DOMAIN),
+        'read_comments' => __('Kommentare lesen', CPC2_TEXT_DOMAIN),
+        'post_comments' => __('Kommentare schreiben', CPC2_TEXT_DOMAIN),
+        'view_history' => __('Verlauf sehen', CPC2_TEXT_DOMAIN),
+    );
+    foreach ($perm_fields as $field => $label) {
+        $html .= '<div>';
+        $html .= '<label>'.esc_html($label).'</label>';
+        $html .= '<select name="cpc_docs_perm_'.esc_attr($field).'">';
+        foreach ($permission_options as $value => $option_label) {
+            $html .= '<option value="'.esc_attr($value).'"'.selected($permission_defaults[$field], $value, false).'>'.esc_html($option_label).'</option>';
+        }
+        $html .= '</select>';
+        $html .= '</div>';
+    }
+    $html .= '</div>';
+
+    $html .= '<div style="display:flex; gap:8px; align-items:center; flex-wrap:wrap;">';
+    $html .= '<button type="submit" class="cpc_button">'.esc_html__('Dokument erstellen', CPC2_TEXT_DOMAIN).'</button>';
     $html .= '</div>';
     $html .= '</div>';
     $html .= '</form>';
+    $html .= '</details>';
+
+    return $html;
+}
+
+function cpc_docs_get_folder_options($component, $component_id, $exclude_doc_id = 0) {
+    $docs = cpc_docs_get_parent_options($component, $component_id, $exclude_doc_id);
+    if (empty($docs)) {
+        return array();
+    }
+
+    $folders = array();
+    foreach ($docs as $doc) {
+        if ($doc && cpc_docs_is_folder($doc->ID)) {
+            $folders[] = $doc;
+        }
+    }
+
+    return $folders;
+}
+
+function cpc_docs_render_folder_manage_panel($component, $component_id) {
+    if (!cpc_docs_user_can_create_for_context($component, $component_id)) {
+        return '';
+    }
+
+    $status_options = cpc_docs_get_status_options($component);
+    $folder_options = cpc_docs_get_folder_options($component, $component_id, 0);
+
+    $html = '';
+    $html .= '<details class="cpc_docs_folder_manage_toggle" id="cpc_docs_folder_manage_panel">';
+    $html .= '<summary class="cpc_button cpc_docs_create_summary">'.esc_html__('Ordner verwalten', CPC2_TEXT_DOMAIN).'</summary>';
+    $html .= '<div class="cpc_docs_folder_manage_forms">';
+
+    $html .= '<form method="post" class="cpc_docs_folder_manage_form">';
+    $html .= '<h4>'.esc_html__('Ordner erstellen', CPC2_TEXT_DOMAIN).'</h4>';
+    $html .= '<input type="hidden" name="cpc_docs_action" value="folder_create" />';
+    $html .= '<input type="hidden" name="cpc_docs_component" value="'.esc_attr($component).'" />';
+    $html .= '<input type="hidden" name="cpc_docs_component_id" value="'.(int)$component_id.'" />';
+    $html .= '<input type="hidden" name="cpc_docs_nonce" value="'.esc_attr(wp_create_nonce('cpc_docs_frontend_action')).'" />';
+    $html .= '<input type="hidden" name="cpc_docs_redirect" value="'.esc_url(cpc_curPageURL()).'" />';
+    $html .= '<label>'.esc_html__('Ordnername', CPC2_TEXT_DOMAIN).'</label>';
+    $html .= '<input type="text" name="cpc_docs_folder_title" required />';
+    $html .= '<label>'.esc_html__('Parent-Ordner', CPC2_TEXT_DOMAIN).'</label>';
+    $html .= '<select name="cpc_docs_parent_id">';
+    $html .= '<option value="0">'.esc_html__('Kein Parent', CPC2_TEXT_DOMAIN).'</option>';
+    foreach ($folder_options as $folder) {
+        $html .= '<option value="'.(int)$folder->ID.'">'.esc_html($folder->post_title).'</option>';
+    }
+    $html .= '</select>';
+    $html .= '<label>'.esc_html__('Sichtbarkeit', CPC2_TEXT_DOMAIN).'</label>';
+    $html .= '<select name="cpc_docs_status">';
+    foreach ($status_options as $value => $label) {
+        $html .= '<option value="'.esc_attr($value).'">'.esc_html($label).'</option>';
+    }
+    $html .= '</select>';
+    $html .= '<button type="submit" class="cpc_button">'.esc_html__('Ordner erstellen', CPC2_TEXT_DOMAIN).'</button>';
+    $html .= '</form>';
+
+    $html .= '<form method="post" class="cpc_docs_folder_manage_form cpc_docs_folder_rename_form">';
+    $html .= '<h4>'.esc_html__('Ordner umbenennen', CPC2_TEXT_DOMAIN).'</h4>';
+    $html .= '<input type="hidden" name="cpc_docs_action" value="folder_rename" />';
+    $html .= '<input type="hidden" name="cpc_docs_component" value="'.esc_attr($component).'" />';
+    $html .= '<input type="hidden" name="cpc_docs_component_id" value="'.(int)$component_id.'" />';
+    $html .= '<input type="hidden" name="cpc_docs_nonce" value="'.esc_attr(wp_create_nonce('cpc_docs_frontend_action')).'" />';
+    $html .= '<input type="hidden" name="cpc_docs_redirect" value="'.esc_url(cpc_curPageURL()).'" />';
+    $html .= '<label>'.esc_html__('Ordner', CPC2_TEXT_DOMAIN).'</label>';
+    $html .= '<select name="cpc_docs_folder_id" class="cpc_docs_folder_rename_select" required>';
+    $html .= '<option value="">'.esc_html__('Bitte auswaehlen', CPC2_TEXT_DOMAIN).'</option>';
+    foreach ($folder_options as $folder) {
+        $html .= '<option value="'.(int)$folder->ID.'">'.esc_html($folder->post_title).'</option>';
+    }
+    $html .= '</select>';
+    $html .= '<label>'.esc_html__('Neuer Name', CPC2_TEXT_DOMAIN).'</label>';
+    $html .= '<input type="text" name="cpc_docs_folder_new_title" class="cpc_docs_folder_rename_title" required />';
+    $html .= '<button type="submit" class="cpc_button">'.esc_html__('Ordner umbenennen', CPC2_TEXT_DOMAIN).'</button>';
+    $html .= '</form>';
+
+    $html .= '</div>';
     $html .= '</details>';
 
     return $html;
@@ -123,6 +224,7 @@ function cpc_docs_render_doc_card($doc) {
     $status = cpc_docs_get_status($doc->ID);
     $author = get_the_author_meta('display_name', $doc->post_author);
     $can_manage = cpc_docs_user_can_manage_doc($doc->ID);
+    $can_edit = cpc_docs_user_can_edit_doc($doc->ID);
 
     $status_options = cpc_docs_get_status_options($component);
     $status_label = isset($status_options[$status]) ? $status_options[$status] : ucfirst($status);
@@ -135,16 +237,19 @@ function cpc_docs_render_doc_card($doc) {
     $html .= '</div>';
 
     if ($doc->post_excerpt) {
-        $html .= '<div>'.wp_kses_post(wpautop(wp_trim_words($doc->post_excerpt, 26))).'</div>';
+        $html .= '<div>'.wp_kses_post(wpautop(wp_trim_words($doc->post_excerpt, cpc_docs_get_directory_excerpt_length()))).'</div>';
     } else {
-        $html .= '<div>'.wp_kses_post(wpautop(wp_trim_words(wp_strip_all_tags($doc->post_content), 36))).'</div>';
+        $html .= '<div>'.wp_kses_post(wpautop(wp_trim_words(wp_strip_all_tags($doc->post_content), cpc_docs_get_directory_excerpt_length()))).'</div>';
     }
 
-    if ($can_manage) {
+    if ($can_manage || $can_edit) {
         $html .= '<div class="row-actions" style="margin:6px 0 8px;">';
-        $html .= '<a href="'.esc_url(cpc_docs_get_edit_link($doc->ID)).'">'.esc_html__('Bearbeiten', CPC2_TEXT_DOMAIN).'</a>';
+        if ($can_edit) {
+            $html .= '<a href="'.esc_url(cpc_docs_get_edit_link($doc->ID)).'">'.esc_html__('Bearbeiten', CPC2_TEXT_DOMAIN).'</a>';
+        }
         $html .= '</div>';
 
+        if ($can_manage) {
         $html .= '<form method="post" style="margin-top:8px;">';
         $html .= '<input type="hidden" name="cpc_docs_action" value="delete_doc" />';
         $html .= '<input type="hidden" name="cpc_docs_doc_id" value="'.(int)$doc->ID.'" />';
@@ -152,6 +257,7 @@ function cpc_docs_render_doc_card($doc) {
         $html .= '<input type="hidden" name="cpc_docs_redirect" value="'.esc_url(cpc_curPageURL()).'" />';
         $html .= '<button type="submit" class="cpc_button" onclick="return confirm(\''.esc_js(__('Dokument wirklich loeschen?', CPC2_TEXT_DOMAIN)).'\');">'.esc_html__('Loeschen', CPC2_TEXT_DOMAIN).'</button>';
         $html .= '</form>';
+        }
     }
 
     $html .= '</article>';
@@ -251,20 +357,37 @@ function cpc_docs_render_loop_breadcrumbs($folder_id, $args = array()) {
 
 function cpc_docs_render_folder_row($doc, $child_count, $args = array()) {
     $can_manage = cpc_docs_user_can_manage_doc($doc->ID);
-    $has_attachments = !empty(cpc_docs_get_doc_attachments($doc->ID));
+    $can_edit = cpc_docs_user_can_edit_doc($doc->ID);
+    $can_history = cpc_docs_user_can_view_history($doc->ID);
+    $has_attachments = cpc_docs_enable_attachments() && !empty(cpc_docs_get_doc_attachments($doc->ID));
 
     $html = '<tr class="folder-row cpc_docs_folder_row" data-folder-id="'.(int)$doc->ID.'">';
     $html .= '<td class="attachment-clip-cell">'.($has_attachments ? '<span class="dashicons dashicons-paperclip"></span>' : '').'</td>';
     $html .= '<td class="title-cell folder-row-name">';
     $html .= '<span class="cpc_docs_folder_title"><span class="dashicons dashicons-category"></span><a href="'.esc_url(get_permalink($doc)).'">'.esc_html($doc->post_title).'</a></span>';
     $html .= '<div class="cpc_docs_folder_meta">'.sprintf(esc_html__('%d Unterdokumente', CPC2_TEXT_DOMAIN), (int)$child_count).'</div>';
+    $html .= cpc_docs_render_access_badges($doc->ID);
     $html .= '<div class="row-actions">';
     $html .= '<span class="toggle-folder-link"><a href="'.esc_url(cpc_docs_build_loop_folder_url($doc->ID, $args)).'">'.esc_html__('Ordner oeffnen', CPC2_TEXT_DOMAIN).'</a></span>';
     $html .= ' | <a href="'.esc_url(get_permalink($doc)).'">'.esc_html__('Ansehen', CPC2_TEXT_DOMAIN).'</a>';
+    if ($can_manage || $can_edit || $can_history) {
+        $current_url = cpc_curPageURL();
+        if ($can_edit) {
+            $html .= ' | <a href="'.esc_url(cpc_docs_get_edit_link($doc->ID)).'">'.esc_html__('Bearbeiten', CPC2_TEXT_DOMAIN).'</a>';
+        }
+        if ($can_history) {
+            $html .= ' | <a href="'.esc_url(cpc_docs_get_history_link($doc->ID)).'">'.esc_html__('Verlauf', CPC2_TEXT_DOMAIN).'</a>';
+        }
+    }
     if ($can_manage) {
-        $html .= ' | <a href="'.esc_url(cpc_docs_get_edit_link($doc->ID)).'">'.esc_html__('Bearbeiten', CPC2_TEXT_DOMAIN).'</a>';
-        $html .= ' | <a href="'.esc_url(cpc_docs_get_history_link($doc->ID)).'">'.esc_html__('Verlauf', CPC2_TEXT_DOMAIN).'</a>';
-        $html .= ' | <a href="#" class="cpc_docs_delete_folder" data-doc-id="'.(int)$doc->ID.'" onclick="event.preventDefault(); return cpc_docs_delete_folder('.(int)$doc->ID.', \''.esc_js($doc->post_title).'\');">'.esc_html__('Loeschen', CPC2_TEXT_DOMAIN).'</a>';
+        $html .= ' | <a href="#cpc_docs_folder_manage_panel" class="cpc_docs_rename_folder_link" data-folder-id="'.(int)$doc->ID.'" data-folder-title="'.esc_attr($doc->post_title).'">'.esc_html__('Umbenennen', CPC2_TEXT_DOMAIN).'</a>';
+        $html .= ' | <form method="post" class="cpc_docs_inline_form">';
+        $html .= '<input type="hidden" name="cpc_docs_action" value="folder_delete" />';
+        $html .= '<input type="hidden" name="cpc_docs_folder_id" value="'.(int)$doc->ID.'" />';
+        $html .= '<input type="hidden" name="cpc_docs_nonce" value="'.esc_attr(wp_create_nonce('cpc_docs_frontend_action')).'" />';
+        $html .= '<input type="hidden" name="cpc_docs_redirect" value="'.esc_url($current_url).'" />';
+        $html .= '<button type="submit" class="cpc_docs_inline_button" onclick="return confirm(\''.esc_js(__('Ordner wirklich loeschen? Unterordner werden in den Parent verschoben.', CPC2_TEXT_DOMAIN)).'\');">'.esc_html__('Loeschen', CPC2_TEXT_DOMAIN).'</button>';
+        $html .= '</form>';
     }
     $html .= '</div>';
     $html .= '</td>';
@@ -277,16 +400,21 @@ function cpc_docs_render_folder_row($doc, $child_count, $args = array()) {
 
 function cpc_docs_render_leaf_row($doc) {
     $can_manage = cpc_docs_user_can_manage_doc($doc->ID);
-    $has_attachments = !empty(cpc_docs_get_doc_attachments($doc->ID));
+    $can_edit = cpc_docs_user_can_edit_doc($doc->ID);
+    $can_history = cpc_docs_user_can_view_history($doc->ID);
+    $has_attachments = cpc_docs_enable_attachments() && !empty(cpc_docs_get_doc_attachments($doc->ID));
 
     $html = '<tr>';
     $html .= '<td class="attachment-clip-cell">'.($has_attachments ? '<span class="dashicons dashicons-paperclip"></span>' : '').'</td>';
     $html .= '<td class="title-cell">';
     $html .= '<span class="cpc_docs_doc_title"><span class="dashicons dashicons-media-document"></span><a href="'.esc_url(get_permalink($doc)).'">'.esc_html($doc->post_title).'</a></span>';
+    $html .= cpc_docs_render_access_badges($doc->ID);
     $html .= '<div class="row-actions">';
     $html .= '<a href="'.esc_url(get_permalink($doc)).'">'.esc_html__('Ansehen', CPC2_TEXT_DOMAIN).'</a>';
-    if ($can_manage) {
+    if ($can_edit) {
         $html .= ' | <a href="'.esc_url(cpc_docs_get_edit_link($doc->ID)).'">'.esc_html__('Bearbeiten', CPC2_TEXT_DOMAIN).'</a>';
+    }
+    if ($can_history) {
         $html .= ' | <a href="'.esc_url(cpc_docs_get_history_link($doc->ID)).'">'.esc_html__('Verlauf', CPC2_TEXT_DOMAIN).'</a>';
     }
     $html .= '</div>';
@@ -307,13 +435,18 @@ function cpc_docs_render_docs_table($docs, $empty_message = '', $args = array())
     $args = wp_parse_args($args, array(
         'mode' => 'current',
     ));
+    $attachments_enabled = cpc_docs_enable_attachments();
     $grouped = cpc_docs_group_docs_by_parent($docs);
     $current_folder_id = cpc_docs_get_loop_folder_id($docs);
     $current_items = isset($grouped[$current_folder_id]) ? $grouped[$current_folder_id] : array();
 
     $html = '';
     $html .= cpc_docs_render_loop_breadcrumbs($current_folder_id, $args);
-    $html .= '<table class="doctable cpc_docs_directory_table cpc_docs_folder_browser" data-folder-id="'.(int)$current_folder_id.'">';
+    $table_classes = 'doctable cpc_docs_directory_table cpc_docs_folder_browser';
+    if (!$attachments_enabled) {
+        $table_classes .= ' cpc_docs_no_attachments';
+    }
+    $html .= '<table class="'.esc_attr($table_classes).'" data-folder-id="'.(int)$current_folder_id.'">';
     $html .= '<thead><tr>';
     $html .= '<th scope="col" class="attachment-clip-cell">&nbsp;</th>';
     $html .= '<th scope="col" class="title-cell">'.esc_html__('Titel', CPC2_TEXT_DOMAIN).'</th>';
@@ -454,6 +587,7 @@ function cpc_docs_render_profile_tab_content($html, $active_tab, $user_id, $shor
     $html .= '<div class="cpc_docs_profile_tab">';
     $html .= '<h3>'.esc_html__('Profil-Dokumente', CPC2_TEXT_DOMAIN).'</h3>';
     $html .= cpc_docs_render_create_form('members', $user_id);
+    $html .= cpc_docs_render_folder_manage_panel('members', $user_id);
 
     if (!$docs) {
         $html .= '<p>'.esc_html__('Noch keine Dokumente vorhanden.', CPC2_TEXT_DOMAIN).'</p>';
@@ -490,6 +624,7 @@ function cpc_docs_render_group_tab_content($html, $group_id, $shortcode_atts) {
     $html .= '<div class="cpc_docs_group_tab">';
     $html .= '<h3>'.esc_html__('Gruppen-Dokumente', CPC2_TEXT_DOMAIN).'</h3>';
     $html .= cpc_docs_render_create_form('groups', $group_id);
+    $html .= cpc_docs_render_folder_manage_panel('groups', $group_id);
 
     if (!$docs) {
         $html .= '<p>'.esc_html__('Noch keine Dokumente vorhanden.', CPC2_TEXT_DOMAIN).'</p>';
@@ -533,9 +668,11 @@ function cpc_docs_render_single_doc_content($content) {
     $body .= cpc_docs_render_single_doc_actions($doc);
     $body .= '</header>';
 
-    if ($is_history) {
+    if ($is_history && cpc_docs_user_can_view_history($doc->ID)) {
         $body .= cpc_docs_render_history_view($doc);
-    } elseif ($is_edit && cpc_docs_user_can_manage_doc($doc->ID)) {
+    } elseif ($is_history) {
+        $body .= '<p>'.esc_html__('Keine Berechtigung fuer den Verlauf.', CPC2_TEXT_DOMAIN).'</p>';
+    } elseif ($is_edit && cpc_docs_user_can_edit_doc($doc->ID)) {
         if (cpc_docs_is_doc_locked($doc->ID, get_current_user_id())) {
             $body .= cpc_docs_render_locked_notice($doc);
         } else {
@@ -561,17 +698,23 @@ function cpc_docs_render_single_doc_actions($doc) {
     }
 
     $can_manage = cpc_docs_user_can_manage_doc($doc->ID);
+    $can_edit = cpc_docs_user_can_edit_doc($doc->ID);
+    $can_history = cpc_docs_user_can_view_history($doc->ID);
     $action = isset($_GET['cpc_docs_action']) ? sanitize_key(wp_unslash($_GET['cpc_docs_action'])) : '';
     $is_edit = ($action === 'edit');
     $is_history = ($action === 'history');
 
     $html = '<div class="doc-edit-link cpc_doc_actions">';
     $html .= '<a class="cpc_button'.(!$is_edit && !$is_history ? ' active' : '').'" href="'.esc_url(get_permalink($doc)).'">'.esc_html__('Ansicht', CPC2_TEXT_DOMAIN).'</a>';
-    $html .= '<a class="cpc_button'.($is_history ? ' active' : '').'" href="'.esc_url(cpc_docs_get_history_link($doc->ID)).'">'.esc_html__('Verlauf', CPC2_TEXT_DOMAIN).'</a>';
+    if ($can_history) {
+        $html .= '<a class="cpc_button'.($is_history ? ' active' : '').'" href="'.esc_url(cpc_docs_get_history_link($doc->ID)).'">'.esc_html__('Verlauf', CPC2_TEXT_DOMAIN).'</a>';
+    }
+
+    if ($can_edit) {
+        $html .= '<a class="cpc_button'.($is_edit ? ' active' : '').'" href="'.esc_url(cpc_docs_get_edit_link($doc->ID)).'">'.esc_html__('Bearbeiten', CPC2_TEXT_DOMAIN).'</a>';
+    }
 
     if ($can_manage) {
-        $html .= '<a class="cpc_button'.($is_edit ? ' active' : '').'" href="'.esc_url(cpc_docs_get_edit_link($doc->ID)).'">'.esc_html__('Bearbeiten', CPC2_TEXT_DOMAIN).'</a>';
-
         $html .= '<form method="post" style="display:inline-block; margin-left:8px;">';
         $html .= '<input type="hidden" name="cpc_docs_action" value="delete_doc" />';
         $html .= '<input type="hidden" name="cpc_docs_doc_id" value="'.(int)$doc->ID.'" />';
@@ -587,6 +730,10 @@ function cpc_docs_render_single_doc_actions($doc) {
 
 function cpc_docs_render_single_doc_attachments($doc) {
     if (!$doc || $doc->post_type !== 'cpc_doc') {
+        return '';
+    }
+
+    if (!cpc_docs_enable_attachments()) {
         return '';
     }
 
@@ -655,8 +802,70 @@ function cpc_docs_get_status_label($status, $component) {
     return isset($options[$status]) ? $options[$status] : ucfirst($status);
 }
 
+function cpc_docs_get_permission_label($permission, $component) {
+    $options = cpc_docs_get_permission_options($component);
+    $permission = sanitize_key((string)$permission);
+    return isset($options[$permission]) ? $options[$permission] : ucfirst($permission);
+}
+
+function cpc_docs_render_access_badges($doc_id) {
+    $doc_id = (int)$doc_id;
+    if ($doc_id <= 0) {
+        return '';
+    }
+
+    $component = cpc_docs_get_component($doc_id);
+    $status_label = cpc_docs_get_status_label(cpc_docs_get_status($doc_id), $component);
+    $edit_label = cpc_docs_get_permission_label(cpc_docs_get_doc_permission($doc_id, 'edit', $component), $component);
+    $manage_label = cpc_docs_get_permission_label(cpc_docs_get_doc_permission($doc_id, 'manage', $component), $component);
+    $history_label = cpc_docs_get_permission_label(cpc_docs_get_doc_permission($doc_id, 'view_history', $component), $component);
+
+    $html = '<div class="cpc_docs_access_badges">';
+    $html .= '<span class="cpc_docs_badge cpc_docs_badge_status">'.esc_html__('Sichtbar', CPC2_TEXT_DOMAIN).': '.esc_html($status_label).'</span>';
+    $html .= '<span class="cpc_docs_badge">'.esc_html__('Edit', CPC2_TEXT_DOMAIN).': '.esc_html($edit_label).'</span>';
+    $html .= '<span class="cpc_docs_badge">'.esc_html__('Manage', CPC2_TEXT_DOMAIN).': '.esc_html($manage_label).'</span>';
+    $html .= '<span class="cpc_docs_badge">'.esc_html__('History', CPC2_TEXT_DOMAIN).': '.esc_html($history_label).'</span>';
+    $html .= '</div>';
+
+    return $html;
+}
+
+function cpc_docs_render_history_compare_form($doc, $revisions, $from_id, $to_id) {
+    if (!$doc || $doc->post_type !== 'cpc_doc' || empty($revisions)) {
+        return '';
+    }
+
+    $html = '<form method="get" class="cpc_doc_history_compare_form">';
+    $html .= '<input type="hidden" name="cpc_docs_action" value="history" />';
+    $html .= '<input type="hidden" name="cpc_docs_doc_id" value="'.(int)$doc->ID.'" />';
+    $html .= '<div class="cpc_doc_history_compare_grid">';
+
+    $html .= '<div><label for="cpc_docs_compare_from">'.esc_html__('Von Revision', CPC2_TEXT_DOMAIN).'</label>';
+    $html .= '<select id="cpc_docs_compare_from" name="cpc_docs_compare_from">';
+    foreach ($revisions as $revision) {
+        $label = wp_strip_all_tags(wp_post_revision_title($revision->ID, false));
+        $html .= '<option value="'.(int)$revision->ID.'"'.selected((int)$from_id, (int)$revision->ID, false).'>'.esc_html($label).'</option>';
+    }
+    $html .= '</select></div>';
+
+    $html .= '<div><label for="cpc_docs_compare_to">'.esc_html__('Zu Revision', CPC2_TEXT_DOMAIN).'</label>';
+    $html .= '<select id="cpc_docs_compare_to" name="cpc_docs_compare_to">';
+    foreach ($revisions as $revision) {
+        $label = wp_strip_all_tags(wp_post_revision_title($revision->ID, false));
+        $html .= '<option value="'.(int)$revision->ID.'"'.selected((int)$to_id, (int)$revision->ID, false).'>'.esc_html($label).'</option>';
+    }
+    $html .= '</select></div>';
+
+    $html .= '</div>';
+    $html .= '<button type="submit" class="cpc_button">'.esc_html__('Revisionen vergleichen', CPC2_TEXT_DOMAIN).'</button>';
+    $html .= '</form>';
+
+    return $html;
+}
+
 function cpc_docs_render_edit_form($doc) {
-    if (!$doc || $doc->post_type !== 'cpc_doc' || !cpc_docs_user_can_manage_doc($doc->ID)) {
+    $attachments_enabled = cpc_docs_enable_attachments();
+    if (!$doc || $doc->post_type !== 'cpc_doc' || !cpc_docs_user_can_edit_doc($doc->ID)) {
         return '';
     }
 
@@ -664,6 +873,7 @@ function cpc_docs_render_edit_form($doc) {
     $component_id = cpc_docs_get_component_id($doc->ID);
     $status = cpc_docs_get_status($doc->ID);
     $status_options = cpc_docs_get_status_options($component);
+    $permission_options = cpc_docs_get_permission_options($component);
     $parent_options = cpc_docs_get_parent_options($component, $component_id, $doc->ID);
     $tags_string = cpc_docs_get_doc_tags_string($doc->ID);
 
@@ -673,14 +883,7 @@ function cpc_docs_render_edit_form($doc) {
     $html .= '<input type="hidden" name="cpc_docs_nonce" value="'.esc_attr(wp_create_nonce('cpc_docs_frontend_action')).'" />';
     $html .= '<input type="hidden" name="cpc_docs_redirect" value="'.esc_url(get_permalink($doc)).'" />';
 
-    $is_folder = cpc_docs_is_folder($doc->ID);
-
     $html .= '<div class="doc-content">';
-    $html .= '<p><label style="display:flex; gap:8px; align-items:center; cursor:pointer;">';
-    $html .= '<input type="checkbox" name="cpc_docs_is_folder" class="cpc_docs_is_folder_toggle" value="1"'.checked($is_folder, true, false).' />';
-    $html .= '<span>'.esc_html__('Ordner (Inhalt optional)', CPC2_TEXT_DOMAIN).'</span>';
-    $html .= '</label></p>';
-
     $html .= '<p><label for="cpc_docs_title">'.esc_html__('Title', CPC2_TEXT_DOMAIN).'</label>';
     $html .= '<input type="text" id="cpc_docs_title" name="cpc_docs_title" value="'.esc_attr($doc->post_title).'" required /></p>';
 
@@ -715,6 +918,39 @@ function cpc_docs_render_edit_form($doc) {
     $html .= '</td></tr></table></div>';
     $html .= '</details>';
 
+    $perm_values = array(
+        'edit' => cpc_docs_get_doc_permission($doc->ID, 'edit', $component),
+        'manage' => cpc_docs_get_doc_permission($doc->ID, 'manage', $component),
+        'read_comments' => cpc_docs_get_doc_permission($doc->ID, 'read_comments', $component),
+        'post_comments' => cpc_docs_get_doc_permission($doc->ID, 'post_comments', $component),
+        'view_history' => cpc_docs_get_doc_permission($doc->ID, 'view_history', $component),
+    );
+
+    $perm_labels = array(
+        'edit' => __('Bearbeiten', CPC2_TEXT_DOMAIN),
+        'manage' => __('Verwalten', CPC2_TEXT_DOMAIN),
+        'read_comments' => __('Kommentare lesen', CPC2_TEXT_DOMAIN),
+        'post_comments' => __('Kommentare schreiben', CPC2_TEXT_DOMAIN),
+        'view_history' => __('Verlauf sehen', CPC2_TEXT_DOMAIN),
+    );
+
+    $html .= '<details class="doc-meta-box toggleable">';
+    $html .= '<summary class="toggle-switch">'.esc_html__('Berechtigungen', CPC2_TEXT_DOMAIN).'</summary>';
+    $html .= '<div class="toggle-content"><table class="toggle-table">';
+    foreach ($perm_labels as $field => $label) {
+        $html .= '<tr><td class="desc-column">';
+        $html .= '<label for="cpc_docs_perm_'.esc_attr($field).'">'.esc_html($label).'</label>';
+        $html .= '</td><td class="content-column">';
+        $html .= '<select id="cpc_docs_perm_'.esc_attr($field).'" name="cpc_docs_perm_'.esc_attr($field).'">';
+        foreach ($permission_options as $value => $option_label) {
+            $html .= '<option value="'.esc_attr($value).'"'.selected($perm_values[$field], $value, false).'>'.esc_html($option_label).'</option>';
+        }
+        $html .= '</select>';
+        $html .= '</td></tr>';
+    }
+    $html .= '</table></div>';
+    $html .= '</details>';
+
     $html .= '<details class="doc-meta-box toggleable">';
     $html .= '<summary class="toggle-switch">'.esc_html__('Tags', CPC2_TEXT_DOMAIN).'</summary>';
     $html .= '<div class="toggle-content"><table class="toggle-table"><tr><td class="desc-column">';
@@ -740,15 +976,17 @@ function cpc_docs_render_edit_form($doc) {
     $html .= '</td></tr></table></div>';
     $html .= '</details>';
 
-    $html .= '<details class="doc-meta-box toggleable">';
-    $html .= '<summary class="toggle-switch">'.esc_html__('Attachments', CPC2_TEXT_DOMAIN).'</summary>';
-    $html .= '<div class="toggle-content"><table class="toggle-table"><tr><td class="desc-column">';
-    $html .= '<label for="cpc_docs_attachments">'.esc_html__('Neue Attachments', CPC2_TEXT_DOMAIN).'</label>';
-    $html .= '<span class="description">'.esc_html__('Mehrere Dateien gleichzeitig moeglich.', CPC2_TEXT_DOMAIN).'</span>';
-    $html .= '</td><td class="content-column">';
-    $html .= '<input id="cpc_docs_attachments" type="file" name="cpc_docs_attachments[]" multiple />';
-    $html .= '</td></tr></table></div>';
-    $html .= '</details>';
+    if ($attachments_enabled) {
+        $html .= '<details class="doc-meta-box toggleable">';
+        $html .= '<summary class="toggle-switch">'.esc_html__('Attachments', CPC2_TEXT_DOMAIN).'</summary>';
+        $html .= '<div class="toggle-content"><table class="toggle-table"><tr><td class="desc-column">';
+        $html .= '<label for="cpc_docs_attachments">'.esc_html__('Neue Attachments', CPC2_TEXT_DOMAIN).'</label>';
+        $html .= '<span class="description">'.esc_html__('Mehrere Dateien gleichzeitig moeglich.', CPC2_TEXT_DOMAIN).'</span>';
+        $html .= '</td><td class="content-column">';
+        $html .= '<input id="cpc_docs_attachments" type="file" name="cpc_docs_attachments[]" multiple />';
+        $html .= '</td></tr></table></div>';
+        $html .= '</details>';
+    }
 
     $html .= '</div>';
 
@@ -798,6 +1036,10 @@ function cpc_docs_render_history_view($doc) {
         return '';
     }
 
+    if (!cpc_docs_user_can_view_history($doc->ID)) {
+        return '<p>'.esc_html__('Keine Berechtigung fuer den Verlauf.', CPC2_TEXT_DOMAIN).'</p>';
+    }
+
     $revisions = wp_get_post_revisions($doc->ID, array(
         'order' => 'DESC',
         'orderby' => 'date',
@@ -808,16 +1050,6 @@ function cpc_docs_render_history_view($doc) {
 
     $from_id = isset($_GET['cpc_docs_compare_from']) ? (int)$_GET['cpc_docs_compare_from'] : 0;
     $to_id = isset($_GET['cpc_docs_compare_to']) ? (int)$_GET['cpc_docs_compare_to'] : 0;
-    if ($from_id > 0 && $to_id > 0) {
-        $from_post = get_post($from_id);
-        $to_post = get_post($to_id);
-        if ($from_post && $to_post && (int)$from_post->post_parent === (int)$doc->ID && (int)$to_post->post_parent === (int)$doc->ID) {
-            $html .= '<div class="cpc_doc_history_diff">';
-            $html .= '<h4>'.esc_html__('Vergleich', CPC2_TEXT_DOMAIN).'</h4>';
-            $html .= wp_text_diff((string)$from_post->post_content, (string)$to_post->post_content);
-            $html .= '</div>';
-        }
-    }
 
     if (empty($revisions)) {
         $html .= '<p>'.esc_html__('Noch keine Revisionen vorhanden.', CPC2_TEXT_DOMAIN).'</p>';
@@ -825,11 +1057,50 @@ function cpc_docs_render_history_view($doc) {
         return $html;
     }
 
+    $revisions = array_values($revisions);
+    if ($from_id <= 0 || $to_id <= 0) {
+        $to_id = (int)$revisions[0]->ID;
+        $from_id = isset($revisions[1]) ? (int)$revisions[1]->ID : $to_id;
+    }
+
+    $html .= cpc_docs_render_history_compare_form($doc, $revisions, $from_id, $to_id);
+
+    if ($from_id > 0 && $to_id > 0 && $from_id !== $to_id) {
+        $from_post = get_post($from_id);
+        $to_post = get_post($to_id);
+        if ($from_post && $to_post && (int)$from_post->post_parent === (int)$doc->ID && (int)$to_post->post_parent === (int)$doc->ID) {
+            $html .= '<div class="cpc_doc_history_diff">';
+            $html .= '<h4>'.esc_html__('Vergleich', CPC2_TEXT_DOMAIN).'</h4>';
+            $html .= '<div class="cpc_doc_history_diff_meta">';
+            $html .= '<span><strong>'.esc_html__('Von', CPC2_TEXT_DOMAIN).':</strong> '.esc_html(wp_strip_all_tags(wp_post_revision_title($from_post->ID, false))).'</span>';
+            $html .= '<span><strong>'.esc_html__('Zu', CPC2_TEXT_DOMAIN).':</strong> '.esc_html(wp_strip_all_tags(wp_post_revision_title($to_post->ID, false))).'</span>';
+            $html .= '</div>';
+
+            $title_diff = wp_text_diff((string)$from_post->post_title, (string)$to_post->post_title);
+            if ($title_diff) {
+                $html .= '<h5>'.esc_html__('Titel-Aenderungen', CPC2_TEXT_DOMAIN).'</h5>';
+                $html .= $title_diff;
+            }
+
+            $content_diff = wp_text_diff((string)$from_post->post_content, (string)$to_post->post_content);
+            if ($content_diff) {
+                $html .= '<h5>'.esc_html__('Inhalt-Aenderungen', CPC2_TEXT_DOMAIN).'</h5>';
+                $html .= $content_diff;
+            }
+
+            $excerpt_diff = wp_text_diff((string)$from_post->post_excerpt, (string)$to_post->post_excerpt);
+            if ($excerpt_diff) {
+                $html .= '<h5>'.esc_html__('Excerpt-Aenderungen', CPC2_TEXT_DOMAIN).'</h5>';
+                $html .= $excerpt_diff;
+            }
+            $html .= '</div>';
+        }
+    }
+
     $html .= '<table class="doctable cpc_doc_history_table">';
     $html .= '<thead><tr><th>'.esc_html__('Datum', CPC2_TEXT_DOMAIN).'</th><th>'.esc_html__('Autor', CPC2_TEXT_DOMAIN).'</th><th>'.esc_html__('Aktion', CPC2_TEXT_DOMAIN).'</th></tr></thead>';
     $html .= '<tbody>';
 
-    $revisions = array_values($revisions);
     for ($i = 0; $i < count($revisions); $i++) {
         $revision = $revisions[$i];
         $author = get_the_author_meta('display_name', (int)$revision->post_author);
@@ -867,6 +1138,8 @@ function cpc_docs_directory_build_url($args = array()) {
         'cpc_docs_q' => isset($_GET['cpc_docs_q']) ? sanitize_text_field(wp_unslash($_GET['cpc_docs_q'])) : '',
         'cpc_docs_component' => isset($_GET['cpc_docs_component']) ? sanitize_key(wp_unslash($_GET['cpc_docs_component'])) : '',
         'cpc_docs_status' => isset($_GET['cpc_docs_status']) ? sanitize_key(wp_unslash($_GET['cpc_docs_status'])) : '',
+        'cpc_docs_perm_edit' => isset($_GET['cpc_docs_perm_edit']) ? sanitize_key(wp_unslash($_GET['cpc_docs_perm_edit'])) : '',
+        'cpc_docs_perm_history' => isset($_GET['cpc_docs_perm_history']) ? sanitize_key(wp_unslash($_GET['cpc_docs_perm_history'])) : '',
         'cpc_docs_folder' => isset($_GET['cpc_docs_folder']) ? (int)$_GET['cpc_docs_folder'] : 0,
         'cpc_docs_page' => isset($_GET['cpc_docs_page']) ? max(1, (int)$_GET['cpc_docs_page']) : 1,
     );
@@ -883,7 +1156,7 @@ function cpc_docs_directory_build_url($args = array()) {
     return $url;
 }
 
-function cpc_docs_directory_get_results($component = '', $status = '', $search = '', $page = 1, $per_page = 12) {
+function cpc_docs_directory_get_results($component = '', $status = '', $search = '', $page = 1, $per_page = 12, $perm_edit = '', $perm_history = '') {
     $visible = array();
     $offset = 0;
     $loops = 0;
@@ -915,9 +1188,19 @@ function cpc_docs_directory_get_results($component = '', $status = '', $search =
         }
 
         foreach ($batch as $doc) {
-            if (cpc_docs_user_can_view_doc($doc->ID)) {
-                $visible[] = $doc;
+            if (!cpc_docs_user_can_view_doc($doc->ID)) {
+                continue;
             }
+
+            if ($perm_edit !== '' && cpc_docs_get_doc_permission($doc->ID, 'edit', cpc_docs_get_component($doc->ID)) !== $perm_edit) {
+                continue;
+            }
+
+            if ($perm_history !== '' && cpc_docs_get_doc_permission($doc->ID, 'view_history', cpc_docs_get_component($doc->ID)) !== $perm_history) {
+                continue;
+            }
+
+                $visible[] = $doc;
         }
 
         if (count($batch) < $batch_size) {
@@ -934,9 +1217,10 @@ function cpc_docs_directory_get_results($component = '', $status = '', $search =
     );
 }
 
-function cpc_docs_render_directory_filters($component, $status, $search) {
+function cpc_docs_render_directory_filters($component, $status, $search, $perm_edit = '', $perm_history = '') {
     $base_url = cpc_docs_directory_get_base_url();
     $current_folder_id = isset($_GET['cpc_docs_folder']) ? (int)$_GET['cpc_docs_folder'] : 0;
+    $permission_options = cpc_docs_get_permission_options('groups');
     $html = '<form method="get" action="'.esc_url($base_url).'" class="cpc_docs_directory_filters">';
     if ($current_folder_id > 0) {
         $html .= '<input type="hidden" name="cpc_docs_folder" value="'.(int)$current_folder_id.'" />';
@@ -945,6 +1229,26 @@ function cpc_docs_render_directory_filters($component, $status, $search) {
     $html .= '<div class="cpc_docs_directory_filter_field">';
     $html .= '<label>'.esc_html__('Suche', CPC2_TEXT_DOMAIN).'</label>';
     $html .= '<input type="search" name="cpc_docs_q" value="'.esc_attr($search).'" placeholder="'.esc_attr__('Titel oder Inhalt', CPC2_TEXT_DOMAIN).'" />';
+    $html .= '</div>';
+
+    $html .= '<div class="cpc_docs_directory_filter_field">';
+    $html .= '<label>'.esc_html__('Edit-Recht', CPC2_TEXT_DOMAIN).'</label>';
+    $html .= '<select name="cpc_docs_perm_edit">';
+    $html .= '<option value="">'.esc_html__('Alle', CPC2_TEXT_DOMAIN).'</option>';
+    foreach ($permission_options as $value => $label) {
+        $html .= '<option value="'.esc_attr($value).'"'.selected($perm_edit, $value, false).'>'.esc_html($label).'</option>';
+    }
+    $html .= '</select>';
+    $html .= '</div>';
+
+    $html .= '<div class="cpc_docs_directory_filter_field">';
+    $html .= '<label>'.esc_html__('History-Recht', CPC2_TEXT_DOMAIN).'</label>';
+    $html .= '<select name="cpc_docs_perm_history">';
+    $html .= '<option value="">'.esc_html__('Alle', CPC2_TEXT_DOMAIN).'</option>';
+    foreach ($permission_options as $value => $label) {
+        $html .= '<option value="'.esc_attr($value).'"'.selected($perm_history, $value, false).'>'.esc_html($label).'</option>';
+    }
+    $html .= '</select>';
     $html .= '</div>';
 
     $html .= '<div class="cpc_docs_directory_filter_field">';
@@ -970,7 +1274,7 @@ function cpc_docs_render_directory_filters($component, $status, $search) {
 
     $html .= '<div class="cpc_docs_directory_actions">';
     $html .= '<button type="submit" class="cpc_button">'.esc_html__('Filtern', CPC2_TEXT_DOMAIN).'</button>';
-    $html .= '<a class="cpc_button" href="'.esc_url(cpc_docs_directory_build_url(array('cpc_docs_q' => '', 'cpc_docs_component' => '', 'cpc_docs_status' => '', 'cpc_docs_folder' => '', 'cpc_docs_page' => 1))).'">'.esc_html__('Zuruecksetzen', CPC2_TEXT_DOMAIN).'</a>';
+    $html .= '<a class="cpc_button" href="'.esc_url(cpc_docs_directory_build_url(array('cpc_docs_q' => '', 'cpc_docs_component' => '', 'cpc_docs_status' => '', 'cpc_docs_perm_edit' => '', 'cpc_docs_perm_history' => '', 'cpc_docs_folder' => '', 'cpc_docs_page' => 1))).'">'.esc_html__('Zuruecksetzen', CPC2_TEXT_DOMAIN).'</a>';
     $html .= '</div>';
 
     $html .= '</form>';
@@ -1005,6 +1309,8 @@ function cpc_docs_directory_shortcode($atts) {
     $search = isset($_GET['cpc_docs_q']) ? sanitize_text_field(wp_unslash($_GET['cpc_docs_q'])) : '';
     $component = isset($_GET['cpc_docs_component']) ? sanitize_key(wp_unslash($_GET['cpc_docs_component'])) : '';
     $status = isset($_GET['cpc_docs_status']) ? sanitize_key(wp_unslash($_GET['cpc_docs_status'])) : '';
+    $perm_edit = isset($_GET['cpc_docs_perm_edit']) ? sanitize_key(wp_unslash($_GET['cpc_docs_perm_edit'])) : '';
+    $perm_history = isset($_GET['cpc_docs_perm_history']) ? sanitize_key(wp_unslash($_GET['cpc_docs_perm_history'])) : '';
     $page = isset($_GET['cpc_docs_page']) ? max(1, (int)$_GET['cpc_docs_page']) : 1;
     $per_page = max(6, min(60, (int)$atts['per_page']));
 
@@ -1014,12 +1320,20 @@ function cpc_docs_directory_shortcode($atts) {
     if (!in_array($status, array('', 'public', 'loggedin', 'members', 'admins', 'private'), true)) {
         $status = '';
     }
+    $valid_permissions = array_keys(cpc_docs_get_permission_options('groups'));
+    if ($perm_edit !== '' && !in_array($perm_edit, $valid_permissions, true)) {
+        $perm_edit = '';
+    }
+    if ($perm_history !== '' && !in_array($perm_history, $valid_permissions, true)) {
+        $perm_history = '';
+    }
 
-    $results = cpc_docs_directory_get_results($component, $status, $search, $page, $per_page);
+    $results = cpc_docs_directory_get_results($component, $status, $search, $page, $per_page, $perm_edit, $perm_history);
 
     $html = '<div class="cpc_docs_directory">';
     $html .= '<div class="cpc_docs_directory_header">';
-    $html .= cpc_docs_render_directory_filters($component, $status, $search);
+    $html .= '<h3 class="cpc_docs_directory_title">'.esc_html(cpc_docs_get_directory_title()).'</h3>';
+    $html .= cpc_docs_render_directory_filters($component, $status, $search, $perm_edit, $perm_history);
     $html .= '</div>';
 
     if (empty($results['items'])) {

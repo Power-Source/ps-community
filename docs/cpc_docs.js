@@ -4,27 +4,7 @@
     var ajaxUrl = window.wpAjaxUrl || (typeof window.ajaxurl !== 'undefined' ? window.ajaxurl : '/wp-admin/admin-ajax.php');
 
     document.addEventListener('DOMContentLoaded', function() {
-        // Folder checkbox toggle (hide/show content field)
-        var folderCheckboxes = document.querySelectorAll('.cpc_docs_is_folder_toggle');
-        folderCheckboxes.forEach(function(checkbox) {
-            var updateContentFieldVisibility = function() {
-                // Try to find associated content field
-                var contentField = checkbox.closest('form') ? checkbox.closest('form').querySelector('.cpc_docs_content_field') : null;
-                var editorParent = checkbox.closest('form') ? checkbox.closest('form').querySelector('.wp-editor-wrap') : null;
-                
-                if (checkbox.checked) {
-                    if (contentField) contentField.style.display = 'none';
-                    if (contentField) contentField.removeAttribute('required');
-                    if (editorParent) editorParent.style.display = 'none';
-                } else {
-                    if (contentField) contentField.style.display = '';
-                    if (contentField) contentField.setAttribute('required', 'required');
-                    if (editorParent) editorParent.style.display = '';
-                }
-            };
-            checkbox.addEventListener('change', updateContentFieldVisibility);
-            updateContentFieldVisibility(); // Initial state
-        });
+        bindFolderRenameLinks();
 
         // Folder toggle via AJAX
         var folderLinks = document.querySelectorAll('.cpc_docs_folder_browser .toggle-folder-link a');
@@ -92,6 +72,32 @@
         });
     });
 
+    function bindFolderRenameLinks() {
+        var renameLinks = document.querySelectorAll('.cpc_docs_rename_folder_link');
+        renameLinks.forEach(function(link) {
+            link.addEventListener('click', function() {
+                var folderId = link.getAttribute('data-folder-id');
+                var folderTitle = link.getAttribute('data-folder-title') || '';
+                var panel = document.getElementById('cpc_docs_folder_manage_panel');
+                var select = document.querySelector('.cpc_docs_folder_rename_select');
+                var titleInput = document.querySelector('.cpc_docs_folder_rename_title');
+
+                if (panel) {
+                    panel.open = true;
+                }
+
+                if (select && folderId) {
+                    select.value = folderId;
+                }
+
+                if (titleInput) {
+                    titleInput.value = folderTitle;
+                    titleInput.focus();
+                }
+            });
+        });
+    }
+
     function loadFolderContents(folderId) {
         var container = document.querySelector('.cpc_docs_folder_browser');
         if (!container) return;
@@ -110,6 +116,8 @@
         if (currentParams.has('cpc_docs_q')) params.append('cpc_docs_q', currentParams.get('cpc_docs_q'));
         if (currentParams.has('cpc_docs_component')) params.append('cpc_docs_component', currentParams.get('cpc_docs_component'));
         if (currentParams.has('cpc_docs_status')) params.append('cpc_docs_status', currentParams.get('cpc_docs_status'));
+        if (currentParams.has('cpc_docs_perm_edit')) params.append('cpc_docs_perm_edit', currentParams.get('cpc_docs_perm_edit'));
+        if (currentParams.has('cpc_docs_perm_history')) params.append('cpc_docs_perm_history', currentParams.get('cpc_docs_perm_history'));
 
         var url = ajaxUrl + '?' + params.toString();
 
@@ -124,6 +132,7 @@
 
                         // Re-attach event listeners to new elements
                         attachFolderEventListeners();
+                        bindFolderRenameLinks();
                     }
                 } catch (e) {
                     console.error('Failed to parse AJAX response:', e);
@@ -175,43 +184,3 @@
         }
     });
 })();
-
-// Global function for folder deletion
-window.cpc_docs_delete_folder = function(docId, folderName) {
-    if (!confirm('Ordner "' + folderName + '" wirklich löschen? Unterordner werden zum Parent verschoben.')) {
-        return false;
-    }
-    
-    var form = document.createElement('form');
-    form.method = 'post';
-    form.style.display = 'none';
-    
-    var actionInput = document.createElement('input');
-    actionInput.type = 'hidden';
-    actionInput.name = 'cpc_docs_action';
-    actionInput.value = 'delete_doc';
-    form.appendChild(actionInput);
-    
-    var docIdInput = document.createElement('input');
-    docIdInput.type = 'hidden';
-    docIdInput.name = 'cpc_docs_doc_id';
-    docIdInput.value = docId;
-    form.appendChild(docIdInput);
-    
-    var nonceInput = document.createElement('input');
-    nonceInput.type = 'hidden';
-    nonceInput.name = 'cpc_docs_nonce';
-    nonceInput.value = document.querySelector('input[name="cpc_docs_nonce"]') ? document.querySelector('input[name="cpc_docs_nonce"]').value : '';
-    form.appendChild(nonceInput);
-    
-    var redirectInput = document.createElement('input');
-    redirectInput.type = 'hidden';
-    redirectInput.name = 'cpc_docs_redirect';
-    redirectInput.value = window.location.href;
-    form.appendChild(redirectInput);
-    
-    document.body.appendChild(form);
-    form.submit();
-    
-    return false;
-};
