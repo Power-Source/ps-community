@@ -294,13 +294,23 @@ function cpc_media_render_group_tab_content($html, $group_id, $shortcode_atts) {
         'component' => 'groups',
         'component_id' => $group_id,
         'posts_per_page' => 50,
+        'include_system' => true,
     ));
 
     if (!$galleries) {
         $html .= '<p>'.esc_html__('Noch keine Galerien vorhanden.', CPC2_TEXT_DOMAIN).'</p>';
     } else {
+        $rendered = 0;
         foreach ($galleries as $gallery) {
-            $html .= cpc_media_render_gallery_block($gallery);
+            $block = cpc_media_render_gallery_block($gallery);
+            if ($block !== '') {
+                $html .= $block;
+                $rendered++;
+            }
+        }
+
+        if ($rendered === 0) {
+            $html .= '<p>'.esc_html__('Noch keine Galerien vorhanden.', CPC2_TEXT_DOMAIN).'</p>';
         }
     }
 

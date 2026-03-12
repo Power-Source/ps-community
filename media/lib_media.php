@@ -43,13 +43,56 @@ function cpc_media_get_user_media_url($user_id) {
     return content_url('/cpc-pro-content/members/'.$folder.'/media/');
 }
 
+function cpc_media_get_group_cloud_folder_name($group_id) {
+    $group_id = (int)$group_id;
+    if ($group_id <= 0) {
+        return 'group-0';
+    }
+
+    if (function_exists('cpc_activity_plus_get_group_cloud_folder_name')) {
+        return cpc_activity_plus_get_group_cloud_folder_name($group_id);
+    }
+
+    $group = get_post($group_id);
+    $slug = $group ? sanitize_title($group->post_name) : '';
+    if ($slug === '') {
+        $slug = 'group';
+    }
+
+    return $slug.'-'.$group_id;
+}
+
+function cpc_media_get_group_media_dir($group_id, $create = true) {
+    $folder = cpc_media_get_group_cloud_folder_name($group_id);
+    $path = WP_CONTENT_DIR.'/cpc-pro-content/groups/'.$folder.'/media/';
+
+    if ($create && !file_exists($path)) {
+        wp_mkdir_p($path);
+    }
+
+    return $path;
+}
+
+function cpc_media_get_group_media_url($group_id) {
+    $folder = cpc_media_get_group_cloud_folder_name($group_id);
+    return content_url('/cpc-pro-content/groups/'.$folder.'/media/');
+}
+
 function cpc_media_get_gallery_dir($gallery_id, $create = true) {
     $gallery = get_post($gallery_id);
     if (!$gallery || $gallery->post_type !== 'cpc_gallery') {
         return '';
     }
 
-    $base = cpc_media_get_user_media_dir($gallery->post_author, $create);
+    $component = cpc_media_get_gallery_component($gallery_id);
+    $component_id = cpc_media_get_gallery_component_id($gallery_id);
+
+    if ($component === 'groups' && $component_id > 0) {
+        $base = cpc_media_get_group_media_dir($component_id, $create);
+    } else {
+        $base = cpc_media_get_user_media_dir($gallery->post_author, $create);
+    }
+
     if (!$base) {
         return '';
     }
@@ -66,6 +109,13 @@ function cpc_media_get_gallery_url($gallery_id) {
     $gallery = get_post($gallery_id);
     if (!$gallery || $gallery->post_type !== 'cpc_gallery') {
         return '';
+    }
+
+    $component = cpc_media_get_gallery_component($gallery_id);
+    $component_id = cpc_media_get_gallery_component_id($gallery_id);
+
+    if ($component === 'groups' && $component_id > 0) {
+        return trailingslashit(cpc_media_get_group_media_url($component_id)).'gallery-'.(int)$gallery_id.'/';
     }
 
     return trailingslashit(cpc_media_get_user_media_url($gallery->post_author)).'gallery-'.(int)$gallery_id.'/';
@@ -154,6 +204,466 @@ function cpc_media_get_gallery_layout() {
 
 function cpc_media_get_gallery_items_limit() {
     return max(1, min(60, (int)get_option('cpc_media_gallery_items_limit', 24)));
+}
+
+function cpc_media_get_directory_page_id() {
+    return max(0, (int)get_option('cpc_media_directory_page', 0));
+}
+
+function cpc_media_get_directory_items_per_page() {
+    return max(6, min(60, (int)get_option('cpc_media_directory_items_per_page', 12)));
+}
+
+function cpc_media_activity_wall_sync_enabled() {
+    return (bool)get_option('cpc_media_activity_wall_sync', 1);
+}
+
+function cpc_media_get_group_stream_album_visibility_options() {
+    return array(
+        'admins' => __('Nur Gruppen-Admins', CPC2_TEXT_DOMAIN),
+        'members' => __('Alle Gruppenmitglieder', CPC2_TEXT_DOMAIN),
+        'public' => __('Alle mit Gruppenzugriff', CPC2_TEXT_DOMAIN),
+        'hidden' => __('Versteckt (nur Moderation)', CPC2_TEXT_DOMAIN),
+    );
+}
+
+function cpc_media_normalize_group_stream_album_visibility($value) {
+    $value = sanitize_key((string)$value);
+    $allowed = array_keys(cpc_media_get_group_stream_album_visibility_options());
+    return in_array($value, $allowed, true) ? $value : 'admins';
+}
+
+function cpc_media_get_group_stream_album_visibility($group_id) {
+    $group_id = (int)$group_id;
+    if ($group_id <= 0) {
+        return 'admins';
+    }
+
+    $stored = get_post_meta($group_id, 'cpc_group_stream_album_visibility', true);
+    return cpc_media_normalize_group_stream_album_visibility($stored);
+}
+
+function cpc_media_map_group_stream_visibility_to_gallery_status($visibility) {
+    $visibility = cpc_media_normalize_group_stream_album_visibility($visibility);
+    return $visibility === 'public' ? 'public' : 'private';
+}
+
+function cpc_media_can_view_group_stream_album($group_id, $user_id = 0) {
+    $group_id = (int)$group_id;
+    if ($group_id <= 0) {
+        return false;
+    }
+
+    if (!$user_id) {
+        $user_id = get_current_user_id();
+    }
+
+    if (current_user_can('manage_options')) {
+        return true;
+    }
+
+    $visibility = cpc_media_get_group_stream_album_visibility($group_id);
+
+    if ($visibility === 'hidden') {
+        return false;
+    }
+
+    if ($visibility === 'admins') {
+        return function_exists('cpc_is_group_admin') && cpc_is_group_admin($user_id, $group_id);
+    }
+
+    if ($visibility === 'members') {
+        return function_exists('cpc_is_group_member') && cpc_is_group_member($user_id, $group_id);
+    }
+
+    return function_exists('cpc_can_view_group') ? cpc_can_view_group($user_id, $group_id) : false;
+}
+
+function cpc_media_get_user_storage_limit_mb() {
+    return max(0, min(10240, (int)get_option('cpc_media_user_storage_limit_mb', 0)));
+}
+
+function cpc_media_get_group_storage_limit_mb() {
+    return max(0, min(10240, (int)get_option('cpc_media_group_storage_limit_mb', 0)));
+}
+
+function cpc_media_is_system_gallery($gallery_id) {
+    return (bool)get_post_meta((int)$gallery_id, 'cpc_gallery_is_system', true);
+}
+
+function cpc_media_get_directory_size_bytes($dir) {
+    if (!file_exists($dir) || !is_dir($dir)) {
+        return 0;
+    }
+
+    if (function_exists('cpc_activity_plus_get_directory_size_bytes')) {
+        return (int)cpc_activity_plus_get_directory_size_bytes($dir);
+    }
+
+    $size = 0;
+    $iterator = new RecursiveIteratorIterator(
+        new RecursiveDirectoryIterator($dir, FilesystemIterator::SKIP_DOTS),
+        RecursiveIteratorIterator::SELF_FIRST
+    );
+
+    foreach ($iterator as $file) {
+        if ($file->isFile()) {
+            $size += (int)$file->getSize();
+        }
+    }
+
+    return max(0, (int)$size);
+}
+
+function cpc_media_get_storage_summary($component, $component_id, $user_id = 0) {
+    $component = sanitize_key((string)$component);
+    $component_id = (int)$component_id;
+    $user_id = (int)$user_id;
+
+    if ($component === 'groups' && $component_id > 0) {
+        if (function_exists('cpc_activity_plus_get_group_cloud_summary')) {
+            return cpc_activity_plus_get_group_cloud_summary($component_id);
+        }
+
+        $used = cpc_media_get_directory_size_bytes(cpc_media_get_group_media_dir($component_id, false));
+        $limit_mb = cpc_media_get_group_storage_limit_mb();
+        $limit = $limit_mb > 0 ? $limit_mb * 1024 * 1024 : 0;
+    } else {
+        if ($component_id <= 0) {
+            $component_id = $user_id;
+        }
+
+        if ($component_id > 0 && function_exists('cpc_activity_plus_get_user_cloud_summary')) {
+            return cpc_activity_plus_get_user_cloud_summary($component_id);
+        }
+
+        $used = cpc_media_get_directory_size_bytes(cpc_media_get_user_media_dir($component_id, false));
+        $limit_mb = cpc_media_get_user_storage_limit_mb();
+        $limit = $limit_mb > 0 ? $limit_mb * 1024 * 1024 : 0;
+    }
+
+    $remaining = $limit > 0 ? max(0, $limit - $used) : 0;
+    $percent = ($limit > 0) ? min(100, round(($used / $limit) * 100, 1)) : 0;
+
+    return array(
+        'used_bytes' => $used,
+        'used_human' => size_format($used),
+        'limit_bytes' => $limit,
+        'limit_human' => $limit > 0 ? size_format($limit) : __('Unbegrenzt', CPC2_TEXT_DOMAIN),
+        'remaining_bytes' => $remaining,
+        'remaining_human' => $limit > 0 ? size_format($remaining) : __('Unbegrenzt', CPC2_TEXT_DOMAIN),
+        'percent' => $percent,
+    );
+}
+
+function cpc_media_map_item_type_to_allowed_type($media_type) {
+    $map = array(
+        'photo' => 'image',
+        'video' => 'video',
+        'audio' => 'audio',
+        'doc' => 'document',
+    );
+
+    $media_type = sanitize_key((string)$media_type);
+    return isset($map[$media_type]) ? $map[$media_type] : 'document';
+}
+
+function cpc_media_get_activity_image_urls($activity_id) {
+    $activity = get_post((int)$activity_id);
+    if (!$activity) {
+        return array();
+    }
+
+    $content = (string)$activity->post_title;
+    if (!preg_match('/\[cpcap_images\](.*?)\[\/cpcap_images\]/is', $content, $matches)) {
+        return array();
+    }
+
+    $urls = preg_split('/\r\n|\r|\n/', trim($matches[1]));
+    if (!$urls || !is_array($urls)) {
+        return array();
+    }
+
+    $clean = array();
+    foreach ($urls as $url) {
+        $url = esc_url_raw(trim($url));
+        if ($url) {
+            $clean[] = $url;
+        }
+    }
+
+    return array_values(array_unique($clean));
+}
+
+function cpc_media_get_file_path_from_url($url) {
+    $url = (string)$url;
+    if ($url === '') {
+        return '';
+    }
+
+    $content_base = content_url('/');
+    if (strpos($url, $content_base) !== 0) {
+        return '';
+    }
+
+    $relative = ltrim(substr($url, strlen($content_base)), '/');
+    if ($relative === '') {
+        return '';
+    }
+
+    $path = trailingslashit(WP_CONTENT_DIR).str_replace('/', DIRECTORY_SEPARATOR, $relative);
+    return file_exists($path) ? $path : '';
+}
+
+function cpc_media_find_activity_item($activity_id, $url) {
+    $signature = md5((int)$activity_id.'|'.(string)$url);
+    $posts = get_posts(array(
+        'post_type' => 'cpc_media',
+        'post_status' => 'publish',
+        'posts_per_page' => 1,
+        'fields' => 'ids',
+        'meta_query' => array(
+            array(
+                'key' => 'cpc_media_activity_signature',
+                'value' => $signature,
+            ),
+        ),
+    ));
+
+    return !empty($posts) ? (int)$posts[0] : 0;
+}
+
+function cpc_media_get_or_create_wall_gallery($component, $component_id, $user_id = 0) {
+    $component = sanitize_key((string)$component);
+    $component_id = (int)$component_id;
+    $user_id = (int)$user_id;
+
+    if ($component !== 'groups') {
+        $component = 'members';
+        if ($component_id <= 0) {
+            $component_id = $user_id;
+        }
+    }
+
+    if ($component_id <= 0 || $user_id <= 0) {
+        return 0;
+    }
+
+    $posts = get_posts(array(
+        'post_type' => 'cpc_gallery',
+        'post_status' => 'publish',
+        'posts_per_page' => 1,
+        'fields' => 'ids',
+        'meta_query' => array(
+            array(
+                'key' => 'cpc_gallery_source',
+                'value' => 'activity-wall',
+            ),
+            array(
+                'key' => 'cpc_gallery_component',
+                'value' => $component,
+            ),
+            array(
+                'key' => 'cpc_gallery_component_id',
+                'value' => $component_id,
+            ),
+        ),
+    ));
+
+    if (!empty($posts)) {
+        if ($component === 'groups') {
+            $visibility = cpc_media_get_group_stream_album_visibility($component_id);
+            update_post_meta((int)$posts[0], 'cpc_gallery_wall_visibility', $visibility);
+            update_post_meta((int)$posts[0], 'cpc_gallery_status', cpc_media_map_group_stream_visibility_to_gallery_status($visibility));
+        }
+        return (int)$posts[0];
+    }
+
+    $group_visibility = ($component === 'groups') ? cpc_media_get_group_stream_album_visibility($component_id) : 'admins';
+
+    $gallery_id = cpc_media_create_gallery(array(
+        'title' => $component === 'groups' ? __('Gruppen-Wall Medien', CPC2_TEXT_DOMAIN) : __('Wall Medien', CPC2_TEXT_DOMAIN),
+        'description' => '',
+        'user_id' => $user_id,
+        'component' => $component,
+        'component_id' => $component_id,
+        'status' => ($component === 'groups') ? cpc_media_map_group_stream_visibility_to_gallery_status($group_visibility) : 'private',
+        'type' => 'photo',
+        'source' => 'activity-wall',
+        'source_id' => $component_id,
+    ));
+
+    if ($gallery_id) {
+        update_post_meta($gallery_id, 'cpc_gallery_is_system', 1);
+        if ($component === 'groups') {
+            update_post_meta($gallery_id, 'cpc_gallery_wall_visibility', $group_visibility);
+        }
+    }
+
+    return (int)$gallery_id;
+}
+
+function cpc_media_import_activity_urls_to_gallery($gallery_id, $activity_id, $urls, $source = 'psc-activity-plus') {
+    $gallery_id = (int)$gallery_id;
+    $activity_id = (int)$activity_id;
+    $gallery = get_post($gallery_id);
+    if (!$gallery || $gallery->post_type !== 'cpc_gallery' || empty($urls) || !is_array($urls)) {
+        return 0;
+    }
+
+    $created = 0;
+    $order = cpc_media_get_gallery_media_count($gallery_id);
+
+    foreach ($urls as $url) {
+        $url = esc_url_raw($url);
+        if (!$url || cpc_media_find_activity_item($activity_id, $url)) {
+            continue;
+        }
+
+        $path = cpc_media_get_file_path_from_url($url);
+        $path_for_info = $path ? $path : wp_parse_url($url, PHP_URL_PATH);
+        $filename = $path_for_info ? wp_basename($path_for_info) : 'activity-media';
+        $title = pathinfo($filename, PATHINFO_FILENAME);
+        $mime_type = '';
+        $metadata = array();
+
+        if ($path) {
+            $filetype = wp_check_filetype($filename);
+            $mime_type = !empty($filetype['type']) ? (string)$filetype['type'] : '';
+            if (strpos($mime_type, 'image/') === 0) {
+                $image_size = @getimagesize($path);
+                if ($image_size && isset($image_size[0], $image_size[1])) {
+                    $metadata['width'] = (int)$image_size[0];
+                    $metadata['height'] = (int)$image_size[1];
+                }
+            }
+        }
+
+        $media_id = cpc_media_create_item(array(
+            'gallery_id' => $gallery_id,
+            'user_id' => (int)$gallery->post_author,
+            'title' => $title,
+            'description' => '',
+            'mime_type' => $mime_type,
+            'media_type' => cpc_media_map_mime_to_type($mime_type, 'photo'),
+            'source' => $source,
+            'source_id' => $activity_id,
+            'source_url' => $url,
+            'source_file' => $path,
+            'file_url' => $url,
+            'file_path' => $path,
+            'metadata' => $metadata,
+            'migrated_files' => $path ? array(
+                array(
+                    'role' => 'original',
+                    'path' => $path,
+                    'url' => $url,
+                ),
+            ) : array(),
+            'menu_order' => $order,
+        ));
+
+        if ($media_id) {
+            update_post_meta($media_id, 'cpc_media_activity_id', $activity_id);
+            update_post_meta($media_id, 'cpc_media_activity_signature', md5($activity_id.'|'.$url));
+            $created++;
+            $order++;
+        }
+    }
+
+    if ($created > 0) {
+        cpc_media_update_gallery_media_count($gallery_id, cpc_media_get_gallery_media_count($gallery_id) + $created);
+    }
+
+    return $created;
+}
+
+function cpc_media_sync_member_activity_gallery($the_post, $the_files, $activity_id) {
+    if (!cpc_media_is_enabled() || !cpc_media_activity_wall_sync_enabled()) {
+        return;
+    }
+
+    $activity_id = (int)$activity_id;
+    $group_id = (int)get_post_meta($activity_id, 'cpc_activity_group_id', true);
+    if ($group_id > 0) {
+        return;
+    }
+
+    $activity = get_post($activity_id);
+    if (!$activity || $activity->post_type !== 'cpc_activity') {
+        return;
+    }
+
+    $urls = cpc_media_get_activity_image_urls($activity_id);
+    if (!$urls) {
+        return;
+    }
+
+    $gallery_id = cpc_media_get_or_create_wall_gallery('members', (int)$activity->post_author, (int)$activity->post_author);
+    if (!$gallery_id) {
+        return;
+    }
+
+    cpc_media_import_activity_urls_to_gallery($gallery_id, $activity_id, $urls, 'psc-activity-plus');
+    update_post_meta($activity_id, 'cpc_media_wall_gallery_id', $gallery_id);
+}
+
+function cpc_media_sync_group_activity_gallery($the_post, $the_files, $activity_id, $group_id) {
+    if (!cpc_media_is_enabled() || !cpc_media_activity_wall_sync_enabled()) {
+        return;
+    }
+
+    $activity_id = (int)$activity_id;
+    $group_id = (int)$group_id;
+    if ($activity_id <= 0 || $group_id <= 0) {
+        return;
+    }
+
+    $activity = get_post($activity_id);
+    if (!$activity || $activity->post_type !== 'cpc_activity') {
+        return;
+    }
+
+    $urls = cpc_media_get_activity_image_urls($activity_id);
+    if (!$urls) {
+        return;
+    }
+
+    $gallery_id = cpc_media_get_or_create_wall_gallery('groups', $group_id, (int)$activity->post_author);
+    if (!$gallery_id) {
+        return;
+    }
+
+    cpc_media_import_activity_urls_to_gallery($gallery_id, $activity_id, $urls, 'psc-activity-plus-group');
+    update_post_meta($activity_id, 'cpc_media_wall_gallery_id', $gallery_id);
+}
+
+function cpc_media_extend_user_cloud_dirs($dirs, $user_id) {
+    $media_dir = cpc_media_get_user_media_dir((int)$user_id, false);
+    if ($media_dir && file_exists($media_dir) && is_dir($media_dir)) {
+        $dirs[] = $media_dir;
+    }
+
+    return array_values(array_unique($dirs));
+}
+
+function cpc_media_extend_group_cloud_dirs($dirs, $group_id) {
+    $media_dir = cpc_media_get_group_media_dir((int)$group_id, false);
+    if ($media_dir && file_exists($media_dir) && is_dir($media_dir)) {
+        $dirs[] = $media_dir;
+    }
+
+    return array_values(array_unique($dirs));
+}
+
+function cpc_media_filter_user_cloud_limit_mb($limit_mb, $user_id, $settings = array()) {
+    $override = cpc_media_get_user_storage_limit_mb();
+    return $override > 0 ? $override : $limit_mb;
+}
+
+function cpc_media_filter_group_cloud_limit_mb($limit_mb, $group_id) {
+    $override = cpc_media_get_group_storage_limit_mb();
+    return $override > 0 ? $override : $limit_mb;
 }
 
 function cpc_media_show_gallery_descriptions() {
@@ -332,6 +842,13 @@ function cpc_media_user_can_view_gallery($gallery_id, $user_id = 0) {
     $component_id = cpc_media_get_gallery_component_id($gallery_id);
     $status = cpc_media_get_gallery_status($gallery_id);
 
+    if (cpc_media_is_system_gallery($gallery_id) && $component === 'groups' && $component_id > 0) {
+        $source = (string)get_post_meta($gallery_id, 'cpc_gallery_source', true);
+        if ($source === 'activity-wall') {
+            return cpc_media_can_view_group_stream_album($component_id, $user_id);
+        }
+    }
+
     if ($component === 'groups' && $component_id && function_exists('cpc_can_view_group')) {
         if (!cpc_can_view_group($user_id, $component_id)) {
             return false;
@@ -364,10 +881,13 @@ function cpc_media_get_galleries($args = array()) {
         'post_status' => 'publish',
         'orderby' => 'date',
         'order' => 'DESC',
+        'include_system' => false,
     );
 
     $query_args = wp_parse_args($args, $defaults);
     $meta_query = array();
+    $include_system = !empty($query_args['include_system']);
+    unset($query_args['include_system']);
 
     if (!empty($query_args['component'])) {
         $meta_query[] = array(
@@ -399,6 +919,21 @@ function cpc_media_get_galleries($args = array()) {
             'value' => sanitize_text_field($query_args['gallery_type']),
         );
         unset($query_args['gallery_type']);
+    }
+
+    if (!$include_system) {
+        $meta_query[] = array(
+            'relation' => 'OR',
+            array(
+                'key' => 'cpc_gallery_is_system',
+                'compare' => 'NOT EXISTS',
+            ),
+            array(
+                'key' => 'cpc_gallery_is_system',
+                'value' => '1',
+                'compare' => '!=',
+            ),
+        );
     }
 
     if ($meta_query) {
@@ -837,6 +1372,24 @@ function cpc_media_upload_file_to_gallery($file, $gallery_id) {
         return $result;
     }
 
+    $file_size = isset($file['size']) ? (int)$file['size'] : 0;
+    $max_size_bytes = cpc_media_get_max_file_size() * 1024 * 1024;
+    if ($file_size > 0 && $max_size_bytes > 0 && $file_size > $max_size_bytes) {
+        $result['error'] = 'file_too_large';
+        return $result;
+    }
+
+    $component = cpc_media_get_gallery_component($gallery_id);
+    $component_id = cpc_media_get_gallery_component_id($gallery_id);
+    $gallery = get_post($gallery_id);
+    $summary = cpc_media_get_storage_summary($component, $component_id, $gallery ? (int)$gallery->post_author : 0);
+    $remaining_bytes = isset($summary['remaining_bytes']) ? (int)$summary['remaining_bytes'] : 0;
+    $limit_bytes = isset($summary['limit_bytes']) ? (int)$summary['limit_bytes'] : 0;
+    if ($limit_bytes > 0 && $file_size > 0 && $file_size > $remaining_bytes) {
+        $result['error'] = 'quota_exceeded';
+        return $result;
+    }
+
     $gallery_dir = cpc_media_get_gallery_dir($gallery_id, true);
     $gallery_url = cpc_media_get_gallery_url($gallery_id);
     if (!$gallery_dir || !$gallery_url) {
@@ -865,6 +1418,12 @@ function cpc_media_upload_file_to_gallery($file, $gallery_id) {
 
     $filetype = wp_check_filetype($target_name);
     $mime_type = !empty($filetype['type']) ? $filetype['type'] : (isset($file['type']) ? (string)$file['type'] : '');
+    $allowed_type = cpc_media_map_item_type_to_allowed_type(cpc_media_map_mime_to_type($mime_type, cpc_media_get_gallery_type($gallery_id)));
+    if (!cpc_media_is_type_allowed($allowed_type)) {
+        @unlink($target_path);
+        $result['error'] = 'type_not_allowed';
+        return $result;
+    }
 
     $result['ok'] = true;
     $result['path'] = $target_path;

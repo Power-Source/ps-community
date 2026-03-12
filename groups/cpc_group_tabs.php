@@ -367,6 +367,7 @@ function cpc_render_group_tab_settings($group_id, $atts = array()) {
 	
 	$group = get_post($group_id);
 	$group_type = get_post_meta($group_id, 'cpc_group_type', true);
+	$stream_visibility = function_exists('cpc_media_get_group_stream_album_visibility') ? cpc_media_get_group_stream_album_visibility($group_id) : 'admins';
 	
 	$html = '';
 	$html .= '<div class="cpc-group-settings-tab">';
@@ -383,6 +384,18 @@ function cpc_render_group_tab_settings($group_id, $atts = array()) {
 	$html .= '<option value="hidden" '.selected($group_type, 'hidden', false).'>'.__('Versteckt', CPC2_TEXT_DOMAIN).'</option>';
 	$html .= '</select>';
 	$html .= '</div>';
+
+	if (function_exists('cpc_media_get_group_stream_album_visibility_options')) {
+		$html .= '<div class="cpc-form-field">';
+		$html .= '<label for="group_stream_album_visibility">'.__('Gruppenstream-Album Sichtbarkeit', CPC2_TEXT_DOMAIN).'</label>';
+		$html .= '<select name="group_stream_album_visibility" id="group_stream_album_visibility">';
+		foreach (cpc_media_get_group_stream_album_visibility_options() as $value => $label) {
+			$html .= '<option value="'.esc_attr($value).'" '.selected($stream_visibility, $value, false).'>'.esc_html($label).'</option>';
+		}
+		$html .= '</select>';
+		$html .= '<p class="description">'.__('Steuert das automatische Album, das Medien aus dem Gruppen-Aktivitätsstream sammelt. Standard ist nur für Gruppen-Admins sichtbar.', CPC2_TEXT_DOMAIN).'</p>';
+		$html .= '</div>';
+	}
 	
 	$html .= '<button type="submit" class="cpc-btn cpc-btn-primary">'.__('Änderungen speichern', CPC2_TEXT_DOMAIN).'</button>';
 	$html .= '</form>';
@@ -699,6 +712,12 @@ function cpc_get_group_activity($group_id, $limit = 10) {
 function cpc_render_group_activity_post_full($post) {
 	$user = get_userdata($post->post_author);
 	if (!$user) return '';
+
+	$post_title = (string)$post->post_title;
+	$visible_text = preg_replace('/\[cpcap_images\].*?\[\/cpcap_images\]/s', '', $post_title);
+	$visible_text = preg_replace('/\[cpcap_link\s+url="[^"]+"\]\[\/cpcap_link\]/s', '', $visible_text);
+	$visible_text = preg_replace('/\[cpcap_video\].*?\[\/cpcap_video\]/s', '', $visible_text);
+	$visible_text = trim((string)$visible_text);
 	
 	$html = '';
 	$html .= '<div class="cpc-group-activity-post cpc-activity-post">';
@@ -723,7 +742,7 @@ function cpc_render_group_activity_post_full($post) {
 	endif;
 	$html .= '</div>';
 	
-	$html .= '<div class="cpc-activity-text">'.$post->post_content.'</div>';
+	$html .= '<div class="cpc-activity-text">'.cpc_formatted_content($visible_text, true).'</div>';
 	
 	$html .= '<div class="cpc-activity-meta">';
 	$html .= '<small>'.human_time_diff(strtotime($post->post_date_gmt), current_time('timestamp', true)).' '.__('ago', CPC2_TEXT_DOMAIN).'</small>';
@@ -803,6 +822,9 @@ function cpc_render_group_activity_post_full($post) {
 		$html .= '</div>'; // .cpc-activity-replies
 	endif;
 	
+	$activity_atts = array();
+	$html = apply_filters('cpc_activity_item_filter', $html, $activity_atts, $post->ID, $post_title, (int)$post->post_author, get_current_user_id(), 1);
+	
 	$html .= '</div>'; // .cpc-activity-content
 	$html .= '</div>'; // .cpc-activity-post
 	
@@ -838,7 +860,7 @@ function cpc_render_group_activity_form($group_id) {
 		$html .= '<div class="cpc-group-activity-form">';
 		$html .= '<h4>'.__('Aktivität posten', CPC2_TEXT_DOMAIN).'</h4>';
 		$html .= '<form class="cpc-group-post-activity-form" data-group-id="'.$group_id.'">';
-		$html .= '<textarea name="activity_content" placeholder="'.__('Was machst du gerade?', CPC2_TEXT_DOMAIN).'" required></textarea>';
+		$html .= '<textarea name="activity_content" placeholder="'.__('Was machst du gerade?', CPC2_TEXT_DOMAIN).'"></textarea>';
 		$html .= '<button type="submit" class="cpc-btn cpc-btn-primary">'.__('Posten', CPC2_TEXT_DOMAIN).'</button>';
 		$html .= '</form>';
 		$html .= '</div>';
@@ -864,7 +886,7 @@ function cpc_render_group_activity_form($group_id) {
 	$html .= '<h4>'.__('Aktivität posten', CPC2_TEXT_DOMAIN).'</h4>';
 	
 	$html .= '<form class="cpc-group-post-activity-form" data-group-id="'.$group_id.'" enctype="multipart/form-data">';
-	$html .= '<textarea name="activity_content" placeholder="'.__('Was machst du gerade?', CPC2_TEXT_DOMAIN).'" required></textarea>';
+	$html .= '<textarea name="activity_content" placeholder="'.__('Was machst du gerade?', CPC2_TEXT_DOMAIN).'"></textarea>';
 	
 	// Activity Plus UI
 	$html .= '<input type="hidden" name="cpc_activity_plus_nonce" value="'.wp_create_nonce('cpc_activity_plus_nonce').'" />';

@@ -7,6 +7,13 @@ require_once(__DIR__.'/cpc_media_shortcodes.php');
 require_once(__DIR__.'/cpc_media_views.php');
 require_once(__DIR__.'/cpc_media_ajax.php');
 
+add_action('cpc_activity_post_add_hook', 'cpc_media_sync_member_activity_gallery', 30, 3);
+add_action('cpc_group_activity_post_add_hook', 'cpc_media_sync_group_activity_gallery', 20, 4);
+add_filter('cpc_activity_plus_user_cloud_dirs', 'cpc_media_extend_user_cloud_dirs', 20, 2);
+add_filter('cpc_activity_plus_group_cloud_dirs', 'cpc_media_extend_group_cloud_dirs', 20, 2);
+add_filter('cpc_activity_plus_user_cloud_limit_mb', 'cpc_media_filter_user_cloud_limit_mb', 20, 3);
+add_filter('cpc_activity_plus_group_cloud_limit_mb', 'cpc_media_filter_group_cloud_limit_mb', 20, 2);
+
 function cpc_media_enqueue_assets() {
     if (!cpc_media_is_enabled()) {
         return;

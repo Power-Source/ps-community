@@ -67,6 +67,25 @@ function cpc_admin_getting_started_media() {
     echo '</tr>';
 
     echo '<tr class="form-field">';
+    echo '<td scope="row" valign="top"><label>'.__('Mediathek-Seite', CPC2_TEXT_DOMAIN).'</label></td>';
+    echo '<td>';
+    echo wp_dropdown_pages(array(
+        'name' => 'cpc_media_directory_page',
+        'echo' => 0,
+        'show_option_none' => __('Keine feste Seite', CPC2_TEXT_DOMAIN),
+        'option_none_value' => '0',
+        'selected' => (int)get_option('cpc_media_directory_page', 0),
+    ));
+    echo '<span class="description">'.__('Optional: diese WordPress-Seite zeigt automatisch die globale Mediathek mit Galerie- und Medienverzeichnis.', CPC2_TEXT_DOMAIN).'</span></td>';
+    echo '</tr>';
+
+    echo '<tr class="form-field">';
+    echo '<td scope="row" valign="top"><label>'.__('Elemente pro Seite in Mediathek', CPC2_TEXT_DOMAIN).'</label></td>';
+    echo '<td><input type="number" min="6" max="60" name="cpc_media_directory_items_per_page" value="'.(int)get_option('cpc_media_directory_items_per_page', 12).'" class="small-text" style="max-width:60px;" />';
+    echo '<span class="description">'.__('Für globale Galerie- und Medienübersicht.', CPC2_TEXT_DOMAIN).'</span></td>';
+    echo '</tr>';
+
+    echo '<tr class="form-field">';
     echo '<td scope="row" valign="top"><label>'.__('Galerie-Beschreibungen anzeigen', CPC2_TEXT_DOMAIN).'</label></td>';
     echo '<td><input type="checkbox" style="width:20px; height:20px;" name="cpc_media_show_gallery_descriptions" '.(cpc_media_show_gallery_descriptions() ? 'CHECKED' : '').' />';
     echo '<span class="description">'.__('Zeigt Galerie-Beschreibungen in Karten.', CPC2_TEXT_DOMAIN).'</span></td>';
@@ -89,6 +108,24 @@ function cpc_admin_getting_started_media() {
     echo '<td scope="row" valign="top"><label>'.__('Max. Dateigröße (MB)', CPC2_TEXT_DOMAIN).'</label></td>';
     echo '<td><input type="number" min="1" max="500" name="cpc_media_max_file_size" value="'.(int)get_option('cpc_media_max_file_size', 50).'" class="small-text" style="max-width:80px;" />';
     echo '<span class="description">'.__('Maximale Größe pro Upload (1-500 MB)', CPC2_TEXT_DOMAIN).'</span></td>';
+    echo '</tr>';
+
+    echo '<tr class="form-field">';
+    echo '<td scope="row" valign="top"><label>'.__('Wall-Medien automatisch spiegeln', CPC2_TEXT_DOMAIN).'</label></td>';
+    echo '<td><input type="checkbox" style="width:20px; height:20px;" name="cpc_media_activity_wall_sync" '.(cpc_media_activity_wall_sync_enabled() ? 'CHECKED' : '').' />';
+    echo '<span class="description">'.__('Bilder aus Activity+ landen zusätzlich in einer versteckten privaten System-Galerie pro Profil bzw. Gruppe.', CPC2_TEXT_DOMAIN).'</span></td>';
+    echo '</tr>';
+
+    echo '<tr class="form-field">';
+    echo '<td scope="row" valign="top"><label>'.__('Nutzer-Speicherlimit (MB)', CPC2_TEXT_DOMAIN).'</label></td>';
+    echo '<td><input type="number" min="0" max="10240" name="cpc_media_user_storage_limit_mb" value="'.(int)cpc_media_get_user_storage_limit_mb().'" class="small-text" style="max-width:90px;" />';
+    echo '<span class="description">'.__('0 = vorhandenes Activity+/Cloud-Limit weiterverwenden, sonst gemeinsames Limit für Galerie- und Activity-Dateien.', CPC2_TEXT_DOMAIN).'</span></td>';
+    echo '</tr>';
+
+    echo '<tr class="form-field">';
+    echo '<td scope="row" valign="top"><label>'.__('Gruppen-Speicherlimit (MB)', CPC2_TEXT_DOMAIN).'</label></td>';
+    echo '<td><input type="number" min="0" max="10240" name="cpc_media_group_storage_limit_mb" value="'.(int)cpc_media_get_group_storage_limit_mb().'" class="small-text" style="max-width:90px;" />';
+    echo '<span class="description">'.__('0 = vorhandenes Gruppen-Cloud-Limit weiterverwenden, sonst gemeinsames Limit für Gruppen-Galerien und Gruppen-Activity.', CPC2_TEXT_DOMAIN).'</span></td>';
     echo '</tr>';
 
     echo '<tr class="form-field">';
@@ -284,6 +321,14 @@ function cpc_admin_media_save($the_post) {
         update_option('cpc_media_gallery_items_limit', max(1, min(100, (int)$the_post['cpc_media_gallery_items_limit'])));
     }
 
+    if (isset($the_post['cpc_media_directory_page'])) {
+        update_option('cpc_media_directory_page', max(0, (int)$the_post['cpc_media_directory_page']));
+    }
+
+    if (isset($the_post['cpc_media_directory_items_per_page'])) {
+        update_option('cpc_media_directory_items_per_page', max(6, min(60, (int)$the_post['cpc_media_directory_items_per_page'])));
+    }
+
     if (isset($the_post['cpc_media_show_gallery_descriptions'])) {
         update_option('cpc_media_show_gallery_descriptions', 1);
     } else {
@@ -299,6 +344,20 @@ function cpc_admin_media_save($the_post) {
     // UPLOAD
     if (isset($the_post['cpc_media_max_file_size'])) {
         update_option('cpc_media_max_file_size', max(1, min(500, (int)$the_post['cpc_media_max_file_size'])));
+    }
+
+    if (isset($the_post['cpc_media_activity_wall_sync'])) {
+        update_option('cpc_media_activity_wall_sync', 1);
+    } else {
+        delete_option('cpc_media_activity_wall_sync');
+    }
+
+    if (isset($the_post['cpc_media_user_storage_limit_mb'])) {
+        update_option('cpc_media_user_storage_limit_mb', max(0, min(10240, (int)$the_post['cpc_media_user_storage_limit_mb'])));
+    }
+
+    if (isset($the_post['cpc_media_group_storage_limit_mb'])) {
+        update_option('cpc_media_group_storage_limit_mb', max(0, min(10240, (int)$the_post['cpc_media_group_storage_limit_mb'])));
     }
 
     if (isset($the_post['cpc_media_allowed_types']) && is_array($the_post['cpc_media_allowed_types'])) {

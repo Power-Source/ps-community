@@ -284,11 +284,95 @@
 .cpc_gallery_item_desc { font-size: 12px; color: #555; margin-top: 4px; }
 .cpc_gallery_item_actions { margin-top: 10px; display: flex; gap: 8px; flex-wrap: wrap; }
 
+.cpc_media_directory {
+    display: grid;
+    gap: 18px;
+}
+
+.cpc_media_directory_header {
+    display: grid;
+    gap: 14px;
+    background: linear-gradient(180deg, #fbfcfd 0%, #f3f6f9 100%);
+    border: 1px solid #d8e0e8;
+    border-radius: 14px;
+    padding: 18px;
+    box-shadow: 0 10px 24px rgba(27, 39, 51, 0.05);
+}
+
+.cpc_media_directory_tabs {
+    display: flex;
+    gap: 8px;
+    flex-wrap: wrap;
+}
+
+.cpc_media_directory_tab {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    padding: 8px 14px;
+    border-radius: 999px;
+    border: 1px solid #cfd9e2;
+    background: #fff;
+    color: #233243;
+    text-decoration: none;
+    font-weight: 700;
+}
+
+.cpc_media_directory_tab.active {
+    background: #1a6c8f;
+    border-color: #1a6c8f;
+    color: #fff;
+}
+
+.cpc_media_directory_filters {
+    display: grid;
+    grid-template-columns: minmax(0, 2fr) minmax(180px, 1fr) auto;
+    gap: 12px;
+    align-items: end;
+}
+
+.cpc_media_directory_filter_field label {
+    display: block;
+    font-weight: 600;
+    margin-bottom: 6px;
+    color: #233243;
+}
+
+.cpc_media_directory_filter_field input,
+.cpc_media_directory_filter_field select {
+    width: 100%;
+    border: 1px solid #cfd9e2;
+    border-radius: 10px;
+    padding: 10px 12px;
+    background: #fff;
+    box-sizing: border-box;
+}
+
+.cpc_media_directory_filter_actions {
+    display: flex;
+    gap: 8px;
+    flex-wrap: wrap;
+}
+
+.cpc_media_directory_pagination {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+    flex-wrap: wrap;
+}
+
+.cpc_media_directory_page_label {
+    color: #526273;
+    font-weight: 600;
+}
+
 @media (max-width: 900px) {
     .cpc_media_form_grid,
     .cpc_media_gallery_shell,
     .cpc_gallery_list_item,
-    .cpc_gallery_items_list .cpc_gallery_item {
+    .cpc_gallery_items_list .cpc_gallery_item,
+    .cpc_media_directory_filters {
         grid-template-columns: 1fr;
     }
 
