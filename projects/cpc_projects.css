@@ -267,7 +267,7 @@
     display: grid;
     grid-template-columns: minmax(0, 1fr) auto auto;
     gap: 6px;
-    align-items: center;
+    align-items: end;
 }
 
 .cpc_projects_task_form_row_secondary {
@@ -279,6 +279,24 @@
 .cpc_projects_task_form select {
     width: 100%;
     box-sizing: border-box;
+}
+
+.cpc_projects_task_field {
+    display: grid;
+    gap: 4px;
+}
+
+.cpc_projects_task_field_label {
+    display: block;
+    font-size: 12px;
+    color: #5f7386;
+    font-weight: 600;
+}
+
+.cpc_projects_task_hint {
+    font-size: 12px;
+    color: #6b7c8d;
+    margin-top: -2px;
 }
 
 .cpc_projects_tasks_list ul {
@@ -729,6 +747,22 @@
     width: 20px;
     height: 20px;
 
+
+/* Fix legacy Select2 sprite artifacts (broken-image square) in assignee fields. */
+.cpc_projects_task_panel .select2-search-choice-close,
+.cpc_projects_task_panel .select2-container .select2-choice abbr {
+    background: none !important;
+    text-indent: 0 !important;
+    text-align: center;
+    color: #6b7c8d;
+    font-size: 12px;
+    line-height: 12px;
+}
+
+.cpc_projects_task_panel .select2-search-choice-close:before,
+.cpc_projects_task_panel .select2-container .select2-choice abbr:before {
+    content: "x";
+}
 /* --- Task direct attachments block --- */
 .cpc_projects_task_direct_attachments {
     margin-top: 8px;

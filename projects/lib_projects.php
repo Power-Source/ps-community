@@ -740,12 +740,27 @@ function cpc_projects_get_assignable_users($project_id) {
         return array();
     }
 
-    return get_users(array(
+    $users = get_users(array(
         'include' => $user_ids,
         'number' => -1,
         'orderby' => 'display_name',
         'order' => 'ASC',
     ));
+
+    // Some membership providers can return duplicate identities across joins.
+    // Keep only one user object per unique user ID.
+    $unique_users = array();
+    foreach ($users as $user) {
+        if (empty($user->ID)) {
+            continue;
+        }
+        $uid = (int)$user->ID;
+        if (!isset($unique_users[$uid])) {
+            $unique_users[$uid] = $user;
+        }
+    }
+
+    return array_values($unique_users);
 }
 
 function cpc_projects_add_task($project_id, $user_id, $title, $description = '', $priority = 1, $deadline = '', $assigned_user_ids = '') {

@@ -46,7 +46,13 @@
         var statusValue = ($panel.find('.cpc_projects_task_filter_status').val() || 'all');
         var priorityValue = ($panel.find('.cpc_projects_task_filter_priority').val() || 'all');
         var assigneeValue = ($panel.find('.cpc_projects_task_filter_assignee').val() || 'all');
-        var overdueOnly = $panel.find('.cpc_projects_task_filter_overdue').is(':checked');
+        var $overdueControl = $panel.find('.cpc_projects_task_filter_overdue');
+        var overdueOnly = false;
+        if ($overdueControl.is('select')) {
+            overdueOnly = ($overdueControl.val() === '1');
+        } else {
+            overdueOnly = $overdueControl.is(':checked');
+        }
         var visibleCount = 0;
 
         $panel.find('.cpc_projects_task_item').each(function() {

@@ -108,6 +108,44 @@ function cpc_projects_render_task_priority_label($priority) {
     return __('Normal', CPC2_TEXT_DOMAIN);
 }
 
+function cpc_projects_get_assignable_user_labels($users) {
+    $users = is_array($users) ? $users : array();
+    if (empty($users)) {
+        return array();
+    }
+
+    $name_counts = array();
+    foreach ($users as $user) {
+        $name = isset($user->display_name) ? trim((string)$user->display_name) : '';
+        if ($name === '') {
+            $name = __('Mitglied', CPC2_TEXT_DOMAIN);
+        }
+        if (!isset($name_counts[$name])) {
+            $name_counts[$name] = 0;
+        }
+        $name_counts[$name]++;
+    }
+
+    $labels = array();
+    foreach ($users as $user) {
+        $id = !empty($user->ID) ? (int)$user->ID : 0;
+        if ($id <= 0) {
+            continue;
+        }
+        $name = isset($user->display_name) ? trim((string)$user->display_name) : '';
+        if ($name === '') {
+            $name = __('Mitglied', CPC2_TEXT_DOMAIN);
+        }
+        $label = $name;
+        if (!empty($name_counts[$name]) && $name_counts[$name] > 1 && !empty($user->user_login)) {
+            $label .= ' (@'.sanitize_text_field((string)$user->user_login).')';
+        }
+        $labels[$id] = $label;
+    }
+
+    return $labels;
+}
+
 function cpc_projects_render_task_panel($project_id) {
     $project_id = (int)$project_id;
     if (!$project_id || !cpc_projects_user_can_view_project($project_id)) {
@@ -117,6 +155,7 @@ function cpc_projects_render_task_panel($project_id) {
     $can_manage = cpc_projects_user_can_manage_project($project_id);
     $tasks = cpc_projects_get_tasks($project_id, array('limit' => 300));
     $assignable_users = cpc_projects_get_assignable_users($project_id);
+    $assignable_labels = cpc_projects_get_assignable_user_labels($assignable_users);
 
     $html = '';
     $html .= '<div class="cpc_projects_task_panel" data-project-id="'.(int)$project_id.'">';
@@ -137,32 +176,49 @@ function cpc_projects_render_task_panel($project_id) {
     $html .= '</select>';
     $html .= '<select class="cpc_projects_task_filter_assignee">';
     $html .= '<option value="all">'.esc_html__('Alle Zuweisungen', CPC2_TEXT_DOMAIN).'</option>';
-    foreach ($assignable_users as $assign_user) {
-        $html .= '<option value="'.(int)$assign_user->ID.'">'.esc_html($assign_user->display_name).'</option>';
+    foreach ($assignable_labels as $uid => $label) {
+        $html .= '<option value="'.(int)$uid.'">'.esc_html($label).'</option>';
     }
     $html .= '</select>';
-    $html .= '<label class="cpc_projects_task_filter_overdue_wrap"><input type="checkbox" class="cpc_projects_task_filter_overdue" value="1" /> '.esc_html__('Nur ueberfaellig', CPC2_TEXT_DOMAIN).'</label>';
+    $html .= '<select class="cpc_projects_task_filter_overdue">';
+    $html .= '<option value="0">'.esc_html__('Alle Fristen', CPC2_TEXT_DOMAIN).'</option>';
+    $html .= '<option value="1">'.esc_html__('Nur ueberfaellig', CPC2_TEXT_DOMAIN).'</option>';
+    $html .= '</select>';
     $html .= '</div>';
 
     if ($can_manage) {
         $html .= '<form class="cpc_projects_task_form" data-project-id="'.(int)$project_id.'">';
         $html .= '<div class="cpc_projects_task_form_row">';
+        $html .= '<div class="cpc_projects_task_field">';
+        $html .= '<label class="cpc_projects_task_field_label">'.esc_html__('Titel', CPC2_TEXT_DOMAIN).'</label>';
         $html .= '<input type="text" name="title" placeholder="'.esc_attr__('Task-Titel', CPC2_TEXT_DOMAIN).'" required />';
+        $html .= '</div>';
+        $html .= '<div class="cpc_projects_task_field">';
+        $html .= '<label class="cpc_projects_task_field_label">'.esc_html__('Prioritaet', CPC2_TEXT_DOMAIN).'</label>';
         $html .= '<select name="priority">';
         $html .= '<option value="1">'.esc_html__('Normal', CPC2_TEXT_DOMAIN).'</option>';
         $html .= '<option value="2">'.esc_html__('Hoch', CPC2_TEXT_DOMAIN).'</option>';
         $html .= '<option value="3">'.esc_html__('Kritisch', CPC2_TEXT_DOMAIN).'</option>';
         $html .= '</select>';
+        $html .= '</div>';
         $html .= '<button type="submit" class="cpc_button cpc_projects_add_task_btn">'.esc_html__('Task hinzufuegen', CPC2_TEXT_DOMAIN).'</button>';
         $html .= '</div>';
         $html .= '<div class="cpc_projects_task_form_row cpc_projects_task_form_row_secondary">';
+        $html .= '<div class="cpc_projects_task_field">';
+        $html .= '<label class="cpc_projects_task_field_label">'.esc_html__('Deadline', CPC2_TEXT_DOMAIN).'</label>';
         $html .= '<input type="datetime-local" name="deadline" placeholder="'.esc_attr__('Deadline', CPC2_TEXT_DOMAIN).'" />';
+        $html .= '</div>';
+        $html .= '<div class="cpc_projects_task_field">';
+        $html .= '<label class="cpc_projects_task_field_label">'.esc_html__('Zuweisen an', CPC2_TEXT_DOMAIN).'</label>';
         $html .= '<select name="assigned_user_ids[]" multiple class="cpc_projects_task_assignees">';
-        foreach ($assignable_users as $assign_user) {
-            $html .= '<option value="'.(int)$assign_user->ID.'">'.esc_html($assign_user->display_name).'</option>';
+        foreach ($assignable_labels as $uid => $label) {
+            $html .= '<option value="'.(int)$uid.'">'.esc_html($label).'</option>';
         }
         $html .= '</select>';
         $html .= '</div>';
+        $html .= '</div>';
+        $html .= '<div class="cpc_projects_task_hint">'.esc_html__('Zuweisung (Mehrfachauswahl moeglich)', CPC2_TEXT_DOMAIN).'</div>';
+        $html .= '<label class="cpc_projects_task_field_label">'.esc_html__('Beschreibung', CPC2_TEXT_DOMAIN).'</label>';
         $html .= '<textarea name="description" rows="2" placeholder="'.esc_attr__('Kurzbeschreibung (optional)', CPC2_TEXT_DOMAIN).'"></textarea>';
         if (cpc_projects_task_comment_attachments_enabled()) {
             $html .= '<div class="cpc_projects_task_file_upload">';
@@ -240,19 +296,25 @@ function cpc_projects_render_task_panel($project_id) {
                 $html .= ' <button type="button" class="cpc_projects_task_edit_toggle cpc_projects_inline_link" data-task-id="'.(int)$task->id.'">'.esc_html__('Bearbeiten', CPC2_TEXT_DOMAIN).'</button>';
 
                 $html .= '<form class="cpc_projects_task_edit_form" data-project-id="'.(int)$project_id.'" data-task-id="'.(int)$task->id.'" style="display:none">';
+                $html .= '<label class="cpc_projects_task_field_label">'.esc_html__('Titel', CPC2_TEXT_DOMAIN).'</label>';
                 $html .= '<input type="text" name="title" value="'.esc_attr((string)$task->title).'" required />';
+                $html .= '<label class="cpc_projects_task_field_label">'.esc_html__('Prioritaet', CPC2_TEXT_DOMAIN).'</label>';
                 $html .= '<select name="priority">';
                 $html .= '<option value="1" '.selected((int)$task->priority, 1, false).'>'.esc_html__('Normal', CPC2_TEXT_DOMAIN).'</option>';
                 $html .= '<option value="2" '.selected((int)$task->priority, 2, false).'>'.esc_html__('Hoch', CPC2_TEXT_DOMAIN).'</option>';
                 $html .= '<option value="3" '.selected((int)$task->priority, 3, false).'>'.esc_html__('Kritisch', CPC2_TEXT_DOMAIN).'</option>';
                 $html .= '</select>';
+                $html .= '<label class="cpc_projects_task_field_label">'.esc_html__('Deadline', CPC2_TEXT_DOMAIN).'</label>';
                 $html .= '<input type="datetime-local" name="deadline" value="'.esc_attr($deadline_value).'" />';
+                $html .= '<label class="cpc_projects_task_field_label">'.esc_html__('Zuweisen an', CPC2_TEXT_DOMAIN).'</label>';
                 $html .= '<select name="assigned_user_ids[]" multiple class="cpc_projects_task_assignees">';
-                foreach ($assignable_users as $assign_user) {
-                    $is_selected = in_array((int)$assign_user->ID, $task_assigned_ids, true);
-                    $html .= '<option value="'.(int)$assign_user->ID.'" '.selected($is_selected, true, false).'>'.esc_html($assign_user->display_name).'</option>';
+                foreach ($assignable_labels as $uid => $label) {
+                    $is_selected = in_array((int)$uid, $task_assigned_ids, true);
+                    $html .= '<option value="'.(int)$uid.'" '.selected($is_selected, true, false).'>'.esc_html($label).'</option>';
                 }
                 $html .= '</select>';
+                $html .= '<div class="cpc_projects_task_hint">'.esc_html__('Zuweisung (Mehrfachauswahl moeglich)', CPC2_TEXT_DOMAIN).'</div>';
+                $html .= '<label class="cpc_projects_task_field_label">'.esc_html__('Beschreibung', CPC2_TEXT_DOMAIN).'</label>';
                 $html .= '<textarea name="description" rows="2">'.esc_textarea((string)$task->description).'</textarea>';
                 if (cpc_projects_task_comment_attachments_enabled()) {
                     $html .= '<div class="cpc_projects_task_file_upload">';
