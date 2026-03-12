@@ -4,7 +4,7 @@ Tags: wp community, social network, social networking, social media, cp-communit
 Requires at least: 4.9
 Tested up to: 6.8.1
 ClassicPress: 2.6.0
-Stable tag: 1.0.9
+Stable tag: 1.1.0
 License URI: https://www.gnu.org/licenses/gpl-2.0.html
 
 == Description ==
@@ -30,6 +30,15 @@ Kein Problem! Ändere ganz einfach den gesamten Text, den Deine Benutzer sehen, 
 [POWERED BY PSOURCE](https://github.com/Power-Source)
 
 == ChangeLog ==
+
+= 1.1.0 =
+
+* Neue globale Mediathek (Galerie- und Medienverzeichnis) mit eigener Seite im Frontend
+* Neue Einstellungen fuer Mediathek-Seite und Anzahl Elemente pro Seite im Medien-Admin
+* Neue Shortcodes `cpc-media-directory` und `cpc-gallery-directory`
+* Mediathek mit Tabs (Galerien/Medien), Suche, Typ-Filter und Pagination
+* Automatisches Rendern der Mediathek auf der konfigurierten Seite (ohne zusaetzlichen Shortcode)
+* Einzelne Galerie-Seiten rendern nun den kompletten Galerieinhalt direkt auf der Single-View
 
 = 1.0.9 =
 

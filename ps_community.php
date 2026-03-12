@@ -315,6 +315,11 @@ endif;
 // Media / galleries
 require_once('media/cpc_media.php');
 
+// Docs
+if (strpos(CPC_CORE_PLUGINS, 'core-profile') !== false || strpos(CPC_CORE_PLUGINS, 'core-groups') !== false):
+    require_once('docs/cpc_docs.php');
+endif;
+
 // Admin
 if (is_admin()):
 	require_once('cpc_admin.php');
