@@ -106,8 +106,8 @@ function cpc_media_ajax_upload() {
     }
 
     if ($success > 0) {
-        $count = count(cpc_media_get_gallery_items($gallery_id, array('posts_per_page' => -1, 'fields' => 'ids')));
-        cpc_media_update_gallery_media_count($gallery_id, $count);
+        $current_count = cpc_media_get_gallery_media_count($gallery_id);
+        cpc_media_update_gallery_media_count($gallery_id, $current_count + $success);
     }
 
     wp_send_json_success(array(

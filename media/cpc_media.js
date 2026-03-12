@@ -53,13 +53,17 @@
         $status.toggleClass('cpc_media_upload_status_error', !!isError);
     }
 
-    function appendItems($galleryBlock, itemsHtml) {
+    function appendItems($galleryBlock, galleryId, itemsHtml) {
         if (!$galleryBlock.length || !itemsHtml || !itemsHtml.length) {
             return;
         }
-        var $itemsWrap = $galleryBlock.find('.cpc_gallery_items');
+        var selector = '.cpc_gallery_items';
+        if (galleryId) {
+            selector = '.cpc_gallery_items[data-gallery-id="' + galleryId + '"]';
+        }
+        var $itemsWrap = $galleryBlock.find(selector).first();
         if (!$itemsWrap.length) {
-            $itemsWrap = $('<div class="cpc_gallery_items"></div>').appendTo($galleryBlock);
+            $itemsWrap = $('<div class="cpc_gallery_items" data-gallery-id="' + galleryId + '"></div>').appendTo($galleryBlock.find('.cpc_media_gallery_body').first());
         }
         $.each(itemsHtml, function(_, html) {
             $itemsWrap.append(html);
@@ -124,7 +128,7 @@
             }
 
             var $galleryBlock = $form.closest('.cpc_media_gallery_block');
-            appendItems($galleryBlock, (resp.data && resp.data.items_html) ? resp.data.items_html : []);
+            appendItems($galleryBlock, galleryId, (resp.data && resp.data.items_html) ? resp.data.items_html : []);
             updateGalleryCount($galleryBlock, resp.data ? resp.data.gallery_count : null);
             setProgress($form, 100);
             setStatus($form, (resp.data && resp.data.message) ? resp.data.message : cpc_media_ajax.uploadDone, false);

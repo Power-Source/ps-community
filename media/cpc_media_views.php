@@ -232,6 +232,7 @@ function cpc_media_render_gallery_block($gallery) {
     $html .= do_shortcode('[cpc-gallery-items gallery_id="'.$gallery_id.'" limit="'.cpc_media_get_gallery_items_limit().'"]');
     $html .= '</div>';
     $html .= '</div>';
+    $html .= '</div>';
 
     return $html;
 }
