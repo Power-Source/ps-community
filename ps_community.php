@@ -320,6 +320,11 @@ if (strpos(CPC_CORE_PLUGINS, 'core-profile') !== false || strpos(CPC_CORE_PLUGIN
     require_once('docs/cpc_docs.php');
 endif;
 
+// Projects
+if (strpos(CPC_CORE_PLUGINS, 'core-profile') !== false || strpos(CPC_CORE_PLUGINS, 'core-groups') !== false):
+    require_once('projects/cpc_projects.php');
+endif;
+
 // Admin
 if (is_admin()):
 	require_once('cpc_admin.php');

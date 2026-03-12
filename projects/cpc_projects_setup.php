@@ -1,0 +1,121 @@
+<?php
+
+add_action('cpc_admin_getting_started_hook', 'cpc_admin_getting_started_projects', 8);
+function cpc_admin_getting_started_projects() {
+    $css = isset($_POST['cpc_expand']) && $_POST['cpc_expand'] === 'cpc_admin_getting_started_projects' ? 'cpc_admin_getting_started_menu_item_remove_icon ' : '';
+    echo '<div class="'.$css.'cpc_admin_getting_started_menu_item" rel="cpc_admin_getting_started_projects" id="cpc_admin_getting_started_projects_div">'.__('Projekte', CPC2_TEXT_DOMAIN).'</div>';
+
+    $display = isset($_POST['cpc_expand']) && $_POST['cpc_expand'] === 'cpc_admin_getting_started_projects' ? 'block' : 'none';
+    echo '<div class="cpc_admin_getting_started_content" id="cpc_admin_getting_started_projects" style="display:'.$display.'">';
+
+    echo '<table class="form-table">';
+
+    echo '<tr class="form-field">';
+    echo '<td scope="row" valign="top"><label>'.__('Projects-Modul aktivieren', CPC2_TEXT_DOMAIN).'</label></td>';
+    echo '<td><input type="checkbox" style="width:20px; height:20px;" name="cpc_projects_module_enabled" '.(cpc_projects_is_enabled() ? 'CHECKED' : '').' />';
+    echo '<span class="description">'.__('Aktiviert Projekte in Profilen und Gruppen.', CPC2_TEXT_DOMAIN).'</span></td>';
+    echo '</tr>';
+
+    echo '<tr class="form-field">';
+    echo '<td scope="row" valign="top"><label>'.__('Profil-Tab: Projekt erstellen erlauben', CPC2_TEXT_DOMAIN).'</label></td>';
+    echo '<td><input type="checkbox" style="width:20px; height:20px;" name="cpc_projects_profile_allow_create" '.(cpc_projects_show_profile_create_form() ? 'CHECKED' : '').' />';
+    echo '<span class="description">'.__('Standardmaessig aus, damit Projekte zentral im Gruppen-Tab verwaltet werden.', CPC2_TEXT_DOMAIN).'</span></td>';
+    echo '</tr>';
+
+    echo '<tr class="form-field">';
+    echo '<td scope="row" valign="top"><label>'.__('User-Tab-Name', CPC2_TEXT_DOMAIN).'</label></td>';
+    echo '<td><input type="text" name="cpc_projects_user_tab_name" value="'.esc_attr(cpc_projects_get_user_tab_name()).'" class="regular-text" /></td>';
+    echo '</tr>';
+
+    echo '<tr class="form-field">';
+    echo '<td scope="row" valign="top"><label>'.__('Gruppen-Tab-Name', CPC2_TEXT_DOMAIN).'</label></td>';
+    echo '<td><input type="text" name="cpc_projects_group_tab_name" value="'.esc_attr(cpc_projects_get_group_tab_name()).'" class="regular-text" /></td>';
+    echo '</tr>';
+
+    echo '<tr class="form-field">';
+    echo '<td scope="row" valign="top"><label>'.__('Task-Kommentar-Anhaenge', CPC2_TEXT_DOMAIN).'</label></td>';
+    echo '<td><input type="checkbox" style="width:20px; height:20px;" name="cpc_projects_comment_attachments_enabled" '.(cpc_projects_task_comment_attachments_enabled() ? 'CHECKED' : '').' />';
+    echo '<span class="description">'.__('Datei-Uploads direkt an Task-Kommentare.', CPC2_TEXT_DOMAIN).'</span></td>';
+    echo '</tr>';
+
+    echo '<tr class="form-field">';
+    echo '<td scope="row" valign="top"><label>'.__('Max. Attachment-Groesse (MB)', CPC2_TEXT_DOMAIN).'</label></td>';
+    echo '<td><input type="number" min="1" max="50" name="cpc_projects_comment_max_attachment_mb" value="'.(int)cpc_projects_task_comment_max_attachment_mb().'" class="small-text" style="max-width:80px;" /></td>';
+    echo '</tr>';
+
+    echo '<tr class="form-field">';
+    echo '<td scope="row" valign="top"><label>'.__('Alerts bei Task-Events', CPC2_TEXT_DOMAIN).'</label></td>';
+    echo '<td><input type="checkbox" style="width:20px; height:20px;" name="cpc_projects_alerts_enabled" '.(cpc_projects_alerts_enabled() ? 'CHECKED' : '').' /></td>';
+    echo '</tr>';
+
+    echo '<tr class="form-field">';
+    echo '<td scope="row" valign="top"><label>'.__('Activity bei Task-Events', CPC2_TEXT_DOMAIN).'</label></td>';
+    echo '<td><input type="checkbox" style="width:20px; height:20px;" name="cpc_projects_activity_enabled" '.(cpc_projects_activity_enabled() ? 'CHECKED' : '').' /></td>';
+    echo '</tr>';
+
+    echo '<tr class="form-field">';
+    echo '<td scope="row" valign="top"><label>'.__('Gruppen-Empfaenger fuer Alerts', CPC2_TEXT_DOMAIN).'</label></td>';
+    echo '<td><select name="cpc_projects_group_alert_scope">';
+    echo '<option value="moderators" '.selected(cpc_projects_group_alert_scope(), 'moderators', false).'>'.esc_html__('Nur Admins/Moderatoren', CPC2_TEXT_DOMAIN).'</option>';
+    echo '<option value="all_members" '.selected(cpc_projects_group_alert_scope(), 'all_members', false).'>'.esc_html__('Alle Gruppenmitglieder', CPC2_TEXT_DOMAIN).'</option>';
+    echo '</select>';
+    echo '<span class="description">'.__('Feinsteuerung fuer Benachrichtigungen bei Gruppen-Projekten.', CPC2_TEXT_DOMAIN).'</span></td>';
+    echo '</tr>';
+
+    echo '</table>';
+    echo '</div>';
+}
+
+add_action('cpc_admin_setup_form_save_hook', 'cpc_admin_projects_save', 10, 1);
+add_action('cpc_admin_setup_form_get_hook', 'cpc_admin_projects_save', 10, 1);
+function cpc_admin_projects_save($the_post) {
+    if (isset($the_post['cpc_projects_module_enabled'])) {
+        update_option('cpc_projects_module_enabled', 1);
+    } else {
+        delete_option('cpc_projects_module_enabled');
+    }
+
+    if (isset($the_post['cpc_projects_profile_allow_create'])) {
+        update_option('cpc_projects_profile_allow_create', 1);
+    } else {
+        delete_option('cpc_projects_profile_allow_create');
+    }
+
+    if (isset($the_post['cpc_projects_user_tab_name'])) {
+        update_option('cpc_projects_user_tab_name', sanitize_text_field($the_post['cpc_projects_user_tab_name']));
+    }
+
+    if (isset($the_post['cpc_projects_group_tab_name'])) {
+        update_option('cpc_projects_group_tab_name', sanitize_text_field($the_post['cpc_projects_group_tab_name']));
+    }
+
+    if (isset($the_post['cpc_projects_comment_attachments_enabled'])) {
+        update_option('cpc_projects_comment_attachments_enabled', 1);
+    } else {
+        delete_option('cpc_projects_comment_attachments_enabled');
+    }
+
+    if (isset($the_post['cpc_projects_comment_max_attachment_mb'])) {
+        update_option('cpc_projects_comment_max_attachment_mb', max(1, min(50, (int)$the_post['cpc_projects_comment_max_attachment_mb'])));
+    }
+
+    if (isset($the_post['cpc_projects_alerts_enabled'])) {
+        update_option('cpc_projects_alerts_enabled', 1);
+    } else {
+        delete_option('cpc_projects_alerts_enabled');
+    }
+
+    if (isset($the_post['cpc_projects_activity_enabled'])) {
+        update_option('cpc_projects_activity_enabled', 1);
+    } else {
+        delete_option('cpc_projects_activity_enabled');
+    }
+
+    if (isset($the_post['cpc_projects_group_alert_scope'])) {
+        $scope = sanitize_key($the_post['cpc_projects_group_alert_scope']);
+        if (!in_array($scope, array('moderators', 'all_members'), true)) {
+            $scope = 'moderators';
+        }
+        update_option('cpc_projects_group_alert_scope', $scope);
+    }
+}
