@@ -73,6 +73,7 @@
         $panel.find('.cpc_projects_no_tasks_filtered').toggle(visibleCount === 0 && $panel.find('.cpc_projects_task_item').length > 0);
     }
 
+    /* ---- Add task (with optional file attachment) ---- */
     $(document).on('submit', '.cpc_projects_task_form', function(e) {
         e.preventDefault();
         if (!hasAjaxConfig()) {
@@ -85,28 +86,38 @@
             return;
         }
 
-        var payload = {
-            action: 'cpc_projects_add_task',
-            nonce: cpc_projects_ajax.nonce,
-            project_id: projectId,
-            title: $.trim($form.find('[name="title"]').val() || ''),
-            description: $.trim($form.find('[name="description"]').val() || ''),
-            priority: parseInt($form.find('[name="priority"]').val(), 10) || 1,
-            deadline: $.trim($form.find('[name="deadline"]').val() || '')
-        };
+        var formData = new window.FormData();
+        formData.append('action',     'cpc_projects_add_task');
+        formData.append('nonce',      cpc_projects_ajax.nonce);
+        formData.append('project_id', projectId);
+        formData.append('title',      $.trim($form.find('[name="title"]').val()       || ''));
+        formData.append('description',$.trim($form.find('[name="description"]').val() || ''));
+        formData.append('priority',   parseInt($form.find('[name="priority"]').val(), 10) || 1);
+        formData.append('deadline',   $.trim($form.find('[name="deadline"]').val()    || ''));
 
-        payload.assigned_user_ids = $form.find('[name="assigned_user_ids[]"]').val() || [];
+        var assignees = $form.find('[name="assigned_user_ids[]"]').val() || [];
+        $.each(assignees, function(i, v) { formData.append('assigned_user_ids[]', v); });
 
-        if (!payload.title) {
+        var taskFileInput = $form.find('[name="task_attachments[]"]')[0];
+        if (taskFileInput && taskFileInput.files && taskFileInput.files.length) {
+            $.each(taskFileInput.files, function(i, f) { formData.append('task_attachments[]', f); });
+        }
+
+        if (!$.trim($form.find('[name="title"]').val())) {
             return;
         }
 
-        $.post(cpc_projects_ajax.ajaxurl, payload).done(function(resp) {
+        $.ajax({
+            url: cpc_projects_ajax.ajaxurl,
+            method: 'POST',
+            data: formData,
+            processData: false,
+            contentType: false
+        }).done(function(resp) {
             if (!resp || !resp.success || !resp.data || !resp.data.tasks_html) {
                 alert(cpc_projects_ajax.addTaskError || 'Task konnte nicht erstellt werden.');
                 return;
             }
-
             replaceTaskPanel(projectId, resp.data.tasks_html);
         }).fail(function() {
             alert(cpc_projects_ajax.addTaskError || 'Task konnte nicht erstellt werden.');
@@ -201,6 +212,7 @@
         $item.find('.cpc_projects_task_details').first().toggle();
     });
 
+    /* ---- Edit task (with optional file attachment) ---- */
     $(document).on('submit', '.cpc_projects_task_edit_form', function(e) {
         e.preventDefault();
         if (!hasAjaxConfig()) {
@@ -219,27 +231,38 @@
             return;
         }
 
-        var payload = {
-            action: 'cpc_projects_update_task',
-            nonce: cpc_projects_ajax.nonce,
-            task_id: taskId,
-            title: $.trim($form.find('[name="title"]').val() || ''),
-            description: $.trim($form.find('[name="description"]').val() || ''),
-            priority: parseInt($form.find('[name="priority"]').val(), 10) || 1,
-            deadline: $.trim($form.find('[name="deadline"]').val() || '')
-        };
-        payload.assigned_user_ids = $form.find('[name="assigned_user_ids[]"]').val() || [];
+        var formData = new window.FormData();
+        formData.append('action',      'cpc_projects_update_task');
+        formData.append('nonce',       cpc_projects_ajax.nonce);
+        formData.append('task_id',     taskId);
+        formData.append('title',       $.trim($form.find('[name="title"]').val()       || ''));
+        formData.append('description', $.trim($form.find('[name="description"]').val() || ''));
+        formData.append('priority',    parseInt($form.find('[name="priority"]').val(), 10) || 1);
+        formData.append('deadline',    $.trim($form.find('[name="deadline"]').val()    || ''));
 
-        if (!payload.title) {
+        var assignees = $form.find('[name="assigned_user_ids[]"]').val() || [];
+        $.each(assignees, function(i, v) { formData.append('assigned_user_ids[]', v); });
+
+        var taskFileInput = $form.find('[name="task_attachments[]"]')[0];
+        if (taskFileInput && taskFileInput.files && taskFileInput.files.length) {
+            $.each(taskFileInput.files, function(i, f) { formData.append('task_attachments[]', f); });
+        }
+
+        if (!$.trim($form.find('[name="title"]').val())) {
             return;
         }
 
-        $.post(cpc_projects_ajax.ajaxurl, payload).done(function(resp) {
+        $.ajax({
+            url: cpc_projects_ajax.ajaxurl,
+            method: 'POST',
+            data: formData,
+            processData: false,
+            contentType: false
+        }).done(function(resp) {
             if (!resp || !resp.success || !resp.data || !resp.data.tasks_html) {
                 alert(cpc_projects_ajax.updateTaskError || 'Task konnte nicht aktualisiert werden.');
                 return;
             }
-
             replaceTaskPanel(projectId, resp.data.tasks_html);
         }).fail(function() {
             alert(cpc_projects_ajax.updateTaskError || 'Task konnte nicht aktualisiert werden.');
@@ -338,6 +361,55 @@
         });
     });
 
+    /* ---- Delete direct task attachment ---- */
+    $(document).on('click', '.cpc_projects_task_direct_attachment_delete', function(e) {
+        e.preventDefault();
+        if (!hasAjaxConfig()) { return; }
+        if (!window.confirm(cpc_projects_ajax.confirmDeleteAttachment || 'Datei wirklich loeschen?')) { return; }
+
+        var $btn         = $(this);
+        var attachmentId = parseInt($btn.data('attachment-id'), 10);
+        var $panel       = $btn.closest('.cpc_projects_task_panel');
+        var projectId    = parseInt($panel.data('project-id'), 10);
+        if (!attachmentId || !projectId) { return; }
+
+        $.post(cpc_projects_ajax.ajaxurl, {
+            action:        'cpc_projects_delete_task_attachment',
+            nonce:         cpc_projects_ajax.nonce,
+            attachment_id: attachmentId
+        }).done(function(resp) {
+            if (!resp || !resp.success || !resp.data || !resp.data.tasks_html) {
+                alert(cpc_projects_ajax.deleteAttachmentError || 'Datei konnte nicht geloescht werden.');
+                return;
+            }
+            replaceTaskPanel(projectId, resp.data.tasks_html);
+        }).fail(function() {
+            alert(cpc_projects_ajax.deleteAttachmentError || 'Datei konnte nicht geloescht werden.');
+        });
+    });
+
+    /* ---- Delete task comment ---- */
+    $(document).on('click', '.cpc_projects_comment_delete', function(e) {
+        e.preventDefault();
+        if (!hasAjaxConfig()) { return; }
+        if (!window.confirm(cpc_projects_ajax.confirmDeleteComment || 'Kommentar wirklich loeschen?')) { return; }
+
+        var $btn      = $(this);
+        var commentId = parseInt($btn.data('comment-id'), 10);
+        var $panel    = $btn.closest('.cpc_projects_task_panel');
+        var projectId = parseInt($panel.data('project-id'), 10);
+        if (!commentId || !projectId) { return; }
+
+        $.post(cpc_projects_ajax.ajaxurl, {
+            action:     'cpc_projects_delete_comment',
+            nonce:      cpc_projects_ajax.nonce,
+            comment_id: commentId
+        }).done(function(resp) {
+            if (!resp || !resp.success || !resp.data || !resp.data.tasks_html) { return; }
+            replaceTaskPanel(projectId, resp.data.tasks_html);
+        });
+    });
+
     $(document).on('keyup change', '.cpc_projects_task_filter_text, .cpc_projects_task_filter_status, .cpc_projects_task_filter_priority, .cpc_projects_task_filter_assignee, .cpc_projects_task_filter_overdue', function() {
         var $panel = $(this).closest('.cpc_projects_task_panel');
         applyTaskFilters($panel);
@@ -364,4 +436,97 @@
             $wrap.find('.cpc_projects_single_section[data-section="' + target + '"]').addClass('is-active').show();
         });
     });
+
+    /* ---- Project settings form ---- */
+    $(document).on('submit', '.cpc_projects_settings_form', function(e) {
+        e.preventDefault();
+        if (!hasAjaxConfig()) {
+            return;
+        }
+
+        var $form     = $(this);
+        var projectId = parseInt($form.data('project-id'), 10);
+        if (!projectId) {
+            return;
+        }
+
+        $.post(cpc_projects_ajax.ajaxurl, {
+            action:      'cpc_projects_update_project',
+            nonce:       cpc_projects_ajax.nonce,
+            project_id:  projectId,
+            title:       $.trim($form.find('[name="title"]').val()       || ''),
+            description: $.trim($form.find('[name="description"]').val() || ''),
+            status:      $form.find('[name="status"]').val() || 'public'
+        }).done(function(resp) {
+            if (!resp || !resp.success) {
+                alert(cpc_projects_ajax.updateProjectError || 'Projekt konnte nicht aktualisiert werden.');
+                return;
+            }
+            if (resp.data && resp.data.title) {
+                $form.closest('.cpc_projects_single').find('.cpc_projects_single_title').text(resp.data.title);
+            }
+            var $notice = $form.closest('.cpc_projects_settings_panel').find('.cpc_projects_settings_notice');
+            $notice.text((resp.data && resp.data.message) ? resp.data.message : 'Gespeichert.').show();
+            setTimeout(function() { $notice.hide(); }, 3500);
+        }).fail(function() {
+            alert(cpc_projects_ajax.updateProjectError || 'Projekt konnte nicht aktualisiert werden.');
+        });
+    });
+
+    /* ---- Delete project button ---- */
+    $(document).on('click', '.cpc_projects_delete_project_btn', function(e) {
+        e.preventDefault();
+        if (!hasAjaxConfig()) {
+            return;
+        }
+
+        if (!window.confirm(cpc_projects_ajax.confirmDeleteProject || 'Projekt wirklich loeschen?')) {
+            return;
+        }
+
+        var projectId = parseInt($(this).data('project-id'), 10);
+        if (!projectId) {
+            return;
+        }
+
+        $.post(cpc_projects_ajax.ajaxurl, {
+            action:     'cpc_projects_delete_project',
+            nonce:      cpc_projects_ajax.nonce,
+            project_id: projectId
+        }).done(function(resp) {
+            if (!resp || !resp.success) {
+                alert(cpc_projects_ajax.deleteProjectError || 'Projekt konnte nicht geloescht werden.');
+                return;
+            }
+            if (resp.data && resp.data.redirect) {
+                window.location.href = resp.data.redirect;
+            } else {
+                window.history.back();
+            }
+        }).fail(function() {
+            alert(cpc_projects_ajax.deleteProjectError || 'Projekt konnte nicht geloescht werden.');
+        });
+    });
+
+    /* ---- Notification prefs form ---- */
+    $(document).on('submit', '.cpc_projects_notification_prefs_form', function(e) {
+        e.preventDefault();
+        if (!hasAjaxConfig()) {
+            return;
+        }
+
+        var $form = $(this);
+
+        $.post(cpc_projects_ajax.ajaxurl, {
+            action:          'cpc_projects_save_notification_prefs',
+            nonce:           cpc_projects_ajax.nonce,
+            notify_task:     $form.find('[name="notify_task"]').is(':checked')    ? 1 : 0,
+            notify_comment:  $form.find('[name="notify_comment"]').is(':checked') ? 1 : 0
+        }).done(function(resp) {
+            var $notice = $form.find('.cpc_projects_prefs_notice');
+            $notice.text((resp && resp.data && resp.data.message) ? resp.data.message : 'Gespeichert.').show();
+            setTimeout(function() { $notice.hide(); }, 3500);
+        });
+    });
+
 })(jQuery);

@@ -5,8 +5,23 @@ function cpc_projects_add_profile_tab($tabs, $user_id, $viewer_id) {
         return $tabs;
     }
 
+    $count = 0;
+    $user_id = (int)$user_id;
+    if ($user_id > 0) {
+        $projects = cpc_projects_get_profile_projects($user_id, array(
+            'posts_per_page' => 120,
+            'viewer_id' => (int)$viewer_id,
+        ));
+        $count = count($projects);
+    }
+
+    $label = cpc_projects_get_user_tab_name();
+    if ($count > 0) {
+        $label .= ' ('.(int)$count.')';
+    }
+
     $tabs['projects'] = array(
-        'label' => cpc_projects_get_user_tab_name(),
+        'label' => $label,
         'icon' => 'portfolio',
         'priority' => 26,
     );
@@ -149,6 +164,12 @@ function cpc_projects_render_task_panel($project_id) {
         $html .= '</select>';
         $html .= '</div>';
         $html .= '<textarea name="description" rows="2" placeholder="'.esc_attr__('Kurzbeschreibung (optional)', CPC2_TEXT_DOMAIN).'"></textarea>';
+        if (cpc_projects_task_comment_attachments_enabled()) {
+            $html .= '<div class="cpc_projects_task_file_upload">';
+            $html .= '<label class="cpc_projects_task_file_label">'.esc_html__('Datei anhaengen (optional)', CPC2_TEXT_DOMAIN).'</label>';
+            $html .= '<input type="file" name="task_attachments[]" class="cpc_projects_task_files" multiple />';
+            $html .= '</div>';
+        }
         $html .= '</form>';
     }
 
@@ -177,7 +198,17 @@ function cpc_projects_render_task_panel($project_id) {
 
             $task_meta_bits = array();
             if (!empty($task->deadline)) {
-                $task_meta_bits[] = sprintf(__('Faellig: %s', CPC2_TEXT_DOMAIN), wp_date(get_option('date_format').' '.get_option('time_format'), strtotime((string)$task->deadline)));
+                $deadline_ts_meta = (int)strtotime((string)$task->deadline);
+                $now_ts_meta = current_time('timestamp', 1);
+                $deadline_date_str = wp_date(get_option('date_format').' '.get_option('time_format'), $deadline_ts_meta);
+                if ($deadline_ts_meta > $now_ts_meta && !$is_done) {
+                    $countdown_str = sprintf(__('(%s verbleibend)', CPC2_TEXT_DOMAIN), human_time_diff($now_ts_meta, $deadline_ts_meta));
+                } elseif ($deadline_ts_meta <= $now_ts_meta && !$is_done) {
+                    $countdown_str = __('(UEBERFAELLIG)', CPC2_TEXT_DOMAIN);
+                } else {
+                    $countdown_str = '';
+                }
+                $task_meta_bits[] = sprintf(__('Faellig: %s', CPC2_TEXT_DOMAIN), $deadline_date_str.(($countdown_str !== '') ? ' '.$countdown_str : ''));
             }
             $task_assigned_ids = cpc_projects_get_task_assigned_user_ids($task);
             if (!empty($task_assigned_ids)) {
@@ -197,7 +228,7 @@ function cpc_projects_render_task_panel($project_id) {
             }
 
             if (!empty($task->description)) {
-                $html .= '<div class="cpc_projects_task_description">'.esc_html(wp_trim_words(wp_strip_all_tags((string)$task->description), 22)).'</div>';
+                $html .= '<div class="cpc_projects_task_description">'.nl2br(esc_html((string)$task->description)).'</div>';
             }
             if ($can_manage) {
                 $deadline_value = '';
@@ -223,6 +254,12 @@ function cpc_projects_render_task_panel($project_id) {
                 }
                 $html .= '</select>';
                 $html .= '<textarea name="description" rows="2">'.esc_textarea((string)$task->description).'</textarea>';
+                if (cpc_projects_task_comment_attachments_enabled()) {
+                    $html .= '<div class="cpc_projects_task_file_upload">';
+                    $html .= '<label class="cpc_projects_task_file_label">'.esc_html__('Weitere Datei anhaengen (optional)', CPC2_TEXT_DOMAIN).'</label>';
+                    $html .= '<input type="file" name="task_attachments[]" class="cpc_projects_task_files" multiple />';
+                    $html .= '</div>';
+                }
                 $html .= '<button type="submit" class="cpc_projects_inline_link">'.esc_html__('Speichern', CPC2_TEXT_DOMAIN).'</button>';
                 $html .= '</form>';
             }
@@ -244,8 +281,37 @@ function cpc_projects_render_task_panel($project_id) {
             if ($task_completer) {
                 $html .= '<div><strong>'.esc_html__('Abgeschlossen von', CPC2_TEXT_DOMAIN).':</strong> '.esc_html($task_completer->display_name).'</div>';
             }
+            if (!empty($task_assigned_ids)) {
+                $html .= '<div class="cpc_projects_task_assignee_avatars"><strong>'.esc_html__('Zugewiesen an', CPC2_TEXT_DOMAIN).':</strong>';
+                foreach ($task_assigned_ids as $aid) {
+                    $ua = get_user_by('id', (int)$aid);
+                    if ($ua) {
+                        $html .= '<span class="cpc_projects_task_assignee_chip">'.get_avatar($aid, 24).'<span>'.esc_html($ua->display_name).'</span></span>';
+                    }
+                }
+                $html .= '</div>';
+            }
             $html .= '<div><strong>'.esc_html__('Kommentare', CPC2_TEXT_DOMAIN).':</strong> '.(int)count($comments).'</div>';
             $html .= '</div>';
+
+            $task_direct_attachments = cpc_projects_get_task_attachment_ids((int)$task->id);
+            if (!empty($task_direct_attachments)) {
+                $html .= '<div class="cpc_projects_task_direct_attachments">';
+                $html .= '<h6>'.esc_html__('Dateianhaenge', CPC2_TEXT_DOMAIN).'</h6>';
+                foreach ($task_direct_attachments as $att_id) {
+                    $att_url  = wp_get_attachment_url($att_id);
+                    if (!$att_url) { continue; }
+                    $att_name = get_the_title($att_id);
+                    if ($att_name === '') { $att_name = basename($att_url); }
+                    $html .= '<div class="cpc_projects_task_direct_attachment_item">';
+                    $html .= '<a class="cpc_projects_task_comment_attachment" href="'.esc_url($att_url).'" target="_blank" rel="noopener">'.esc_html($att_name).'</a>';
+                    if ($can_manage) {
+                        $html .= ' <button type="button" class="cpc_projects_task_direct_attachment_delete cpc_projects_inline_link" data-attachment-id="'.(int)$att_id.'">'.esc_html__('Loeschen', CPC2_TEXT_DOMAIN).'</button>';
+                    }
+                    $html .= '</div>';
+                }
+                $html .= '</div>';
+            }
 
             if (!empty($task_events)) {
                 $html .= '<div class="cpc_projects_task_event_history">';
@@ -262,14 +328,22 @@ function cpc_projects_render_task_panel($project_id) {
             $html .= '</div>';
 
             $html .= '<div class="cpc_projects_task_comments" data-task-id="'.(int)$task->id.'">';
+            $html .= '<h6 class="cpc_projects_discussion_heading">'.esc_html__('Diskussion', CPC2_TEXT_DOMAIN).'</h6>';
             if (!empty($comments)) {
                 $html .= '<ul class="cpc_projects_task_comment_list">';
                 foreach ($comments as $comment) {
                     $author_name = $comment->comment_author ? $comment->comment_author : __('Mitglied', CPC2_TEXT_DOMAIN);
                     $time = sprintf(__('vor %s', CPC2_TEXT_DOMAIN), human_time_diff(strtotime($comment->comment_date_gmt), current_time('timestamp', 1)));
                     $html .= '<li class="cpc_projects_task_comment_item">';
-                    $html .= '<div class="cpc_projects_task_comment_meta"><strong>'.esc_html($author_name).'</strong> <span>'.esc_html($time).'</span></div>';
-                    $html .= '<div class="cpc_projects_task_comment_text">'.esc_html(wp_trim_words(wp_strip_all_tags((string)$comment->comment_content), 45)).'</div>';
+                    $current_uid_comment = get_current_user_id();
+                    $can_delete_comment  = $can_manage || ((int)$comment->user_id === $current_uid_comment && $current_uid_comment > 0);
+                    $html .= '<div class="cpc_projects_task_comment_meta">';
+                    $html .= '<span><strong>'.esc_html($author_name).'</strong> <span>'.esc_html($time).'</span></span>';
+                    if ($can_delete_comment) {
+                        $html .= '<button type="button" class="cpc_projects_comment_delete cpc_projects_inline_link" data-comment-id="'.(int)$comment->comment_ID.'">'.esc_html__('Loeschen', CPC2_TEXT_DOMAIN).'</button>';
+                    }
+                    $html .= '</div>';
+                    $html .= '<div class="cpc_projects_task_comment_text">'.esc_html(wp_strip_all_tags((string)$comment->comment_content)).'</div>';
 
                     $attachment_ids = cpc_projects_get_comment_attachment_ids((int)$comment->comment_ID);
                     if (!empty($attachment_ids)) {
@@ -318,26 +392,150 @@ function cpc_projects_render_task_panel($project_id) {
     return $html;
 }
 
-function cpc_projects_render_projects_list($projects) {
-    if (empty($projects)) {
-        return '<p>'.esc_html__('Noch keine Projekte vorhanden.', CPC2_TEXT_DOMAIN).'</p>';
+function cpc_projects_render_project_progress($project_id) {
+    $stats = cpc_projects_get_task_progress($project_id);
+    if ((int)$stats['total'] <= 0) {
+        return '';
     }
 
-    $html = '<div class="cpc_projects_list">';
+    $html = '';
+    $html .= '<div class="cpc_projects_progress">';
+    $html .= '<div class="cpc_projects_progress_bar">';
+    $html .= '<span class="cpc_projects_progress_fill" style="width:'.(int)$stats['progress'].'%"></span>';
+    $html .= '</div>';
+    $html .= '<div class="cpc_projects_progress_meta">';
+    $html .= sprintf(
+        esc_html__('%1$s Tasks, %2$s%% erledigt (%3$s offen)', CPC2_TEXT_DOMAIN),
+        (int)$stats['total'],
+        (int)$stats['progress'],
+        (int)$stats['remaining']
+    );
+    $html .= '</div>';
+    $html .= '</div>';
 
-    foreach ($projects as $project) {
+    return $html;
+}
+
+function cpc_projects_render_project_owner_line($project) {
+    $project = get_post($project);
+    if (!$project) {
+        return '';
+    }
+
+    $author_id = (int)$project->post_author;
+    $author = $author_id > 0 ? get_user_by('id', $author_id) : false;
+    $author_name = $author ? $author->display_name : __('Mitglied', CPC2_TEXT_DOMAIN);
+    $author_url = $author_id > 0 ? get_author_posts_url($author_id) : '';
+
+    $line = '';
+    $line .= '<div class="cpc_projects_item_owner">';
+    $line .= '<span>'.esc_html__('Started by', CPC2_TEXT_DOMAIN).' </span>';
+    if ($author_url !== '') {
+        $line .= '<a href="'.esc_url($author_url).'">'.get_avatar($author_id, 24).'<span>'.esc_html($author_name).'</span></a>';
+    } else {
+        $line .= '<span>'.esc_html($author_name).'</span>';
+    }
+
+    $component = cpc_projects_get_component($project->ID);
+    $component_id = cpc_projects_get_component_id($project->ID);
+    if ($component === 'groups' && $component_id > 0) {
+        $group = get_post($component_id);
+        if ($group && $group->post_type === 'cpc_group') {
+            $line .= '<span class="cpc_projects_item_owner_sep">'.esc_html__('under', CPC2_TEXT_DOMAIN).' </span>';
+            $group_link = function_exists('cpc_get_group_link') ? cpc_get_group_link($group->ID) : '';
+            if ($group_link !== '') {
+                $line .= '<a href="'.esc_url($group_link).'"><span>'.esc_html($group->post_title).'</span></a>';
+            } else {
+                $line .= '<span>'.esc_html($group->post_title).'</span>';
+            }
+        }
+    }
+
+    $line .= '</div>';
+
+    return $line;
+}
+
+function cpc_projects_render_profile_summary($projects, $user_id) {
+    $user = get_user_by('id', (int)$user_id);
+    $name = $user ? $user->display_name : __('Mitglied', CPC2_TEXT_DOMAIN);
+
+    $total = is_array($projects) ? count($projects) : 0;
+    $group_ids = array();
+    if (!empty($projects)) {
+        foreach ($projects as $project) {
+            $component = cpc_projects_get_component($project->ID);
+            if ($component === 'groups') {
+                $group_id = cpc_projects_get_component_id($project->ID);
+                if ($group_id > 0) {
+                    $group_ids[] = (int)$group_id;
+                }
+            }
+        }
+    }
+
+    $group_count = count(array_unique($group_ids));
+
+    return '<p id="group-projects-explainer" class="cpc_projects_profile_summary mg-top-15 no-mg-bottom">'.sprintf(
+        esc_html__('Es wurden %1$s Projekte in %2$s Gruppen fuer %3$s gefunden.', CPC2_TEXT_DOMAIN),
+        '<strong>'.(int)$total.'</strong>',
+        '<strong>'.(int)$group_count.'</strong>',
+        '<strong>'.esc_html($name).'</strong>'
+    ).'</p>';
+}
+
+function cpc_projects_render_projects_list($projects, $args = array()) {
+    $args = wp_parse_args($args, array(
+        'show_tasks'     => true,
+        'page'           => 1,
+        'per_page'       => 10,
+        'pagination_url' => '',
+    ));
+
+    if (empty($projects)) {
+        return '<p id="message" class="info">'.esc_html__('Derzeit wurden keine Projekte gefunden.', CPC2_TEXT_DOMAIN).'</p>';
+    }
+
+    $page        = max(1, (int)$args['page']);
+    $per_page    = max(1, (int)$args['per_page']);
+    $total       = count($projects);
+    $total_pages = (int)ceil($total / $per_page);
+    $offset      = ($page - 1) * $per_page;
+    $page_projs  = array_slice($projects, $offset, $per_page);
+
+    $html = '<ul id="task_breaker-projects-lists" class="cpc_projects_list">';
+
+    foreach ($page_projs as $project) {
         $excerpt = wp_trim_words(wp_strip_all_tags((string)$project->post_content), 24);
-        $html .= '<article class="cpc_projects_item">';
-        $html .= '<h4 class="cpc_projects_item_title"><a href="'.esc_url(get_permalink($project)).'">'.esc_html($project->post_title).'</a></h4>';
+        $html .= '<li class="cpc_projects_item taskbreaker-project-item">';
+        $html .= '<div class="cpc_projects_item_wrap taskbreaker-project-item-wrap">';
+        $html .= '<div class="task_breaker-project-title"><h4 class="cpc_projects_item_title"><a href="'.esc_url(get_permalink($project)).'">'.esc_html($project->post_title).'</a></h4></div>';
+        $html .= '<div class="task_breaker-project-meta">'.cpc_projects_render_project_progress($project->ID).'</div>';
         if ($excerpt !== '') {
-            $html .= '<p class="cpc_projects_item_excerpt">'.esc_html($excerpt).'</p>';
+            $html .= '<p class="cpc_projects_item_excerpt task_breaker-project-excerpt">'.esc_html($excerpt).'</p>';
         }
         $html .= '<div class="cpc_projects_item_meta">'.esc_html(get_the_date('', $project)).'</div>';
-        $html .= cpc_projects_render_task_panel($project->ID);
-        $html .= '</article>';
+        $html .= '<div class="task_breaker-project-author">'.cpc_projects_render_project_owner_line($project).'</div>';
+        $html .= '<div class="cpc_projects_item_actions"><a class="cpc_button" href="'.esc_url(get_permalink($project)).'">'.esc_html__('Projekt oeffnen', CPC2_TEXT_DOMAIN).'</a></div>';
+        if (!empty($args['show_tasks'])) {
+            $html .= cpc_projects_render_task_panel($project->ID);
+        }
+        $html .= '</div>';
+        $html .= '</li>';
     }
 
-    $html .= '</div>';
+    $html .= '</ul>';
+
+    if ($total_pages > 1) {
+        $base_url = $args['pagination_url'] ? $args['pagination_url'] : cpc_curPageURL();
+        $html .= '<nav class="cpc_projects_pagination">';
+        for ($i = 1; $i <= $total_pages; $i++) {
+            $page_url   = add_query_arg('cpc_paged', $i, $base_url);
+            $active_cls = ($i === $page) ? ' is-active' : '';
+            $html .= '<a class="cpc_projects_page_link'.esc_attr($active_cls).'" href="'.esc_url($page_url).'">'.(int)$i.'</a>';
+        }
+        $html .= '</nav>';
+    }
 
     return $html;
 }
@@ -360,11 +558,36 @@ function cpc_projects_render_profile_tab_content($html, $active_tab, $user_id, $
     $html = '';
     $html .= cpc_projects_render_notice_html();
     $html .= '<div class="cpc_projects_profile_tab">';
-    $html .= '<h3>'.esc_html__('Profil-Projekte', CPC2_TEXT_DOMAIN).'</h3>';
+    $html .= cpc_projects_render_profile_summary($projects, $user_id);
     if (cpc_projects_show_profile_create_form()) {
         $html .= cpc_projects_render_create_form('members', $user_id);
     }
-    $html .= cpc_projects_render_projects_list($projects);
+    $paged   = isset($_GET['cpc_paged']) ? max(1, (int)$_GET['cpc_paged']) : 1;
+    $tab_url = add_query_arg('cpc_projects_tab', 'projects', cpc_curPageURL());
+    $html .= cpc_projects_render_projects_list($projects, array(
+        'show_tasks'     => false,
+        'page'           => $paged,
+        'per_page'       => 10,
+        'pagination_url' => $tab_url,
+    ));
+
+    if (get_current_user_id() === $user_id) {
+        $notify_task    = get_user_meta($user_id, 'cpc_projects_notify_task',    true);
+        $notify_comment = get_user_meta($user_id, 'cpc_projects_notify_comment', true);
+        $notify_task    = ($notify_task    === '') ? 1 : (int)$notify_task;
+        $notify_comment = ($notify_comment === '') ? 1 : (int)$notify_comment;
+
+        $html .= '<div class="cpc_projects_notification_prefs">';
+        $html .= '<h5>'.esc_html__('E-Mail-Benachrichtigungen', CPC2_TEXT_DOMAIN).'</h5>';
+        $html .= '<form class="cpc_projects_notification_prefs_form">';
+        $html .= '<div class="cpc_projects_prefs_notice" style="display:none"></div>';
+        $html .= '<label class="cpc_projects_pref_label"><input type="checkbox" name="notify_task" value="1" '.checked($notify_task, 1, false).' /> '.esc_html__('Bei neuer Aufgabe benachrichtigen', CPC2_TEXT_DOMAIN).'</label>';
+        $html .= '<label class="cpc_projects_pref_label"><input type="checkbox" name="notify_comment" value="1" '.checked($notify_comment, 1, false).' /> '.esc_html__('Bei neuem Kommentar benachrichtigen', CPC2_TEXT_DOMAIN).'</label>';
+        $html .= '<p><button type="submit" class="cpc_button">'.esc_html__('Einstellungen speichern', CPC2_TEXT_DOMAIN).'</button></p>';
+        $html .= '</form>';
+        $html .= '</div>';
+    }
+
     $html .= '</div>';
 
     return $html;
@@ -396,7 +619,14 @@ function cpc_projects_render_group_tab_content($html, $group_id, $shortcode_atts
     $html .= '<div class="cpc_projects_group_tab">';
     $html .= '<h3>'.esc_html__('Gruppen-Projekte', CPC2_TEXT_DOMAIN).'</h3>';
     $html .= cpc_projects_render_create_form('groups', $group_id);
-    $html .= cpc_projects_render_projects_list($projects);
+    $paged_g   = isset($_GET['cpc_paged']) ? max(1, (int)$_GET['cpc_paged']) : 1;
+    $tab_url_g = add_query_arg('cpc_projects_tab', 'projects', cpc_curPageURL());
+    $html .= cpc_projects_render_projects_list($projects, array(
+        'show_tasks'     => true,
+        'page'           => $paged_g,
+        'per_page'       => 10,
+        'pagination_url' => $tab_url_g,
+    ));
     $html .= '</div>';
 
     return $html;

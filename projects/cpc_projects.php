@@ -25,10 +25,14 @@ function cpc_projects_enqueue_assets() {
         'nonce' => wp_create_nonce('cpc_projects_ajax_nonce'),
         'confirmDeleteTask' => __('Task wirklich loeschen?', CPC2_TEXT_DOMAIN),
         'confirmDeleteAttachment' => __('Datei wirklich loeschen?', CPC2_TEXT_DOMAIN),
+        'confirmDeleteProject' => __('Projekt und alle Tasks wirklich dauerhaft loeschen?', CPC2_TEXT_DOMAIN),
+        'confirmDeleteComment' => __('Kommentar wirklich loeschen?', CPC2_TEXT_DOMAIN),
         'addTaskError' => __('Task konnte nicht erstellt werden.', CPC2_TEXT_DOMAIN),
         'updateTaskError' => __('Task konnte nicht aktualisiert werden.', CPC2_TEXT_DOMAIN),
         'addCommentError' => __('Kommentar konnte nicht gespeichert werden.', CPC2_TEXT_DOMAIN),
         'deleteAttachmentError' => __('Datei konnte nicht geloescht werden.', CPC2_TEXT_DOMAIN),
+        'updateProjectError' => __('Projekt konnte nicht aktualisiert werden.', CPC2_TEXT_DOMAIN),
+        'deleteProjectError' => __('Projekt konnte nicht geloescht werden.', CPC2_TEXT_DOMAIN),
         'assigneesPlaceholder' => __('Zuweisung waehlen', CPC2_TEXT_DOMAIN),
         'loadTaskError' => __('Tasks konnten nicht geladen werden.', CPC2_TEXT_DOMAIN),
     ));
@@ -49,6 +53,9 @@ function cpc_projects_render_single_project_content($content) {
     if (!$project) {
         return $content;
     }
+
+    $can_manage = cpc_projects_user_can_manage_project($project_id);
+    $progress = cpc_projects_get_task_progress($project_id);
 
     $events = cpc_projects_get_project_events($project_id, 60);
     $events_html = '';
@@ -71,9 +78,20 @@ function cpc_projects_render_single_project_content($content) {
     $html .= '<button type="button" class="cpc_projects_single_nav_link is-active" data-target="overview">'.esc_html__('Uebersicht', CPC2_TEXT_DOMAIN).'</button>';
     $html .= '<button type="button" class="cpc_projects_single_nav_link" data-target="tasks">'.esc_html__('Tasks', CPC2_TEXT_DOMAIN).'</button>';
     $html .= '<button type="button" class="cpc_projects_single_nav_link" data-target="activity">'.esc_html__('Aktivitaet', CPC2_TEXT_DOMAIN).'</button>';
+    if ($can_manage) {
+        $html .= '<button type="button" class="cpc_projects_single_nav_link" data-target="settings">'.esc_html__('Einstellungen', CPC2_TEXT_DOMAIN).'</button>';
+    }
     $html .= '</div>';
 
     $html .= '<section class="cpc_projects_single_section is-active" data-section="overview">';
+    if ((int)$progress['total'] > 0) {
+        $html .= '<div class="cpc_projects_ataglance">';
+        $html .= '<div class="cpc_projects_ataglance_item"><span class="cpc_projects_ataglance_num">'.(int)$progress['total'].'</span><span class="cpc_projects_ataglance_label">'.esc_html__('Gesamt', CPC2_TEXT_DOMAIN).'</span></div>';
+        $html .= '<div class="cpc_projects_ataglance_item"><span class="cpc_projects_ataglance_num cpc_projects_ataglance_done">'.(int)$progress['completed'].'</span><span class="cpc_projects_ataglance_label">'.esc_html__('Erledigt', CPC2_TEXT_DOMAIN).'</span></div>';
+        $html .= '<div class="cpc_projects_ataglance_item"><span class="cpc_projects_ataglance_num cpc_projects_ataglance_open">'.(int)$progress['remaining'].'</span><span class="cpc_projects_ataglance_label">'.esc_html__('Offen', CPC2_TEXT_DOMAIN).'</span></div>';
+        $html .= '<div class="cpc_projects_ataglance_bar">'.cpc_projects_render_project_progress($project_id).'</div>';
+        $html .= '</div>';
+    }
     $html .= '<div class="cpc_projects_single_content">'.wp_kses_post($project->post_content).'</div>';
     $html .= '</section>';
 
@@ -84,6 +102,36 @@ function cpc_projects_render_single_project_content($content) {
     $html .= '<section class="cpc_projects_single_section" data-section="activity">';
     $html .= $events_html;
     $html .= '</section>';
+
+    if ($can_manage) {
+        $current_status = cpc_projects_get_status($project_id);
+        $html .= '<section class="cpc_projects_single_section" data-section="settings">';
+        $html .= '<div class="cpc_projects_settings_panel">';
+        $html .= '<div class="cpc_projects_settings_notice" style="display:none"></div>';
+        $html .= '<form class="cpc_projects_settings_form" data-project-id="'.(int)$project_id.'">';
+        $html .= '<div class="cpc_projects_form_grid">';
+        $html .= '<label>'.esc_html__('Titel', CPC2_TEXT_DOMAIN).'</label>';
+        $html .= '<input type="text" name="title" value="'.esc_attr(get_the_title($project_id)).'" required />';
+        $html .= '<label>'.esc_html__('Beschreibung', CPC2_TEXT_DOMAIN).'</label>';
+        $html .= '<textarea name="description" rows="6">'.esc_textarea($project->post_content).'</textarea>';
+        $html .= '<label>'.esc_html__('Sichtbarkeit', CPC2_TEXT_DOMAIN).'</label>';
+        $html .= '<select name="status">';
+        $html .= '<option value="public"'.selected($current_status, 'public', false).'>'.esc_html__('Oeffentlich', CPC2_TEXT_DOMAIN).'</option>';
+        $html .= '<option value="members"'.selected($current_status, 'members', false).'>'.esc_html__('Nur Mitglieder', CPC2_TEXT_DOMAIN).'</option>';
+        $html .= '<option value="private"'.selected($current_status, 'private', false).'>'.esc_html__('Privat', CPC2_TEXT_DOMAIN).'</option>';
+        $html .= '</select>';
+        $html .= '</div>';
+        $html .= '<p><button type="submit" class="cpc_button">'.esc_html__('Projekt aktualisieren', CPC2_TEXT_DOMAIN).'</button></p>';
+        $html .= '</form>';
+        $html .= '<hr class="cpc_projects_settings_divider" />';
+        $html .= '<div class="cpc_projects_settings_danger">';
+        $html .= '<p class="cpc_projects_settings_danger_hint">'.esc_html__('Projekt und alle Tasks dauerhaft loeschen. Diese Aktion kann nicht rueckgaengig gemacht werden.', CPC2_TEXT_DOMAIN).'</p>';
+        $html .= '<button type="button" class="cpc_button cpc_button_danger cpc_projects_delete_project_btn" data-project-id="'.(int)$project_id.'">'.esc_html__('Projekt loeschen', CPC2_TEXT_DOMAIN).'</button>';
+        $html .= '</div>';
+        $html .= '</div>';
+        $html .= '</section>';
+    }
+
     $html .= '</div>';
 
     return $html;

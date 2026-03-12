@@ -34,6 +34,57 @@
     display: none;
 }
 
+.cpc_projects_profile_tab,
+.cpc_projects_group_tab {
+    position: relative;
+}
+
+.cpc_projects_profile_tab .cpc_projects_create_toggle,
+.cpc_projects_group_tab .cpc_projects_create_toggle {
+    position: absolute;
+    top: 0;
+    right: 0;
+    margin: 0;
+    z-index: 2;
+}
+
+.cpc_projects_profile_tab,
+.cpc_projects_group_tab {
+    padding-top: 2px;
+}
+
+.cpc_projects_profile_tab .cpc_projects_profile_summary,
+.cpc_projects_group_tab > h3 {
+    margin-right: 260px;
+}
+
+.cpc_projects_profile_tab .cpc_projects_create_summary,
+.cpc_projects_group_tab .cpc_projects_create_summary {
+    background: #2271b1;
+    border: 1px solid #1b5d8f;
+    border-radius: 6px;
+    color: #fff;
+    font-weight: 600;
+    line-height: 1.2;
+    padding: 8px 14px;
+    text-decoration: none;
+}
+
+.cpc_projects_profile_tab .cpc_projects_create_summary:hover,
+.cpc_projects_group_tab .cpc_projects_create_summary:hover,
+.cpc_projects_profile_tab .cpc_projects_create_summary:focus,
+.cpc_projects_group_tab .cpc_projects_create_summary:focus {
+    background: #135e96;
+    border-color: #114f7e;
+    color: #fff;
+}
+
+.cpc_projects_profile_tab .cpc_projects_create_toggle[open],
+.cpc_projects_group_tab .cpc_projects_create_toggle[open] {
+    position: static;
+    margin: 8px 0 16px;
+}
+
 .cpc_projects_create_toggle:not([open]) .cpc_projects_create_form {
     display: none;
 }
@@ -58,8 +109,24 @@
 }
 
 .cpc_projects_list {
+    list-style: none;
+    margin: 0;
+    padding: 0;
     display: grid;
     gap: 10px;
+}
+
+#task_breaker-projects-lists {
+    list-style: none !important;
+    margin-left: 0 !important;
+    padding-left: 0 !important;
+    width: 100%;
+    clear: both;
+}
+
+#task_breaker-projects-lists > li {
+    list-style: none !important;
+    margin-left: 0 !important;
 }
 
 .cpc_projects_item {
@@ -67,10 +134,57 @@
     border-radius: 10px;
     background: #fff;
     padding: 12px;
+    width: 100%;
+    box-sizing: border-box;
+}
+
+.cpc_projects_profile_tab .count {
+    display: inline-block;
+    min-width: 18px;
+    padding: 1px 6px;
+    border-radius: 999px;
+    background: #eef3f8;
+    border: 1px solid #d5dee8;
+    font-size: 11px;
+    line-height: 1.4;
+    text-align: center;
+}
+
+.cpc_projects_item_wrap {
+    display: grid;
+    gap: 8px;
 }
 
 .cpc_projects_item_title {
     margin: 0 0 6px;
+}
+
+.cpc_projects_profile_summary {
+    margin: 0 0 12px;
+    color: #4f6377;
+}
+
+.cpc_projects_progress {
+    display: grid;
+    gap: 5px;
+}
+
+.cpc_projects_progress_bar {
+    height: 12px;
+    border-radius: 99px;
+    background: #edf2f7;
+    overflow: hidden;
+}
+
+.cpc_projects_progress_fill {
+    display: block;
+    height: 100%;
+    background: linear-gradient(90deg, #6ca8de, #2271b1);
+}
+
+.cpc_projects_progress_meta {
+    font-size: 12px;
+    color: #5f7386;
 }
 
 .cpc_projects_item_excerpt {
@@ -81,6 +195,42 @@
 .cpc_projects_item_meta {
     font-size: 12px;
     color: #607284;
+}
+
+.cpc_projects_item_owner {
+    display: flex;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 6px;
+    font-size: 13px;
+    color: #4f6377;
+}
+
+.task_breaker-project-title h4 {
+    margin: 0;
+}
+
+.task_breaker-project-meta {
+    margin: 2px 0;
+}
+
+.task_breaker-project-author {
+    margin-top: 2px;
+}
+
+.cpc_projects_item_owner a {
+    display: inline-flex;
+    align-items: center;
+    gap: 5px;
+    text-decoration: none;
+}
+
+.cpc_projects_item_owner_sep {
+    color: #6b7c8d;
+}
+
+.cpc_projects_item_actions {
+    margin-top: 2px;
 }
 
 .cpc_projects_task_panel {
@@ -390,4 +540,241 @@
     .cpc_projects_task_filters {
         grid-template-columns: 1fr;
     }
+}
+
+/* --- At-a-Glance block --- */
+.cpc_projects_ataglance {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px 20px;
+    align-items: center;
+    background: #f5f9fd;
+    border: 1px solid #d5e2ee;
+    border-radius: 10px;
+    padding: 12px 16px;
+    margin-bottom: 14px;
+}
+
+.cpc_projects_ataglance_item {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    min-width: 52px;
+}
+
+.cpc_projects_ataglance_num {
+    font-size: 22px;
+    font-weight: 700;
+    color: #2a3f56;
+    line-height: 1;
+}
+
+.cpc_projects_ataglance_done {
+    color: #2e8b57;
+}
+
+.cpc_projects_ataglance_open {
+    color: #c07830;
+}
+
+.cpc_projects_ataglance_label {
+    font-size: 11px;
+    color: #6b7c8d;
+    margin-top: 2px;
+    text-transform: uppercase;
+    letter-spacing: 0.04em;
+}
+
+.cpc_projects_ataglance_bar {
+    flex: 1 1 160px;
+    min-width: 120px;
+}
+
+/* --- Settings panel --- */
+.cpc_projects_settings_panel {
+    max-width: 540px;
+}
+
+.cpc_projects_settings_notice {
+    padding: 8px 12px;
+    background: #eefaf2;
+    border: 1px solid #bfe1ca;
+    border-radius: 6px;
+    margin-bottom: 10px;
+    color: #2e6b42;
+    font-size: 13px;
+}
+
+.cpc_projects_settings_danger {
+    margin-top: 14px;
+}
+
+.cpc_projects_settings_danger_hint {
+    font-size: 13px;
+    color: #7a4444;
+    margin: 0 0 8px;
+}
+
+.cpc_projects_settings_divider {
+    border: 0;
+    border-top: 1px solid #e0e8ef;
+    margin: 18px 0 14px;
+}
+
+.cpc_button_danger {
+    background: #c0392b;
+    border-color: #a93226;
+    color: #fff;
+}
+
+.cpc_button_danger:hover {
+    background: #a93226;
+}
+
+/* --- Pagination --- */
+.cpc_projects_pagination {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 5px;
+    margin-top: 12px;
+}
+
+.cpc_projects_page_link {
+    display: inline-block;
+    min-width: 30px;
+    padding: 4px 10px;
+    border: 1px solid #ccd6e0;
+    border-radius: 5px;
+    background: #fff;
+    text-decoration: none;
+    font-size: 13px;
+    text-align: center;
+    color: #2271b1;
+}
+
+.cpc_projects_page_link.is-active {
+    background: #2271b1;
+    border-color: #2271b1;
+    color: #fff;
+    pointer-events: none;
+}
+
+/* --- Notification prefs --- */
+.cpc_projects_notification_prefs {
+    margin-top: 20px;
+    padding: 14px;
+    border: 1px solid #d5dee8;
+    border-radius: 10px;
+    background: #f8fbfe;
+    max-width: 420px;
+}
+
+.cpc_projects_notification_prefs h5 {
+    margin: 0 0 10px;
+    font-size: 14px;
+}
+
+.cpc_projects_pref_label {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font-size: 13px;
+    margin-bottom: 6px;
+}
+
+.cpc_projects_prefs_notice {
+    padding: 6px 10px;
+    background: #eefaf2;
+    border: 1px solid #bfe1ca;
+    border-radius: 6px;
+    color: #2e6b42;
+    font-size: 13px;
+    margin-bottom: 8px;
+}
+
+/* --- Task deep-view discussion heading --- */
+.cpc_projects_discussion_heading {
+    margin: 8px 0 4px;
+    font-size: 12px;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    color: #5f7386;
+}
+
+/* --- Task assignee avatars --- */
+.cpc_projects_task_assignee_avatars {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 6px;
+    font-size: 12px;
+    color: #4f6377;
+    margin-top: 6px;
+}
+
+.cpc_projects_task_assignee_chip {
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+    background: #f0f5fa;
+    border: 1px solid #d5dde8;
+    border-radius: 12px;
+    padding: 2px 8px 2px 3px;
+    font-size: 12px;
+}
+
+.cpc_projects_task_assignee_chip img {
+    border-radius: 50%;
+    width: 20px;
+    height: 20px;
+
+/* --- Task direct attachments block --- */
+.cpc_projects_task_direct_attachments {
+    margin-top: 8px;
+    padding: 8px 10px;
+    background: #f5f9fd;
+    border: 1px solid #d5e2ee;
+    border-radius: 8px;
+}
+
+.cpc_projects_task_direct_attachments h6 {
+    margin: 0 0 6px;
+    font-size: 12px;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    color: #5f7386;
+}
+
+.cpc_projects_task_direct_attachment_item {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    margin-bottom: 4px;
+}
+
+/* --- Task file upload field --- */
+.cpc_projects_task_file_upload {
+    display: grid;
+    gap: 3px;
+    margin-top: 2px;
+}
+
+.cpc_projects_task_file_label {
+    font-size: 12px;
+    color: #5f7386;
+}
+
+.cpc_projects_task_files {
+    font-size: 12px;
+}
+
+/* --- Comment delete button alignment --- */
+.cpc_projects_task_comment_meta {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    gap: 8px;
+}
 }

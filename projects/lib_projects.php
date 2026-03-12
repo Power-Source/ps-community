@@ -479,6 +479,18 @@ function cpc_projects_get_profile_projects($profile_user_id, $args = array()) {
     }));
 }
 
+function cpc_projects_get_notification_pref($user_id, $pref_key) {
+    $user_id = (int)$user_id;
+    if ($user_id <= 0) {
+        return true; // default: opted in
+    }
+    $meta = get_user_meta($user_id, $pref_key, true);
+    if ($meta === '') {
+        return true; // not yet set = opted in
+    }
+    return (bool)(int)$meta;
+}
+
 function cpc_projects_notice_message($code) {
     $map = array(
         'created' => __('Projekt wurde erstellt.', CPC2_TEXT_DOMAIN),
@@ -594,6 +606,38 @@ function cpc_projects_get_tasks($project_id, $args = array()) {
     }
 
     return $wpdb->get_results($query);
+}
+
+function cpc_projects_get_task_progress($project_id) {
+    global $wpdb;
+
+    $project_id = (int)$project_id;
+    if ($project_id <= 0) {
+        return array(
+            'total' => 0,
+            'completed' => 0,
+            'remaining' => 0,
+            'progress' => 0,
+        );
+    }
+
+    $table = cpc_projects_get_tasks_table_name();
+    $row = $wpdb->get_row($wpdb->prepare(
+        "SELECT COUNT(*) AS total, SUM(CASE WHEN status = 'done' THEN 1 ELSE 0 END) AS completed FROM {$table} WHERE project_id = %d",
+        $project_id
+    ));
+
+    $total = !empty($row->total) ? (int)$row->total : 0;
+    $completed = !empty($row->completed) ? (int)$row->completed : 0;
+    $remaining = max(0, $total - $completed);
+    $progress = $total > 0 ? (int)ceil(($completed / $total) * 100) : 0;
+
+    return array(
+        'total' => $total,
+        'completed' => $completed,
+        'remaining' => $remaining,
+        'progress' => max(0, min(100, $progress)),
+    );
 }
 
 function cpc_projects_get_user_recent_tasks($user_id = 0, $limit = 5) {
@@ -1150,6 +1194,12 @@ function cpc_projects_notify_task_event($project_id, $task, $event_type, $actor_
     if (cpc_projects_alerts_enabled()) {
         $recipients = cpc_projects_get_task_notification_recipients($project_id, $task, $actor_id);
         foreach ($recipients as $recipient_id) {
+            if ($event_type === 'created' && !cpc_projects_get_notification_pref($recipient_id, 'cpc_projects_notify_task')) {
+                continue;
+            }
+            if ($event_type === 'commented' && !cpc_projects_get_notification_pref($recipient_id, 'cpc_projects_notify_comment')) {
+                continue;
+            }
             cpc_projects_insert_task_alert($recipient_id, $actor_id, $subject, $message, $url, $project_id, $task_id, $event_type);
         }
     }
@@ -1388,6 +1438,185 @@ function cpc_projects_delete_comment_attachment($attachment_id, $user_id = 0) {
     }
 
     return (bool)wp_delete_attachment($attachment_id, true);
+}
+
+function cpc_projects_get_task_attachment_ids($task_id) {
+    $task_id = (int)$task_id;
+    if ($task_id <= 0) {
+        return array();
+    }
+    $raw = get_option('cpc_projects_task_attachment_ids_'.$task_id, array());
+    if (!is_array($raw)) {
+        return array();
+    }
+    return array_values(array_filter(array_map('intval', $raw)));
+}
+
+function cpc_projects_add_task_attachments($project_id, $task_id, $files) {
+    $project_id = (int)$project_id;
+    $task_id    = (int)$task_id;
+
+    if ($project_id <= 0 || $task_id <= 0 || !cpc_projects_task_comment_attachments_enabled()) {
+        return array();
+    }
+
+    if (empty($files['name'])) {
+        return array();
+    }
+
+    require_once ABSPATH.'wp-admin/includes/file.php';
+    require_once ABSPATH.'wp-admin/includes/image.php';
+
+    $created_ids  = array();
+    $max_bytes    = cpc_projects_task_comment_max_attachment_mb() * 1024 * 1024;
+    $allowed_exts = cpc_projects_comment_allowed_extensions();
+    $names        = is_array($files['name']) ? $files['name'] : array($files['name']);
+
+    foreach ($names as $index => $name) {
+        $name = (string)$name;
+        if ($name === '') {
+            continue;
+        }
+
+        $single = array(
+            'name'     => isset($files['name'][$index])     ? $files['name'][$index]     : '',
+            'type'     => isset($files['type'][$index])     ? $files['type'][$index]     : '',
+            'tmp_name' => isset($files['tmp_name'][$index]) ? $files['tmp_name'][$index] : '',
+            'error'    => isset($files['error'][$index])    ? (int)$files['error'][$index] : 0,
+            'size'     => isset($files['size'][$index])     ? (int)$files['size'][$index]  : 0,
+        );
+
+        if ((int)$single['error'] !== 0 || empty($single['tmp_name'])) {
+            continue;
+        }
+
+        if ($max_bytes > 0 && (int)$single['size'] > $max_bytes) {
+            continue;
+        }
+
+        $file_type = wp_check_filetype((string)$single['name']);
+        $ext       = isset($file_type['ext'])  ? strtolower((string)$file_type['ext'])  : '';
+        $mime_type = isset($file_type['type']) ? (string)$file_type['type']              : '';
+
+        if ($ext === '' || !in_array($ext, $allowed_exts, true)) {
+            continue;
+        }
+
+        $bucket     = cpc_projects_get_attachment_bucket_for_mime($mime_type);
+        $bucket_max = cpc_projects_comment_attachment_type_limit_mb($bucket) * 1024 * 1024;
+        if ($bucket_max > 0 && (int)$single['size'] > $bucket_max) {
+            continue;
+        }
+
+        $uploaded = wp_handle_upload($single, array('test_form' => false));
+        if (!is_array($uploaded) || !empty($uploaded['error']) || empty($uploaded['file']) || empty($uploaded['url'])) {
+            continue;
+        }
+
+        $attachment_id = wp_insert_attachment(array(
+            'post_mime_type' => (string)$uploaded['type'],
+            'post_title'     => sanitize_text_field(pathinfo((string)$single['name'], PATHINFO_FILENAME)),
+            'post_content'   => '',
+            'post_status'    => 'inherit',
+            'post_author'    => get_current_user_id(),
+            'post_parent'    => $project_id,
+        ), $uploaded['file'], $project_id);
+
+        if (is_wp_error($attachment_id) || !$attachment_id) {
+            continue;
+        }
+
+        $meta = wp_generate_attachment_metadata($attachment_id, $uploaded['file']);
+        if (is_array($meta) && !empty($meta)) {
+            wp_update_attachment_metadata($attachment_id, $meta);
+        }
+
+        update_post_meta($attachment_id, 'cpc_project_id',      $project_id);
+        update_post_meta($attachment_id, 'cpc_project_task_id', $task_id);
+        update_post_meta($attachment_id, 'cpc_project_task_direct_attachment', 1);
+
+        $created_ids[] = (int)$attachment_id;
+    }
+
+    if (!empty($created_ids)) {
+        $existing = cpc_projects_get_task_attachment_ids($task_id);
+        update_option('cpc_projects_task_attachment_ids_'.$task_id, array_values(array_unique(array_merge($existing, $created_ids))), false);
+    }
+
+    return $created_ids;
+}
+
+function cpc_projects_delete_task_attachment($attachment_id, $user_id = 0) {
+    $attachment_id = (int)$attachment_id;
+    if ($attachment_id <= 0) {
+        return false;
+    }
+
+    if (!$user_id) {
+        $user_id = get_current_user_id();
+    }
+    $user_id = (int)$user_id;
+
+    $project_id = (int)get_post_meta($attachment_id, 'cpc_project_id', true);
+    $task_id    = (int)get_post_meta($attachment_id, 'cpc_project_task_id', true);
+
+    $can_delete = current_user_can('manage_options')
+        || ($project_id > 0 && cpc_projects_user_can_manage_project($project_id, $user_id));
+
+    if (!$can_delete) {
+        $attachment = get_post($attachment_id);
+        $can_delete = $attachment && (int)$attachment->post_author === $user_id;
+    }
+
+    if (!$can_delete) {
+        return false;
+    }
+
+    if ($task_id > 0) {
+        $ids = cpc_projects_get_task_attachment_ids($task_id);
+        $ids = array_values(array_filter($ids, function($id) use ($attachment_id) {
+            return (int)$id !== $attachment_id;
+        }));
+        update_option('cpc_projects_task_attachment_ids_'.$task_id, $ids, false);
+    }
+
+    return (bool)wp_delete_attachment($attachment_id, true);
+}
+
+function cpc_projects_delete_task_comment($comment_id, $user_id = 0) {
+    $comment_id = (int)$comment_id;
+    if ($comment_id <= 0) {
+        return false;
+    }
+
+    if (!$user_id) {
+        $user_id = get_current_user_id();
+    }
+    $user_id = (int)$user_id;
+    if ($user_id <= 0) {
+        return false;
+    }
+
+    $comment = get_comment($comment_id);
+    if (!$comment || $comment->comment_type !== 'cpc_project_task_comment') {
+        return false;
+    }
+
+    $project_id = (int)$comment->comment_post_ID;
+    $can_delete = current_user_can('manage_options')
+        || ($project_id > 0 && cpc_projects_user_can_manage_project($project_id, $user_id))
+        || (int)$comment->user_id === $user_id;
+
+    if (!$can_delete) {
+        return false;
+    }
+
+    $attachment_ids = cpc_projects_get_comment_attachment_ids($comment_id);
+    foreach ($attachment_ids as $aid) {
+        wp_delete_attachment((int)$aid, true);
+    }
+
+    return (bool)wp_delete_comment($comment_id, true);
 }
 
 function cpc_projects_get_project_events($project_id, $limit = 80) {
