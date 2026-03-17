@@ -238,6 +238,50 @@ function cpc_curPageURL() {
     return $protocol . '://' . $host . $request_uri;
 }
 
+// Detect admin-ajax endpoint so frontend save flows never redirect there.
+function cpc_is_admin_ajax_url($url) {
+	$url = is_string($url) ? trim($url) : '';
+	if ($url === '') {
+		return false;
+	}
+
+	$path = (string)wp_parse_url($url, PHP_URL_PATH);
+	if ($path === '') {
+		return false;
+	}
+
+	return (bool)preg_match('#/wp-admin/admin-ajax\.php$#', $path);
+}
+
+function cpc_normalize_frontend_redirect($redirect = '', $fallback = '') {
+	$redirect = is_string($redirect) ? trim(wp_unslash($redirect)) : '';
+	$fallback = is_string($fallback) ? trim($fallback) : '';
+
+	if ($redirect !== '') {
+		$validated = wp_validate_redirect($redirect, home_url('/'));
+		if ($validated && !cpc_is_admin_ajax_url($validated)) {
+			return $validated;
+		}
+	}
+
+	$referer = wp_get_referer();
+	if ($referer) {
+		$validated_referer = wp_validate_redirect($referer, home_url('/'));
+		if ($validated_referer && !cpc_is_admin_ajax_url($validated_referer)) {
+			return $validated_referer;
+		}
+	}
+
+	if ($fallback !== '') {
+		$validated_fallback = wp_validate_redirect($fallback, home_url('/'));
+		if ($validated_fallback && !cpc_is_admin_ajax_url($validated_fallback)) {
+			return $validated_fallback;
+		}
+	}
+
+	return home_url('/');
+}
+
 // Permalinks or not?
 function cpc_query_mark($url) {
 	if ($url):

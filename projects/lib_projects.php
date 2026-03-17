@@ -511,10 +511,8 @@ function cpc_projects_handle_frontend_requests() {
     }
 
     $action = sanitize_key(wp_unslash($_POST['cpc_projects_action']));
-    $redirect = isset($_POST['cpc_projects_redirect']) ? esc_url_raw(wp_unslash($_POST['cpc_projects_redirect'])) : cpc_curPageURL();
-    if (!$redirect) {
-        $redirect = cpc_curPageURL();
-    }
+    $redirect = isset($_POST['cpc_projects_redirect']) ? esc_url_raw(wp_unslash($_POST['cpc_projects_redirect'])) : '';
+    $redirect = cpc_normalize_frontend_redirect($redirect, cpc_curPageURL());
 
     $nonce = isset($_POST['cpc_projects_nonce']) ? sanitize_text_field(wp_unslash($_POST['cpc_projects_nonce'])) : '';
     if (!wp_verify_nonce($nonce, 'cpc_projects_frontend_action')) {

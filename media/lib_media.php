@@ -1479,18 +1479,17 @@ function cpc_media_normalize_redirect_url($redirect = '', $fallback = '') {
 
     if ($redirect !== '') {
         $validated = wp_validate_redirect($redirect, '');
-        if ($validated) {
+        if ($validated && !cpc_is_admin_ajax_url($validated)) {
             $redirect = $validated;
         } elseif (strpos($redirect, '/') === 0) {
-            $redirect = home_url($redirect);
+            $candidate = home_url($redirect);
+            $redirect = cpc_is_admin_ajax_url($candidate) ? '' : $candidate;
         } else {
             $redirect = '';
         }
     }
 
-    if ($redirect === '') {
-        $redirect = $fallback ? $fallback : home_url('/');
-    }
+    $redirect = cpc_normalize_frontend_redirect($redirect, $fallback ? $fallback : home_url('/'));
 
     $redirect = remove_query_arg(array('cpc_media_notice', 'cpc_media_gallery_id', 'cpc_media_uploaded'), $redirect);
 

@@ -344,7 +344,8 @@ endif;
 // Enable shortcodes in text widgets.
 add_filter('widget_text', 'do_shortcode');
 // Init
-add_action('init', 'cpc_init');
+add_action('wp_enqueue_scripts', 'cpc_enqueue_frontend_assets');
+add_action('admin_enqueue_scripts', 'cpc_enqueue_admin_assets');
 add_action('init', 'cpc_update_routine');
 add_action('admin_menu', 'cpc_menu', 9); // Located in cpc_admin.php
 add_action( 'wp_head', 'cpc_add_custom_css' );
@@ -399,52 +400,89 @@ if ($do_update) {
 		update_option('cpc_installed', time());
 	endif;
 }
-function cpc_init() {
+function cpc_enqueue_frontend_assets() {
     // CSS
     wp_enqueue_style('cpc-css', plugins_url('css/cp_community.css', __FILE__), 'css');
-    if (is_admin()):
-    	// Alerts admin
-        if (strpos(CPC_CORE_PLUGINS, 'core-alerts') !== false):
-            wp_enqueue_script('cpc-alerts-js', plugins_url('alerts/cpc_alerts.js', __FILE__), array('jquery'));	
-            wp_localize_script('cpc-alerts-js', 'cpc_alerts', array( 
-                'ajaxurl' => admin_url( 'admin-ajax.php' ),
-                'nonce' => wp_create_nonce('cpc-alerts-nonce')
-            ));    	
-        endif;
-    	// Activity admin
-        if (strpos(CPC_CORE_PLUGINS, 'core-activity') !== false):
-		    wp_enqueue_script('cpc-activity-js', plugins_url('activity/cpc_activity.js', __FILE__), array('jquery'));	
-		    wp_localize_script( 'cpc-activity-js', 'cpc_ajax', array( 
-                'ajaxurl' => admin_url( 'admin-ajax.php' ),
-                'nonce' => wp_create_nonce('cpc-activity-nonce')
-            ) );		
-        endif;
-		// Forums admin
-        if (strpos(CPC_CORE_PLUGINS, 'core-forums') !== false):
-            wp_enqueue_script('cpc-forum-js', plugins_url('forums/cpc_forum.js', __FILE__), array('jquery'));	
-            wp_localize_script( 'cpc-forum-js', 'cpc_ajax', array( 
-                'ajaxurl' => admin_url( 'admin-ajax.php' ),
-                'nonce' => wp_create_nonce('cpc-forum-nonce')
-            ) );		
-        endif;
-		// Friendships
-        if (strpos(CPC_CORE_PLUGINS, 'core-friendships') !== false):
-            wp_enqueue_script('cpc-friendship-js', plugins_url('friendships/cpc_friends.js', __FILE__), array('jquery'));
-            wp_localize_script( 'cpc-friendship-js', 'cpc_ajax', array( 
-                'ajaxurl' => admin_url( 'admin-ajax.php' ),
-                'nonce' => wp_create_nonce('cpc-friendship-nonce')
-            ) );		
-        endif;
-        wp_enqueue_script('cpc-admin-js', plugins_url('js/cpc.admin.js', __FILE__), array('jquery'));
-        wp_localize_script( 'cpc-admin-js', 'cpc_ajax', array(
+    // Core CPC JS
+	wp_enqueue_script('cpc-js', plugins_url('js/cp_community.js', __FILE__), array('jquery'));
+}
+
+function cpc_is_plugin_admin_screen() {
+    if (!is_admin()) {
+        return false;
+    }
+
+    if (isset($_GET['page'])) {
+        $page = sanitize_key(wp_unslash($_GET['page']));
+        if (strpos($page, 'cpc_') === 0 || strpos($page, 'cpccom_') === 0) {
+            return true;
+        }
+    }
+
+    if (isset($_GET['post_type'])) {
+        $post_type = sanitize_key(wp_unslash($_GET['post_type']));
+        if (strpos($post_type, 'cpc_') === 0) {
+            return true;
+        }
+    }
+
+    if (isset($_GET['taxonomy'])) {
+        $taxonomy = sanitize_key(wp_unslash($_GET['taxonomy']));
+        if (strpos($taxonomy, 'cpc_') === 0) {
+            return true;
+        }
+    }
+
+    return false;
+}
+
+function cpc_enqueue_admin_assets() {
+    // Avoid leaking CPC styling into core WP admin screens (widefat tables, inputs, etc.).
+    if (!cpc_is_plugin_admin_screen()) {
+        return;
+    }
+
+    wp_enqueue_style('cpc-css', plugins_url('css/cp_community.css', __FILE__), 'css');
+
+    // Alerts admin
+    if (strpos(CPC_CORE_PLUGINS, 'core-alerts') !== false):
+        wp_enqueue_script('cpc-alerts-js', plugins_url('alerts/cpc_alerts.js', __FILE__), array('jquery'));
+        wp_localize_script('cpc-alerts-js', 'cpc_alerts', array(
             'ajaxurl' => admin_url( 'admin-ajax.php' ),
-            'nonce' => wp_create_nonce('cpc-admin-nonce')
-        ) );		
-		wp_enqueue_style('cpc-admin-css', plugins_url('css/cpc_admin.css', __FILE__), 'css');		
-    else:
-        // Core CPC JS
-		wp_enqueue_script('cpc-js', plugins_url('js/cp_community.js', __FILE__), array('jquery'));	
+            'nonce' => wp_create_nonce('cpc-alerts-nonce')
+        ));
     endif;
+    // Activity admin
+    if (strpos(CPC_CORE_PLUGINS, 'core-activity') !== false):
+        wp_enqueue_script('cpc-activity-js', plugins_url('activity/cpc_activity.js', __FILE__), array('jquery'));
+        wp_localize_script( 'cpc-activity-js', 'cpc_ajax', array(
+            'ajaxurl' => admin_url( 'admin-ajax.php' ),
+            'nonce' => wp_create_nonce('cpc-activity-nonce')
+        ) );
+    endif;
+    // Forums admin
+    if (strpos(CPC_CORE_PLUGINS, 'core-forums') !== false):
+        wp_enqueue_script('cpc-forum-js', plugins_url('forums/cpc_forum.js', __FILE__), array('jquery'));
+        wp_localize_script( 'cpc-forum-js', 'cpc_ajax', array(
+            'ajaxurl' => admin_url( 'admin-ajax.php' ),
+            'nonce' => wp_create_nonce('cpc-forum-nonce')
+        ) );
+    endif;
+    // Friendships
+    if (strpos(CPC_CORE_PLUGINS, 'core-friendships') !== false):
+        wp_enqueue_script('cpc-friendship-js', plugins_url('friendships/cpc_friends.js', __FILE__), array('jquery'));
+        wp_localize_script( 'cpc-friendship-js', 'cpc_ajax', array(
+            'ajaxurl' => admin_url( 'admin-ajax.php' ),
+            'nonce' => wp_create_nonce('cpc-friendship-nonce')
+        ) );
+    endif;
+
+    wp_enqueue_script('cpc-admin-js', plugins_url('js/cpc.admin.js', __FILE__), array('jquery'));
+    wp_localize_script( 'cpc-admin-js', 'cpc_ajax', array(
+        'ajaxurl' => admin_url( 'admin-ajax.php' ),
+        'nonce' => wp_create_nonce('cpc-admin-nonce')
+    ) );
+    wp_enqueue_style('cpc-admin-css', plugins_url('css/cpc_admin.css', __FILE__), 'css');
 }
 // ****************** ALERTS ******************
 if (strpos(CPC_CORE_PLUGINS, 'core-alerts') !== false):

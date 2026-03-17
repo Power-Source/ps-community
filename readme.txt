@@ -31,6 +31,12 @@ Kein Problem! Ändere ganz einfach den gesamten Text, den Deine Benutzer sehen, 
 
 == ChangeLog ==
 
+= 1.1.1 =
+
+* Fix: Speichern in Dokumente/Projekte/Medien Tabs leitet nicht mehr auf `/wp-admin/admin-ajax.php` ("0"-Seite) um
+* Redirect-Handling fuer Frontend-Formulare zentralisiert und gegen AJAX-Redirect-Ziele abgesichert
+* Profil- und Gruppen-Tabs: Speichern bleibt im erwarteten Seitenkontext mit korrekter Notice
+
 = 1.1.0 =
 
 * Neue globale Mediathek (Galerie- und Medienverzeichnis) mit eigener Seite im Frontend

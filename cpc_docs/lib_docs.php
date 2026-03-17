@@ -440,16 +440,7 @@ function cpc_docs_get_docs($args = array()) {
 
 function cpc_docs_build_safe_redirect() {
     $redirect = isset($_POST['cpc_docs_redirect']) ? trim(wp_unslash($_POST['cpc_docs_redirect'])) : '';
-    if ($redirect) {
-        return wp_validate_redirect($redirect, home_url('/'));
-    }
-
-    $referer = wp_get_referer();
-    if ($referer) {
-        return wp_validate_redirect($referer, home_url('/'));
-    }
-
-    return home_url('/');
+    return cpc_normalize_frontend_redirect($redirect, cpc_curPageURL());
 }
 
 function cpc_docs_set_doc_meta($doc_id, $component, $component_id, $status, $permissions = array()) {
