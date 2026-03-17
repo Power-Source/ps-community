@@ -613,7 +613,7 @@ function cpc_docs_release_edit_lock($doc_id, $user_id = 0, $force = false) {
     return true;
 }
 
-function cpc_docs_get_parent_options($component, $component_id, $exclude_doc_id = 0) {
+function cpc_docs_get_parent_options($component, $component_id, $exclude_doc_id = 0, $folders_only = false) {
     $component = sanitize_key((string)$component);
     $component_id = (int)$component_id;
     $exclude_doc_id = (int)$exclude_doc_id;
@@ -639,7 +639,20 @@ function cpc_docs_get_parent_options($component, $component_id, $exclude_doc_id 
         });
     }
 
-    return array_values($docs);
+    $docs = array_values($docs);
+
+    if (!$folders_only) {
+        return $docs;
+    }
+
+    $folders = array();
+    foreach ($docs as $doc) {
+        if ($doc && cpc_docs_is_folder($doc->ID)) {
+            $folders[] = $doc;
+        }
+    }
+
+    return $folders;
 }
 
 function cpc_docs_doc_matches_context($doc, $component, $component_id) {
@@ -789,7 +802,13 @@ function cpc_docs_is_folder($doc_id) {
         return false;
     }
 
-    // A document is considered a folder if it has no content (empty post_content)
+    // Check explicit folder marker first (redundancy)
+    $is_folder_meta = get_post_meta($doc_id, 'cpc_doc_is_folder', true);
+    if (!empty($is_folder_meta)) {
+        return true;
+    }
+
+    // Fallback: A document is considered a folder if it has no content (empty post_content)
     return empty(trim($doc->post_content));
 }
 
@@ -986,8 +1005,10 @@ function cpc_docs_handle_frontend_requests() {
         }
 
         cpc_docs_set_doc_meta($doc_id, $component, $component_id, $status);
+        // Mark this post as a folder explicitly
+        update_post_meta($doc_id, 'cpc_doc_is_folder', '1');
 
-        wp_safe_redirect(add_query_arg(array('cpc_docs_notice' => 'created', 'cpc_docs_doc_id' => $doc_id), $redirect));
+        wp_safe_redirect(add_query_arg(array('cpc_docs_notice' => 'folder_created', 'cpc_docs_doc_id' => $doc_id), $redirect));
         exit;
     }
 
@@ -1011,7 +1032,7 @@ function cpc_docs_handle_frontend_requests() {
             'post_title' => $new_title,
         ));
 
-        wp_safe_redirect(add_query_arg(array('cpc_docs_notice' => 'updated', 'cpc_docs_doc_id' => $folder_id), $redirect));
+        wp_safe_redirect(add_query_arg(array('cpc_docs_notice' => 'folder_updated', 'cpc_docs_doc_id' => $folder_id), $redirect));
         exit;
     }
 
@@ -1045,7 +1066,7 @@ function cpc_docs_handle_frontend_requests() {
 
         cpc_docs_release_edit_lock($folder_id, get_current_user_id(), true);
         wp_delete_post($folder_id, true);
-        wp_safe_redirect(add_query_arg('cpc_docs_notice', 'deleted', $redirect));
+        wp_safe_redirect(add_query_arg('cpc_docs_notice', 'folder_deleted', $redirect));
         exit;
     }
 
@@ -1149,6 +1170,13 @@ function cpc_docs_handle_frontend_requests() {
             'post_content' => $content,
             'post_parent' => $parent_id,
         ));
+
+        // Update folder marker based on content
+        if (empty(trim($content))) {
+            update_post_meta($doc_id, 'cpc_doc_is_folder', '1');
+        } else {
+            delete_post_meta($doc_id, 'cpc_doc_is_folder');
+        }
 
         cpc_docs_set_doc_meta($doc_id, $component, $component_id, $status, $permissions);
         cpc_docs_set_doc_tags($doc_id, $tags);
@@ -1316,7 +1344,7 @@ function cpc_docs_load_folder_contents_ajax() {
         }
 
         $child_count = isset($grouped[$doc->ID]) ? count($grouped[$doc->ID]) : 0;
-        if ($child_count > 0) {
+        if ($child_count > 0 || cpc_docs_is_folder($doc->ID)) {
             $can_manage = cpc_docs_user_can_manage_doc($doc->ID);
             $can_edit = cpc_docs_user_can_edit_doc($doc->ID);
             $can_history = cpc_docs_user_can_view_history($doc->ID);
@@ -1398,6 +1426,9 @@ function cpc_docs_notice_message($code) {
         'created' => __('Dokument wurde erstellt.', CPC2_TEXT_DOMAIN),
         'updated' => __('Dokument wurde aktualisiert.', CPC2_TEXT_DOMAIN),
         'deleted' => __('Dokument wurde geloescht.', CPC2_TEXT_DOMAIN),
+        'folder_created' => __('Ordner wurde erstellt.', CPC2_TEXT_DOMAIN),
+        'folder_updated' => __('Ordner wurde aktualisiert.', CPC2_TEXT_DOMAIN),
+        'folder_deleted' => __('Ordner wurde geloescht.', CPC2_TEXT_DOMAIN),
         'attachment_deleted' => __('Attachment wurde geloescht.', CPC2_TEXT_DOMAIN),
         'locked' => __('Dokument ist aktuell durch einen anderen Benutzer gesperrt.', CPC2_TEXT_DOMAIN),
         'unlocked' => __('Bearbeitungssperre wurde aufgehoben.', CPC2_TEXT_DOMAIN),

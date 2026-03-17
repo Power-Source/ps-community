@@ -60,7 +60,7 @@ function cpc_docs_render_create_form($component, $component_id) {
     $permission_defaults = cpc_docs_get_permission_defaults($component);
 
     $html = '';
-    $parent_options = cpc_docs_get_parent_options($component, $component_id, 0);
+    $parent_options = cpc_docs_get_parent_options($component, $component_id, 0, true);
 
     $add_label = __('Dokument hinzufuegen', CPC2_TEXT_DOMAIN);
 
@@ -95,9 +95,9 @@ function cpc_docs_render_create_form($component, $component_id) {
     $html .= '<div class="cpc_docs_create_editor_wrap">'.$editor_html.'</div>';
     $html .= '<div style="display:grid; gap:8px; grid-template-columns:minmax(0,1fr) minmax(0,1fr);">';
     $html .= '<div>';
-    $html .= '<label>'.esc_html__('Parent', CPC2_TEXT_DOMAIN).'</label>';
+    $html .= '<label>'.esc_html__('Ordner', CPC2_TEXT_DOMAIN).'</label>';
     $html .= '<select name="cpc_docs_parent_id">';
-    $html .= '<option value="0">'.esc_html__('Kein Parent', CPC2_TEXT_DOMAIN).'</option>';
+    $html .= '<option value="0">'.esc_html__('Kein Ordner', CPC2_TEXT_DOMAIN).'</option>';
     foreach ($parent_options as $parent_doc) {
         $html .= '<option value="'.(int)$parent_doc->ID.'">'.esc_html($parent_doc->post_title).'</option>';
     }
@@ -150,19 +150,7 @@ function cpc_docs_render_create_form($component, $component_id) {
 }
 
 function cpc_docs_get_folder_options($component, $component_id, $exclude_doc_id = 0) {
-    $docs = cpc_docs_get_parent_options($component, $component_id, $exclude_doc_id);
-    if (empty($docs)) {
-        return array();
-    }
-
-    $folders = array();
-    foreach ($docs as $doc) {
-        if ($doc && cpc_docs_is_folder($doc->ID)) {
-            $folders[] = $doc;
-        }
-    }
-
-    return $folders;
+    return cpc_docs_get_parent_options($component, $component_id, $exclude_doc_id, true);
 }
 
 function cpc_docs_render_folder_manage_panel($component, $component_id) {
@@ -536,7 +524,7 @@ function cpc_docs_render_docs_table($docs, $empty_message = '', $args = array())
     $rendered = 0;
     foreach ($current_items as $doc) {
         $child_count = isset($grouped[$doc->ID]) ? count($grouped[$doc->ID]) : 0;
-        if ($child_count > 0) {
+        if ($child_count > 0 || cpc_docs_is_folder($doc->ID)) {
             $html .= cpc_docs_render_folder_row($doc, $child_count, $args);
         } else {
             $html .= cpc_docs_render_leaf_row($doc, $args);
@@ -991,7 +979,7 @@ function cpc_docs_render_edit_form($doc, $args = array()) {
     $status = cpc_docs_get_status($doc->ID);
     $status_options = cpc_docs_get_status_options($component);
     $permission_options = cpc_docs_get_permission_options($component);
-    $parent_options = cpc_docs_get_parent_options($component, $component_id, $doc->ID);
+    $parent_options = cpc_docs_get_parent_options($component, $component_id, $doc->ID, true);
     $tags_string = cpc_docs_get_doc_tags_string($doc->ID);
 
     $html = '<form method="post" enctype="multipart/form-data" class="standard-form" id="doc-form">';
@@ -1005,20 +993,26 @@ function cpc_docs_render_edit_form($doc, $args = array()) {
     $html .= '<p><label for="cpc_docs_title">'.esc_html__('Title', CPC2_TEXT_DOMAIN).'</label>';
     $html .= '<input type="text" id="cpc_docs_title" name="cpc_docs_title" value="'.esc_attr($doc->post_title).'" required /></p>';
 
-    $html .= '<p><label for="cpc_docs_content">'.esc_html__('Content', CPC2_TEXT_DOMAIN).'</label></p>';
-    if (function_exists('wp_editor')) {
-        ob_start();
-        wp_editor($doc->post_content, 'cpc_docs_content', array(
-            'textarea_name' => 'cpc_docs_content',
-            'media_buttons' => false,
-            'dfw' => false,
-            'textarea_rows' => 12,
-            'editor_height' => 380,
-            'editor_class' => 'cpc_docs_content_field',
-        ));
-        $html .= ob_get_clean();
+    $doc_is_folder = cpc_docs_is_folder($doc->ID);
+    if (!$doc_is_folder) {
+        $html .= '<p><label for="cpc_docs_content">'.esc_html__('Content', CPC2_TEXT_DOMAIN).'</label></p>';
+        if (function_exists('wp_editor')) {
+            ob_start();
+            wp_editor($doc->post_content, 'cpc_docs_content', array(
+                'textarea_name' => 'cpc_docs_content',
+                'media_buttons' => false,
+                'dfw' => false,
+                'textarea_rows' => 12,
+                'editor_height' => 380,
+                'editor_class' => 'cpc_docs_content_field',
+            ));
+            $html .= ob_get_clean();
+        } else {
+            $html .= '<textarea id="cpc_docs_content" class="cpc_docs_content_field" name="cpc_docs_content" rows="12">'.esc_textarea($doc->post_content).'</textarea>';
+        }
     } else {
-        $html .= '<textarea id="cpc_docs_content" class="cpc_docs_content_field" name="cpc_docs_content" rows="12">'.esc_textarea($doc->post_content).'</textarea>';
+        $html .= '<p style="padding:12px; background:#f0f0f0; border-radius:4px; color:#666;">'.esc_html__('Dies ist ein Ordner ohne Inhalt.', CPC2_TEXT_DOMAIN).'</p>';
+        $html .= '<input type="hidden" name="cpc_docs_content" value="" />';
     }
 
     $html .= '<div id="doc-meta">';
@@ -1083,11 +1077,11 @@ function cpc_docs_render_edit_form($doc, $args = array()) {
     $html .= '<details class="doc-meta-box toggleable">';
     $html .= '<summary class="toggle-switch">'.esc_html__('Parent', CPC2_TEXT_DOMAIN).'</summary>';
     $html .= '<div class="toggle-content"><table class="toggle-table"><tr><td class="desc-column">';
-    $html .= '<label for="cpc_docs_parent_id">'.esc_html__('Parent-Dokument', CPC2_TEXT_DOMAIN).'</label>';
-    $html .= '<span class="description">'.esc_html__('Optionales Parent fuer Hierarchie/Breadcrumb.', CPC2_TEXT_DOMAIN).'</span>';
+    $html .= '<label for="cpc_docs_parent_id">'.esc_html__('Ordner', CPC2_TEXT_DOMAIN).'</label>';
+    $html .= '<span class="description">'.esc_html__('Optionales Ziel fuer die Ablage in einem Ordner.', CPC2_TEXT_DOMAIN).'</span>';
     $html .= '</td><td class="content-column">';
     $html .= '<select id="cpc_docs_parent_id" name="cpc_docs_parent_id">';
-    $html .= '<option value="0">'.esc_html__('Kein Parent', CPC2_TEXT_DOMAIN).'</option>';
+    $html .= '<option value="0">'.esc_html__('Kein Ordner', CPC2_TEXT_DOMAIN).'</option>';
     foreach ($parent_options as $parent_doc) {
         $html .= '<option value="'.(int)$parent_doc->ID.'"'.selected((int)$doc->post_parent, (int)$parent_doc->ID, false).'>'.esc_html($parent_doc->post_title).'</option>';
     }

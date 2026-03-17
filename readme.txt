@@ -4,7 +4,7 @@ Tags: wp community, social network, social networking, social media, cp-communit
 Requires at least: 4.9
 Tested up to: 6.8.1
 ClassicPress: 2.6.0
-Stable tag: 1.1.0
+Stable tag: 1.1.1
 License URI: https://www.gnu.org/licenses/gpl-2.0.html
 
 == Description ==
@@ -36,6 +36,11 @@ Kein Problem! Ändere ganz einfach den gesamten Text, den Deine Benutzer sehen, 
 * Fix: Speichern in Dokumente/Projekte/Medien Tabs leitet nicht mehr auf `/wp-admin/admin-ajax.php` ("0"-Seite) um
 * Redirect-Handling fuer Frontend-Formulare zentralisiert und gegen AJAX-Redirect-Ziele abgesichert
 * Profil- und Gruppen-Tabs: Speichern bleibt im erwarteten Seitenkontext mit korrekter Notice
+* Verbesserung: Ordner-Erkennungssystem mit redundanten Meta-Markern für erhöhte Zuverlässigkeit
+* Ordner werden nun explizit mit Meta-Key gekennzeichnet, fallback auf empty post_content
+* Fix: Ordner-Status bleibt konsistent beim Bearbeiten von Dokumenten (Inhaltsänderung zu/von Ordner)
+* Verbesserung: Folder-Rendering in Profil- und Gruppen-Tabs zeigt neu erstellte Ordner korrekt an
+* **UX-Fix: Ordner zeigen bei der Bearbeitung keinen Content-Editor mehr an** - nur Titel und Einstellungen
 
 = 1.1.0 =
 
