@@ -59,6 +59,7 @@ Kein Problem! Ändere ganz einfach den gesamten Text, den Deine Benutzer sehen, 
 * Fix: Task-Kommentare lassen sich jetzt wieder löschen (AJAX-Handler comment-type Typ-Mismatch und Validierungsfehler behoben)
 * UX: Alle nervigen Bestätigungs-Dialoge bei Lösch-Operationen (Tasks, Kommentare, Dateien, Projekte) entfernt
 * Fix: Dokument-Editor in Edit-Form war nicht sichtbar (CSS-Wrapper-Fehler für TinyMCE behoben)
+* UX-Fix: Task-Liste mit korrekter `<div>`-Struktur statt `<li>`/`<ul>` für konsistentes HTML-Rendering
 
 = 1.1.0 =
 

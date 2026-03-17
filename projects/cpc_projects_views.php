@@ -332,33 +332,36 @@ function cpc_projects_render_task_panel($project_id) {
     $html .= '<div class="cpc_projects_task_panel" data-project-id="'.(int)$project_id.'">';
     $html .= '<h5 class="cpc_projects_task_heading">'.esc_html__('Tasks', CPC2_TEXT_DOMAIN).'</h5>';
 
-    $html .= '<div class="cpc_projects_task_filters">';
-    $html .= '<input type="text" class="cpc_projects_task_filter_text" placeholder="'.esc_attr__('Tasks durchsuchen...', CPC2_TEXT_DOMAIN).'" />';
+    // Compact filter bar
+    $html .= '<div class="cpc_projects_task_filters_bar">';
+    $html .= '<input type="text" class="cpc_projects_task_filter_text" placeholder="'.esc_attr__('Suchen...', CPC2_TEXT_DOMAIN).'" />';
     $html .= '<select class="cpc_projects_task_filter_status">';
-    $html .= '<option value="all">'.esc_html__('Alle', CPC2_TEXT_DOMAIN).'</option>';
+    $html .= '<option value="all">'.esc_html__('Status', CPC2_TEXT_DOMAIN).'</option>';
     $html .= '<option value="open">'.esc_html__('Offen', CPC2_TEXT_DOMAIN).'</option>';
     $html .= '<option value="done">'.esc_html__('Erledigt', CPC2_TEXT_DOMAIN).'</option>';
     $html .= '</select>';
     $html .= '<select class="cpc_projects_task_filter_priority">';
-    $html .= '<option value="all">'.esc_html__('Alle Prioritaeten', CPC2_TEXT_DOMAIN).'</option>';
+    $html .= '<option value="all">'.esc_html__('Priorität', CPC2_TEXT_DOMAIN).'</option>';
     $html .= '<option value="1">'.esc_html__('Normal', CPC2_TEXT_DOMAIN).'</option>';
     $html .= '<option value="2">'.esc_html__('Hoch', CPC2_TEXT_DOMAIN).'</option>';
     $html .= '<option value="3">'.esc_html__('Kritisch', CPC2_TEXT_DOMAIN).'</option>';
     $html .= '</select>';
+    $html .= '<select class="cpc_projects_task_filter_overdue">';
+    $html .= '<option value="0">'.esc_html__('Fristen', CPC2_TEXT_DOMAIN).'</option>';
+    $html .= '<option value="1">'.esc_html__('Überfällig', CPC2_TEXT_DOMAIN).'</option>';
+    $html .= '</select>';
     $html .= '<select class="cpc_projects_task_filter_assignee">';
-    $html .= '<option value="all">'.esc_html__('Alle Zuweisungen', CPC2_TEXT_DOMAIN).'</option>';
+    $html .= '<option value="all">'.esc_html__('Zugewiesen', CPC2_TEXT_DOMAIN).'</option>';
     foreach ($assignable_labels as $uid => $label) {
         $html .= '<option value="'.(int)$uid.'">'.esc_html($label).'</option>';
     }
     $html .= '</select>';
-    $html .= '<select class="cpc_projects_task_filter_overdue">';
-    $html .= '<option value="0">'.esc_html__('Alle Fristen', CPC2_TEXT_DOMAIN).'</option>';
-    $html .= '<option value="1">'.esc_html__('Nur ueberfaellig', CPC2_TEXT_DOMAIN).'</option>';
-    $html .= '</select>';
     $html .= '</div>';
 
     if ($can_manage) {
-        $html .= '<form class="cpc_projects_task_form" data-project-id="'.(int)$project_id.'">';
+        $html .= '<details class="cpc_projects_task_form_toggle" style="margin-bottom:12px;">';
+        $html .= '<summary class="cpc_button cpc_projects_task_form_summary">'.esc_html__('+ Task hinzufuegen', CPC2_TEXT_DOMAIN).'</summary>';
+        $html .= '<form class="cpc_projects_task_form" data-project-id="'.(int)$project_id.'" style="margin-top:12px;">';
         $html .= '<div class="cpc_projects_task_form_row">';
         $html .= '<div class="cpc_projects_task_field">';
         $html .= '<label class="cpc_projects_task_field_label">'.esc_html__('Titel', CPC2_TEXT_DOMAIN).'</label>';
@@ -398,13 +401,14 @@ function cpc_projects_render_task_panel($project_id) {
             $html .= '</div>';
         }
         $html .= '</form>';
+        $html .= '</details>';
     }
 
     $html .= '<div class="cpc_projects_tasks_list" data-project-id="'.(int)$project_id.'">';
     if (empty($tasks)) {
         $html .= '<p class="cpc_projects_no_tasks">'.esc_html__('Noch keine Tasks vorhanden.', CPC2_TEXT_DOMAIN).'</p>';
     } else {
-        $html .= '<ul>';
+        $html .= '<div class="cpc_projects_tasks_items">';
         foreach ($tasks as $task) {
             $is_done = ((string)$task->status === 'done');
             $item_class = 'cpc_projects_task_item'.($is_done ? ' is-done' : '');
@@ -412,7 +416,7 @@ function cpc_projects_render_task_panel($project_id) {
             $task_assigned_csv = implode(',', array_map('intval', cpc_projects_get_task_assigned_user_ids($task)));
             $deadline_ts = !empty($task->deadline) ? (int)strtotime((string)$task->deadline) : 0;
             $is_overdue = ($deadline_ts > 0 && !$is_done && $deadline_ts < current_time('timestamp', 1)) ? '1' : '0';
-            $html .= '<li id="cpc-project-task-'.(int)$task->id.'" class="'.esc_attr($item_class).'" data-task-id="'.(int)$task->id.'" data-task-status="'.esc_attr($is_done ? 'done' : 'open').'" data-task-title="'.esc_attr($task_title_attr).'" data-task-priority="'.(int)$task->priority.'" data-task-assigned="'.esc_attr($task_assigned_csv).'" data-task-overdue="'.esc_attr($is_overdue).'">';
+            $html .= '<div id="cpc-project-task-'.(int)$task->id.'" class="'.esc_attr($item_class).'" data-task-id="'.(int)$task->id.'" data-task-status="'.esc_attr($is_done ? 'done' : 'open').'" data-task-title="'.esc_attr($task_title_attr).'" data-task-priority="'.(int)$task->priority.'" data-task-assigned="'.esc_attr($task_assigned_csv).'" data-task-overdue="'.esc_attr($is_overdue).'">';
             $html .= '<label class="cpc_projects_task_toggle_wrap">';
             if ($can_manage) {
                 $html .= '<input class="cpc_projects_task_toggle" type="checkbox" '.checked($is_done, true, false).' data-task-id="'.(int)$task->id.'" />';
@@ -627,9 +631,9 @@ function cpc_projects_render_task_panel($project_id) {
             }
             $html .= '</div>';
 
-            $html .= '</li>';
+            $html .= '</div>';
         }
-        $html .= '</ul>';
+        $html .= '</div>';
         $html .= '<p class="cpc_projects_no_tasks cpc_projects_no_tasks_filtered" style="display:none">'.esc_html__('Keine passenden Tasks gefunden.', CPC2_TEXT_DOMAIN).'</p>';
     }
     $html .= '</div>';
