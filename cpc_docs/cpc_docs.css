@@ -705,3 +705,79 @@
         visibility: visible;
     }
 }
+
+/* Directory Create Section Styles */
+.cpc_docs_directory_create_toggle_btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    background: #2271b1;
+    border: 1px solid #1b5d8f;
+    border-radius: 6px;
+    color: #fff;
+    font-weight: 600;
+    padding: 8px 14px;
+    font-size: 14px;
+    cursor: pointer;
+    transition: all 0.2s ease;
+}
+
+.cpc_docs_directory_create_toggle_btn:hover {
+    background: #1b5d8f;
+    border-color: #164266;
+}
+
+.cpc_docs_directory_create_toggle_btn:focus {
+    outline: 2px solid #72aee6;
+    outline-offset: 2px;
+}
+
+#cpc_docs_directory_create_form {
+    animation: slideDown 0.3s ease-out;
+}
+
+@keyframes slideDown {
+    from {
+        opacity: 0;
+        transform: translateY(-10px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+#cpc_docs_directory_create_form input[type="text"],
+#cpc_docs_directory_create_form input[type="file"],
+#cpc_docs_directory_create_form select {
+    font-size: 14px;
+}
+
+#cpc_docs_directory_create_form .cpc_button {
+    padding: 10px 14px !important;
+    font-size: 14px !important;
+}
+
+#cpc_docs_directory_create_form .cpc_button_primary {
+    background: #2271b1 !important;
+    border-color: #1b5d8f !important;
+    color: #fff !important;
+}
+
+#cpc_docs_directory_create_form .cpc_button_primary:hover {
+    background: #1b5d8f !important;
+}
+
+@media (max-width: 768px) {
+    #cpc_docs_directory_create_form {
+        padding: 12px !important;
+    }
+
+    #cpc_docs_directory_create_form .cpc_docs_create_form {
+        gap: 10px !important;
+    }
+
+    #cpc_docs_directory_create_form [style*="grid-template-columns: 1fr 1fr"] {
+        grid-template-columns: 1fr !important;
+    }
+}

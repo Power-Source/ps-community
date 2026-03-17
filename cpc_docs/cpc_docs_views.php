@@ -1419,6 +1419,170 @@ function cpc_docs_render_directory_pagination($page, $has_more) {
     return $html;
 }
 
+function cpc_docs_render_directory_create_section() {
+    $user_id = get_current_user_id();
+    if (!$user_id || !is_user_logged_in()) {
+        return '';
+    }
+
+    $html = '';
+    $user_groups = cpc_docs_get_user_writable_groups($user_id);
+    $can_create_personal = cpc_docs_user_can_create_for_context('members', $user_id);
+
+    if (empty($user_groups) && !$can_create_personal) {
+        return '';
+    }
+
+    $attachments_enabled = cpc_docs_enable_attachments();
+    $options = cpc_docs_get_status_options('members');
+    $permission_options = cpc_docs_get_permission_options('members');
+    $permission_defaults = cpc_docs_get_permission_defaults('members');
+
+    $html .= '<div style="margin-bottom:24px;">';
+    $html .= '<button type="button" class="cpc_button cpc_docs_directory_create_toggle_btn" data-toggle="cpc_docs_directory_create_form">'.esc_html__('Dokument erstellen', CPC2_TEXT_DOMAIN).'</button>';
+    $html .= '</div>';
+
+    $html .= '<div id="cpc_docs_directory_create_form" style="display:none; margin-bottom:24px; padding:16px; border:1px solid #ddd; border-radius:4px; background:#f9f9f9;">';
+    
+    $html .= '<details class="cpc_docs_create_toggle" open>';
+    $html .= '<summary style="cursor:pointer; font-weight:bold; margin-bottom:16px;">'.esc_html__('Neues Dokument', CPC2_TEXT_DOMAIN).'</summary>';
+    
+    $html .= '<form method="post" enctype="multipart/form-data" class="cpc_docs_create_form" style="display:grid; gap:12px;">';
+    $html .= '<input type="hidden" name="cpc_docs_action" value="create_doc" />';
+    $html .= '<input type="hidden" name="cpc_docs_nonce" value="'.esc_attr(wp_create_nonce('cpc_docs_frontend_action')).'" />';
+    $html .= '<input type="hidden" name="cpc_docs_redirect" value="'.esc_url(cpc_curPageURL()).'" />';
+
+    $html .= '<div>';
+    $html .= '<input type="text" name="cpc_docs_title" placeholder="'.esc_attr__('Titel', CPC2_TEXT_DOMAIN).'" required style="width:100%; padding:8px; border:1px solid #ccc; border-radius:4px;" />';
+    $html .= '</div>';
+
+    $editor_id = 'cpc_docs_create_content_directory';
+    $editor_html = '';
+    if (function_exists('wp_editor')) {
+        ob_start();
+        wp_editor('', $editor_id, array(
+            'textarea_name' => 'cpc_docs_content',
+            'media_buttons' => false,
+            'dfw' => false,
+            'textarea_rows' => 10,
+            'editor_height' => 300,
+            'editor_class' => 'cpc_docs_content_field cpc_docs_create_editor',
+        ));
+        $editor_html = ob_get_clean();
+    } else {
+        $editor_html = '<textarea name="cpc_docs_content" class="cpc_docs_content_field cpc_docs_create_editor" rows="10" placeholder="'.esc_attr__('Dokumentinhalt', CPC2_TEXT_DOMAIN).'" required style="width:100%; padding:8px; border:1px solid #ccc; border-radius:4px; font-family:monospace;"></textarea>';
+    }
+    $html .= '<div class="cpc_docs_create_editor_wrap">'.$editor_html.'</div>';
+
+    $html .= '<div style="display:grid; gap:12px; grid-template-columns:1fr 1fr;">';
+    
+    $html .= '<div>';
+    $html .= '<label style="display:block; margin-bottom:4px; font-weight:500;">'.esc_html__('Zugeordnet zu', CPC2_TEXT_DOMAIN).'</label>';
+    $html .= '<select name="cpc_docs_component_id" class="cpc_docs_component_select" style="width:100%; padding:8px; border:1px solid #ccc; border-radius:4px;">';
+    
+    if ($can_create_personal) {
+        $html .= '<option value="'.esc_attr('members:' . $user_id).'">'.esc_html__('Meine Dokumente', CPC2_TEXT_DOMAIN).'</option>';
+    }
+    
+    if (!empty($user_groups)) {
+        foreach ($user_groups as $group) {
+            $html .= '<option value="'.esc_attr('groups:' . $group['id']).'">'.esc_html($group['title']).'</option>';
+        }
+    }
+    
+    $html .= '</select>';
+    $html .= '</div>';
+
+    $html .= '<div>';
+    $html .= '<label style="display:block; margin-bottom:4px; font-weight:500;">'.esc_html__('Status', CPC2_TEXT_DOMAIN).'</label>';
+    $html .= '<select name="cpc_docs_status" style="width:100%; padding:8px; border:1px solid #ccc; border-radius:4px;">';
+    foreach ($options as $value => $label) {
+        $html .= '<option value="'.esc_attr($value).'">'.esc_html($label).'</option>';
+    }
+    $html .= '</select>';
+    $html .= '</div>';
+
+    $html .= '</div>';
+
+    $html .= '<div style="display:grid; gap:12px; grid-template-columns:1fr 1fr;">';
+    
+    $html .= '<div>';
+    $html .= '<label style="display:block; margin-bottom:4px; font-weight:500;">'.esc_html__('Bearbeiten', CPC2_TEXT_DOMAIN).'</label>';
+    $html .= '<select name="cpc_docs_perm_edit" style="width:100%; padding:8px; border:1px solid #ccc; border-radius:4px;">';
+    foreach ($permission_options as $value => $label) {
+        $selected = $value === $permission_defaults['edit'] ? ' selected' : '';
+        $html .= '<option value="'.esc_attr($value).'"'.$selected.'>'.esc_html($label).'</option>';
+    }
+    $html .= '</select>';
+    $html .= '</div>';
+
+    $html .= '<div>';
+    $html .= '<label style="display:block; margin-bottom:4px; font-weight:500;">'.esc_html__('Verlauf', CPC2_TEXT_DOMAIN).'</label>';
+    $html .= '<select name="cpc_docs_perm_history" style="width:100%; padding:8px; border:1px solid #ccc; border-radius:4px;">';
+    foreach ($permission_options as $value => $label) {
+        $selected = $value === $permission_defaults['history'] ? ' selected' : '';
+        $html .= '<option value="'.esc_attr($value).'"'.$selected.'>'.esc_html($label).'</option>';
+    }
+    $html .= '</select>';
+    $html .= '</div>';
+
+    $html .= '</div>';
+
+    if ($attachments_enabled) {
+        $html .= '<div>';
+        $html .= '<label style="display:block; margin-bottom:4px; font-weight:500;">';
+        $html .= '<input type="checkbox" name="cpc_docs_upload_file" value="1" /> ';
+        $html .= esc_html__('Datei anhängen', CPC2_TEXT_DOMAIN);
+        $html .= '</label>';
+        $html .= '<input type="file" name="cpc_docs_file" style="width:100%; padding:4px; border:1px solid #ccc; border-radius:4px;" />';
+        $html .= '</div>';
+    }
+
+    $html .= '<div style="display:grid; gap:8px; grid-template-columns:1fr 1fr;">';
+    $html .= '<button type="submit" class="cpc_button cpc_button_primary" style="padding:8px; cursor:pointer;">'.esc_html__('Erstellen', CPC2_TEXT_DOMAIN).'</button>';
+    $html .= '<button type="button" class="cpc_button" style="padding:8px; cursor:pointer;" onclick="document.getElementById(\'cpc_docs_directory_create_form\').style.display=\'none\';">'.esc_html__('Abbrechen', CPC2_TEXT_DOMAIN).'</button>';
+    $html .= '</div>';
+
+    $html .= '</form>';
+    $html .= '</details>';
+    $html .= '</div>';
+
+    $html .= '<script type="text/javascript">';
+    $html .= 'document.addEventListener("DOMContentLoaded", function(){';
+    $html .= 'var toggleBtn = document.querySelector(".cpc_docs_directory_create_toggle_btn");';
+    $html .= 'var form = document.getElementById("cpc_docs_directory_create_form");';
+    $html .= 'if (toggleBtn && form) {';
+    $html .= 'toggleBtn.addEventListener("click", function(e) {';
+    $html .= 'e.preventDefault();';
+    $html .= 'var isVisible = form.style.display !== "none";';
+    $html .= 'form.style.display = isVisible ? "none" : "block";';
+    $html .= '});';
+    $html .= '}';
+    $html .= '});';
+    $html .= 'document.addEventListener("submit", function(e) {';
+    $html .= 'var form = e.target.closest(".cpc_docs_create_form");';
+    $html .= 'if (!form) return;';
+    $html .= 'var select = form.querySelector(".cpc_docs_component_select");';
+    $html .= 'if (!select) return;';
+    $html .= 'var value = select.value.split(":");';
+    $html .= 'if (value.length === 2) {';
+    $html .= 'var input = document.createElement("input");';
+    $html .= 'input.type = "hidden";';
+    $html .= 'input.name = "cpc_docs_component";';
+    $html .= 'input.value = value[0];';
+    $html .= 'form.appendChild(input);';
+    $html .= 'input = document.createElement("input");';
+    $html .= 'input.type = "hidden";';
+    $html .= 'input.name = "cpc_docs_component_id";';
+    $html .= 'input.value = value[1];';
+    $html .= 'form.appendChild(input);';
+    $html .= '}';
+    $html .= '});';
+    $html .= '</script>';
+
+    return $html;
+}
+
 function cpc_docs_directory_shortcode($atts) {
     $atts = shortcode_atts(array(
         'per_page' => cpc_docs_get_directory_items_per_page(),
@@ -1453,6 +1617,7 @@ function cpc_docs_directory_shortcode($atts) {
     $html .= '<h3 class="cpc_docs_directory_title">'.esc_html(cpc_docs_get_directory_title()).'</h3>';
     $html .= cpc_docs_render_directory_filters($component, $status, $search, $perm_edit, $perm_history);
     $html .= '</div>';
+    $html .= cpc_docs_render_directory_create_section();
 
     if (empty($results['items'])) {
         $html .= '<p>'.esc_html__('Keine Dokumente gefunden.', CPC2_TEXT_DOMAIN).'</p>';

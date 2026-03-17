@@ -292,6 +292,42 @@ function cpc_docs_user_can_create_for_context($component, $component_id, $user_i
     return false;
 }
 
+function cpc_docs_get_user_writable_groups($user_id = 0) {
+    if (!$user_id) {
+        $user_id = get_current_user_id();
+    }
+
+    if (!$user_id || !is_user_logged_in()) {
+        return array();
+    }
+
+    $groups = array();
+    
+    if (!function_exists('cpc_get_user_groups')) {
+        return $groups;
+    }
+
+    $user_groups = cpc_get_user_groups($user_id, 'active');
+    if (empty($user_groups)) {
+        return $groups;
+    }
+
+    foreach ($user_groups as $group_member) {
+        $group_id = (int)get_post_meta($group_member->ID, 'cpc_member_group_id', true);
+        if ($group_id > 0 && cpc_docs_user_can_create_for_context('groups', $group_id, $user_id)) {
+            $group_post = get_post($group_id);
+            if ($group_post) {
+                $groups[] = array(
+                    'id' => $group_id,
+                    'title' => $group_post->post_title,
+                );
+            }
+        }
+    }
+
+    return $groups;
+}
+
 function cpc_docs_user_can_manage_doc($doc_id, $user_id = 0) {
     $doc = get_post((int)$doc_id);
     if (!$doc || $doc->post_type !== 'cpc_doc') {

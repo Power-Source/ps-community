@@ -60,6 +60,9 @@ Kein Problem! Ändere ganz einfach den gesamten Text, den Deine Benutzer sehen, 
 * UX: Alle nervigen Bestätigungs-Dialoge bei Lösch-Operationen (Tasks, Kommentare, Dateien, Projekte) entfernt
 * Fix: Dokument-Editor in Edit-Form war nicht sichtbar (CSS-Wrapper-Fehler für TinyMCE behoben)
 * UX-Fix: Task-Liste mit korrekter `<div>`-Struktur statt `<li>`/`<ul>` für konsistentes HTML-Rendering
+* Neu: Dokumente können direkt auf der Dokumente-Übersichtsseite erstellt werden - mit Zuordnung zu eigenes Profil oder Gruppen
+* UX-Verbesserung: Create-Form auf Übersichtsseite mit Gruppen-Auswahl (nur Gruppen, bei denen Nutzer Docs erstellen darf)
+* Responsive Modal-Design für mobile Endgeräte optimiert
 
 = 1.1.0 =
 
