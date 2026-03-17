@@ -170,6 +170,19 @@ function cpc_projects_get_group_tab_name() {
     return $label !== '' ? $label : __('Projekte', CPC2_TEXT_DOMAIN);
 }
 
+function cpc_projects_get_directory_page_id() {
+    return max(0, (int)get_option('cpc_projects_directory_page', 0));
+}
+
+function cpc_projects_get_directory_title() {
+    $title = trim((string)get_option('cpc_projects_directory_title', 'Projekte-Verzeichnis'));
+    return $title !== '' ? $title : __('Projekte-Verzeichnis', CPC2_TEXT_DOMAIN);
+}
+
+function cpc_projects_get_directory_items_per_page() {
+    return max(6, min(60, (int)get_option('cpc_projects_directory_items_per_page', 12)));
+}
+
 function cpc_projects_get_component($project_id) {
     $component = get_post_meta((int)$project_id, 'cpc_project_component', true);
     return $component ? $component : 'members';

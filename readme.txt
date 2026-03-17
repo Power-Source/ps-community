@@ -66,6 +66,10 @@ Kein Problem! Ändere ganz einfach den gesamten Text, den Deine Benutzer sehen, 
 * Neu: Task-Deadline-Datumsauswahl mit vorausgefüllten Standardwerten
 * Dashboard-Einstellungen für Task-Deadline-Offset (Standard: 7 Tage) und Standard-Uhrzeit (Standard: 09:00)
 * Nutzer können Standard-Deadline-Offset und Zeit individuell anpassen und dann vor dem Speichern überschreiben
+* Neu: Öffentliche Projekte-Übersichtsseite mit View Management (nur öffentliche für Gäste, private sichtbar für beteiligte User)
+* Dashboard-Einstellungen für Projekte-Directory-Seite, Titel und Items pro Seite
+* Shortcodes `[cpc-projects-directory]` und `[cpc-project-directory]` für Übersichtsseite
+* Archive-Template für Projekte-Übersicht mit Suche und Pagination
 
 = 1.1.0 =
 

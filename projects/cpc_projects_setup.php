@@ -27,6 +27,28 @@ function cpc_admin_getting_started_projects() {
     echo '</tr>';
 
     echo '<tr class="form-field">';
+    echo '<td scope="row" valign="top"><label>'.__('Directory-Seite (Übersicht)', CPC2_TEXT_DOMAIN).'</label></td>';
+    echo '<td>';
+    wp_dropdown_pages(array(
+        'name' => 'cpc_projects_directory_page',
+        'selected' => cpc_projects_get_directory_page_id(),
+        'show_option_none' => __('Keine/Deaktiviert', CPC2_TEXT_DOMAIN),
+    ));
+    echo '<span class="description">'.__('Seite für die öffentliche Projekte-Übersicht mit Shortcode [cpc-projects-directory]', CPC2_TEXT_DOMAIN).'</span>';
+    echo '</td>';
+    echo '</tr>';
+
+    echo '<tr class="form-field">';
+    echo '<td scope="row" valign="top"><label>'.__('Directory-Titel', CPC2_TEXT_DOMAIN).'</label></td>';
+    echo '<td><input type="text" name="cpc_projects_directory_title" value="'.esc_attr(cpc_projects_get_directory_title()).'" class="regular-text" /></td>';
+    echo '</tr>';
+
+    echo '<tr class="form-field">';
+    echo '<td scope="row" valign="top"><label>'.__('Items pro Seite', CPC2_TEXT_DOMAIN).'</label></td>';
+    echo '<td><input type="number" min="6" max="60" name="cpc_projects_directory_items_per_page" value="'.(int)cpc_projects_get_directory_items_per_page().'" class="small-text" style="max-width:60px;" /></td>';
+    echo '</tr>';
+
+    echo '<tr class="form-field">';
     echo '<td scope="row" valign="top"><label>'.__('Task-Kommentar-Anhaenge', CPC2_TEXT_DOMAIN).'</label></td>';
     echo '<td><input type="checkbox" style="width:20px; height:20px;" name="cpc_projects_comment_attachments_enabled" '.(cpc_projects_task_comment_attachments_enabled() ? 'CHECKED' : '').' />';
     echo '<span class="description">'.__('Datei-Uploads direkt an Task-Kommentare.', CPC2_TEXT_DOMAIN).'</span></td>';
@@ -116,6 +138,18 @@ function cpc_admin_projects_save($the_post) {
 
     if (isset($the_post['cpc_projects_group_tab_name'])) {
         update_option('cpc_projects_group_tab_name', sanitize_text_field($the_post['cpc_projects_group_tab_name']));
+    }
+
+    if (isset($the_post['cpc_projects_directory_page'])) {
+        update_option('cpc_projects_directory_page', max(0, (int)$the_post['cpc_projects_directory_page']));
+    }
+
+    if (isset($the_post['cpc_projects_directory_title'])) {
+        update_option('cpc_projects_directory_title', sanitize_text_field($the_post['cpc_projects_directory_title']));
+    }
+
+    if (isset($the_post['cpc_projects_directory_items_per_page'])) {
+        update_option('cpc_projects_directory_items_per_page', max(6, min(60, (int)$the_post['cpc_projects_directory_items_per_page'])));
     }
 
     if (isset($the_post['cpc_projects_comment_attachments_enabled'])) {

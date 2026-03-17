@@ -1084,4 +1084,200 @@
 .cpc_projects_back_link a:hover {
     text-decoration: underline;
 }
+
+/* Directory-Ansicht Styling */
+.cpc_projects_directory {
+    margin: 0;
+}
+
+.cpc_projects_directory_header {
+    margin-bottom: 24px;
+}
+
+.cpc_projects_directory_title {
+    margin: 0 0 16px;
+    font-size: 24px;
+    font-weight: 600;
+    color: #2c3e50;
+}
+
+.cpc_projects_directory_filters {
+    display: flex;
+    align-items: flex-end;
+    gap: 10px;
+}
+
+.cpc_projects_directory_filters input[type="search"],
+.cpc_projects_directory_filters input[type="text"] {
+    flex: 1;
+    min-width: 0;
+    padding: 8px 12px;
+    border: 1px solid #d0d8e0;
+    border-radius: 6px;
+    font-size: 14px;
+}
+
+.cpc_projects_directory_filters button {
+    padding: 8px 16px;
+}
+
+/* List-View für Directory */
+.cpc_projects_directory_list {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+    gap: 20px;
+    list-style: none !important;
+    margin: 0 0 24px;
+    padding: 0;
+}
+
+.cpc_projects_directory_item {
+    display: flex;
+    flex-direction: column;
+    border: 1px solid #e0e6ed;
+    border-radius: 12px;
+    background: #fff;
+    padding: 16px;
+    transition: all 0.2s ease;
+    list-style: none !important;
+}
+
+.cpc_projects_directory_item:hover {
+    border-color: #c5d3e3;
+    box-shadow: 0 4px 12px rgba(32, 113, 177, 0.12);
+}
+
+.cpc_projects_directory_item .cpc_projects_item_wrap {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    height: 100%;
+}
+
+.cpc_projects_directory_item .task_breaker-project-title {
+    margin: 0;
+}
+
+.cpc_projects_directory_item .cpc_projects_item_title {
+    margin: 0;
+    font-size: 16px;
+    line-height: 1.4;
+}
+
+.cpc_projects_directory_item .cpc_projects_item_title a {
+    color: #2271b1;
+    text-decoration: none;
+}
+
+.cpc_projects_directory_item .cpc_projects_item_title a:hover {
+    color: #135e96;
+    text-decoration: underline;
+}
+
+.cpc_projects_directory_item .cpc_projects_item_excerpt {
+    flex: 1;
+    margin: 0;
+    font-size: 13px;
+    color: #5f7386;
+    line-height: 1.5;
+}
+
+.cpc_projects_directory_status {
+    display: inline-block;
+    padding: 4px 10px;
+    border-radius: 4px;
+    background: #f0f4f8;
+    border: 1px solid #d0d8e0;
+    font-size: 11px;
+    font-weight: 500;
+    color: #536273;
+    text-transform: uppercase;
+    letter-spacing: 0.3px;
+    width: fit-content;
+}
+
+.cpc_projects_directory_item .cpc_projects_item_meta {
+    margin: 0;
+    font-size: 12px;
+    color: #8892a3;
+}
+
+.cpc_projects_directory_item .task_breaker-project-author {
+    margin: 0;
+    font-size: 12px;
+}
+
+.cpc_projects_directory_item .cpc_projects_item_actions {
+    margin-top: auto;
+    padding-top: 10px;
+}
+
+.cpc_projects_directory_item .cpc_button {
+    display: inline-block;
+    width: 100%;
+    padding: 10px;
+    text-align: center;
+}
+
+/* Pagination */
+.cpc_projects_directory_pagination {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 10px;
+    margin-top: 24px;
+    padding-top: 24px;
+    border-top: 1px solid #e6ebf0;
+}
+
+.cpc_projects_directory_page_label {
+    display: inline-flex;
+    align-items: center;
+    padding: 8px 14px;
+    font-size: 13px;
+    color: #676f7d;
+    font-weight: 500;
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+    .cpc_projects_directory_list {
+        grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+        gap: 16px;
+    }
+
+    .cpc_projects_directory_filters {
+        flex-direction: column;
+        align-items: stretch;
+    }
+
+    .cpc_projects_directory_filters input[type="search"],
+    .cpc_projects_directory_filters input[type="text"],
+    .cpc_projects_directory_filters button {
+        width: 100%;
+    }
+
+    .cpc_projects_directory_title {
+        font-size: 20px;
+    }
+}
+
+@media (max-width: 480px) {
+    .cpc_projects_directory_list {
+        grid-template-columns: 1fr;
+    }
+
+    .cpc_projects_directory_item {
+        padding: 12px;
+    }
+
+    .cpc_projects_directory_title {
+        font-size: 18px;
+        margin-bottom: 12px;
+    }
+
+    .cpc_projects_directory_pagination {
+        flex-wrap: wrap;
+    }
+}
 }

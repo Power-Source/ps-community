@@ -39,6 +39,20 @@ function cpc_projects_enqueue_assets() {
 }
 add_action('wp_enqueue_scripts', 'cpc_projects_enqueue_assets', 20);
 
+function cpc_projects_archive_template_include($template) {
+    if (!cpc_projects_is_enabled() || !is_post_type_archive('cpc_project')) {
+        return $template;
+    }
+
+    $archive_template = __DIR__.'/archive-cpc_project.php';
+    if (file_exists($archive_template)) {
+        return $archive_template;
+    }
+
+    return $template;
+}
+add_filter('template_include', 'cpc_projects_archive_template_include', 50);
+
 function cpc_projects_render_single_project_content($content) {
     if (!is_singular('cpc_project') || !in_the_loop() || !is_main_query()) {
         return $content;
