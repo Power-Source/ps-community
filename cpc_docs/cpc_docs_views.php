@@ -1006,7 +1006,7 @@ function cpc_docs_render_edit_form($doc, $args = array()) {
                 'editor_height' => 380,
                 'editor_class' => 'cpc_docs_content_field',
             ));
-            $html .= ob_get_clean();
+            $html .= '<div class="cpc_docs_edit_editor_wrap">'.ob_get_clean().'</div>';
         } else {
             $html .= '<textarea id="cpc_docs_content" class="cpc_docs_content_field" name="cpc_docs_content" rows="12">'.esc_textarea($doc->post_content).'</textarea>';
         }

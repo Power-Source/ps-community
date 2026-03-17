@@ -139,6 +139,19 @@
     min-height: 420px;
 }
 
+.cpc_docs_edit_editor_wrap .wp-editor-wrap,
+.cpc_docs_edit_editor_wrap .wp-editor-container {
+    width: 100%;
+}
+
+.cpc_docs_edit_editor_wrap textarea.cpc_docs_content_field {
+    min-height: 380px;
+}
+
+.cpc_docs_edit_editor_wrap .mce-edit-area iframe {
+    min-height: 380px;
+}
+
 #doc-form .mce-edit-area iframe {
     min-height: 380px;
 }
