@@ -405,25 +405,9 @@ jQuery(document).ready(function() {
 					        security : cpc_forum_ajax.nonce
 					    },
 					    function(response) {
-					    	var responseNodes = jQuery.parseHTML(response, document, false) || [];
-				    	if (jQuery('#sub_comment_div_'+id).prev('.cpc_forum_post_subcomments').length) {
-								jQuery('#sub_comment_div_'+id).prev('.cpc_forum_post_subcomments').append(responseNodes);
-						} else {
-								jQuery('#sub_comment_div_'+id).prepend(responseNodes);
-						}
-							jQuery('.cpc_forum_post_subcomment').slideDown('fast');
-							jQuery("body").removeClass("cpc_wait_loading");
-							document.getElementById('sub_comment_'+id).focus();							
-                            
-                            // Show any content marked for after page has loaded from returned content
-                            if (jQuery('.cpc_show_after_page_load').length) {
-                                jQuery('.cpc_show_after_page_load').show();
-                            }
-                            
-                            jQuery('#sub_comment_'+id).removeClass('cpc_field_error');
-                			jQuery("#cpc_tmp").remove();
-                			jQuery(the_button).show();
-                			jQuery(the_textarea).show();
+							// Avoid injecting raw HTML from AJAX response into DOM.
+							// Reloading keeps behavior consistent while removing DOM XSS sink.
+							location.reload();
                             
 					    }   
 					);                  
