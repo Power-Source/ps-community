@@ -50,6 +50,7 @@ Kein Problem! Ändere ganz einfach den gesamten Text, den Deine Benutzer sehen, 
 * Verbesserung: Projekt-Tab „Aktivität" zeigt jetzt die projektbezogenen Aktivitätsmeldungen aller Nutzer mit direkten Links
 * Neu: Projekt-Task-Events werden bei Gruppen-Projekten zusätzlich in den Gruppen-Aktivitätsstream geschrieben
 * Neu: Dokumente/Ordner-Aktionen (Erstellen, Umbenennen, Aktualisieren, Löschen) werden im Gruppen-Aktivitätsstream protokolliert
+* Fix: `cpc-forum-children` zeigt in der Count-Spalte wieder die Anzahl der Threads je Child-Forum statt Aktivität/aktive User
 
 = 1.1.0 =
 

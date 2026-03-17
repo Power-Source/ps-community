@@ -1294,7 +1294,7 @@ function cpc_forum_children($atts) {
         'show_last_activity' => cpc_get_shortcode_value($values, 'cpc_forum_children-show_last_activity', true),
         'show_freshness' => cpc_get_shortcode_value($values, 'cpc_forum_children-show_freshness', true),
 		'forum_title' => cpc_get_shortcode_value($values, 'cpc_forum_children-forum_title', __('Kind-Forum', CPC2_TEXT_DOMAIN)),
-		'forum_count' => cpc_get_shortcode_value($values, 'cpc_forum_children-forum_count', __('Aktivität', CPC2_TEXT_DOMAIN)),
+		'forum_count' => cpc_get_shortcode_value($values, 'cpc_forum_children-forum_count', __('Themen', CPC2_TEXT_DOMAIN)),
 		'forum_last_activity' => cpc_get_shortcode_value($values, 'cpc_forum_children-forum_last_activity', __('Letzter Poster', CPC2_TEXT_DOMAIN)),		
 		'forum_freshness' => cpc_get_shortcode_value($values, 'cpc_forum_children-forum_freshness', __('Neueste', CPC2_TEXT_DOMAIN)),		
 	    'link' => cpc_get_shortcode_value($values, 'cpc_forum_children-link', true),		
@@ -1402,7 +1402,6 @@ function cpc_forum_children($atts) {
 							) );
 
 							global $post,$wpdb;
-			                $comment_count = 0;
 			                $post_ptr = 0;
 							if ($loop->have_posts()):
 								while ( $loop->have_posts() ) : $loop->the_post();
@@ -1412,13 +1411,11 @@ function cpc_forum_children($atts) {
 			                            $date = $base_date == 'post_date_gmt' ? $post->post_date_gmt : $post->post_date;
 			                            $created = sprintf(__('vor %s', CPC2_TEXT_DOMAIN), human_time_diff(strtotime($date), current_time('timestamp', 1)), CPC2_TEXT_DOMAIN);
 			                        endif;
-			                        $comment_count++; // add count of post itself
 			                        // Get count of comments if needed
 			                        if (true):
 			                            $sql = "SELECT * FROM ".$wpdb->prefix."comments WHERE comment_post_ID = %d ORDER BY comment_ID DESC";
 			                            $comments = $wpdb->get_results($wpdb->prepare($sql, $post->ID));
 			                            if ($comments):
-			                                $comments_count = 0;
 			                                foreach ($comments as $comment):
 			                                	if ($comment->user_id): // exclude auto-closed
 				                                    $comment_user = get_user_by('id', $comment->user_id);
@@ -1433,12 +1430,10 @@ function cpc_forum_children($atts) {
 				                                            $date = $comment_date;
 				                                            $created = $comment_created;
 				                                        endif;
-				                                        $comments_count++;
 				    
 				                                    endif;
 				                                endif;
 			                                endforeach;
-			                                $comment_count = $comment_count + $comments_count;
 			                            endif;
 			                        endif;
 			                        $post_ptr++;
@@ -1484,7 +1479,8 @@ function cpc_forum_children($atts) {
 			                                endif;
 			                                if ($show_count):
 			                                    $forum_html .= '<div class="cpc_forum_categories_count">';
-			                                        $count = $comment_count;
+			                                        // Child forum summary should show number of threads, not activity/comments.
+			                                        $count = (int) $forum['count'];
 			                                        $forum_html .= $count;
 			                                    $forum_html .= '</div>';
 			                                endif;
