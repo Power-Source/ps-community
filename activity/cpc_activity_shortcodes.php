@@ -668,5 +668,166 @@ if (!is_admin()) {
     add_shortcode(CPC_PREFIX.'-profile-slot', 'cpc_profile_slot');
 }
 
+function cpc_activity_wall_collect_items($atts = array()) {
+    $settings = function_exists('cpc_activity_plus_get_global_wall_settings') ? cpc_activity_plus_get_global_wall_settings() : array();
+    $limit = isset($atts['limit']) ? max(20, min(400, (int)$atts['limit'])) : max(120, cpc_activity_plus_global_wall_per_page() * 20);
+    $post_id = isset($atts['post_id']) ? (int)$atts['post_id'] : 0;
+
+    $items = array();
+
+    if ($post_id > 0) {
+        if (function_exists('cpc_activity_plus_is_wall_eligible_activity') && cpc_activity_plus_is_wall_eligible_activity($post_id, $settings)) {
+            $post = get_post($post_id);
+            if ($post) {
+                $items[] = array(
+                    'ID' => (int)$post->ID,
+                    'datetime' => strtotime((string)$post->post_date_gmt ? $post->post_date_gmt : $post->post_date),
+                    'date' => (string)$post->post_date,
+                    'is_sticky' => get_post_meta($post->ID, 'cpc_sticky', true) ? 1 : 0,
+                );
+            }
+        }
+        return $items;
+    }
+
+    $query = new WP_Query(array(
+        'post_type' => 'cpc_activity',
+        'post_status' => 'publish',
+        'posts_per_page' => $limit,
+        'orderby' => 'date',
+        'order' => 'DESC',
+        'no_found_rows' => true,
+        'update_post_meta_cache' => true,
+        'update_post_term_cache' => false,
+    ));
+
+    if (empty($query->posts)) {
+        return $items;
+    }
+
+    foreach ($query->posts as $post) {
+        if (!function_exists('cpc_activity_plus_is_wall_eligible_activity') || !cpc_activity_plus_is_wall_eligible_activity($post->ID, $settings)) {
+            continue;
+        }
+
+        $items[] = array(
+            'ID' => (int)$post->ID,
+            'datetime' => strtotime((string)$post->post_date_gmt ? $post->post_date_gmt : $post->post_date),
+            'date' => (string)$post->post_date,
+            'is_sticky' => get_post_meta($post->ID, 'cpc_sticky', true) ? 1 : 0,
+        );
+    }
+
+    foreach ($items as $key => $row) {
+        $is_sticky_sort[$key] = (int)$row['is_sticky'];
+        $datetime_sort[$key] = (int)$row['datetime'];
+    }
+    if (!empty($items)) {
+        array_multisort($is_sticky_sort, SORT_DESC, $datetime_sort, SORT_DESC, $items);
+    }
+
+    return $items;
+}
+
+function cpc_activity_wall_render_items_container($activity, $page_size, $this_user) {
+    $user_id = 0;
+    $html = '';
+
+    if ($activity) {
+        $html .= '<div id="cpc_activity_items" class="cpc_activity_items">';
+        $html .= '<div id="cpc_activity_ajax_div"><img style="width:20px;height:20px;" src="'.plugins_url('../css/images/wait.gif', __FILE__).'" /></div>';
+        $html .= '<div style="display:none" id="cpc_atts_array">'.wp_json_encode(array()).'</div>';
+        $html .= '<div style="display:none" id="cpc_activity_array">'.wp_json_encode($activity).'</div>';
+        $html .= '<div style="display:none" id="cpc_this_user">'.(int)$this_user.'</div>';
+        $html .= '<div style="display:none" id="cpc_user_id">'.$user_id.'</div>';
+        $html .= '<div style="display:none" id="cpc_wait_url">'.plugins_url('../css/images/wait.gif', __FILE__).'</div>';
+        $html .= '<div style="display:none" id="cpc_page_size">'.(int)$page_size.'</div>';
+        $html .= '<div style="display:none" id="cpc_nonce_'.$user_id.'">'.wp_create_nonce('cpc_get_activity_nonce_'.$user_id).'</div>';
+        $html .= '</div>';
+    } else {
+        $html .= '<div id="cpc_activity_post_private_msg">'.__('Keine öffentliche Aktivität zum Anzeigen...', CPC2_TEXT_DOMAIN).'</div>';
+        $html .= '<div style="display:none" id="cpc_wait_url">'.plugins_url('../css/images/wait.gif', __FILE__).'</div>';
+        $html .= '<div id="cpc_activity_items" class="cpc_activity_items"></div>';
+    }
+
+    return $html;
+}
+
+function cpc_activity_wall($atts) {
+    cpc_activity_init();
+
+    $settings = function_exists('cpc_activity_plus_get_global_wall_settings') ? cpc_activity_plus_get_global_wall_settings() : array();
+    $html = cpc_activity_get_dynamic_styles();
+    $current_user_id = get_current_user_id();
+    $view_post_id = isset($_GET['view']) ? (int)$_GET['view'] : 0;
+
+    $values = cpc_get_shortcode_options('cpc_activity_wall');
+    extract(shortcode_atts(array(
+        'title' => isset($settings['title']) ? $settings['title'] : __('Aktivitätswall', CPC2_TEXT_DOMAIN),
+        'page_size' => isset($settings['per_page']) ? $settings['per_page'] : 12,
+        'show_post_form' => 1,
+        'styles' => true,
+        'before' => '',
+        'after' => '',
+    ), $atts, 'cpc_activity_wall'));
+
+    $html .= '<div class="cpc_activity_wall">';
+    if ($title !== '') {
+        $html .= '<h3 class="cpc_activity_wall_title">'.esc_html($title).'</h3>';
+    }
+
+    if ($show_post_form && is_user_logged_in() && $current_user_id > 0 && !$view_post_id) {
+        $html .= '<div class="cpc_activity_wall_post_form">';
+        $html .= cpc_activity_post(array('user_id' => $current_user_id, 'styles' => false));
+        $html .= '</div>';
+    }
+
+    $activity = cpc_activity_wall_collect_items(array(
+        'limit' => max(120, (int)$page_size * 20),
+        'post_id' => $view_post_id,
+    ));
+
+    $html .= cpc_activity_wall_render_items_container($activity, (int)$page_size, (int)$current_user_id);
+    $html .= '</div>';
+
+    if ($html) {
+        $html = apply_filters('cpc_wrap_shortcode_styles_filter', $html, 'cpc_activity_wall', $before, $after, $styles, $values);
+    }
+
+    return $html;
+}
+
+function cpc_activity_wall_render_page_content($content) {
+    if (!function_exists('cpc_activity_plus_global_wall_enabled') || !cpc_activity_plus_global_wall_enabled()) {
+        return $content;
+    }
+
+    if (!is_page() || !in_the_loop() || !is_main_query()) {
+        return $content;
+    }
+
+    $page_id = function_exists('cpc_activity_plus_global_wall_page_id') ? cpc_activity_plus_global_wall_page_id() : 0;
+    if (!$page_id || (int)get_queried_object_id() !== $page_id) {
+        return $content;
+    }
+
+    global $post;
+    if ($post && has_shortcode((string)$post->post_content, 'cpc-activity-wall')) {
+        return $content;
+    }
+
+    $wall = cpc_activity_wall(array());
+    if (trim((string)$content) === '') {
+        return $wall;
+    }
+
+    return $content.$wall;
+}
+
+if (!is_admin()) {
+    add_shortcode(CPC_PREFIX.'-activity-wall', 'cpc_activity_wall');
+    add_filter('the_content', 'cpc_activity_wall_render_page_content', 25);
+}
+
 
 ?>

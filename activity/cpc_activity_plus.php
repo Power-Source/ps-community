@@ -123,6 +123,220 @@ function cpc_activity_plus_get_settings() {
     return $settings;
 }
 
+function cpc_activity_plus_global_wall_enabled() {
+    return (bool)get_option('cpc_activity_plus_global_wall_enabled');
+}
+
+function cpc_activity_plus_global_wall_page_id() {
+    return max(0, (int)get_option('cpc_activity_plus_global_wall_page', 0));
+}
+
+function cpc_activity_plus_global_wall_title() {
+    $title = trim((string)get_option('cpc_activity_plus_global_wall_title', 'Aktivitätswall'));
+    return $title !== '' ? $title : __('Aktivitätswall', CPC2_TEXT_DOMAIN);
+}
+
+function cpc_activity_plus_global_wall_per_page() {
+    return max(5, min(50, (int)get_option('cpc_activity_plus_global_wall_per_page', 12)));
+}
+
+function cpc_activity_plus_global_wall_include_group_posts() {
+    return (bool)get_option('cpc_activity_plus_global_wall_include_group_posts', 1);
+}
+
+function cpc_activity_plus_global_wall_exclude_system_posts() {
+    return (bool)get_option('cpc_activity_plus_global_wall_exclude_system_posts', 1);
+}
+
+function cpc_activity_plus_global_wall_push_enabled() {
+    return (bool)get_option('cpc_activity_plus_global_wall_push_enabled', 0);
+}
+
+function cpc_activity_plus_get_global_wall_settings() {
+    return array(
+        'enabled' => cpc_activity_plus_global_wall_enabled(),
+        'page_id' => cpc_activity_plus_global_wall_page_id(),
+        'title' => cpc_activity_plus_global_wall_title(),
+        'per_page' => cpc_activity_plus_global_wall_per_page(),
+        'include_group_posts' => cpc_activity_plus_global_wall_include_group_posts(),
+        'exclude_system_posts' => cpc_activity_plus_global_wall_exclude_system_posts(),
+        'push_enabled' => cpc_activity_plus_global_wall_push_enabled(),
+    );
+}
+
+function cpc_activity_plus_maybe_create_global_wall_page() {
+    $existing_page_id = cpc_activity_plus_global_wall_page_id();
+    if ($existing_page_id > 0 && get_post($existing_page_id)) {
+        return $existing_page_id;
+    }
+
+    $page_slug = sanitize_title(cpc_activity_plus_global_wall_title());
+    if ($page_slug === '') {
+        $page_slug = 'aktivitaetswall';
+    }
+
+    $existing_page = get_page_by_path($page_slug, OBJECT, 'page');
+    if ($existing_page && !empty($existing_page->ID)) {
+        update_option('cpc_activity_plus_global_wall_page', (int)$existing_page->ID);
+        return (int)$existing_page->ID;
+    }
+
+    $page_id = wp_insert_post(array(
+        'post_type' => 'page',
+        'post_title' => cpc_activity_plus_global_wall_title(),
+        'post_name' => $page_slug,
+        'post_content' => '[cpc-activity-wall]',
+        'post_status' => 'publish',
+    ));
+
+    if (!is_wp_error($page_id) && $page_id) {
+        update_option('cpc_activity_plus_global_wall_page', (int)$page_id);
+        return (int)$page_id;
+    }
+
+    return 0;
+}
+
+function cpc_activity_plus_is_public_group($group_id) {
+    $group_id = (int)$group_id;
+    if ($group_id <= 0) {
+        return false;
+    }
+
+    $group_type = get_post_meta($group_id, 'cpc_group_type', true);
+    if (!$group_type) {
+        $group_type = 'public';
+    }
+
+    return $group_type === 'public';
+}
+
+function cpc_activity_plus_is_manual_profile_wall_post($activity_id) {
+    $activity = get_post((int)$activity_id);
+    if (!$activity || $activity->post_type !== 'cpc_activity') {
+        return false;
+    }
+
+    $activity_type = (string)get_post_meta($activity->ID, 'cpc_activity_type', true);
+    $target_type = (string)get_post_meta($activity->ID, 'cpc_target_type', true);
+    if ($activity_type !== '' || $target_type !== '') {
+        return false;
+    }
+
+    $target_id = get_post_meta($activity->ID, 'cpc_target', true);
+    return (string)$target_id !== '' && (int)$target_id === (int)$activity->post_author;
+}
+
+function cpc_activity_plus_is_manual_group_wall_post($activity_id) {
+    $activity = get_post((int)$activity_id);
+    if (!$activity || $activity->post_type !== 'cpc_activity') {
+        return false;
+    }
+
+    $activity_type = (string)get_post_meta($activity->ID, 'cpc_activity_type', true);
+    $target_type = (string)get_post_meta($activity->ID, 'cpc_target_type', true);
+    $group_id = (int)get_post_meta($activity->ID, 'cpc_activity_group_id', true);
+
+    if ($activity_type !== 'group_activity' || $target_type !== '' || $group_id <= 0) {
+        return false;
+    }
+
+    return cpc_activity_plus_is_public_group($group_id);
+}
+
+function cpc_activity_plus_mark_members_post_for_wall($activity_id, $target_id) {
+    $activity = get_post((int)$activity_id);
+    if (!$activity || $activity->post_type !== 'cpc_activity') {
+        return;
+    }
+
+    $target_id = (int)$target_id;
+    $is_public_wall_post = $target_id > 0 && $target_id === (int)$activity->post_author;
+
+    update_post_meta($activity->ID, 'cpc_activity_wall_origin', 'user');
+    update_post_meta($activity->ID, 'cpc_activity_wall_context', 'members');
+    update_post_meta($activity->ID, 'cpc_activity_wall_visibility', $is_public_wall_post ? 'public' : 'private');
+    update_post_meta($activity->ID, 'cpc_activity_wall_include', $is_public_wall_post ? 1 : 0);
+}
+
+function cpc_activity_plus_mark_group_post_for_wall($activity_id, $group_id) {
+    $activity = get_post((int)$activity_id);
+    if (!$activity || $activity->post_type !== 'cpc_activity') {
+        return;
+    }
+
+    $group_id = (int)$group_id;
+    $is_public_group = cpc_activity_plus_is_public_group($group_id);
+
+    update_post_meta($activity->ID, 'cpc_activity_wall_origin', 'user');
+    update_post_meta($activity->ID, 'cpc_activity_wall_context', 'groups');
+    update_post_meta($activity->ID, 'cpc_activity_wall_visibility', $is_public_group ? 'public' : 'private');
+    update_post_meta($activity->ID, 'cpc_activity_wall_include', $is_public_group ? 1 : 0);
+}
+
+function cpc_activity_plus_is_wall_eligible_activity($activity_id, $settings = null) {
+    $activity = get_post((int)$activity_id);
+    if (!$activity || $activity->post_type !== 'cpc_activity' || $activity->post_status !== 'publish') {
+        return false;
+    }
+
+    if (!is_array($settings)) {
+        $settings = cpc_activity_plus_get_global_wall_settings();
+    }
+
+    if (cpc_activity_plus_is_manual_profile_wall_post($activity->ID)) {
+        return true;
+    }
+
+    if (!empty($settings['include_group_posts']) && cpc_activity_plus_is_manual_group_wall_post($activity->ID)) {
+        return true;
+    }
+
+    if (!empty($settings['exclude_system_posts'])) {
+        return false;
+    }
+
+    $group_id = (int)get_post_meta($activity->ID, 'cpc_activity_group_id', true);
+    if ($group_id > 0 && cpc_activity_plus_is_public_group($group_id)) {
+        return !empty($settings['include_group_posts']);
+    }
+
+    return false;
+}
+
+function cpc_activity_plus_get_wall_activity_url($activity_id) {
+    $activity_id = (int)$activity_id;
+    $page_id = cpc_activity_plus_global_wall_page_id();
+    if ($page_id > 0) {
+        return add_query_arg('view', $activity_id, get_permalink($page_id));
+    }
+    return get_permalink($activity_id);
+}
+
+function cpc_activity_plus_dispatch_wall_push($activity_id) {
+    if (!cpc_activity_plus_global_wall_push_enabled()) {
+        return;
+    }
+
+    $activity = get_post((int)$activity_id);
+    if (!$activity || !cpc_activity_plus_is_wall_eligible_activity($activity->ID)) {
+        return;
+    }
+
+    $group_id = (int)get_post_meta($activity->ID, 'cpc_activity_group_id', true);
+    $payload = array(
+        'activity_id' => (int)$activity->ID,
+        'author_id' => (int)$activity->post_author,
+        'group_id' => $group_id,
+        'url' => cpc_activity_plus_get_wall_activity_url($activity->ID),
+        'message' => wp_trim_words(wp_strip_all_tags((string)$activity->post_title), 18),
+        'context' => (string)get_post_meta($activity->ID, 'cpc_activity_wall_context', true),
+    );
+
+    do_action('cpc_activity_wall_post_published', $activity->ID, $payload, $activity);
+    do_action('cpc_activity_wall_push_hook', $activity->ID, $payload, $activity);
+}
+
 function cpc_activity_plus_user_activity_dir($user_id) {
     $folder = cpc_activity_plus_get_user_cloud_folder_name($user_id);
     return WP_CONTENT_DIR.'/cpc-pro-content/members/'.$folder.'/activity/';
@@ -474,6 +688,19 @@ function cpc_activity_plus_on_post_add($the_post, $the_files, $new_id) {
     ));
 }
 add_action('cpc_activity_post_add_hook', 'cpc_activity_plus_on_post_add', 20, 3);
+
+function cpc_activity_plus_on_members_post_add_wall_meta($the_post, $the_files, $new_id) {
+    $target_id = isset($the_post['cpc_activity_post_target']) ? (int)$the_post['cpc_activity_post_target'] : 0;
+    cpc_activity_plus_mark_members_post_for_wall($new_id, $target_id);
+    cpc_activity_plus_dispatch_wall_push($new_id);
+}
+add_action('cpc_activity_post_add_hook', 'cpc_activity_plus_on_members_post_add_wall_meta', 30, 3);
+
+function cpc_activity_plus_on_group_post_add_wall_meta($the_post, $the_files, $new_id, $group_id) {
+    cpc_activity_plus_mark_group_post_for_wall($new_id, $group_id);
+    cpc_activity_plus_dispatch_wall_push($new_id);
+}
+add_action('cpc_group_activity_post_add_hook', 'cpc_activity_plus_on_group_post_add_wall_meta', 20, 4);
 
 function cpc_activity_plus_render_tags($item_html, $atts, $item_id, $post_title, $user_id, $this_user, $shown_count) {
 

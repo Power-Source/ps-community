@@ -252,6 +252,18 @@
     padding: 8px;
 }
 
+.cpc_activity_wall {
+    clear: both;
+}
+
+.cpc_activity_wall_title {
+    margin: 0 0 18px;
+}
+
+.cpc_activity_wall_post_form {
+    margin-bottom: 20px;
+}
+
 .cpc_activity_plus_link_preview_image_container {
     width: 180px;
     height: 135px;

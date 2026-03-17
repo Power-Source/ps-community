@@ -31,6 +31,13 @@ function cpc_admin_getting_started_activity_plus() {
     $cleanup_on_delete = get_option('cpc_activity_plus_cleanup_on_delete');
     $theme = function_exists('cpc_activity_plus_normalize_theme') ? cpc_activity_plus_normalize_theme(get_option('cpc_activity_plus_theme', 'default')) : get_option('cpc_activity_plus_theme', 'default');
     $alignment = function_exists('cpc_activity_plus_normalize_alignment') ? cpc_activity_plus_normalize_alignment(get_option('cpc_activity_plus_alignment', 'left')) : get_option('cpc_activity_plus_alignment', 'left');
+    $wall_enabled = function_exists('cpc_activity_plus_global_wall_enabled') ? cpc_activity_plus_global_wall_enabled() : false;
+    $wall_page_id = function_exists('cpc_activity_plus_global_wall_page_id') ? cpc_activity_plus_global_wall_page_id() : 0;
+    $wall_title = function_exists('cpc_activity_plus_global_wall_title') ? cpc_activity_plus_global_wall_title() : __('Aktivitätswall', CPC2_TEXT_DOMAIN);
+    $wall_per_page = function_exists('cpc_activity_plus_global_wall_per_page') ? cpc_activity_plus_global_wall_per_page() : 12;
+    $wall_include_group_posts = function_exists('cpc_activity_plus_global_wall_include_group_posts') ? cpc_activity_plus_global_wall_include_group_posts() : true;
+    $wall_exclude_system_posts = function_exists('cpc_activity_plus_global_wall_exclude_system_posts') ? cpc_activity_plus_global_wall_exclude_system_posts() : true;
+    $wall_push_enabled = function_exists('cpc_activity_plus_global_wall_push_enabled') ? cpc_activity_plus_global_wall_push_enabled() : false;
 
     echo '<table class="form-table">';
 
@@ -107,6 +114,68 @@ function cpc_admin_getting_started_activity_plus() {
         echo '<td>';
             echo '<input name="cpc_activity_plus_cleanup_on_delete" id="cpc_activity_plus_cleanup_on_delete" type="checkbox" style="width:10px" '.($cleanup_on_delete ? 'CHECKED' : '').' />';
             echo '<span class="description">'.__('Entfernt zugehörige Aktivitätsdateien beim Löschen eines Beitrags.', CPC2_TEXT_DOMAIN).'</span>';
+        echo '</td>';
+    echo '</tr>';
+
+    echo '<tr class="form-field"><th scope="row" valign="top">'.__('Globale Aktivitätswall', CPC2_TEXT_DOMAIN).'</th><td><strong>'.__('Öffentliche Community-Wall', CPC2_TEXT_DOMAIN).'</strong><br /><span class="description">'.__('Zeigt öffentliche manuelle User-Posts und optional öffentliche Gruppenposts in einem globalen Feed.', CPC2_TEXT_DOMAIN).'</span></td></tr>';
+
+    echo '<tr class="form-field">';
+        echo '<th scope="row" valign="top"><label for="cpc_activity_plus_global_wall_enabled">'.__('Globale Wall aktivieren', CPC2_TEXT_DOMAIN).'</label></th>';
+        echo '<td>';
+            echo '<input name="cpc_activity_plus_global_wall_enabled" id="cpc_activity_plus_global_wall_enabled" type="checkbox" style="width:10px" '.($wall_enabled ? 'CHECKED' : '').' />';
+            echo '<span class="description">'.__('Aktiviert den Shortcode [cpc-activity-wall] und die automatische Ausgabe auf der gewählten Seite.', CPC2_TEXT_DOMAIN).'</span>';
+        echo '</td>';
+    echo '</tr>';
+
+    echo '<tr class="form-field">';
+        echo '<th scope="row" valign="top"><label for="cpc_activity_plus_global_wall_page">'.__('Wall-Seite', CPC2_TEXT_DOMAIN).'</label></th>';
+        echo '<td>';
+            echo wp_dropdown_pages(array(
+                'name' => 'cpc_activity_plus_global_wall_page',
+                'echo' => 0,
+                'selected' => $wall_page_id,
+                'show_option_none' => __('Keine/Deaktiviert', CPC2_TEXT_DOMAIN),
+            ));
+            echo '<label style="display:block;margin-top:8px"><input name="cpc_activity_plus_global_wall_create_page" type="checkbox" style="width:10px" /> '.__('Falls keine Seite gewählt ist, automatisch eine Wall-Seite erstellen', CPC2_TEXT_DOMAIN).'</label>';
+        echo '</td>';
+    echo '</tr>';
+
+    echo '<tr class="form-field">';
+        echo '<th scope="row" valign="top"><label for="cpc_activity_plus_global_wall_title">'.__('Wall-Titel', CPC2_TEXT_DOMAIN).'</label></th>';
+        echo '<td>';
+            echo '<input name="cpc_activity_plus_global_wall_title" id="cpc_activity_plus_global_wall_title" type="text" class="regular-text" value="'.esc_attr($wall_title).'" />';
+        echo '</td>';
+    echo '</tr>';
+
+    echo '<tr class="form-field">';
+        echo '<th scope="row" valign="top"><label for="cpc_activity_plus_global_wall_per_page">'.__('Beiträge pro Ladung', CPC2_TEXT_DOMAIN).'</label></th>';
+        echo '<td>';
+            echo '<input name="cpc_activity_plus_global_wall_per_page" id="cpc_activity_plus_global_wall_per_page" type="number" min="5" max="50" step="1" style="width:90px" value="'.esc_attr($wall_per_page).'" />';
+            echo '<span class="description">'.__('Anzahl der Einträge pro AJAX-Ladung in der globalen Wall.', CPC2_TEXT_DOMAIN).'</span>';
+        echo '</td>';
+    echo '</tr>';
+
+    echo '<tr class="form-field">';
+        echo '<th scope="row" valign="top"><label for="cpc_activity_plus_global_wall_include_group_posts">'.__('Öffentliche Gruppenposts einbeziehen', CPC2_TEXT_DOMAIN).'</label></th>';
+        echo '<td>';
+            echo '<input name="cpc_activity_plus_global_wall_include_group_posts" id="cpc_activity_plus_global_wall_include_group_posts" type="checkbox" style="width:10px" '.($wall_include_group_posts ? 'CHECKED' : '').' />';
+            echo '<span class="description">'.__('Nimmt manuelle Aktivitätsposts aus öffentlichen Gruppen zusätzlich in die globale Wall auf.', CPC2_TEXT_DOMAIN).'</span>';
+        echo '</td>';
+    echo '</tr>';
+
+    echo '<tr class="form-field">';
+        echo '<th scope="row" valign="top"><label for="cpc_activity_plus_global_wall_exclude_system_posts">'.__('Systemmeldungen ausblenden', CPC2_TEXT_DOMAIN).'</label></th>';
+        echo '<td>';
+            echo '<input name="cpc_activity_plus_global_wall_exclude_system_posts" id="cpc_activity_plus_global_wall_exclude_system_posts" type="checkbox" style="width:10px" '.($wall_exclude_system_posts ? 'CHECKED' : '').' />';
+            echo '<span class="description">'.__('Zeigt nur echte User-Posts. Automatische Meldungen wie erstellt/beigetreten bleiben in den jeweiligen Kontext-Streams.', CPC2_TEXT_DOMAIN).'</span>';
+        echo '</td>';
+    echo '</tr>';
+
+    echo '<tr class="form-field">';
+        echo '<th scope="row" valign="top"><label for="cpc_activity_plus_global_wall_push_enabled">'.__('Push-Hook für neue Wall-Posts', CPC2_TEXT_DOMAIN).'</label></th>';
+        echo '<td>';
+            echo '<input name="cpc_activity_plus_global_wall_push_enabled" id="cpc_activity_plus_global_wall_push_enabled" type="checkbox" style="width:10px" '.($wall_push_enabled ? 'CHECKED' : '').' />';
+            echo '<span class="description">'.__('Löst bei neuen global sichtbaren Wall-Posts den Hook cpc_activity_wall_push_hook aus, damit bestehende Push-Integrationen andocken können.', CPC2_TEXT_DOMAIN).'</span>';
         echo '</td>';
     echo '</tr>';
 
@@ -230,6 +299,48 @@ function cpc_admin_activity_plus_options_save($the_post) {
     else:
         delete_option('cpc_activity_plus_cleanup_on_delete');
     endif;
+
+    if (isset($the_post['cpc_activity_plus_global_wall_enabled'])):
+        update_option('cpc_activity_plus_global_wall_enabled', true);
+    else:
+        delete_option('cpc_activity_plus_global_wall_enabled');
+    endif;
+
+    if (isset($the_post['cpc_activity_plus_global_wall_page'])):
+        update_option('cpc_activity_plus_global_wall_page', max(0, (int)$the_post['cpc_activity_plus_global_wall_page']));
+    endif;
+
+    if (isset($the_post['cpc_activity_plus_global_wall_title'])):
+        update_option('cpc_activity_plus_global_wall_title', sanitize_text_field($the_post['cpc_activity_plus_global_wall_title']));
+    endif;
+
+    if (isset($the_post['cpc_activity_plus_global_wall_per_page']) && is_numeric($the_post['cpc_activity_plus_global_wall_per_page'])):
+        update_option('cpc_activity_plus_global_wall_per_page', max(5, min(50, (int)$the_post['cpc_activity_plus_global_wall_per_page'])));
+    else:
+        update_option('cpc_activity_plus_global_wall_per_page', 12);
+    endif;
+
+    if (isset($the_post['cpc_activity_plus_global_wall_include_group_posts'])):
+        update_option('cpc_activity_plus_global_wall_include_group_posts', 1);
+    else:
+        delete_option('cpc_activity_plus_global_wall_include_group_posts');
+    endif;
+
+    if (isset($the_post['cpc_activity_plus_global_wall_exclude_system_posts'])):
+        update_option('cpc_activity_plus_global_wall_exclude_system_posts', 1);
+    else:
+        delete_option('cpc_activity_plus_global_wall_exclude_system_posts');
+    endif;
+
+    if (isset($the_post['cpc_activity_plus_global_wall_push_enabled'])):
+        update_option('cpc_activity_plus_global_wall_push_enabled', 1);
+    else:
+        delete_option('cpc_activity_plus_global_wall_push_enabled');
+    endif;
+
+    if (!empty($the_post['cpc_activity_plus_global_wall_create_page']) && function_exists('cpc_activity_plus_maybe_create_global_wall_page')) {
+        cpc_activity_plus_maybe_create_global_wall_page();
+    }
 
     if (isset($the_post['cpc_activity_plus_theme']) && in_array($the_post['cpc_activity_plus_theme'], array('default', 'new', 'round', 'modern', 'compact'))):
         $theme = $the_post['cpc_activity_plus_theme'];

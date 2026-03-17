@@ -70,6 +70,8 @@ Kein Problem! Ändere ganz einfach den gesamten Text, den Deine Benutzer sehen, 
 * Dashboard-Einstellungen für Projekte-Directory-Seite, Titel und Items pro Seite
 * Shortcodes `[cpc-projects-directory]` und `[cpc-project-directory]` für Übersichtsseite
 * Archive-Template für Projekte-Übersicht mit Suche und Pagination
+* Neu: Globale Aktivitätswall unter Aktivität Plus mit eigener Seite, Shortcode `[cpc-activity-wall]` und automatischer Seitenausgabe
+* Neue Wall-Optionen: öffentliche Gruppenposts einbeziehen, Systemmeldungen ausblenden und Push-Hook für neue globale Posts
 
 = 1.1.0 =
 
