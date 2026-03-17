@@ -1,7 +1,7 @@
 <?php
 
 function cpc_media_is_enabled() {
-    return (bool)apply_filters('cpc_media_is_enabled', (bool)get_option('cpc_media_module_enabled', 0));
+    return (bool)apply_filters('cpc_media_is_enabled', defined('CPC_CORE_PLUGINS') && strpos(CPC_CORE_PLUGINS, 'core-media') !== false);
 }
 
 function cpc_media_get_user_cloud_folder_name($user_id) {

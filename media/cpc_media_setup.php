@@ -22,12 +22,6 @@ function cpc_admin_getting_started_media() {
     echo '<table class="form-table">';
 
     echo '<tr class="form-field">';
-    echo '<td scope="row" valign="top"><label>'.__('Modul aktivieren', CPC2_TEXT_DOMAIN).'</label></td>';
-    echo '<td><input type="checkbox" style="width:20px; height:20px;" name="cpc_media_module_enabled" '.(get_option('cpc_media_module_enabled', 1) ? 'CHECKED' : '').' />';
-    echo '<span class="description">'.__('Aktiviert / Deaktiviert komplett das Medien-Modul fuer alle Benutzer.', CPC2_TEXT_DOMAIN).'</span></td>';
-    echo '</tr>';
-
-    echo '<tr class="form-field">';
     echo '<td scope="row" valign="top"><label>'.__('Benutzer können Galerien erstellen', CPC2_TEXT_DOMAIN).'</label></td>';
     echo '<td><input type="checkbox" style="width:20px; height:20px;" name="cpc_media_user_can_create_galleries" '.(get_option('cpc_media_user_can_create_galleries', 1) ? 'CHECKED' : '').' />';
     echo '<span class="description">'.__('Erlaubt Benutzern, neue Galerien auf ihrem Profil zu erstellen.', CPC2_TEXT_DOMAIN).'</span></td>';
@@ -292,11 +286,8 @@ add_action('cpc_admin_setup_form_get_hook', 'cpc_admin_media_save', 10, 2);
 add_action('cpc_admin_setup_form_save_hook', 'cpc_admin_media_save', 10, 2);
 function cpc_admin_media_save($the_post) {
     // GENERAL
-    if (isset($the_post['cpc_media_module_enabled'])) {
-        update_option('cpc_media_module_enabled', 1);
-    } else {
-        delete_option('cpc_media_module_enabled');
-    }
+    // Module activation is now controlled centrally via cpc_default_core (core-media).
+    delete_option('cpc_media_module_enabled');
 
     if (isset($the_post['cpc_media_user_can_create_galleries'])) {
         update_option('cpc_media_user_can_create_galleries', 1);

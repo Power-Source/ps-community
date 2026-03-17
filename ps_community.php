@@ -3,7 +3,7 @@
 Plugin Name: PS Community
 Plugin URI: https://power-source.github.io/ps-community/
 Description: Füge Deiner ClassicPress-Webseite schnell und einfach ein soziales Netzwerk hinzu!
-Version: 1.1.0
+Version: 1.1.1
 Author: PSOURCE
 Author URI: https://github.com/Power-Source
 License: GPLv2 or later
@@ -38,16 +38,43 @@ add_action('plugins_loaded', 'cpc_languages');
 // Get core plugin features enabled
 // In Multisite: ensure each site has the option set
 if (!$core_plugins = get_option('cpc_default_core')):
-    $default_core = 'core-profile,core-activity,core-avatar,core-friendships,core-groups,core-alerts,core-forums';
+    // Fresh install: core-media, core-docs, core-projects are OFF by default
+    $default_core = 'core-profile,core-activity,core-avatar,core-friendships,core-alerts,core-forums';
     update_option('cpc_default_core', $default_core);
+    update_option('cpc_modules_migrated_111', 1); // fresh install needs no migration
     $core_plugins = $default_core;
 endif;
 
-// Multisite fallback: if option exists but is empty or doesn't include groups, update it
-if (is_multisite() && (!$core_plugins || strpos($core_plugins, 'core-groups') === false)) {
-    $default_core = 'core-profile,core-activity,core-avatar,core-friendships,core-groups,core-alerts,core-forums';
+// Multisite fallback: if option is missing/empty for a site, initialize defaults once
+if (is_multisite() && !$core_plugins) {
+    $default_core = 'core-profile,core-activity,core-avatar,core-friendships,core-alerts,core-forums';
     update_option('cpc_default_core', $default_core);
+    update_option('cpc_modules_migrated_111', 1);
     $core_plugins = $default_core;
+}
+
+// Migration 1.1.1: Bestehende Installationen erhalten die neuen Core-Flags automatisch,
+// da Media immer aktiv war und Docs/Projekte mit Profile/Groups geladen wurden.
+if (!get_option('cpc_modules_migrated_111') && is_string($core_plugins)) {
+    $needs_save = false;
+    if (strpos($core_plugins, 'core-media') === false) {
+        $core_plugins .= ',core-media';
+        $needs_save = true;
+    }
+    if (strpos($core_plugins, 'core-docs') === false &&
+        (strpos($core_plugins, 'core-profile') !== false || strpos($core_plugins, 'core-groups') !== false)) {
+        $core_plugins .= ',core-docs';
+        $needs_save = true;
+    }
+    if (strpos($core_plugins, 'core-projects') === false &&
+        (strpos($core_plugins, 'core-profile') !== false || strpos($core_plugins, 'core-groups') !== false)) {
+        $core_plugins .= ',core-projects';
+        $needs_save = true;
+    }
+    if ($needs_save) {
+        update_option('cpc_default_core', $core_plugins);
+    }
+    update_option('cpc_modules_migrated_111', 1);
 }
 
 if (!defined('CPC_CORE_PLUGINS')) define ('CPC_CORE_PLUGINS', $core_plugins);
@@ -313,15 +340,17 @@ else:
 endif;
 
 // Media / galleries
-require_once('media/cpc_media.php');
+if (strpos(CPC_CORE_PLUGINS, 'core-media') !== false):
+    require_once('media/cpc_media.php');
+endif;
 
 // Docs
-if (strpos(CPC_CORE_PLUGINS, 'core-profile') !== false || strpos(CPC_CORE_PLUGINS, 'core-groups') !== false):
+if (strpos(CPC_CORE_PLUGINS, 'core-docs') !== false):
     require_once('cpc_docs/cpc_docs.php');
 endif;
 
 // Projects
-if (strpos(CPC_CORE_PLUGINS, 'core-profile') !== false || strpos(CPC_CORE_PLUGINS, 'core-groups') !== false):
+if (strpos(CPC_CORE_PLUGINS, 'core-projects') !== false):
     require_once('projects/cpc_projects.php');
 endif;
 

@@ -11,12 +11,6 @@ function cpc_admin_getting_started_projects() {
     echo '<table class="form-table">';
 
     echo '<tr class="form-field">';
-    echo '<td scope="row" valign="top"><label>'.__('Projects-Modul aktivieren', CPC2_TEXT_DOMAIN).'</label></td>';
-    echo '<td><input type="checkbox" style="width:20px; height:20px;" name="cpc_projects_module_enabled" '.(cpc_projects_is_enabled() ? 'CHECKED' : '').' />';
-    echo '<span class="description">'.__('Aktiviert Projekte in Profilen und Gruppen.', CPC2_TEXT_DOMAIN).'</span></td>';
-    echo '</tr>';
-
-    echo '<tr class="form-field">';
     echo '<td scope="row" valign="top"><label>'.__('Profil-Tab: Projekt erstellen erlauben', CPC2_TEXT_DOMAIN).'</label></td>';
     echo '<td><input type="checkbox" style="width:20px; height:20px;" name="cpc_projects_profile_allow_create" '.(cpc_projects_show_profile_create_form() ? 'CHECKED' : '').' />';
     echo '<span class="description">'.__('Standardmaessig aus, damit Projekte zentral im Gruppen-Tab verwaltet werden.', CPC2_TEXT_DOMAIN).'</span></td>';
@@ -95,11 +89,8 @@ function cpc_admin_getting_started_projects() {
 add_action('cpc_admin_setup_form_save_hook', 'cpc_admin_projects_save', 10, 1);
 add_action('cpc_admin_setup_form_get_hook', 'cpc_admin_projects_save', 10, 1);
 function cpc_admin_projects_save($the_post) {
-    if (isset($the_post['cpc_projects_module_enabled'])) {
-        update_option('cpc_projects_module_enabled', 1);
-    } else {
-        delete_option('cpc_projects_module_enabled');
-    }
+    // Module activation is now controlled centrally via cpc_default_core (core-projects).
+    delete_option('cpc_projects_module_enabled');
 
     if (isset($the_post['cpc_projects_profile_allow_create'])) {
         update_option('cpc_projects_profile_allow_create', 1);

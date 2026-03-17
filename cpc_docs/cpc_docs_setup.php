@@ -11,12 +11,6 @@ function cpc_admin_getting_started_docs() {
     echo '<table class="form-table">';
 
     echo '<tr class="form-field">';
-    echo '<td scope="row" valign="top"><label>'.__('Docs Modul aktivieren', CPC2_TEXT_DOMAIN).'</label></td>';
-    echo '<td><input type="checkbox" style="width:20px; height:20px;" name="cpc_docs_module_enabled" '.(cpc_docs_is_enabled() ? 'CHECKED' : '').' />';
-    echo '<span class="description">'.__('Aktiviert Dokumente in Profil- und Gruppen-Tabs.', CPC2_TEXT_DOMAIN).'</span></td>';
-    echo '</tr>';
-
-    echo '<tr class="form-field">';
     echo '<td scope="row" valign="top"><label>'.__('Docs-Slug', CPC2_TEXT_DOMAIN).'</label></td>';
     echo '<td><input type="text" name="cpc_docs_slug" value="'.esc_attr(cpc_docs_get_slug()).'" class="regular-text" />';
     echo '<span class="description">'.__('URL-Slug fuer Dokumente, z.B. docs oder wiki.', CPC2_TEXT_DOMAIN).'</span></td>';
@@ -84,11 +78,8 @@ add_action('cpc_admin_setup_form_get_hook', 'cpc_admin_docs_save', 10, 1);
 function cpc_admin_docs_save($the_post) {
     $old_slug = cpc_docs_get_slug();
 
-    if (isset($the_post['cpc_docs_module_enabled'])) {
-        update_option('cpc_docs_module_enabled', 1);
-    } else {
-        delete_option('cpc_docs_module_enabled');
-    }
+    // Module activation is now controlled centrally via cpc_default_core (core-docs).
+    delete_option('cpc_docs_module_enabled');
 
     if (isset($the_post['cpc_docs_slug'])) {
         update_option('cpc_docs_slug', sanitize_title($the_post['cpc_docs_slug']));

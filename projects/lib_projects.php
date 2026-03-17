@@ -1,7 +1,7 @@
 <?php
 
 function cpc_projects_is_enabled() {
-    return (bool)get_option('cpc_projects_module_enabled', 0);
+    return defined('CPC_CORE_PLUGINS') && strpos(CPC_CORE_PLUGINS, 'core-projects') !== false;
 }
 
 function cpc_projects_show_profile_create_form() {

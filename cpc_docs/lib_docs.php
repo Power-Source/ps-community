@@ -1,7 +1,7 @@
 <?php
 
 function cpc_docs_is_enabled() {
-    return (bool)get_option('cpc_docs_module_enabled', 0);
+    return defined('CPC_CORE_PLUGINS') && strpos(CPC_CORE_PLUGINS, 'core-docs') !== false;
 }
 
 function cpc_docs_get_directory_page_id() {

@@ -41,6 +41,9 @@ Kein Problem! Ändere ganz einfach den gesamten Text, den Deine Benutzer sehen, 
 * Fix: Ordner-Status bleibt konsistent beim Bearbeiten von Dokumenten (Inhaltsänderung zu/von Ordner)
 * Verbesserung: Folder-Rendering in Profil- und Gruppen-Tabs zeigt neu erstellte Ordner korrekt an
 * **UX-Fix: Ordner zeigen bei der Bearbeitung keinen Content-Editor mehr an** - nur Titel und Einstellungen
+* Neu: Medien, Dokumente und Projekte werden zentral über den Core-Funktionen-Tab gesteuert (`core-media`, `core-docs`, `core-projects`)
+* Fix: Gruppen lassen sich im Community-Dashboard wieder korrekt deaktivieren (kein erzwungenes Reaktivieren in Multisite)
+* Bereinigung: Redundante "Modul aktivieren"-Schalter in Medien-, Dokumente- und Projekte-Tab entfernt, um Doppelsteuerung zu vermeiden
 
 = 1.1.0 =
 

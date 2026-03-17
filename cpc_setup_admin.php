@@ -2823,6 +2823,9 @@ function cpc_admin_getting_started_core_save($the_post) {
 	if (isset($the_post['core-alerts'])) 	   $cpc_default_core .= 'core-alerts,';
 	if (isset($the_post['core-forums'])) 	   $cpc_default_core .= 'core-forums,';
 	if (isset($the_post['core-groups'])) 	   $cpc_default_core .= 'core-groups,';
+	if (isset($the_post['core-media']))  	   $cpc_default_core .= 'core-media,';
+	if (isset($the_post['core-docs']))   	   $cpc_default_core .= 'core-docs,';
+	if (isset($the_post['core-projects']))	   $cpc_default_core .= 'core-projects,';
 	update_option('cpc_default_core', $cpc_default_core);  
 
 	if (isset($the_post['cpc_core_options_tips'])):
@@ -2959,6 +2962,9 @@ if (!function_exists('cpc_admin_getting_started_extensions')):
                 echo cpc_show_core($values, 'core-alerts', __('Benachrichtigungen', CPC2_TEXT_DOMAIN), 'https://cp-community.n3rds.work/email-alerts/', '');
                 echo cpc_show_core($values, 'core-forums', __('Foren', CPC2_TEXT_DOMAIN), 'https://cp-community.n3rds.work/forum-page/', '');
                 echo cpc_show_core($values, 'core-groups', __('Gruppen', CPC2_TEXT_DOMAIN), 'https://cp-community.n3rds.work/groups/', '');
+                echo cpc_show_core($values, 'core-media', __('Medien', CPC2_TEXT_DOMAIN), '', '');
+                echo cpc_show_core($values, 'core-docs', __('Dokumente', CPC2_TEXT_DOMAIN), '', '');
+                echo cpc_show_core($values, 'core-projects', __('Projekte', CPC2_TEXT_DOMAIN), '', '');
                 ?>
             </td>
         </tr> 
