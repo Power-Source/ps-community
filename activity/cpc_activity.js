@@ -228,6 +228,17 @@ jQuery('#cpc_activity_post_button').attr("disabled", false);
                     var tmp = 'cpc_'+jQuery.now();
 		            iframeContents = '<div id="'+tmp+'" style="display:none">'+jQuery("#postiframe")[0].contentWindow.document.body.innerHTML+'</div>';
                     jQuery('#cpc_activity_post').val('').focus();
+					// Reset Activity Plus state after successful submit
+					jQuery('#cpc_activity_plus_link_url').val('');
+					jQuery('#cpc_activity_plus_video_url').val('');
+					jQuery('#cpc_activity_plus_remote_images').val('');
+					jQuery('#cpc_activity_plus_link_preview').html('');
+					jQuery('#cpc_activity_plus_video_preview').html('');
+					jQuery('#cpc_activity_plus_no_thumbnail').prop('checked', false);
+					if (jQuery('#cpc_activity_plus_images').length) {
+						jQuery('#cpc_activity_plus_images').val('');
+					}
+					jQuery('.cpc_activity_plus_wrap').hide();
                     jQuery("#postiframe").remove();                    
 			    	jQuery('#cpc_activity_items').prepend(iframeContents);
                     jQuery('#'+tmp).slideDown('fast');

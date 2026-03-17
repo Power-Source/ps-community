@@ -434,7 +434,18 @@ function cpc_activity_plus_on_post_add($the_post, $the_files, $new_id) {
     if ($settings['allow_links'] && !empty($the_post['cpc_activity_plus_link_url'])) {
         $link_url = esc_url_raw($the_post['cpc_activity_plus_link_url']);
         if ($link_url) {
-            $parts[] = '[cpcap_link url="'.esc_attr($link_url).'"][/cpcap_link]';
+            $link_preview = cpc_activity_plus_fetch_link_preview_data($link_url);
+            $link_attrs = 'url="'.esc_attr($link_url).'"';
+            if (!empty($link_preview['title'])) {
+                $link_attrs .= ' title="'.esc_attr($link_preview['title']).'"';
+            }
+            if (!empty($link_preview['description'])) {
+                $link_attrs .= ' description="'.esc_attr($link_preview['description']).'"';
+            }
+            if (!empty($link_preview['image'])) {
+                $link_attrs .= ' image="'.esc_attr($link_preview['image']).'"';
+            }
+            $parts[] = '[cpcap_link '.$link_attrs.'][/cpcap_link]';
         }
     }
 
@@ -480,8 +491,17 @@ function cpc_activity_plus_render_tags($item_html, $atts, $item_id, $post_title,
     }
 
     $link_url = '';
-    if (preg_match('/\[cpcap_link\s+url="([^"]+)"\]\[\/cpcap_link\]/', $post_title, $matches)) {
-        $link_url = esc_url($matches[1]);
+    $link_title = '';
+    $link_description = '';
+    $link_image = '';
+    if (preg_match('/\[cpcap_link([^\]]*)\]\[\/cpcap_link\]/', $post_title, $matches)) {
+        $atts = shortcode_parse_atts(trim($matches[1]));
+        if (is_array($atts)) {
+            $link_url = !empty($atts['url']) ? esc_url($atts['url']) : '';
+            $link_title = !empty($atts['title']) ? sanitize_text_field($atts['title']) : '';
+            $link_description = !empty($atts['description']) ? sanitize_text_field($atts['description']) : '';
+            $link_image = !empty($atts['image']) ? esc_url($atts['image']) : '';
+        }
     }
 
     $video_url = '';
@@ -490,11 +510,11 @@ function cpc_activity_plus_render_tags($item_html, $atts, $item_id, $post_title,
     }
 
     $item_html = preg_replace('/\[cpcap_images\].*?\[\/cpcap_images\]/s', '', $item_html);
-    $item_html = preg_replace('/\[cpcap_link\s+url="[^"]+"\]\[\/cpcap_link\]/s', '', $item_html);
+    $item_html = preg_replace('/\[cpcap_link[^\]]*\]\[\/cpcap_link\]/s', '', $item_html);
     $item_html = preg_replace('/\[cpcap_video\].*?\[\/cpcap_video\]/s', '', $item_html);
 
     $caption_source = preg_replace('/\[cpcap_images\].*?\[\/cpcap_images\]/s', '', $post_title);
-    $caption_source = preg_replace('/\[cpcap_link\s+url="[^"]+"\]\[\/cpcap_link\]/s', '', $caption_source);
+    $caption_source = preg_replace('/\[cpcap_link[^\]]*\]\[\/cpcap_link\]/s', '', $caption_source);
     $caption_source = preg_replace('/\[cpcap_video\].*?\[\/cpcap_video\]/s', '', $caption_source);
     $caption_text = trim(wp_strip_all_tags($caption_source));
 
@@ -516,8 +536,22 @@ function cpc_activity_plus_render_tags($item_html, $atts, $item_id, $post_title,
     }
 
     if ($link_url) {
-        $plus_html .= '<div class="cpc_activity_plus_link">';
-        $plus_html .= '<a href="'.$link_url.'" target="_blank" rel="noopener noreferrer">'.$link_url.'</a>';
+        $display_title = $link_title !== '' ? $link_title : $link_url;
+        $plus_html .= '<div class="cpc_activity_plus_link cpc_activity_plus_link_preview_card">';
+        $plus_html .= '<a class="cpc_activity_plus_link_preview_anchor" href="'.$link_url.'" target="_blank" rel="noopener noreferrer">';
+        if ($link_image) {
+            $plus_html .= '<div class="cpc_activity_plus_link_preview_image_wrap">';
+            $plus_html .= '<img src="'.$link_image.'" alt="" class="cpc_activity_plus_link_preview_image" loading="lazy" />';
+            $plus_html .= '</div>';
+        }
+        $plus_html .= '<div class="cpc_activity_plus_link_preview_content">';
+        $plus_html .= '<div class="cpc_activity_plus_link_preview_title">'.esc_html($display_title).'</div>';
+        if ($link_description !== '') {
+            $plus_html .= '<div class="cpc_activity_plus_link_preview_desc">'.esc_html($link_description).'</div>';
+        }
+        $plus_html .= '<div class="cpc_activity_plus_link_preview_url">'.esc_html($link_url).'</div>';
+        $plus_html .= '</div>';
+        $plus_html .= '</a>';
         $plus_html .= '</div>';
     }
 
@@ -571,6 +605,45 @@ function cpc_activity_plus_extract_thumbnail($body, $base_url) {
     return array_filter($images);
 }
 
+function cpc_activity_plus_fetch_link_preview_data($url) {
+
+    $url = esc_url_raw($url);
+    if (!$url) {
+        return array();
+    }
+
+    $response = wp_remote_get($url, array('timeout' => 8, 'redirection' => 3));
+    if (is_wp_error($response)) {
+        return array();
+    }
+
+    $body = wp_remote_retrieve_body($response);
+    if (!$body) {
+        return array();
+    }
+
+    $title = $url;
+    if (preg_match('/<title>(.*?)<\/title>/is', $body, $matches)) {
+        $title = wp_strip_all_tags($matches[1]);
+    }
+
+    $description = '';
+    if (preg_match('/<meta[^>]+name=["\']description["\'][^>]+content=["\'](.*?)["\']/is', $body, $matches)) {
+        $description = wp_strip_all_tags($matches[1]);
+    }
+
+    $images = cpc_activity_plus_extract_thumbnail($body, $url);
+    $primary_image = reset($images);
+
+    return array(
+        'url' => esc_url($url),
+        'title' => sanitize_text_field($title),
+        'description' => sanitize_text_field($description),
+        'image' => $primary_image ? esc_url($primary_image) : '',
+        'images' => array_map('esc_url', $images),
+    );
+}
+
 function cpc_activity_plus_resolve_url($relative_url, $base_url) {
     if (filter_var($relative_url, FILTER_VALIDATE_URL)) {
         return $relative_url;
@@ -603,35 +676,17 @@ function cpc_activity_plus_ajax_preview_link() {
         wp_send_json_error();
     }
 
-    $response = wp_remote_get($url, array('timeout' => 8, 'redirection' => 3));
-    if (is_wp_error($response)) {
+    $preview = cpc_activity_plus_fetch_link_preview_data($url);
+    if (empty($preview)) {
         wp_send_json_error();
     }
-
-    $body = wp_remote_retrieve_body($response);
-    if (!$body) {
-        wp_send_json_error();
-    }
-
-    $title = $url;
-    if (preg_match('/<title>(.*?)<\/title>/is', $body, $matches)) {
-        $title = wp_strip_all_tags($matches[1]);
-    }
-
-    $description = '';
-    if (preg_match('/<meta[^>]+name=["\']description["\'][^>]+content=["\'](.*?)["\']/is', $body, $matches)) {
-        $description = wp_strip_all_tags($matches[1]);
-    }
-
-    $images = cpc_activity_plus_extract_thumbnail($body, $url);
-    $primary_image = reset($images);
 
     wp_send_json_success(array(
-        'title' => $title,
-        'description' => $description,
-        'url' => esc_url($url),
-        'image' => $primary_image ? esc_url($primary_image) : '',
-        'images' => array_map('esc_url', $images),
+        'title' => $preview['title'],
+        'description' => $preview['description'],
+        'url' => $preview['url'],
+        'image' => !empty($preview['image']) ? $preview['image'] : '',
+        'images' => !empty($preview['images']) ? $preview['images'] : array(),
     ));
 }
 add_action('wp_ajax_cpc_activity_plus_preview_link', 'cpc_activity_plus_ajax_preview_link');
@@ -848,7 +903,18 @@ function cpc_activity_plus_process_group_uploads($the_post, $the_files, $activit
     if ($settings['allow_links'] && !empty($the_post['cpc_activity_plus_link_url'])) {
         $link_url = esc_url_raw($the_post['cpc_activity_plus_link_url']);
         if ($link_url) {
-            $parts[] = '[cpcap_link url="'.esc_attr($link_url).'"][/cpcap_link]';
+            $link_preview = cpc_activity_plus_fetch_link_preview_data($link_url);
+            $link_attrs = 'url="'.esc_attr($link_url).'"';
+            if (!empty($link_preview['title'])) {
+                $link_attrs .= ' title="'.esc_attr($link_preview['title']).'"';
+            }
+            if (!empty($link_preview['description'])) {
+                $link_attrs .= ' description="'.esc_attr($link_preview['description']).'"';
+            }
+            if (!empty($link_preview['image'])) {
+                $link_attrs .= ' image="'.esc_attr($link_preview['image']).'"';
+            }
+            $parts[] = '[cpcap_link '.$link_attrs.'][/cpcap_link]';
         }
     }
 

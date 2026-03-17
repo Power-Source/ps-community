@@ -44,6 +44,8 @@ Kein Problem! Ändere ganz einfach den gesamten Text, den Deine Benutzer sehen, 
 * Neu: Medien, Dokumente und Projekte werden zentral über den Core-Funktionen-Tab gesteuert (`core-media`, `core-docs`, `core-projects`)
 * Fix: Gruppen lassen sich im Community-Dashboard wieder korrekt deaktivieren (kein erzwungenes Reaktivieren in Multisite)
 * Bereinigung: Redundante "Modul aktivieren"-Schalter in Medien-, Dokumente- und Projekte-Tab entfernt, um Doppelsteuerung zu vermeiden
+* Fix: Aktivität Plus Link-Vorschau bleibt nach dem Veröffentlichen im Stream als Card erhalten (Titel/Beschreibung/Bild), statt nur als nackter Link
+* UX-Fix: Aktivität Plus Editor wird nach erfolgreichem Posten sauber zurückgesetzt (Link-/Video-Vorschau und Eingabefelder werden geleert)
 
 = 1.1.0 =
 
