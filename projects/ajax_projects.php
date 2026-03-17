@@ -234,6 +234,7 @@ function cpc_projects_ajax_delete_comment_attachment() {
 
 	wp_send_json_success(array(
 		'tasks_html' => cpc_projects_render_task_panel($project_id),
+		'activity_html' => cpc_projects_render_events_html($project_id, 60),
 	));
 }
 
@@ -278,6 +279,7 @@ function cpc_projects_ajax_delete_task_attachment_handler() {
 
 	wp_send_json_success(array(
 		'tasks_html' => cpc_projects_render_task_panel($project_id),
+		'activity_html' => cpc_projects_render_events_html($project_id, 60),
 	));
 }
 
@@ -287,7 +289,7 @@ function cpc_projects_ajax_delete_comment() {
 	$comment_id = isset($_POST['comment_id']) ? (int)$_POST['comment_id'] : 0;
 	$comment    = get_comment($comment_id);
 
-	if (!$comment || $comment->comment_type !== 'cpc_project_task_comment') {
+	if (!$comment || $comment->comment_type !== 'cpc_project_task') {
 		wp_send_json_error(array('message' => __('Kommentar nicht gefunden.', CPC2_TEXT_DOMAIN)), 404);
 	}
 

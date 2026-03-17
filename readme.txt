@@ -56,6 +56,9 @@ Kein Problem! Ändere ganz einfach den gesamten Text, den Deine Benutzer sehen, 
 * Verbesserung: Task-Widget zeigt Restzeit zur Deadline statt „hinzugefügt vor..." – einfacher Überblick über dringende Aufgaben
 * Neu: Task-Links im Widget und in Aktivitätsmeldungen **navigieren direkt zum Task-Tab** und scrollen zur Task
 * Fix: Projekt-Deep-Linking mit `cpc_project_section=tasks` Query-Parameter öffnet automatisch Tasks-Tab mit Hash-Scroll zum Task
+* Fix: Task-Kommentare lassen sich jetzt wieder löschen (AJAX-Handler comment-type Typ-Mismatch und Validierungsfehler behoben)
+* UX: Alle nervigen Bestätigungs-Dialoge bei Lösch-Operationen (Tasks, Kommentare, Dateien, Projekte) entfernt
+* Fix: Dokument-Editor in Edit-Form war nicht sichtbar (CSS-Wrapper-Fehler für TinyMCE behoben)
 
 = 1.1.0 =
 

@@ -176,10 +176,6 @@
             return;
         }
 
-        if (!window.confirm(cpc_projects_ajax.confirmDeleteTask || 'Task wirklich loeschen?')) {
-            return;
-        }
-
         var $btn = $(this);
         var taskId = parseInt($btn.data('task-id'), 10);
         if (!taskId) {
@@ -347,10 +343,6 @@
             return;
         }
 
-        if (!window.confirm(cpc_projects_ajax.confirmDeleteAttachment || 'Datei wirklich loeschen?')) {
-            return;
-        }
-
         var $btn = $(this);
         var attachmentId = parseInt($btn.data('attachment-id'), 10);
         if (!attachmentId) {
@@ -369,13 +361,11 @@
             attachment_id: attachmentId
         }).done(function(resp) {
             if (!resp || !resp.success || !resp.data || !resp.data.tasks_html) {
-                alert(cpc_projects_ajax.deleteAttachmentError || 'Datei konnte nicht geloescht werden.');
                 return;
             }
 
             replaceTaskPanel(projectId, resp.data.tasks_html);
-        }).fail(function() {
-            alert(cpc_projects_ajax.deleteAttachmentError || 'Datei konnte nicht geloescht werden.');
+            replaceActivityPanel(projectId, resp.data.activity_html || '');
         });
     });
 
@@ -383,7 +373,6 @@
     $(document).on('click', '.cpc_projects_task_direct_attachment_delete', function(e) {
         e.preventDefault();
         if (!hasAjaxConfig()) { return; }
-        if (!window.confirm(cpc_projects_ajax.confirmDeleteAttachment || 'Datei wirklich loeschen?')) { return; }
 
         var $btn         = $(this);
         var attachmentId = parseInt($btn.data('attachment-id'), 10);
@@ -397,12 +386,10 @@
             attachment_id: attachmentId
         }).done(function(resp) {
             if (!resp || !resp.success || !resp.data || !resp.data.tasks_html) {
-                alert(cpc_projects_ajax.deleteAttachmentError || 'Datei konnte nicht geloescht werden.');
                 return;
             }
             replaceTaskPanel(projectId, resp.data.tasks_html);
-        }).fail(function() {
-            alert(cpc_projects_ajax.deleteAttachmentError || 'Datei konnte nicht geloescht werden.');
+            replaceActivityPanel(projectId, resp.data.activity_html || '');
         });
     });
 
@@ -410,7 +397,6 @@
     $(document).on('click', '.cpc_projects_comment_delete', function(e) {
         e.preventDefault();
         if (!hasAjaxConfig()) { return; }
-        if (!window.confirm(cpc_projects_ajax.confirmDeleteComment || 'Kommentar wirklich loeschen?')) { return; }
 
         var $btn      = $(this);
         var commentId = parseInt($btn.data('comment-id'), 10);
@@ -425,6 +411,7 @@
         }).done(function(resp) {
             if (!resp || !resp.success || !resp.data || !resp.data.tasks_html) { return; }
             replaceTaskPanel(projectId, resp.data.tasks_html);
+            replaceActivityPanel(projectId, resp.data.activity_html || '');
         });
     });
 
@@ -548,9 +535,6 @@
             return;
         }
 
-        if (!window.confirm(cpc_projects_ajax.confirmDeleteProject || 'Projekt wirklich loeschen?')) {
-            return;
-        }
 
         var projectId = parseInt($(this).data('project-id'), 10);
         if (!projectId) {

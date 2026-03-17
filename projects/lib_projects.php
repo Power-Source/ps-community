@@ -1669,7 +1669,7 @@ function cpc_projects_delete_task_comment($comment_id, $user_id = 0) {
     }
 
     $comment = get_comment($comment_id);
-    if (!$comment || $comment->comment_type !== 'cpc_project_task_comment') {
+    if (!$comment || $comment->comment_type !== 'cpc_project_task') {
         return false;
     }
 
