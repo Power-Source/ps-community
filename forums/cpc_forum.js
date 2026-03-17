@@ -9,9 +9,24 @@ jQuery(document).ready(function() {
 	}
 
 	function cpcDecodeEntities(value) {
-		var textarea = document.createElement('textarea');
-		textarea.innerHTML = String(value || '');
-		return textarea.value;
+		var input = String(value || '');
+		return input.replace(/&(#x?[0-9a-f]+|amp|lt|gt|quot|apos|#39);/gi, function(match, entity) {
+			var key = String(entity || '').toLowerCase();
+			if (key === 'amp') { return '&'; }
+			if (key === 'lt') { return '<'; }
+			if (key === 'gt') { return '>'; }
+			if (key === 'quot') { return '"'; }
+			if (key === 'apos' || key === '#39') { return "'"; }
+			if (key.indexOf('#x') === 0) {
+				var cpHex = parseInt(key.slice(2), 16);
+				return isNaN(cpHex) ? match : String.fromCharCode(cpHex);
+			}
+			if (key.indexOf('#') === 0) {
+				var cpDec = parseInt(key.slice(1), 10);
+				return isNaN(cpDec) ? match : String.fromCharCode(cpDec);
+			}
+			return match;
+		});
 	}
 
 	function cpcBuildForumUploadUrl() {
@@ -357,12 +372,19 @@ jQuery(document).ready(function() {
 				var the_button = this;
 				var the_textarea = jQuery('#sub_comment_'+id);
 				var waitUrl = jQuery('#cpc_wait_url').text().trim();
-				var $tmp = jQuery('<div>', {
-					id: 'cpc_tmp',
-					css: { width: '20px', height: '20px', marginBottom: '20px' }
-				});
-				jQuery('<img>', { src: waitUrl, alt: '' }).appendTo($tmp);
-				jQuery(this).parent().append($tmp);
+				var $parent = jQuery(this).parent();
+				var tmpNode = document.createElement('div');
+				tmpNode.id = 'cpc_tmp';
+				tmpNode.style.width = '20px';
+				tmpNode.style.height = '20px';
+				tmpNode.style.marginBottom = '20px';
+				var imgNode = document.createElement('img');
+				imgNode.alt = '';
+				imgNode.src = waitUrl;
+				tmpNode.appendChild(imgNode);
+				if ($parent.length && $parent[0]) {
+					$parent[0].appendChild(tmpNode);
+				}
 				jQuery(the_button).hide();
 				jQuery(the_textarea).hide();
 
