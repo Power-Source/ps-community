@@ -15,6 +15,13 @@
         }
     }
 
+    function replaceActivityPanel(projectId, activityHtml) {
+        var $section = $('.cpc_projects_single[data-project-id="' + projectId + '"] .cpc_projects_single_section[data-section="activity"]');
+        if ($section.length && typeof activityHtml === 'string') {
+            $section.html(activityHtml);
+        }
+    }
+
     function initAssigneeSelects($context) {
         var $root = ($context && $context.length) ? $context : $(document);
         var $selects = $root.find('.cpc_projects_task_assignees');
@@ -125,6 +132,7 @@
                 return;
             }
             replaceTaskPanel(projectId, resp.data.tasks_html);
+            replaceActivityPanel(projectId, resp.data.activity_html || '');
         }).fail(function() {
             alert(cpc_projects_ajax.addTaskError || 'Task konnte nicht erstellt werden.');
         });
@@ -158,6 +166,7 @@
             }
 
             replaceTaskPanel(projectId, resp.data.tasks_html);
+            replaceActivityPanel(projectId, resp.data.activity_html || '');
         });
     });
 
@@ -193,6 +202,7 @@
             }
 
             replaceTaskPanel(projectId, resp.data.tasks_html);
+            replaceActivityPanel(projectId, resp.data.activity_html || '');
         });
     });
 
@@ -270,6 +280,7 @@
                 return;
             }
             replaceTaskPanel(projectId, resp.data.tasks_html);
+            replaceActivityPanel(projectId, resp.data.activity_html || '');
         }).fail(function() {
             alert(cpc_projects_ajax.updateTaskError || 'Task konnte nicht aktualisiert werden.');
         });
@@ -324,6 +335,7 @@
             }
 
             replaceTaskPanel(projectId, resp.data.tasks_html);
+            replaceActivityPanel(projectId, resp.data.activity_html || '');
         }).fail(function() {
             alert(cpc_projects_ajax.addCommentError || 'Kommentar konnte nicht gespeichert werden.');
         });

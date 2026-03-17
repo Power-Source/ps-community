@@ -77,6 +77,30 @@ function cpc_projects_get_project_url($project_id) {
     return get_permalink($project_id);
 }
 
+function cpc_projects_render_events_html($project_id, $limit = 60) {
+    $project_id = (int)$project_id;
+    $limit = max(1, min(300, (int)$limit));
+
+    if ($project_id <= 0) {
+        return '<p>' . esc_html__('Noch keine Events vorhanden.', CPC2_TEXT_DOMAIN) . '</p>';
+    }
+
+    $events = cpc_projects_get_project_events($project_id, $limit);
+    if (empty($events)) {
+        return '<p>' . esc_html__('Noch keine Events vorhanden.', CPC2_TEXT_DOMAIN) . '</p>';
+    }
+
+    $html = '<ul class="cpc_projects_single_events">';
+    foreach ($events as $event) {
+        $who  = $event->comment_author ? $event->comment_author : __('Mitglied', CPC2_TEXT_DOMAIN);
+        $when = sprintf(__('vor %s', CPC2_TEXT_DOMAIN), human_time_diff(strtotime($event->comment_date_gmt), current_time('timestamp', 1)));
+        $html .= '<li><strong>' . esc_html($who) . '</strong> <span>' . esc_html($when) . '</span><div>' . esc_html(wp_strip_all_tags((string)$event->comment_content)) . '</div></li>';
+    }
+    $html .= '</ul>';
+
+    return $html;
+}
+
 /**
  * Rendert die komplette Detail-Ansicht eines einzelnen Projekts (Tabs: Uebersicht, Tasks, Aktivitaet, Einstellungen).
  * Wird sowohl vom CPT-Einzel-Template als auch vom Gruppen-Tab genutzt.
@@ -99,25 +123,13 @@ function cpc_projects_render_single_project_html($project_id, $args = array()) {
     $can_manage = cpc_projects_user_can_manage_project($project_id);
     $progress   = cpc_projects_get_task_progress($project_id);
 
-    $events = cpc_projects_get_project_events($project_id, 60);
-    $events_html = '';
-    if (!empty($events)) {
-        $events_html .= '<ul class="cpc_projects_single_events">';
-        foreach ($events as $event) {
-            $who  = $event->comment_author ? $event->comment_author : __('Mitglied', CPC2_TEXT_DOMAIN);
-            $when = sprintf(__('vor %s', CPC2_TEXT_DOMAIN), human_time_diff(strtotime($event->comment_date_gmt), current_time('timestamp', 1)));
-            $events_html .= '<li><strong>' . esc_html($who) . '</strong> <span>' . esc_html($when) . '</span><div>' . esc_html(wp_strip_all_tags((string)$event->comment_content)) . '</div></li>';
-        }
-        $events_html .= '</ul>';
-    } else {
-        $events_html .= '<p>' . esc_html__('Noch keine Events vorhanden.', CPC2_TEXT_DOMAIN) . '</p>';
-    }
+    $events_html = cpc_projects_render_events_html($project_id, 60);
 
     $html = '';
     if (!empty($args['back_url'])) {
         $html .= '<p class="cpc_projects_back_link"><a href="' . esc_url($args['back_url']) . '">&larr; ' . esc_html__('Alle Projekte', CPC2_TEXT_DOMAIN) . '</a></p>';
     }
-    $html .= '<div class="cpc_projects_single">';
+    $html .= '<div class="cpc_projects_single" data-project-id="' . (int)$project_id . '">';
     $html .= '<h2 class="cpc_projects_single_title">' . esc_html(get_the_title($project_id)) . '</h2>';
     $html .= '<div class="cpc_projects_single_nav">';
     $html .= '<button type="button" class="cpc_projects_single_nav_link is-active" data-target="overview">' . esc_html__('Uebersicht', CPC2_TEXT_DOMAIN) . '</button>';
@@ -581,7 +593,7 @@ function cpc_projects_render_task_panel($project_id) {
             }
 
             if (is_user_logged_in() && cpc_projects_user_can_view_project($project_id)) {
-                $html .= '<form class="cpc_projects_task_comment_form" data-project-id="'.(int)$project_id.'" data-task-id="'.(int)$task->id.'">';
+                $html .= '<form method="post" action="" class="cpc_projects_task_comment_form" data-project-id="'.(int)$project_id.'" data-task-id="'.(int)$task->id.'">';
                 $html .= '<textarea name="comment" rows="2" maxlength="1500" placeholder="'.esc_attr__('Kommentar schreiben...', CPC2_TEXT_DOMAIN).'" required></textarea>';
                 if (cpc_projects_task_comment_attachments_enabled()) {
                     $html .= '<input type="file" name="attachments[]" class="cpc_projects_task_comment_files" multiple />';

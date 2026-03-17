@@ -1172,7 +1172,10 @@ function cpc_projects_notify_task_event($project_id, $task, $event_type, $actor_
 
     $url = cpc_projects_get_task_url($project_id, $task_id);
     if ($url === '') {
-        return;
+        $url = get_permalink($project_id);
+        if (!$url) {
+            $url = home_url('/');
+        }
     }
 
     $subject = get_bloginfo('name').': '.__('Projekt-Task Update', CPC2_TEXT_DOMAIN);

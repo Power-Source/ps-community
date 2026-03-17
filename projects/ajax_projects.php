@@ -73,6 +73,7 @@ function cpc_projects_ajax_add_task() {
 	wp_send_json_success(array(
 		'task_id' => $task_id,
 		'tasks_html' => cpc_projects_render_task_panel($project_id),
+		'activity_html' => cpc_projects_render_events_html($project_id, 60),
 	));
 }
 
@@ -118,6 +119,7 @@ function cpc_projects_ajax_update_task() {
 
 	wp_send_json_success(array(
 		'tasks_html' => cpc_projects_render_task_panel((int)$task->project_id),
+		'activity_html' => cpc_projects_render_events_html((int)$task->project_id, 60),
 	));
 }
 
@@ -150,6 +152,7 @@ function cpc_projects_ajax_toggle_task() {
 
 	wp_send_json_success(array(
 		'tasks_html' => cpc_projects_render_task_panel((int)$task->project_id),
+		'activity_html' => cpc_projects_render_events_html((int)$task->project_id, 60),
 	));
 }
 
@@ -173,6 +176,7 @@ function cpc_projects_ajax_delete_task() {
 
 	wp_send_json_success(array(
 		'tasks_html' => cpc_projects_render_task_panel((int)$task->project_id),
+		'activity_html' => cpc_projects_render_events_html((int)$task->project_id, 60),
 	));
 }
 
@@ -207,6 +211,7 @@ function cpc_projects_ajax_add_comment() {
 		'comment_id' => (int)$comment_id,
 		'attachment_ids' => $attachment_ids,
 		'tasks_html' => cpc_projects_render_task_panel((int)$task->project_id),
+		'activity_html' => cpc_projects_render_events_html((int)$task->project_id, 60),
 	));
 }
 
