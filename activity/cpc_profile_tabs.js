@@ -38,34 +38,45 @@ cpcLoadedExternalScripts[src] = loader.promise();
 return cpcLoadedExternalScripts[src];
 }
 
-// Inject <link rel="stylesheet"> tags into <head> using regex (avoids jQuery DOM stripping)
+// Inject stylesheet/link nodes into <head> from parsed HTML.
 function cpcInjectStyles(stylesHtml) {
 if (!stylesHtml || !stylesHtml.trim()) { return; }
-var linkRe = /<link[^>]+rel=["']stylesheet["'][^>]*>/gi;
-var hrefRe = /href=["']([^"']+)["']/i;
-var idRe   = /id=["']([^"']+)["']/i;
-var match;
-while ((match = linkRe.exec(stylesHtml)) !== null) {
-var tag = match[0];
-var hrefMatch = hrefRe.exec(tag);
-if (!hrefMatch) { continue; }
-var href = hrefMatch[1];
+var parser = new DOMParser();
+var doc = parser.parseFromString('<body>' + stylesHtml + '</body>', 'text/html');
+var styleEls = doc.body.querySelectorAll('link[rel="stylesheet"], style');
+
+Array.prototype.forEach.call(styleEls, function(el) {
+if (el.tagName.toLowerCase() === 'link') {
+var href = el.getAttribute('href');
+if (!href) { return; }
 var hrefBase = href.split('?')[0];
 var already = false;
 $('head link[rel="stylesheet"]').each(function() {
 if (($(this).attr('href') || '').split('?')[0] === hrefBase) {
-already = true; return false;
+already = true;
+return false;
 }
 });
-if (already) { continue; }
+if (already) { return; }
 var linkEl = document.createElement('link');
 linkEl.rel = 'stylesheet';
 linkEl.href = href;
-linkEl.media = 'all';
-var idMatch = idRe.exec(tag);
-if (idMatch) { linkEl.id = idMatch[1]; }
+linkEl.media = el.getAttribute('media') || 'all';
+if (el.id) { linkEl.id = el.id; }
 document.head.appendChild(linkEl);
+return;
 }
+
+var cssText = el.textContent || '';
+if (!cssText.trim()) { return; }
+var styleHash = cpcAssetHash(cssText);
+if (document.head.querySelector('style[data-cpc-inline-style="' + styleHash + '"]')) { return; }
+var styleNode = document.createElement('style');
+styleNode.type = 'text/css';
+styleNode.setAttribute('data-cpc-inline-style', styleHash);
+styleNode.textContent = cssText;
+document.head.appendChild(styleNode);
+});
 }
 
 // Inject scripts using DOMParser (avoids jQuery stripping inline scripts), returns Promise
@@ -94,14 +105,36 @@ return cpcResolvedPromise();
 return chain;
 }
 
-// Extract <link>, <style>, <script> from HTML using regex – does NOT strip them via jQuery
+// Extract <link>, <style>, <script> from HTML using DOMParser.
 function cpcExtractAssetsFromHtml(html) {
 if (!html || typeof html !== 'string') { return { html: html || '', styles: '', scripts: '' }; }
-var stylesArr = [], scriptsArr = [];
-html = html.replace(/<link[^>]+rel=["']stylesheet["'][^>]*\/?>/gi, function(m) { stylesArr.push(m); return ''; });
-html = html.replace(/<style[\s\S]*?<\/style>/gi,                   function(m) { stylesArr.push(m); return ''; });
-html = html.replace(/<script[\s\S]*?<\/script>/gi,                  function(m) { scriptsArr.push(m); return ''; });
-return { html: html, styles: stylesArr.join('\n'), scripts: scriptsArr.join('\n') };
+var parser = new DOMParser();
+var doc = parser.parseFromString('<body>' + html + '</body>', 'text/html');
+var body = doc.body;
+var stylesArr = [];
+var scriptsArr = [];
+
+Array.prototype.slice.call(body.querySelectorAll('link[rel="stylesheet"], style')).forEach(function(node) {
+stylesArr.push(node.outerHTML);
+node.parentNode.removeChild(node);
+});
+
+Array.prototype.slice.call(body.querySelectorAll('script')).forEach(function(node) {
+scriptsArr.push(node.outerHTML);
+node.parentNode.removeChild(node);
+});
+
+return { html: body.innerHTML, styles: stylesArr.join('\n'), scripts: scriptsArr.join('\n') };
+}
+
+function cpcRenderHtmlInto($target, html) {
+var parser = new DOMParser();
+var doc = parser.parseFromString('<body>' + (html || '') + '</body>', 'text/html');
+var fragment = document.createDocumentFragment();
+while (doc.body.firstChild) {
+fragment.appendChild(doc.body.firstChild);
+}
+$target.empty().append(fragment);
 }
 
 function cpcFixJobboardExpertLayout() {
@@ -190,7 +223,7 @@ tabHtml = response;
 
 if (!tabHtml) {
 $contentWrapper.removeClass('loading').css('opacity', '1');
-$contentWrapper.html('<div class="cpc-error">Tab-Inhalt konnte nicht geladen werden.</div>');
+$contentWrapper.text('Tab-Inhalt konnte nicht geladen werden.');
 return;
 }
 
@@ -202,7 +235,7 @@ cpcInjectStyles(stylesHtml + '\n' + extracted.styles);
 // 2. Swap content, then load scripts
 $contentWrapper.fadeOut(200, function() {
 var $w = $(this);
-$w.html(extracted.html);
+cpcRenderHtmlInto($w, extracted.html);
 if (tab === 'jobboard') {
 cpcFixJobboardExpertLayout();
 }
@@ -221,9 +254,7 @@ cpcFixJobboardExpertLayout();
 },
 error: function(xhr) {
 $contentWrapper.removeClass('loading').css('opacity', '1');
-$contentWrapper.html(
-xhr && xhr.responseText ? xhr.responseText : '<div class="cpc-error">Tab-Inhalt konnte nicht geladen werden.</div>'
-);
+$contentWrapper.text(xhr && xhr.responseText ? xhr.responseText : 'Tab-Inhalt konnte nicht geladen werden.');
 }
 });
 

@@ -1,4 +1,30 @@
 jQuery(document).ready(function() {
+
+	function cpcTrimIframeResponse(rawResponse) {
+		return String(rawResponse || '').trim();
+	}
+
+	function cpcStripLeadingErrorMarker(value) {
+		return String(value || '').replace(/^\*+/, '');
+	}
+
+	function cpcDecodeEntities(value) {
+		var textarea = document.createElement('textarea');
+		textarea.innerHTML = String(value || '');
+		return textarea.value;
+	}
+
+	function cpcBuildForumUploadUrl() {
+		var basePath = String(jQuery('#cpc_forum_plugins_url').val() || '').trim();
+		try {
+			var uploadUrl = new URL(basePath.replace(/\/+$/, '') + '/lib_forum.php', window.location.origin);
+			if (uploadUrl.protocol === 'http:' || uploadUrl.protocol === 'https:') {
+				return uploadUrl.href;
+			}
+		} catch (e) {
+		}
+		return '/lib_forum.php';
+	}
     
 	/* Admin - add forum */
 
@@ -122,7 +148,7 @@ jQuery(document).ready(function() {
 					        jQuery("body").append(iframe);
 
 					        var form = jQuery('#cpc_forum_post_theuploadform');
-					        form.attr("action", jQuery('#cpc_forum_plugins_url').val()+"/lib_forum.php");
+					        form.attr("action", cpcBuildForumUploadUrl());
 					        form.attr("method", "post");
 					        form.attr("enctype", "multipart/form-data");
 					        form.attr("encoding", "multipart/form-data");
@@ -131,17 +157,17 @@ jQuery(document).ready(function() {
 					        form.submit();
 
 					        jQuery("#cpc_forum_postiframe").load(function () {
-                                iframeContents = jQuery("#cpc_forum_postiframe")[0].contentWindow.document.body.textContent;
-                                if (iframeContents.indexOf("*") == 0) {
+								var iframeContents = cpcTrimIframeResponse(jQuery("#cpc_forum_postiframe")[0].contentWindow.document.body.textContent);
+								if (iframeContents.indexOf("*") === 0) {
                                     alert(jQuery('#valid_exts_msg').val());
-                                    iframeContents = iframeContents.replace('*', '');
+									iframeContents = cpcStripLeadingErrorMarker(iframeContents);
                                 }
-                                iframeContents = iframeContents.split("|");
-                                var reload_loc = document.location; // reload current page
-                                var post_id = iframeContents[0];
-								var cpc_forum_moderate = iframeContents[2];
-								if (iframeContents[1] != 'reload') {
-                                    reload_loc = iframeContents[1].replace('&amp;','&'); // to go straight to new post or url to redirect to	
+								var iframeParts = iframeContents.split("|");
+								var reload_loc = window.location.href; // reload current page
+								var post_id = iframeParts[0] || '';
+								var cpc_forum_moderate = iframeParts[2];
+								if ((iframeParts[1] || 'reload') !== 'reload') {
+									reload_loc = cpcDecodeEntities(iframeParts[1]); // to go straight to new post or url to redirect to
                                 }
                                 // now call AJAX to do hook, like subscribers, so can skip any delay
                                 jQuery.post(
@@ -242,18 +268,18 @@ jQuery(document).ready(function() {
                         jQuery("body").append(iframe);
 
                         var form = jQuery('#cpc_forum_comment_theuploadform');
-                        form.attr("action", jQuery('#cpc_forum_plugins_url').val()+"/lib_forum.php");
+						form.attr("action", cpcBuildForumUploadUrl());
                         form.attr("method", "post");
                         form.attr("enctype", "multipart/form-data");
                         form.attr("encoding", "multipart/form-data");
                         form.attr("target", "cpc_forum_commentiframe");
                         form.submit();
 
-                        jQuery("#cpc_forum_commentiframe").load(function () {
-                            iframeContents = jQuery("#cpc_forum_commentiframe")[0].contentWindow.document.body.textContent;
-                            if (iframeContents.indexOf("*") == 0) {
+						jQuery("#cpc_forum_commentiframe").load(function () {
+							var iframeContents = cpcTrimIframeResponse(jQuery("#cpc_forum_commentiframe")[0].contentWindow.document.body.textContent);
+							if (iframeContents.indexOf("*") === 0) {
                                 alert(jQuery('#valid_exts_msg').val());
-                                iframeContents = iframeContents.replace('*', '');
+								iframeContents = cpcStripLeadingErrorMarker(iframeContents);
                             }                            
                             if (iframeContents == 'reload') {
                             	var url = document.location.toString();
@@ -328,11 +354,15 @@ jQuery(document).ready(function() {
 
 			} else {
 
-                var the_button = this;
+				var the_button = this;
 				var the_textarea = jQuery('#sub_comment_'+id);
-				// FIXED: Escape HTML content from .html() to prevent XSS
-				var waitUrl = jQuery('<div>').text(jQuery('#cpc_wait_url').html()).html();
-				jQuery(this).parent().append('<div id="cpc_tmp" style="width:20px;height:20px;margin-bottom:20px"><img src="'+waitUrl+'" /></div>');
+				var waitUrl = jQuery('#cpc_wait_url').text().trim();
+				var $tmp = jQuery('<div>', {
+					id: 'cpc_tmp',
+					css: { width: '20px', height: '20px', marginBottom: '20px' }
+				});
+				jQuery('<img>', { src: waitUrl, alt: '' }).appendTo($tmp);
+				jQuery(this).parent().append($tmp);
 				jQuery(the_button).hide();
 				jQuery(the_textarea).hide();
 
@@ -353,12 +383,11 @@ jQuery(document).ready(function() {
 					        security : cpc_forum_ajax.nonce
 					    },
 					    function(response) {
-				    	// FIXED: Sanitize AJAX response to prevent XSS injection
-				    	var sanitizedResponse = jQuery('<div>').append(jQuery.parseHTML(response)).html();
+					    	var responseNodes = jQuery.parseHTML(response, document, false) || [];
 				    	if (jQuery('#sub_comment_div_'+id).prev('.cpc_forum_post_subcomments').length) {
-							jQuery('#sub_comment_div_'+id).prev('.cpc_forum_post_subcomments').append(sanitizedResponse);
+								jQuery('#sub_comment_div_'+id).prev('.cpc_forum_post_subcomments').append(responseNodes);
 						} else {
-							jQuery('#sub_comment_div_'+id).prepend(sanitizedResponse);
+								jQuery('#sub_comment_div_'+id).prepend(responseNodes);
 						}
 							jQuery('.cpc_forum_post_subcomment').slideDown('fast');
 							jQuery("body").removeClass("cpc_wait_loading");

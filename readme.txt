@@ -153,7 +153,4 @@ Kein Problem! Ändere ganz einfach den gesamten Text, den Deine Benutzer sehen, 
 * Fix: Creation of dynamic property
 
 = 1.0.0 =
-
-== Upgrade Notice ==
-
-Latest news and information at https://n3rds.work/blog.
+* Release
