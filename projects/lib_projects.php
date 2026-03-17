@@ -1116,25 +1116,35 @@ function cpc_projects_insert_task_activity($author_id, $project_id, $task_id, $t
         return 0;
     }
 
+    $component = cpc_projects_get_component($project_id);
+    $component_id = cpc_projects_get_component_id($project_id);
+
+    $activity_id = 0;
+
     if (function_exists('cpc_add_activity')) {
-        return (int)cpc_add_activity($author_id, 'project_task_'.$event_type, $text, $project_id);
+        $activity_id = (int)cpc_add_activity($author_id, 'project_task_'.$event_type, $text, $project_id);
+    } else {
+        if (!post_type_exists('cpc_activity')) {
+            return 0;
+        }
+
+        $activity_id = wp_insert_post(array(
+            'post_type' => 'cpc_activity',
+            'post_status' => 'publish',
+            'post_title' => wp_strip_all_tags($text),
+            'post_content' => wp_kses_post($text),
+            'post_author' => $author_id,
+            'comment_status' => 'open',
+            'ping_status' => 'closed',
+        ), true);
+
+        if (is_wp_error($activity_id) || !$activity_id) {
+            return 0;
+        }
     }
 
-    if (!post_type_exists('cpc_activity')) {
-        return 0;
-    }
-
-    $activity_id = wp_insert_post(array(
-        'post_type' => 'cpc_activity',
-        'post_status' => 'publish',
-        'post_title' => wp_strip_all_tags($text),
-        'post_content' => wp_kses_post($text),
-        'post_author' => $author_id,
-        'comment_status' => 'open',
-        'ping_status' => 'closed',
-    ), true);
-
-    if (is_wp_error($activity_id) || !$activity_id) {
+    $activity_id = (int)$activity_id;
+    if ($activity_id <= 0) {
         return 0;
     }
 
@@ -1142,6 +1152,12 @@ function cpc_projects_insert_task_activity($author_id, $project_id, $task_id, $t
     update_post_meta($activity_id, 'cpc_project_id', $project_id);
     update_post_meta($activity_id, 'cpc_project_task_id', $task_id);
     update_post_meta($activity_id, 'cpc_target', (int)get_post_field('post_author', $project_id));
+
+    // Ensure project activities appear in the related group activity stream.
+    if ($component === 'groups' && $component_id > 0) {
+        update_post_meta($activity_id, 'cpc_activity_group_id', (int)$component_id);
+        update_post_meta($activity_id, 'cpc_activity_type', 'group_activity');
+    }
 
     return (int)$activity_id;
 }
@@ -1650,4 +1666,118 @@ function cpc_projects_get_project_events($project_id, $limit = 80) {
         'number' => $limit,
         'order' => 'DESC',
     ));
+}
+
+function cpc_projects_get_project_activities($project_id, $limit = 80) {
+    $project_id = (int)$project_id;
+    $limit = max(1, min(300, (int)$limit));
+
+    if ($project_id <= 0 || !post_type_exists('cpc_activity')) {
+        return array();
+    }
+
+    return get_posts(array(
+        'post_type' => 'cpc_activity',
+        'post_status' => 'publish',
+        'posts_per_page' => $limit,
+        'orderby' => 'date',
+        'order' => 'DESC',
+        'no_found_rows' => true,
+        'meta_query' => array(
+            'relation' => 'OR',
+            array(
+                'key' => 'cpc_project_id',
+                'value' => $project_id,
+                'type' => 'NUMERIC',
+            ),
+            array(
+                'relation' => 'AND',
+                array(
+                    'key' => 'cpc_target',
+                    'value' => $project_id,
+                    'type' => 'NUMERIC',
+                ),
+                array(
+                    'key' => 'cpc_target_type',
+                    'value' => 'project_task_',
+                    'compare' => 'LIKE',
+                ),
+            ),
+        ),
+    ));
+}
+
+function cpc_projects_get_project_timeline_items($project_id, $limit = 80) {
+    $project_id = (int)$project_id;
+    $limit = max(1, min(300, (int)$limit));
+
+    if ($project_id <= 0) {
+        return array();
+    }
+
+    $items = array();
+
+    $events = cpc_projects_get_project_events($project_id, $limit);
+    foreach ($events as $event) {
+        $ts = strtotime((string)$event->comment_date_gmt.' GMT');
+        if (!$ts) {
+            $ts = current_time('timestamp', 1);
+        }
+
+        $items[] = (object)array(
+            'kind' => 'event',
+            'timestamp' => (int)$ts,
+            'author' => $event->comment_author ? $event->comment_author : __('Mitglied', CPC2_TEXT_DOMAIN),
+            'text' => wp_strip_all_tags((string)$event->comment_content),
+        );
+    }
+
+    if (post_type_exists('cpc_activity')) {
+        $activities = get_posts(array(
+            'post_type' => 'cpc_activity',
+            'post_status' => 'publish',
+            'posts_per_page' => $limit,
+            'orderby' => 'date',
+            'order' => 'DESC',
+            'no_found_rows' => true,
+            'meta_query' => array(
+                array(
+                    'key' => 'cpc_project_id',
+                    'value' => $project_id,
+                    'type' => 'NUMERIC',
+                ),
+            ),
+        ));
+
+        foreach ($activities as $activity) {
+            $ts = strtotime((string)$activity->post_date_gmt.' GMT');
+            if (!$ts) {
+                $ts = current_time('timestamp', 1);
+            }
+
+            $author_name = __('Mitglied', CPC2_TEXT_DOMAIN);
+            $author = get_user_by('id', (int)$activity->post_author);
+            if ($author) {
+                $author_name = $author->display_name;
+            }
+
+            $text = trim((string)$activity->post_title);
+            if ($text === '') {
+                $text = trim((string)$activity->post_content);
+            }
+
+            $items[] = (object)array(
+                'kind' => 'activity',
+                'timestamp' => (int)$ts,
+                'author' => $author_name,
+                'text' => $text,
+            );
+        }
+    }
+
+    usort($items, function($a, $b) {
+        return (int)$b->timestamp <=> (int)$a->timestamp;
+    });
+
+    return array_slice($items, 0, $limit);
 }

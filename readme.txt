@@ -46,6 +46,10 @@ Kein Problem! Ändere ganz einfach den gesamten Text, den Deine Benutzer sehen, 
 * Bereinigung: Redundante "Modul aktivieren"-Schalter in Medien-, Dokumente- und Projekte-Tab entfernt, um Doppelsteuerung zu vermeiden
 * Fix: Aktivität Plus Link-Vorschau bleibt nach dem Veröffentlichen im Stream als Card erhalten (Titel/Beschreibung/Bild), statt nur als nackter Link
 * UX-Fix: Aktivität Plus Editor wird nach erfolgreichem Posten sauber zurückgesetzt (Link-/Video-Vorschau und Eingabefelder werden geleert)
+* Fix: Projekt-Task-Kommentar-Submit im Gruppenkontext wieder stabil (kein fehlerhafter GET-Fallback mehr auf Group-URL)
+* Verbesserung: Projekt-Tab „Aktivität" zeigt jetzt die projektbezogenen Aktivitätsmeldungen aller Nutzer mit direkten Links
+* Neu: Projekt-Task-Events werden bei Gruppen-Projekten zusätzlich in den Gruppen-Aktivitätsstream geschrieben
+* Neu: Dokumente/Ordner-Aktionen (Erstellen, Umbenennen, Aktualisieren, Löschen) werden im Gruppen-Aktivitätsstream protokolliert
 
 = 1.1.0 =
 

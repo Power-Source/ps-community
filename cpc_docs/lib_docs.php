@@ -59,6 +59,62 @@ function cpc_docs_get_component_id($doc_id) {
     return (int)get_post_meta((int)$doc_id, 'cpc_doc_component_id', true);
 }
 
+function cpc_docs_insert_group_activity($doc_id, $text, $author_id = 0) {
+    $doc_id = (int)$doc_id;
+    $text = trim((string)$text);
+    $author_id = (int)$author_id;
+
+    if ($doc_id <= 0 || $text === '') {
+        return 0;
+    }
+
+    if ($author_id <= 0) {
+        $author_id = get_current_user_id();
+    }
+    if ($author_id <= 0) {
+        $author_id = (int)get_post_field('post_author', $doc_id);
+    }
+    if ($author_id <= 0) {
+        return 0;
+    }
+
+    if (cpc_docs_get_component($doc_id) !== 'groups') {
+        return 0;
+    }
+
+    $group_id = cpc_docs_get_component_id($doc_id);
+    if ($group_id <= 0) {
+        return 0;
+    }
+
+    $activity_id = 0;
+    if (function_exists('cpc_add_activity')) {
+        $activity_id = (int)cpc_add_activity($author_id, 'group_activity', $text, $group_id);
+    } elseif (post_type_exists('cpc_activity')) {
+        $activity_id = wp_insert_post(array(
+            'post_type' => 'cpc_activity',
+            'post_status' => 'publish',
+            'post_title' => wp_strip_all_tags($text),
+            'post_content' => wp_kses_post($text),
+            'post_author' => $author_id,
+            'comment_status' => 'open',
+            'ping_status' => 'closed',
+        ), true);
+        if (is_wp_error($activity_id)) {
+            $activity_id = 0;
+        }
+    }
+
+    $activity_id = (int)$activity_id;
+    if ($activity_id > 0) {
+        update_post_meta($activity_id, 'cpc_activity_group_id', $group_id);
+        update_post_meta($activity_id, 'cpc_activity_type', 'group_activity');
+        update_post_meta($activity_id, 'cpc_doc_id', $doc_id);
+    }
+
+    return $activity_id;
+}
+
 function cpc_docs_get_status($doc_id) {
     $status = get_post_meta((int)$doc_id, 'cpc_doc_status', true);
     return $status ? $status : 'public';
@@ -1008,6 +1064,15 @@ function cpc_docs_handle_frontend_requests() {
         // Mark this post as a folder explicitly
         update_post_meta($doc_id, 'cpc_doc_is_folder', '1');
 
+        $folder_url = get_permalink($doc_id);
+        $folder_title = wp_strip_all_tags($title);
+        $activity_text = sprintf(
+            __('hat den Ordner <a href="%1$s">%2$s</a> erstellt', CPC2_TEXT_DOMAIN),
+            esc_url($folder_url),
+            esc_html($folder_title)
+        );
+        cpc_docs_insert_group_activity($doc_id, $activity_text, get_current_user_id());
+
         wp_safe_redirect(add_query_arg(array('cpc_docs_notice' => 'folder_created', 'cpc_docs_doc_id' => $doc_id), $redirect));
         exit;
     }
@@ -1031,6 +1096,15 @@ function cpc_docs_handle_frontend_requests() {
             'ID' => $folder_id,
             'post_title' => $new_title,
         ));
+
+        $folder_url = get_permalink($folder_id);
+        $folder_title = wp_strip_all_tags($new_title);
+        $activity_text = sprintf(
+            __('hat den Ordner <a href="%1$s">%2$s</a> umbenannt', CPC2_TEXT_DOMAIN),
+            esc_url($folder_url),
+            esc_html($folder_title)
+        );
+        cpc_docs_insert_group_activity($folder_id, $activity_text, get_current_user_id());
 
         wp_safe_redirect(add_query_arg(array('cpc_docs_notice' => 'folder_updated', 'cpc_docs_doc_id' => $folder_id), $redirect));
         exit;
@@ -1063,6 +1137,13 @@ function cpc_docs_handle_frontend_requests() {
                 ));
             }
         }
+
+        $folder_title = $folder ? wp_strip_all_tags($folder->post_title) : __('Ordner', CPC2_TEXT_DOMAIN);
+        $activity_text = sprintf(
+            __('hat den Ordner "%s" geloescht', CPC2_TEXT_DOMAIN),
+            esc_html($folder_title)
+        );
+        cpc_docs_insert_group_activity($folder_id, $activity_text, get_current_user_id());
 
         cpc_docs_release_edit_lock($folder_id, get_current_user_id(), true);
         wp_delete_post($folder_id, true);
@@ -1119,6 +1200,15 @@ function cpc_docs_handle_frontend_requests() {
         if (cpc_docs_enable_attachments()) {
             cpc_docs_upload_files_to_doc($doc_id, 'cpc_docs_attachments', get_current_user_id());
         }
+
+        $doc_url = get_permalink($doc_id);
+        $doc_title = wp_strip_all_tags($title);
+        $activity_text = sprintf(
+            __('hat das Dokument <a href="%1$s">%2$s</a> erstellt', CPC2_TEXT_DOMAIN),
+            esc_url($doc_url),
+            esc_html($doc_title)
+        );
+        cpc_docs_insert_group_activity($doc_id, $activity_text, get_current_user_id());
 
         wp_safe_redirect(add_query_arg(array('cpc_docs_notice' => 'created', 'cpc_docs_doc_id' => $doc_id), $redirect));
         exit;
@@ -1183,6 +1273,16 @@ function cpc_docs_handle_frontend_requests() {
         if (cpc_docs_enable_attachments()) {
             cpc_docs_upload_files_to_doc($doc_id, 'cpc_docs_attachments', (int)$doc->post_author);
         }
+
+        $doc_url = get_permalink($doc_id);
+        $doc_title = wp_strip_all_tags($title);
+        $activity_text = sprintf(
+            __('hat das Dokument <a href="%1$s">%2$s</a> aktualisiert', CPC2_TEXT_DOMAIN),
+            esc_url($doc_url),
+            esc_html($doc_title)
+        );
+        cpc_docs_insert_group_activity($doc_id, $activity_text, get_current_user_id());
+
         cpc_docs_release_edit_lock($doc_id, get_current_user_id(), false);
 
         wp_safe_redirect(add_query_arg(array('cpc_docs_notice' => 'updated', 'cpc_docs_doc_id' => $doc_id), get_permalink($doc_id)));

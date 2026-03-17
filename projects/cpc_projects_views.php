@@ -85,16 +85,40 @@ function cpc_projects_render_events_html($project_id, $limit = 60) {
         return '<p>' . esc_html__('Noch keine Events vorhanden.', CPC2_TEXT_DOMAIN) . '</p>';
     }
 
-    $events = cpc_projects_get_project_events($project_id, $limit);
-    if (empty($events)) {
+    $activities = cpc_projects_get_project_activities($project_id, $limit);
+    if (empty($activities)) {
         return '<p>' . esc_html__('Noch keine Events vorhanden.', CPC2_TEXT_DOMAIN) . '</p>';
     }
 
     $html = '<ul class="cpc_projects_single_events">';
-    foreach ($events as $event) {
-        $who  = $event->comment_author ? $event->comment_author : __('Mitglied', CPC2_TEXT_DOMAIN);
-        $when = sprintf(__('vor %s', CPC2_TEXT_DOMAIN), human_time_diff(strtotime($event->comment_date_gmt), current_time('timestamp', 1)));
-        $html .= '<li><strong>' . esc_html($who) . '</strong> <span>' . esc_html($when) . '</span><div>' . esc_html(wp_strip_all_tags((string)$event->comment_content)) . '</div></li>';
+    foreach ($activities as $activity) {
+        $author_name = __('Mitglied', CPC2_TEXT_DOMAIN);
+        $author = get_user_by('id', (int)$activity->post_author);
+        if ($author) {
+            $author_name = $author->display_name;
+        }
+
+        $ts = strtotime((string)$activity->post_date_gmt . ' GMT');
+        if (!$ts) {
+            $ts = current_time('timestamp', 1);
+        }
+        $when = sprintf(__('vor %s', CPC2_TEXT_DOMAIN), human_time_diff($ts, current_time('timestamp', 1)));
+
+        $text_html = trim((string)$activity->post_content);
+        if ($text_html === '') {
+            $text_html = trim((string)$activity->post_title);
+        }
+
+        $task_id = (int)get_post_meta((int)$activity->ID, 'cpc_project_task_id', true);
+        $target_url = $task_id > 0 ? cpc_projects_get_task_url($project_id, $task_id) : cpc_projects_get_project_url($project_id);
+
+        $html .= '<li>';
+        $html .= '<strong>' . esc_html($author_name) . '</strong> <span>' . esc_html($when) . '</span>';
+        $html .= '<div>' . wp_kses_post($text_html) . '</div>';
+        if (!empty($target_url)) {
+            $html .= '<div><a href="' . esc_url($target_url) . '">' . esc_html__('Zum Eintrag', CPC2_TEXT_DOMAIN) . '</a></div>';
+        }
+        $html .= '</li>';
     }
     $html .= '</ul>';
 
