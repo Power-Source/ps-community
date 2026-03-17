@@ -453,6 +453,56 @@
             $wrap.find('.cpc_projects_single_section').removeClass('is-active').hide();
             $wrap.find('.cpc_projects_single_section[data-section="' + target + '"]').addClass('is-active').show();
         });
+
+        // Auto-select tab from query parameter (cpc_project_section) or hash
+        function initializeProjectTabFromUrl($wrap) {
+            if (!$wrap || !$wrap.length) {
+                return;
+            }
+
+            var targetSection = '';
+
+            // Parse query parameter cpc_project_section
+            var params = new URLSearchParams(window.location.search);
+            if (params.has('cpc_project_section')) {
+                targetSection = params.get('cpc_project_section');
+            }
+
+            // Parse hash for task ID (fallback: auto-select 'tasks' tab if hash matches cpc-project-task-*)
+            if (!targetSection && window.location.hash) {
+                var hash = window.location.hash.substring(1);
+                if (hash.indexOf('cpc-project-task-') === 0) {
+                    targetSection = 'tasks';
+                }
+            }
+
+            if (targetSection && targetSection !== 'overview') {
+                var $btn = $wrap.find('.cpc_projects_single_nav_link[data-target="' + targetSection + '"]');
+                if ($btn.length) {
+                    $btn.click();
+                }
+            }
+
+            // Scroll to task element if hash present
+            if (window.location.hash) {
+                var hash = window.location.hash.substring(1);
+                var $target = $('#' + hash);
+                if ($target.length) {
+                    setTimeout(function() {
+                        $('html, body').animate({ scrollTop: $target.offset().top - 100 }, 500);
+                        // Optional: highlight task element briefly
+                        $target.css('background-color', '#ffffcc').delay(2000).fadeOut('slow', function() {
+                            $(this).removeAttr('style');
+                        });
+                    }, 100);
+                }
+            }
+        }
+
+        // Initialize on load
+        $('.cpc_projects_single').each(function() {
+            initializeProjectTabFromUrl($(this));
+        });
     });
 
     /* ---- Project settings form ---- */

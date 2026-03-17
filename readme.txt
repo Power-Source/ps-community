@@ -51,6 +51,11 @@ Kein Problem! Ändere ganz einfach den gesamten Text, den Deine Benutzer sehen, 
 * Neu: Projekt-Task-Events werden bei Gruppen-Projekten zusätzlich in den Gruppen-Aktivitätsstream geschrieben
 * Neu: Dokumente/Ordner-Aktionen (Erstellen, Umbenennen, Aktualisieren, Löschen) werden im Gruppen-Aktivitätsstream protokolliert
 * Fix: `cpc-forum-children` zeigt in der Count-Spalte wieder die Anzahl der Threads je Child-Forum statt Aktivität/aktive User
+* Verbesserung: Task-Widget „Meine Tasks" zeigt nur **offene Tasks** sortiert nach Priorität und Deadline statt zuletzt geändert
+* UX-Fix: Task-Widget **synchronisiert Status sofort** – abgeschlossene Tasks verschwinden aus dem Widget nach Reload
+* Verbesserung: Task-Widget zeigt Restzeit zur Deadline statt „hinzugefügt vor..." – einfacher Überblick über dringende Aufgaben
+* Neu: Task-Links im Widget und in Aktivitätsmeldungen **navigieren direkt zum Task-Tab** und scrollen zur Task
+* Fix: Projekt-Deep-Linking mit `cpc_project_section=tasks` Query-Parameter öffnet automatisch Tasks-Tab mit Hash-Scroll zum Task
 
 = 1.1.0 =
 

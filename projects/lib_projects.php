@@ -677,6 +677,45 @@ function cpc_projects_get_user_recent_tasks($user_id = 0, $limit = 5) {
     }));
 }
 
+function cpc_projects_get_user_open_tasks($user_id = 0, $limit = 5) {
+    global $wpdb;
+
+    $user_id = (int)$user_id;
+    if ($user_id <= 0) {
+        $user_id = get_current_user_id();
+    }
+    if ($user_id <= 0) {
+        return array();
+    }
+
+    $limit = max(1, min(50, (int)$limit));
+    $table = cpc_projects_get_tasks_table_name();
+
+    $query = $wpdb->prepare(
+        "SELECT t.*, p.post_title AS project_title
+         FROM {$table} t
+         INNER JOIN {$wpdb->posts} p ON p.ID = t.project_id
+         WHERE p.post_type = 'cpc_project'
+           AND p.post_status = 'publish'
+           AND t.status = 'open'
+           AND (t.user_id = %d OR FIND_IN_SET(%d, t.assigned_user_ids))
+         ORDER BY t.priority DESC, CASE WHEN t.deadline IS NULL THEN 1 ELSE 0 END ASC, t.deadline ASC, t.date_updated DESC
+         LIMIT %d",
+        $user_id,
+        $user_id,
+        $limit
+    );
+
+    $rows = $wpdb->get_results($query);
+    if (empty($rows)) {
+        return array();
+    }
+
+    return array_values(array_filter($rows, function($row) use ($user_id) {
+        return !empty($row->project_id) && cpc_projects_user_can_view_project((int)$row->project_id, $user_id);
+    }));
+}
+
 function cpc_projects_normalize_assigned_user_ids($assigned_user_ids) {
     if (is_string($assigned_user_ids)) {
         $assigned_user_ids = explode(',', $assigned_user_ids);

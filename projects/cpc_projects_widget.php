@@ -10,7 +10,7 @@ class CPC_Projects_Recent_Tasks_Widget extends WP_Widget {
     public function __construct() {
         parent::__construct(
             'cpc_projects_recent_tasks',
-            __('(Projects) Meine letzten Tasks', CPC2_TEXT_DOMAIN),
+            __('(Projects) Meine Tasks', CPC2_TEXT_DOMAIN),
             array(
                 'classname' => 'cpc_projects_recent_tasks_widget',
                 'description' => __('Zeigt die letzten Tasks des aktuell angemeldeten Nutzers.', CPC2_TEXT_DOMAIN),
@@ -37,7 +37,7 @@ class CPC_Projects_Recent_Tasks_Widget extends WP_Widget {
     }
 
     public function widget($args, $instance) {
-        $title = !empty($instance['title']) ? (string)$instance['title'] : __('Meine letzten Tasks', CPC2_TEXT_DOMAIN);
+        $title = !empty($instance['title']) ? (string)$instance['title'] : __('Meine Tasks', CPC2_TEXT_DOMAIN);
         $task_number = !empty($instance['task_number']) ? (int)$instance['task_number'] : $this->default_task_number;
         $task_number = max(1, min(20, $task_number));
 
@@ -52,7 +52,7 @@ class CPC_Projects_Recent_Tasks_Widget extends WP_Widget {
             return;
         }
 
-        $tasks = cpc_projects_get_user_recent_tasks(get_current_user_id(), $task_number);
+        $tasks = cpc_projects_get_user_open_tasks(get_current_user_id(), $task_number);
         if (empty($tasks)) {
             echo '<div class="cpc_projects_widget_no_tasks">'.esc_html__('Keine Tasks gefunden.', CPC2_TEXT_DOMAIN).'</div>';
             echo $args['after_widget'];
@@ -66,14 +66,23 @@ class CPC_Projects_Recent_Tasks_Widget extends WP_Widget {
                 continue;
             }
 
-            $url = $project_url.'#cpc-project-task-'.(int)$task->id;
+            $url = function_exists('cpc_projects_get_task_url') ? cpc_projects_get_task_url((int)$task->project_id, (int)$task->id) : $project_url.'#cpc-project-task-'.(int)$task->id;
+            $url = add_query_arg('cpc_project_section', 'tasks', $url);
             $label = cpc_projects_render_task_priority_label((int)$task->priority);
             $time_label = '';
-            if (!empty($task->date_added)) {
-                $time_label = sprintf(
-                    __('hinzugefuegt vor %s', CPC2_TEXT_DOMAIN),
-                    human_time_diff(strtotime((string)$task->date_added), current_time('timestamp', 1))
-                );
+            if (!empty($task->deadline)) {
+                $deadline_ts = (int)strtotime((string)$task->deadline);
+                $now_ts = current_time('timestamp', 1);
+                if ($deadline_ts > $now_ts) {
+                    $time_label = sprintf(
+                        __('Faellig: %s', CPC2_TEXT_DOMAIN),
+                        human_time_diff($now_ts, $deadline_ts)
+                    );
+                } else {
+                    $time_label = __('UEBERFAELLIG', CPC2_TEXT_DOMAIN);
+                }
+            } else {
+                $time_label = __('Keine Frist', CPC2_TEXT_DOMAIN);
             }
 
             echo '<li class="cpc_projects_widget_recent_item">';
@@ -92,7 +101,7 @@ class CPC_Projects_Recent_Tasks_Widget extends WP_Widget {
     }
 
     public function form($instance) {
-        $title = !empty($instance['title']) ? (string)$instance['title'] : __('Meine letzten Tasks', CPC2_TEXT_DOMAIN);
+        $title = !empty($instance['title']) ? (string)$instance['title'] : __('Meine Tasks', CPC2_TEXT_DOMAIN);
         $task_number = !empty($instance['task_number']) ? (int)$instance['task_number'] : $this->default_task_number;
         ?>
         <p>
