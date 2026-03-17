@@ -380,7 +380,7 @@ function cpc_projects_render_task_panel($project_id) {
         $html .= '<div class="cpc_projects_task_form_row cpc_projects_task_form_row_secondary">';
         $html .= '<div class="cpc_projects_task_field">';
         $html .= '<label class="cpc_projects_task_field_label">'.esc_html__('Deadline', CPC2_TEXT_DOMAIN).'</label>';
-        $html .= '<input type="datetime-local" name="deadline" placeholder="'.esc_attr__('Deadline', CPC2_TEXT_DOMAIN).'" />';
+        $html .= '<input type="datetime-local" name="deadline" placeholder="'.esc_attr__('Deadline', CPC2_TEXT_DOMAIN).'" value="'.esc_attr(cpc_projects_get_default_deadline_datetime()).'" />';
         $html .= '</div>';
         $html .= '<div class="cpc_projects_task_field">';
         $html .= '<label class="cpc_projects_task_field_label">'.esc_html__('Zuweisen an', CPC2_TEXT_DOMAIN).'</label>';

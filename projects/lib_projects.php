@@ -24,6 +24,26 @@ function cpc_projects_group_alert_scope() {
     return $scope;
 }
 
+function cpc_projects_task_default_deadline_days() {
+    $days = max(1, min(365, (int)get_option('cpc_projects_task_default_deadline_days', 7)));
+    return $days;
+}
+
+function cpc_projects_task_default_deadline_time() {
+    $time = sanitize_text_field((string)get_option('cpc_projects_task_default_deadline_time', '09:00'));
+    if (!preg_match('/^\d{2}:\d{2}$/', $time)) {
+        $time = '09:00';
+    }
+    return $time;
+}
+
+function cpc_projects_get_default_deadline_datetime() {
+    $days = cpc_projects_task_default_deadline_days();
+    $time = cpc_projects_task_default_deadline_time();
+    $future_date = wp_date('Y-m-d', current_time('timestamp', 1) + ($days * 86400));
+    return $future_date . 'T' . $time;
+}
+
 function cpc_projects_task_comment_attachments_enabled() {
     return (bool)get_option('cpc_projects_comment_attachments_enabled', 1);
 }

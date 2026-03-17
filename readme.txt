@@ -63,6 +63,9 @@ Kein Problem! Ändere ganz einfach den gesamten Text, den Deine Benutzer sehen, 
 * Neu: Dokumente können direkt auf der Dokumente-Übersichtsseite erstellt werden - mit Zuordnung zu eigenes Profil oder Gruppen
 * UX-Verbesserung: Create-Form auf Übersichtsseite mit Gruppen-Auswahl (nur Gruppen, bei denen Nutzer Docs erstellen darf)
 * Responsive Modal-Design für mobile Endgeräte optimiert
+* Neu: Task-Deadline-Datumsauswahl mit vorausgefüllten Standardwerten
+* Dashboard-Einstellungen für Task-Deadline-Offset (Standard: 7 Tage) und Standard-Uhrzeit (Standard: 09:00)
+* Nutzer können Standard-Deadline-Offset und Zeit individuell anpassen und dann vor dem Speichern überschreiben
 
 = 1.1.0 =
 

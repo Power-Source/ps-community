@@ -64,6 +64,18 @@ function cpc_admin_getting_started_projects() {
     echo '</tr>';
 
     echo '<tr class="form-field">';
+    echo '<td scope="row" valign="top"><label>'.__('Task-Deadline Standard-Offset (Tage)', CPC2_TEXT_DOMAIN).'</label></td>';
+    echo '<td><input type="number" min="1" max="365" name="cpc_projects_task_default_deadline_days" value="'.(int)cpc_projects_task_default_deadline_days().'" class="small-text" style="max-width:80px;" />';
+    echo '<span class="description">'.__('Standard-Anzahl von Tagen ab heute für Aufgaben-Deadline (z.B. 7 = 7 Tage ab heute)', CPC2_TEXT_DOMAIN).'</span></td>';
+    echo '</tr>';
+
+    echo '<tr class="form-field">';
+    echo '<td scope="row" valign="top"><label>'.__('Task-Deadline Standard-Zeit', CPC2_TEXT_DOMAIN).'</label></td>';
+    echo '<td><input type="time" name="cpc_projects_task_default_deadline_time" value="'.esc_attr(cpc_projects_task_default_deadline_time()).'" />';
+    echo '<span class="description">'.__('Standard-Uhrzeit für Aufgaben-Deadline (z.B. 09:00 = 9:00 Uhr morgens)', CPC2_TEXT_DOMAIN).'</span></td>';
+    echo '</tr>';
+
+    echo '<tr class="form-field">';
     echo '<td scope="row" valign="top"><label>'.__('Alerts bei Task-Events', CPC2_TEXT_DOMAIN).'</label></td>';
     echo '<td><input type="checkbox" style="width:20px; height:20px;" name="cpc_projects_alerts_enabled" '.(cpc_projects_alerts_enabled() ? 'CHECKED' : '').' /></td>';
     echo '</tr>';
@@ -126,6 +138,17 @@ function cpc_admin_projects_save($the_post) {
         $key = 'cpc_projects_comment_max_attachment_mb_'.$bucket;
         if (isset($the_post[$key])) {
             update_option($key, max(1, min(200, (int)$the_post[$key])));
+        }
+    }
+
+    if (isset($the_post['cpc_projects_task_default_deadline_days'])) {
+        update_option('cpc_projects_task_default_deadline_days', max(1, min(365, (int)$the_post['cpc_projects_task_default_deadline_days'])));
+    }
+
+    if (isset($the_post['cpc_projects_task_default_deadline_time'])) {
+        $time = sanitize_text_field((string)$the_post['cpc_projects_task_default_deadline_time']);
+        if (preg_match('/^\d{2}:\d{2}$/', $time)) {
+            update_option('cpc_projects_task_default_deadline_time', $time);
         }
     }
 
