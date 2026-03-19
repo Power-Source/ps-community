@@ -621,16 +621,16 @@ function cpc_projects_get_tasks($project_id, $args = array()) {
     $table = cpc_projects_get_tasks_table_name();
     $limit = max(1, min(1000, (int)$args['limit']));
 
-    if ($args['status'] !== '' && in_array($args['status'], array('open', 'done'), true)) {
-        $query = $wpdb->prepare(
-            "SELECT * FROM {$table} WHERE project_id = %d AND status = %s ORDER BY status ASC, priority DESC, date_added DESC LIMIT %d",
-            $project_id,
-            $args['status'],
-            $limit
-        );
+        if ($args['status'] !== '' && in_array($args['status'], array('open', 'done'), true)) {
+            $query = $wpdb->prepare(
+                "SELECT * FROM {$table} WHERE project_id = %d AND status = %s ORDER BY priority DESC, date_added DESC LIMIT %d",
+                $project_id,
+                $args['status'],
+                $limit
+            );
     } else {
         $query = $wpdb->prepare(
-            "SELECT * FROM {$table} WHERE project_id = %d ORDER BY status ASC, priority DESC, date_added DESC LIMIT %d",
+            "SELECT * FROM {$table} WHERE project_id = %d ORDER BY CASE WHEN status = 'open' THEN 0 ELSE 1 END ASC, priority DESC, date_added DESC LIMIT %d",
             $project_id,
             $limit
         );
@@ -909,7 +909,7 @@ function cpc_projects_update_task_status($task_id, $status = 'open', $completed_
         'date_updated' => current_time('mysql', 1),
     );
 
-    $updated = $wpdb->update($table, $data, array('id' => $task_id), array('%s', '%d', '%s'), array('%d'));
+        $updated = $wpdb->update($table, $data, array('id' => $task_id), array('%s', '%d', '%s'), array('%d'));
     return ($updated !== false);
 }
 

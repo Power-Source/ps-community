@@ -275,6 +275,7 @@ if (strpos(CPC_CORE_PLUGINS, 'core-profile') !== false):
     require_once('usermeta/cpc_usermeta_help.php');
     require_once('usermeta/cpc_usermeta_ajax.php');
     require_once('usermeta/cpc_usermeta_shortcodes.php');
+    require_once('usermeta/cpc_2fa_profile.php'); // PS Security 2FA Integration
 endif;
 // Avatar
 if (strpos(CPC_CORE_PLUGINS, 'core-avatar') !== false)

@@ -243,13 +243,24 @@ function cpc_ajax_join_group() {
 	$group_type = get_post_meta($group_id, 'cpc_group_type', true);
 	if (!$group_type) $group_type = 'public';
 
+	$member_role = 'member';
+	$group_creator_id = (int) get_post_meta($group_id, 'cpc_group_creator', true);
+	if ((int) $group->post_author === $user_id || $group_creator_id === $user_id) {
+		$member_role = 'admin';
+	}
+
 	// Determine status based on group type
 	$status = 'active';
 	if ($group_type == 'private') {
 		$status = 'pending'; // Requires approval for private groups
 	}
 
-	$membership_id = cpc_add_group_member($user_id, $group_id, 'member', $status, $current_blog_id);
+	// Group creator should never need approval for own group.
+	if ($member_role === 'admin') {
+		$status = 'active';
+	}
+
+	$membership_id = cpc_add_group_member($user_id, $group_id, $member_role, $status, $current_blog_id);
 
 	if ($membership_id) {
 		if ($status == 'pending') {

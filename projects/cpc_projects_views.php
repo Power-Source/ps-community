@@ -337,7 +337,7 @@ function cpc_projects_render_task_panel($project_id) {
     $html .= '<input type="text" class="cpc_projects_task_filter_text" placeholder="'.esc_attr__('Suchen...', CPC2_TEXT_DOMAIN).'" />';
     $html .= '<select class="cpc_projects_task_filter_status">';
     $html .= '<option value="all">'.esc_html__('Status', CPC2_TEXT_DOMAIN).'</option>';
-    $html .= '<option value="open">'.esc_html__('Offen', CPC2_TEXT_DOMAIN).'</option>';
+    $html .= '<option value="open" selected="selected">'.esc_html__('Offen', CPC2_TEXT_DOMAIN).'</option>';
     $html .= '<option value="done">'.esc_html__('Erledigt', CPC2_TEXT_DOMAIN).'</option>';
     $html .= '</select>';
     $html .= '<select class="cpc_projects_task_filter_priority">';

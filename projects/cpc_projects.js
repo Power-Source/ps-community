@@ -49,6 +49,28 @@
             return;
         }
 
+        // Keep DOM order deterministic: open tasks first, then by highest priority.
+        var $taskContainer = $panel.find('.cpc_projects_tasks_items').first();
+        if ($taskContainer.length) {
+            var $items = $taskContainer.children('.cpc_projects_task_item');
+            $items.sort(function(a, b) {
+                var $a = $(a);
+                var $b = $(b);
+                var aStatus = ($a.attr('data-task-status') || 'open');
+                var bStatus = ($b.attr('data-task-status') || 'open');
+                var aRank = (aStatus === 'open') ? 0 : 1;
+                var bRank = (bStatus === 'open') ? 0 : 1;
+                if (aRank !== bRank) {
+                    return aRank - bRank;
+                }
+
+                var aPriority = parseInt($a.attr('data-task-priority') || '1', 10);
+                var bPriority = parseInt($b.attr('data-task-priority') || '1', 10);
+                return bPriority - aPriority;
+            });
+            $taskContainer.append($items);
+        }
+
         var textValue = $.trim(($panel.find('.cpc_projects_task_filter_text').val() || '')).toLowerCase();
         var statusValue = ($panel.find('.cpc_projects_task_filter_status').val() || 'all');
         var priorityValue = ($panel.find('.cpc_projects_task_filter_priority').val() || 'all');
@@ -470,18 +492,20 @@
                 }
             }
 
-            // Scroll to task element if hash present
+            // Scroll only for explicit task anchors, not for empty hashes like trailing '#'.
             if (window.location.hash) {
                 var hash = window.location.hash.substring(1);
-                var $target = $('#' + hash);
-                if ($target.length) {
-                    setTimeout(function() {
-                        $('html, body').animate({ scrollTop: $target.offset().top - 100 }, 500);
-                        // Optional: highlight task element briefly
-                        $target.css('background-color', '#ffffcc').delay(2000).fadeOut('slow', function() {
-                            $(this).removeAttr('style');
-                        });
-                    }, 100);
+                if (hash.indexOf('cpc-project-task-') === 0) {
+                    var $target = $('#' + hash);
+                    if ($target.length) {
+                        setTimeout(function() {
+                            $('html, body').animate({ scrollTop: $target.offset().top - 100 }, 500);
+                            // Optional: highlight task element briefly
+                            $target.css('background-color', '#ffffcc').delay(2000).fadeOut('slow', function() {
+                                $(this).removeAttr('style');
+                            });
+                        }, 100);
+                    }
                 }
             }
         }

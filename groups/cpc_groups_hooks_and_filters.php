@@ -156,6 +156,84 @@ function cpc_groups_update_activity_on_save($post_id) {
 }
 
 /**
+ * Ensure group author is always an active group admin.
+ *
+ * This covers groups created via wp-admin/CPT where no membership record
+ * is created automatically by the frontend AJAX flow.
+ */
+add_action('save_post_cpc_group', 'cpc_groups_ensure_creator_admin_membership', 20, 3);
+function cpc_groups_ensure_creator_admin_membership($post_id, $post, $update) {
+	if (wp_is_post_revision($post_id) || wp_is_post_autosave($post_id)) {
+		return;
+	}
+
+	if (!$post || $post->post_type !== 'cpc_group') {
+		return;
+	}
+
+	if ($post->post_status === 'auto-draft' || $post->post_status === 'trash') {
+		return;
+	}
+
+	$author_id = (int) $post->post_author;
+	if ($author_id <= 0) {
+		return;
+	}
+
+	// Keep creator meta consistent for admin-created groups.
+	if (!get_post_meta($post_id, 'cpc_group_creator', true)) {
+		update_post_meta($post_id, 'cpc_group_creator', $author_id);
+	}
+
+	$args = array(
+		'post_type'              => 'cpc_group_members',
+		'posts_per_page'         => 1,
+		'post_status'            => 'publish',
+		'fields'                 => 'ids',
+		'no_found_rows'          => true,
+		'update_post_meta_cache' => false,
+		'update_post_term_cache' => false,
+		'suppress_filters'       => true,
+		'meta_query'             => array(
+			array(
+				'key'   => 'cpc_member_user_id',
+				'value' => $author_id,
+			),
+			array(
+				'key'   => 'cpc_member_group_id',
+				'value' => $post_id,
+			),
+		),
+	);
+
+	$membership_ids = get_posts($args);
+
+	if (empty($membership_ids)) {
+		$current_blog_id = is_multisite() ? get_current_blog_id() : null;
+		cpc_add_group_member($author_id, $post_id, 'admin', 'active', $current_blog_id);
+		return;
+	}
+
+	$membership_id = (int) $membership_ids[0];
+	$changed = false;
+
+	if (get_post_meta($membership_id, 'cpc_member_role', true) !== 'admin') {
+		update_post_meta($membership_id, 'cpc_member_role', 'admin');
+		$changed = true;
+	}
+
+	if (get_post_meta($membership_id, 'cpc_member_status', true) !== 'active') {
+		update_post_meta($membership_id, 'cpc_member_status', 'active');
+		$changed = true;
+	}
+
+	if ($changed) {
+		cpc_update_group_member_count($post_id);
+		cpc_update_group_activity($post_id);
+	}
+}
+
+/**
  * Clean up memberships when group is deleted
  */
 add_action('before_delete_post', 'cpc_groups_cleanup_on_delete');
