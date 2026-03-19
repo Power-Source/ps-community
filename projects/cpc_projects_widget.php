@@ -16,24 +16,10 @@ class CPC_Projects_Recent_Tasks_Widget extends WP_Widget {
                 'description' => __('Zeigt die letzten Tasks des aktuell angemeldeten Nutzers.', CPC2_TEXT_DOMAIN),
             )
         );
-
-        $this->register_sidebar();
     }
 
     public static function register_widget() {
         register_widget('CPC_Projects_Recent_Tasks_Widget');
-    }
-
-    private function register_sidebar() {
-        register_sidebar(array(
-            'name' => __('Projects', CPC2_TEXT_DOMAIN),
-            'id' => 'cpc-projects',
-            'description' => __('Sidebar fuer Projects-bezogene Widgets.', CPC2_TEXT_DOMAIN),
-            'before_widget' => '<aside id="%1$s" class="sidebar-widgets widget %2$s">',
-            'after_widget' => '</aside>',
-            'before_title' => '<h3 class="widget-title">',
-            'after_title' => '</h3><div class="widget-clear"></div>',
-        ));
     }
 
     public function widget($args, $instance) {

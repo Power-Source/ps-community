@@ -4,7 +4,7 @@ Tags: wp community, social network, social networking, social media, cp-communit
 Requires at least: 4.9
 Tested up to: 6.8.1
 ClassicPress: 2.6.0
-Stable tag: 1.1.2
+Stable tag: 1.1.1
 License URI: https://www.gnu.org/licenses/gpl-2.0.html
 
 == Description ==
@@ -36,11 +36,10 @@ Kein Problem! Ändere ganz einfach den gesamten Text, den Deine Benutzer sehen, 
 * Fix: Beim Erstellen von Gruppen im Backend (Dashboard/CPT) wird der Ersteller jetzt zuverlässig als Gruppen-Admin-Mitglied angelegt
 * Fix: Bestehende Gruppen werden beim Speichern automatisch repariert, falls dem Ersteller die Admin-Mitgliedschaft fehlt oder falschen Status/Rolle hat
 * Fix: Wenn der Gruppenersteller seiner eigenen Gruppe beitritt, wird er korrekt als Admin statt als normales Mitglied geführt
+* UX-Fix: Die automatische Projects-Widget-Sidebar (`cpc-projects`) wurde entfernt; das Task-Widget kann wie gewohnt in bestehenden Sidebars platziert werden
 * UX-Fix: Projekt-Task-Tab startet standardmäßig mit Status-Filter **Offen** statt **Status/Alle**
 * Verbesserung: Tasks werden im Projekt-Tab konsistent mit **Offen zuerst** und danach **höchste Priorität zuerst** dargestellt
 * Fix: Kein unerwünschtes Auto-Scrollen mehr bei URLs mit leerem Hash (`...&cpc_project_section=tasks#`), Scroll nur noch bei explizitem Task-Anchor
-* Neu: PS Security (cp-defender) Zwei-Faktor-Authentifizierung ins Frontend-Profil integriert – User können 2FA per App (TOTP) oder E-Mail direkt im Profil aktivieren, deaktivieren und Backup-Codes verwalten
-* UX: 2FA-Setup im Profil Bearbeiten möglich wenn PS Security aktiviert
 
 = 1.1.1 =
 
