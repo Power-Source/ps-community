@@ -23,7 +23,8 @@ function cpc_menu() {
     $admin_favs = get_option('cpc_admin_favs');
 
 	$menu_label = (defined('CPC_MENU')) ? CPC_MENU : 'PS Community';
-	add_menu_page($menu_label, $menu_label, 'manage_options', 'cpc_com', 'cpccom_setup', 'none'); 
+    $menu_icon = plugins_url('css/images/cpc_logo.png', __FILE__);
+    add_menu_page($menu_label, $menu_label, 'manage_options', 'cpc_com', 'cpccom_setup', $menu_icon); 
 	add_submenu_page('cpc_com', __('Versionshinweise', CPC2_TEXT_DOMAIN), __('Versionshinweise', CPC2_TEXT_DOMAIN), 'manage_options', 'cpc_com_release_notes', 'cpccom_release_notes');
 	add_submenu_page('cpc_com', __('Einstellungen', CPC2_TEXT_DOMAIN), __('Einstellungen', CPC2_TEXT_DOMAIN), 'manage_options', 'cpc_com_setup', 'cpccom_setup');
 	add_submenu_page('cpc_com', __('Shortcodes', CPC2_TEXT_DOMAIN), __('Shortcodes', CPC2_TEXT_DOMAIN), 'manage_options', 'cpc_com_shortcodes', 'cpc_com_shortcodes');
