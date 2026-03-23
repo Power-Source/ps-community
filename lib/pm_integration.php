@@ -486,7 +486,7 @@ function cpc_pm_integration_settings() {
 			</p>
 			
 			<p>
-				<a href="https://github.com/Power-Source/private-messaging/releases/latest" target="_blank" class="button">
+				<a href="https://psource.eimen.net//private-messaging/releases/latest" target="_blank" class="button">
 					<?php _e('PS PM-System herunterladen', CPC2_TEXT_DOMAIN); ?>
 				</a>
 			</p>

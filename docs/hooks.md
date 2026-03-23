@@ -6,8 +6,8 @@ title: "PS Community Hooks"
 <h2 align="center" style="color:#38c2bb;">📚 PS Community Hooks</h2>
 
 <div class="menu">
-  <a href="https://github.com/Power-Source/cp-community/discussions" style="color:#38c2bb;">💬 Forum</a>
-  <a href="https://github.com/Power-Source/cp-community/releases" style="color:#38c2bb;">📝 Download</a>
+  <a href="https://psource.eimen.net//cp-community/discussions" style="color:#38c2bb;">💬 Forum</a>
+  <a href="https://psource.eimen.net//cp-community/releases" style="color:#38c2bb;">📝 Download</a>
 </div>
 
 ## core_api.php

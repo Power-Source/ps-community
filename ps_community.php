@@ -1,11 +1,11 @@
 <?php
 /*
 Plugin Name: PS Community
-Plugin URI: https://power-source.github.io/ps-community/
+Plugin URI: https://psource.eimen.net/wiki/ps-community-dokumentation/
 Description: Füge Deiner ClassicPress-Webseite schnell und einfach ein soziales Netzwerk hinzu!
 Version: 1.1.1
 Author: PSOURCE
-Author URI: https://github.com/Power-Source
+Author URI: https://psource.eimen.net/
 License: GPLv2 or later
 Text Domain: cp-community
 Domain Path: /languages

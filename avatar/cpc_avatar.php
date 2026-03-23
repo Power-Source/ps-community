@@ -116,46 +116,6 @@ function user_avatar_core_get_cloud_folder_name($uid) {
 	return $folder;
 }
 
-function user_avatar_core_avatar_legacy_upload_path($uid = false) {
-	if (!$uid):
-		global $current_user;
-		$uid = (isset($_GET['user_id'])) ? $_GET['user_id'] : $current_user->ID;
-	endif;
-
-	$uid = (int)$uid;
-	return WP_CONTENT_DIR.'/cpc-pro-content/members/'.$uid.'/avatar/';
-}
-
-function user_avatar_core_avatar_legacy_url($uid = false) {
-	if (!$uid):
-		global $current_user;
-		$uid = (isset($_GET['user_id'])) ? $_GET['user_id'] : $current_user->ID;
-	endif;
-
-	$uid = (int)$uid;
-	return content_url('/cpc-pro-content/members/'.$uid.'/avatar/');
-}
-
-function user_avatar_core_avatar_paths($uid = false) {
-	if (!$uid):
-		global $current_user;
-		$uid = (isset($_GET['user_id'])) ? $_GET['user_id'] : $current_user->ID;
-	endif;
-
-	$uid = (int)$uid;
-	$folder = user_avatar_core_get_cloud_folder_name($uid);
-
-	$primary = WP_CONTENT_DIR.'/cpc-pro-content/members/'.$folder.'/avatar/';
-	$paths = array($primary);
-
-	$legacy = user_avatar_core_avatar_legacy_upload_path($uid);
-	if ($legacy !== $primary && file_exists($legacy) && is_dir($legacy)) {
-		$paths[] = $legacy;
-	}
-
-	return array_values(array_unique($paths));
-}
-
 function user_avatar_core_avatar_meta_path($uid, $filename) {
 	$uid = (int)$uid;
 	$folder = user_avatar_core_get_cloud_folder_name($uid);
@@ -165,16 +125,6 @@ function user_avatar_core_avatar_meta_path($uid, $filename) {
 function user_avatar_core_avatar_file_url($uid, $filename) {
 	$uid = (int)$uid;
 	$filename = ltrim((string)$filename, '/');
-
-	$paths = user_avatar_core_avatar_paths($uid);
-	foreach ($paths as $path) {
-		if (file_exists($path.$filename)) {
-			if ($path === user_avatar_core_avatar_legacy_upload_path($uid)) {
-				return user_avatar_core_avatar_legacy_url($uid).$filename;
-			}
-			return user_avatar_core_avatar_url($uid).$filename;
-		}
-	}
 
 	return user_avatar_core_avatar_url($uid).$filename;
 }
@@ -543,20 +493,14 @@ function user_avatar_add_photo_step3($uid)
  */
 function user_avatar_delete_files($uid)
 {
-	$paths = user_avatar_core_avatar_paths($uid);
+	$avatar_folder_dir = user_avatar_core_avatar_upload_path($uid, false);
 	$deleted = false;
 
-	foreach ($paths as $avatar_folder_dir) {
-		if ( !file_exists( $avatar_folder_dir ) )
-			continue;
-
-		if ( is_dir( $avatar_folder_dir ) && $av_dir = opendir( $avatar_folder_dir ) ) {
-			while ( false !== ( $avatar_file = readdir($av_dir) ) ) {
-				@unlink( $avatar_folder_dir . '/' . $avatar_file );
-			}
-			closedir($av_dir);
+	if ( file_exists( $avatar_folder_dir ) && is_dir( $avatar_folder_dir ) && $av_dir = opendir( $avatar_folder_dir ) ) {
+		while ( false !== ( $avatar_file = readdir($av_dir) ) ) {
+			@unlink( $avatar_folder_dir . '/' . $avatar_file );
 		}
-
+		closedir($av_dir);
 		@rmdir( $avatar_folder_dir );
 		$deleted = true;
 	}
@@ -812,13 +756,9 @@ function user_avatar_form($profile)
  */
 function user_avatar_avatar_exists($id, $type = "-cpcfull"){
 	$return = false;
-	$paths = user_avatar_core_avatar_paths($id);
+	$avatar_folder_dir = user_avatar_core_avatar_upload_path($id, false);
 
-	foreach ($paths as $avatar_folder_dir) {
-
-		if (!(is_dir( $avatar_folder_dir ) && $av_dir = opendir( $avatar_folder_dir ))) {
-			continue;
-		}
+	if (is_dir( $avatar_folder_dir ) && $av_dir = opendir( $avatar_folder_dir )) {
 
 			// Stash files in an array once to check for one that matches
 			$avatar_files = array();
@@ -843,11 +783,6 @@ function user_avatar_avatar_exists($id, $type = "-cpcfull"){
 
 		// Close the avatar directory
 		closedir( $av_dir );
-
-		if ($return) {
-			break;
-		}
-
 	}
 	
 	return $return;

@@ -48,5 +48,4 @@ add_action('wp_enqueue_scripts', 'cpc_media_enqueue_assets', 20);
 
 if (is_admin()):
     require_once(__DIR__.'/cpc_media_setup.php');
-    require_once(__DIR__.'/cpc_media_admin.php');
 endif;

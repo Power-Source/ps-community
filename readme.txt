@@ -4,7 +4,7 @@ Tags: wp community, social network, social networking, social media, cp-communit
 Requires at least: 4.9
 Tested up to: 6.8.1
 ClassicPress: 2.6.0
-Stable tag: 1.1.1
+Stable tag: 1.1.2
 License URI: https://www.gnu.org/licenses/gpl-2.0.html
 
 == Description ==
@@ -17,7 +17,7 @@ Füge einfach das Plugin hinzu, klicken auf eine Schaltfläche und Du hast ganz 
 
 **Unglaublich kompatibel**
 
-Unglaublich kompatibel mit Themes und Plugins. Weitere Informationen, einschließlich zusätzlicher Plugins für PS Community, findest Du unter https://github.com/Power-Source/.
+Unglaublich kompatibel mit Themes und Plugins. Weitere Informationen, einschließlich zusätzlicher Plugins für PS Community, findest Du unter https://psource.eimen.net//.
 
 **Massiv anpassbar**
 
@@ -27,7 +27,7 @@ Möchtest Du etwas ändern, das Layout, den Text, die Schaltflächenbeschriftung
 
 Kein Problem! Ändere ganz einfach den gesamten Text, den Deine Benutzer sehen, über die Optionen. Verwendest Du WPML? Funktioniert auch problemlos mit diesem Plugin!
 
-[POWERED BY PSOURCE](https://github.com/Power-Source)
+[POWERED BY PSOURCE](https://psource.eimen.net/)
 
 == ChangeLog ==
 

@@ -250,7 +250,7 @@ function cpc_integrations_page() {
 				</p>
 				
 				<p>
-					<a href="https://github.com/Power-Source/ps-chat/releases/latest" target="_blank" class="button">
+					<a href="https://psource.eimen.net//ps-chat/releases/latest" target="_blank" class="button">
 						<?php _e('PS-Chat herunterladen', CPC2_TEXT_DOMAIN); ?>
 					</a>
 				</p>

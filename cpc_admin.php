@@ -401,9 +401,9 @@ function cpccom_release_notes() {
 
                     <h3>Aktivität</h3>
                     <p>Wir planen die Entwicklungsumgebung auf Github weiter auszubauen und zugänglicher zu machen</p>
-                    <a href="https://github.com/Power-Source/cp-community/issues" target-"_blank">Hier kannst Du Fehler melden!</a><br />
+                    <a href="https://psource.eimen.net//cp-community/issues" target-"_blank">Hier kannst Du Fehler melden!</a><br />
                     <p>Wir freuen uns über jeden, der dieses Projekt mitgestalten möchte:</p>
-                    <a href="https://github.com/Power-Source/ps-community" target-"_blank">Entwickler-Board</a><br />
+                    <a href="https://psource.eimen.net//ps-community" target-"_blank">Entwickler-Board</a><br />
 					
 				</td>
 			</tr></table>
