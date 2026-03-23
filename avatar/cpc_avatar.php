@@ -44,6 +44,14 @@ function user_avatar_init(){
 	// as this function is called from user_avatar_iframe_head hook
 	do_action('admin_print_styles');
 	do_action('admin_print_scripts');
+
+	// In admin-ajax requests there is no reliable screen/post context.
+	// Triggering admin_head here can fire third-party admin hooks that assume
+	// a normal admin page load (and then throw warnings).
+	if (function_exists('wp_doing_ajax') && wp_doing_ajax()) {
+		return;
+	}
+
 	do_action('admin_head');
 
 }

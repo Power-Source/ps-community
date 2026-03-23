@@ -302,7 +302,13 @@ function cpc_activity_post($atts) {
 
         	else:
 
-        		if ($user_id) $html .= '<div id="cpc_activity_post_private_msg">'.$private_msg.'</div>';
+            	if ($user_id):
+            		if (function_exists('cpc_friendships_get_private_profile_notice')):
+            			$html .= cpc_friendships_get_private_profile_notice($user_id, get_current_user_id(), array('message' => $private_msg));
+            		else:
+            			$html .= '<div id="cpc_activity_post_private_msg">'.$private_msg.'</div>';
+            		endif;
+            	endif;
 
         	endif;
 
@@ -640,7 +646,11 @@ if ($debug) $debug_html .= 'Start: '.date('Y-m-d H:i:s').'<br />';
 
         else:
 
-            $html .= '<div id="cpc_activity_post_private_msg">'.$private_msg.'</div>';
+            if (function_exists('cpc_friendships_get_private_profile_notice')):
+            	$html .= cpc_friendships_get_private_profile_notice($user_id, (int)$this_user, array('message' => $private_msg));
+            else:
+            	$html .= '<div id="cpc_activity_post_private_msg">'.$private_msg.'</div>';
+            endif;
 
         endif;
     

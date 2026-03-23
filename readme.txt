@@ -42,6 +42,7 @@ Kein Problem! Ändere ganz einfach den gesamten Text, den Deine Benutzer sehen, 
 * Fix: Kein unerwünschtes Auto-Scrollen mehr bei URLs mit leerem Hash (`...&cpc_project_section=tasks#`), Scroll nur noch bei explizitem Task-Anchor
 * Fix: Cursor wird in Textfeldern wieder angezeigt
 * Hinzugefügt: Chat-Status im Profil bei aktivierter PS Chat Integration
+* Hinzugefügt: Erweiterte Profil-Privatsphäre-Optionen
 
 = 1.1.1 =
 

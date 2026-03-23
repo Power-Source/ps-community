@@ -801,9 +801,16 @@ function cpc_is_friend_content($atts, $content="") {
 
         if ($user_id):
 
-            $friends = cpc_are_friends($current_user->ID, $user_id);
+            $viewer_user_id = isset($current_user->ID) ? (int) $current_user->ID : 0;
+            $friends = cpc_are_friends($viewer_user_id, $user_id);
 
-            if ($friends['status'] == 'publish'):
+            if (function_exists('cpc_friendships_can_view_profile')) {
+                $can_view_profile = cpc_friendships_can_view_profile($user_id, $viewer_user_id);
+            } else {
+                $can_view_profile = ($friends['status'] == 'publish');
+            }
+
+            if ($can_view_profile):
 
                 // Shortcode parameters
                 extract( shortcode_atts( array(
