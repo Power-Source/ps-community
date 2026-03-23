@@ -40,6 +40,17 @@ jQuery(document).ready(function() {
 		}
 		return '/lib_forum.php';
 	}
+
+	function cpcSafeHttpUrl(rawValue) {
+		try {
+			var urlObj = new URL(String(rawValue || '').trim(), window.location.origin);
+			if (urlObj.protocol === 'http:' || urlObj.protocol === 'https:') {
+				return urlObj.href;
+			}
+		} catch (e) {
+		}
+		return '';
+	}
     
 	/* Admin - add forum */
 
@@ -371,17 +382,19 @@ jQuery(document).ready(function() {
 
 				var the_button = this;
 				var the_textarea = jQuery('#sub_comment_'+id);
-				var waitUrl = jQuery('#cpc_wait_url').text().trim();
+				var waitUrl = cpcSafeHttpUrl(jQuery('#cpc_wait_url').text());
 				var $parent = jQuery(this).parent();
 				var tmpNode = document.createElement('div');
 				tmpNode.id = 'cpc_tmp';
 				tmpNode.style.width = '20px';
 				tmpNode.style.height = '20px';
 				tmpNode.style.marginBottom = '20px';
-				var imgNode = document.createElement('img');
-				imgNode.alt = '';
-				imgNode.src = waitUrl;
-				tmpNode.appendChild(imgNode);
+				if (waitUrl) {
+					var imgNode = document.createElement('img');
+					imgNode.alt = '';
+					imgNode.src = waitUrl;
+					tmpNode.appendChild(imgNode);
+				}
 				if ($parent.length && $parent[0]) {
 					$parent[0].appendChild(tmpNode);
 				}
