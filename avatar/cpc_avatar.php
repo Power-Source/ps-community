@@ -129,6 +129,15 @@ function user_avatar_core_avatar_file_url($uid, $filename) {
 	return user_avatar_core_avatar_url($uid).$filename;
 }
 
+function user_avatar_core_avatar_paths($uid = false) {
+	$uid = (int)$uid;
+
+	return array(
+		'upload_path' => user_avatar_core_avatar_upload_path($uid, false),
+		'url' => user_avatar_core_avatar_url($uid),
+	);
+}
+
 /**
  * user_avatar_core_avatar_upload_path function.
  * Description: Establishing upload path/area where images that are uploaded will be stored.
