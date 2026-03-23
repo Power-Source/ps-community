@@ -604,6 +604,66 @@
     content: "▶";
 }
 
+/* Activity visibility badges + inline feedback */
+.cpc_activity_visibility_meta {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+}
+
+.cpc_activity_visibility_badge {
+    display: inline-block;
+    padding: 1px 8px;
+    border-radius: 999px;
+    font-size: 11px;
+    line-height: 1.6;
+    border: 1px solid transparent;
+    font-weight: 600;
+}
+
+.cpc_activity_visibility_badge-public {
+    color: #0f5132;
+    background: #d1e7dd;
+    border-color: #badbcc;
+}
+
+.cpc_activity_visibility_badge-loggedin {
+    color: #0c5460;
+    background: #d1ecf1;
+    border-color: #b8daff;
+}
+
+.cpc_activity_visibility_badge-friends {
+    color: #664d03;
+    background: #fff3cd;
+    border-color: #ffecb5;
+}
+
+.cpc_activity_visibility_badge-onlyme {
+    color: #5f3dc4;
+    background: #efe7ff;
+    border-color: #d9c6ff;
+}
+
+.cpc_activity_visibility_badge-adminsonly {
+    color: #842029;
+    background: #f8d7da;
+    border-color: #f5c2c7;
+}
+
+.cpc_activity_visibility_feedback {
+    font-size: 11px;
+    margin-left: 2px;
+}
+
+.cpc_activity_visibility_feedback.is-success {
+    color: #0f5132;
+}
+
+.cpc_activity_visibility_feedback.is-error {
+    color: #842029;
+}
+
 /* ========================================
    PROFILE TABS SYSTEM
    ======================================== */

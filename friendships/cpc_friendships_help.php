@@ -56,6 +56,54 @@ function cpc_admin_getting_started_friendships() {
 				<span class="description"><?php _e('Wenn aktiv, können Benutzer ihre Sichtbarkeit auf der Seite Profil bearbeiten selbst festlegen.', CPC2_TEXT_DOMAIN); ?></span>
 			</td>
 		</tr>
+		<tr class="form-field">
+			<td scope="row" valign="top">
+				<label for="cpc_friendships_activity_privacy_enabled"><?php _e('Aktivitäts-Privatsphäre aktivieren', CPC2_TEXT_DOMAIN); ?></label>
+			</td>
+			<td>
+				<select name="cpc_friendships_activity_privacy_enabled" id="cpc_friendships_activity_privacy_enabled">
+					<option value="0" <?php selected(get_option('cpc_friendships_activity_privacy_enabled', '0'), '0'); ?>><?php _e('Nein', CPC2_TEXT_DOMAIN); ?></option>
+					<option value="1" <?php selected(get_option('cpc_friendships_activity_privacy_enabled', '0'), '1'); ?>><?php _e('Ja', CPC2_TEXT_DOMAIN); ?></option>
+				</select>
+				<span class="description"><?php _e('Aktiviert Sichtbarkeitsstufen pro Aktivitätsbeitrag im Stream.', CPC2_TEXT_DOMAIN); ?></span>
+			</td>
+		</tr>
+		<tr class="form-field">
+			<td scope="row" valign="top">
+				<label for="cpc_activity_visibility_default"><?php _e('Standard Aktivitäts-Sichtbarkeit', CPC2_TEXT_DOMAIN); ?></label>
+			</td>
+			<td>
+				<select name="cpc_activity_visibility_default" id="cpc_activity_visibility_default">
+					<option value="public" <?php selected(get_option('cpc_activity_visibility_default', 'public'), 'public'); ?>><?php _e('Öffentlich', CPC2_TEXT_DOMAIN); ?></option>
+					<option value="loggedin" <?php selected(get_option('cpc_activity_visibility_default', 'public'), 'loggedin'); ?>><?php _e('Nur angemeldete Benutzer', CPC2_TEXT_DOMAIN); ?></option>
+					<?php if (function_exists('cpc_are_friends') || (defined('CPC_CORE_PLUGINS') && strpos(CPC_CORE_PLUGINS, 'core-friendships') !== false)): ?>
+					<option value="friends" <?php selected(get_option('cpc_activity_visibility_default', 'public'), 'friends'); ?>><?php _e('Nur Freunde', CPC2_TEXT_DOMAIN); ?></option>
+					<?php endif; ?>
+					<option value="onlyme" <?php selected(get_option('cpc_activity_visibility_default', 'public'), 'onlyme'); ?>><?php _e('Nur ich', CPC2_TEXT_DOMAIN); ?></option>
+					<option value="adminsonly" <?php selected(get_option('cpc_activity_visibility_default', 'public'), 'adminsonly'); ?>><?php _e('Nur Administratoren', CPC2_TEXT_DOMAIN); ?></option>
+				</select>
+				<span class="description"><?php _e('Dieser Wert wird beim Erstellen neuer Aktivitätsbeiträge vorausgewählt.', CPC2_TEXT_DOMAIN); ?></span>
+			</td>
+		</tr>
+		<tr class="form-field">
+			<td scope="row" valign="top">
+				<label><?php _e('Erlaubte Sichtbarkeitsstufen', CPC2_TEXT_DOMAIN); ?></label>
+			</td>
+			<td>
+				<?php
+				$activity_levels_base = cpc_friendships_get_activity_visibility_levels_base();
+				$activity_enabled_levels = cpc_friendships_get_enabled_activity_visibility_levels();
+				foreach ($activity_levels_base as $level_key => $level_label):
+					$checked = isset($activity_enabled_levels[$level_key]);
+				?>
+				<label style="display:block;margin:2px 0;">
+					<input type="checkbox" name="cpc_activity_visibility_enabled[<?php echo esc_attr($level_key); ?>]" value="1" <?php checked($checked); ?> />
+					<?php echo esc_html($level_label); ?>
+				</label>
+				<?php endforeach; ?>
+				<span class="description"><?php _e('Nur aktivierte Stufen werden in der Auswahl angezeigt und ausgewertet.', CPC2_TEXT_DOMAIN); ?></span>
+			</td>
+		</tr>
 		</table>
         <?php
 	echo '</div>';
@@ -93,7 +141,314 @@ function cpc_admin_friendships_save($the_post) {
 		update_option('cpc_friendships_allow_profile_privacy_choice', $allow_privacy_choice);
 	}
 
+	if (isset($the_post['cpc_friendships_activity_privacy_enabled'])) {
+		$activity_privacy_enabled = sanitize_text_field($the_post['cpc_friendships_activity_privacy_enabled']) === '1' ? '1' : '0';
+		update_option('cpc_friendships_activity_privacy_enabled', $activity_privacy_enabled);
+	}
+
+	if (isset($the_post['cpc_activity_visibility_default'])) {
+		$activity_default = sanitize_key($the_post['cpc_activity_visibility_default']);
+		$allowed = cpc_friendships_get_activity_visibility_levels();
+		if (!isset($allowed[$activity_default])) {
+			$activity_default = 'public';
+		}
+		update_option('cpc_activity_visibility_default', $activity_default);
+	}
+
+	$enabled_levels = array();
+	$base_levels = cpc_friendships_get_activity_visibility_levels_base();
+	$submitted_levels = isset($the_post['cpc_activity_visibility_enabled']) && is_array($the_post['cpc_activity_visibility_enabled'])
+		? $the_post['cpc_activity_visibility_enabled']
+		: array();
+
+	foreach ($base_levels as $level_key => $level_label) {
+		if (isset($submitted_levels[$level_key])) {
+			$enabled_levels[] = $level_key;
+		}
+	}
+
+	if (empty($enabled_levels)) {
+		$enabled_levels[] = 'public';
+	}
+
+	update_option('cpc_activity_visibility_enabled_levels', $enabled_levels);
+
 }
+
+function cpc_friendships_activity_privacy_enabled() {
+	return get_option('cpc_friendships_activity_privacy_enabled', '0') === '1';
+}
+
+function cpc_friendships_get_activity_visibility_levels_base() {
+	$levels = array(
+		'public' => __('Öffentlich', CPC2_TEXT_DOMAIN),
+		'loggedin' => __('Nur angemeldete Benutzer', CPC2_TEXT_DOMAIN),
+		'onlyme' => __('Nur ich', CPC2_TEXT_DOMAIN),
+		'adminsonly' => __('Nur Administratoren', CPC2_TEXT_DOMAIN),
+	);
+
+	if (function_exists('cpc_are_friends') || (defined('CPC_CORE_PLUGINS') && strpos(CPC_CORE_PLUGINS, 'core-friendships') !== false)) {
+		$levels = array_merge(
+			array(
+				'public' => __('Öffentlich', CPC2_TEXT_DOMAIN),
+				'loggedin' => __('Nur angemeldete Benutzer', CPC2_TEXT_DOMAIN),
+				'friends' => __('Nur Freunde', CPC2_TEXT_DOMAIN),
+			),
+			array(
+				'onlyme' => __('Nur ich', CPC2_TEXT_DOMAIN),
+				'adminsonly' => __('Nur Administratoren', CPC2_TEXT_DOMAIN),
+			)
+		);
+	}
+
+	return apply_filters('cpc_activity_visibility_levels_base_filter', $levels);
+}
+
+function cpc_friendships_get_enabled_activity_visibility_levels() {
+	$base_levels = cpc_friendships_get_activity_visibility_levels_base();
+	$stored = get_option('cpc_activity_visibility_enabled_levels', array_keys($base_levels));
+	if (!is_array($stored)) {
+		$stored = array_keys($base_levels);
+	}
+
+	$enabled = array();
+	foreach ($stored as $level_key) {
+		$level_key = sanitize_key($level_key);
+		if (isset($base_levels[$level_key])) {
+			$enabled[$level_key] = $base_levels[$level_key];
+		}
+	}
+
+	if (empty($enabled) && isset($base_levels['public'])) {
+		$enabled['public'] = $base_levels['public'];
+	}
+
+	return $enabled;
+}
+
+function cpc_friendships_get_activity_visibility_levels() {
+	$levels = cpc_friendships_get_enabled_activity_visibility_levels();
+	return apply_filters('cpc_activity_visibility_levels_filter', $levels);
+}
+
+function cpc_friendships_get_activity_visibility_for_post($activity_id) {
+	$visibility = sanitize_key(get_post_meta((int) $activity_id, 'cpc_activity_visibility', true));
+	$levels = cpc_friendships_get_activity_visibility_levels();
+	if (!isset($levels[$visibility])) {
+		$visibility = cpc_friendships_get_default_activity_visibility();
+	}
+
+	return $visibility;
+}
+
+function cpc_friendships_get_activity_visibility_label($visibility) {
+	$levels = cpc_friendships_get_activity_visibility_levels();
+	$visibility = sanitize_key($visibility);
+
+	if (!isset($levels[$visibility])) {
+		return '';
+	}
+
+	return $levels[$visibility];
+}
+
+function cpc_friendships_render_activity_visibility_badge($visibility, $with_prefix = true) {
+	$visibility = sanitize_key($visibility);
+	$label = cpc_friendships_get_activity_visibility_label($visibility);
+	if ($label === '') {
+		$visibility = 'public';
+		$label = cpc_friendships_get_activity_visibility_label($visibility);
+	}
+
+	$html = '<span class="cpc_activity_visibility_label">';
+	$html .= '<span class="cpc_activity_visibility_badge cpc_activity_visibility_badge-' . esc_attr($visibility) . '">' . esc_html($label) . '</span>';
+	$html .= '</span>';
+
+	return $html;
+}
+
+function cpc_friendships_get_default_activity_visibility() {
+	$default = sanitize_key(get_option('cpc_activity_visibility_default', 'public'));
+	$levels = cpc_friendships_get_activity_visibility_levels();
+
+	if (!isset($levels[$default])) {
+		$default = 'public';
+	}
+
+	return $default;
+}
+
+function cpc_friendships_can_view_activity($activity_id, $viewer_user_id = 0) {
+	$activity_id = (int) $activity_id;
+	$viewer_user_id = (int) $viewer_user_id;
+
+	if (!$activity_id) {
+		return false;
+	}
+
+	if (!cpc_friendships_activity_privacy_enabled()) {
+		return true;
+	}
+
+	$author_id = (int) get_post_field('post_author', $activity_id);
+	if (!$author_id) {
+		return false;
+	}
+
+	if ($viewer_user_id > 0 && $viewer_user_id === $author_id) {
+		return true;
+	}
+
+	if ($viewer_user_id > 0 && user_can($viewer_user_id, 'manage_options')) {
+		return true;
+	}
+
+	$visibility = cpc_friendships_get_activity_visibility_for_post($activity_id);
+
+	switch ($visibility) {
+		case 'loggedin':
+			return $viewer_user_id > 0;
+
+		case 'friends':
+			if ($viewer_user_id <= 0 || !function_exists('cpc_are_friends')) {
+				return false;
+			}
+			$friends = cpc_are_friends($viewer_user_id, $author_id);
+			return (is_array($friends) && isset($friends['status']) && $friends['status'] === 'publish');
+
+		case 'onlyme':
+			return ($viewer_user_id > 0 && $viewer_user_id === $author_id);
+
+		case 'adminsonly':
+			return ($viewer_user_id > 0 && user_can($viewer_user_id, 'manage_options'));
+
+		case 'public':
+		default:
+			return true;
+	}
+}
+
+add_filter('cpc_activity_post_post_form_filter', 'cpc_friendships_add_activity_privacy_field', 30, 4);
+function cpc_friendships_add_activity_privacy_field($form_html, $atts, $user_id, $viewer_user_id) {
+	if (!cpc_friendships_activity_privacy_enabled() || !is_user_logged_in()) {
+		return $form_html;
+	}
+
+	$user_id = (int) $user_id;
+	$viewer_user_id = (int) $viewer_user_id;
+	if ($viewer_user_id <= 0 || $user_id <= 0 || !cpc_friendships_can_view_profile($user_id, $viewer_user_id)) {
+		return $form_html;
+	}
+
+	$levels = cpc_friendships_get_activity_visibility_levels();
+	$default = cpc_friendships_get_default_activity_visibility();
+
+	$form_html .= '<div class="cpc_activity_visibility_field" style="margin:10px 0 6px;">';
+	$form_html .= '<label for="cpc_activity_visibility" style="display:block;margin-bottom:4px;">' . esc_html__('Sichtbarkeit', CPC2_TEXT_DOMAIN) . '</label>';
+	$form_html .= '<select name="cpc_activity_visibility" id="cpc_activity_visibility">';
+	foreach ($levels as $level_key => $level_label) {
+		$form_html .= '<option value="' . esc_attr($level_key) . '"' . selected($default, $level_key, false) . '>' . esc_html($level_label) . '</option>';
+	}
+	$form_html .= '</select>';
+	$form_html .= '</div>';
+
+	return $form_html;
+}
+
+add_filter('cpc_activity_item_meta_filter', 'cpc_friendships_render_activity_visibility_meta', 30, 5);
+function cpc_friendships_render_activity_visibility_meta($item_html, $atts, $activity_id, $user_id, $this_user) {
+	if (!cpc_friendships_activity_privacy_enabled()) {
+		return $item_html;
+	}
+
+	$activity_id = (int) $activity_id;
+	$this_user = (int) $this_user;
+	if (!$activity_id) {
+		return $item_html;
+	}
+
+	$current_visibility = cpc_friendships_get_activity_visibility_for_post($activity_id);
+
+	$author_id = (int) get_post_field('post_author', $activity_id);
+	$can_edit = ($this_user > 0 && ($this_user === $author_id || user_can($this_user, 'manage_options')));
+
+	$item_html .= '<span class="cpc_activity_visibility_meta" style="margin-left:8px;">';
+	$item_html .= cpc_friendships_render_activity_visibility_badge($current_visibility, true);
+
+	if ($can_edit) {
+		$levels = cpc_friendships_get_activity_visibility_levels();
+		$item_html .= '<select class="cpc_activity_visibility_edit" data-post-id="' . (int) $activity_id . '" style="margin-left:8px;">';
+		foreach ($levels as $level_key => $level_label) {
+			$item_html .= '<option value="' . esc_attr($level_key) . '"' . selected($current_visibility, $level_key, false) . '>' . esc_html($level_label) . '</option>';
+		}
+		$item_html .= '</select>';
+		$item_html .= '<span class="cpc_activity_visibility_feedback" aria-live="polite"></span>';
+	}
+
+	$item_html .= '</span>';
+
+	return $item_html;
+}
+
+add_action('wp_ajax_cpc_activity_update_visibility', 'cpc_friendships_ajax_update_activity_visibility');
+function cpc_friendships_ajax_update_activity_visibility() {
+	check_ajax_referer('cpc-activity-nonce', 'security');
+
+	if (!is_user_logged_in() || !cpc_friendships_activity_privacy_enabled()) {
+		wp_send_json_error(array('message' => __('Nicht erlaubt.', CPC2_TEXT_DOMAIN)));
+	}
+
+	$post_id = isset($_POST['post_id']) ? absint($_POST['post_id']) : 0;
+	$visibility = isset($_POST['visibility']) ? sanitize_key($_POST['visibility']) : '';
+
+	if (!$post_id || get_post_type($post_id) !== 'cpc_activity') {
+		wp_send_json_error(array('message' => __('Ungültiger Aktivitätsbeitrag.', CPC2_TEXT_DOMAIN)));
+	}
+
+	$author_id = (int) get_post_field('post_author', $post_id);
+	$current_user_id = get_current_user_id();
+	if (!$author_id || ($current_user_id !== $author_id && !current_user_can('manage_options'))) {
+		wp_send_json_error(array('message' => __('Keine Berechtigung.', CPC2_TEXT_DOMAIN)));
+	}
+
+	$levels = cpc_friendships_get_activity_visibility_levels();
+	if (!isset($levels[$visibility])) {
+		wp_send_json_error(array('message' => __('Ungültige Sichtbarkeit.', CPC2_TEXT_DOMAIN)));
+	}
+
+	update_post_meta($post_id, 'cpc_activity_visibility', $visibility);
+
+	wp_send_json_success(array(
+		'post_id' => $post_id,
+		'visibility' => $visibility,
+		'label' => $levels[$visibility],
+		'badge_html' => cpc_friendships_render_activity_visibility_badge($visibility, true),
+	));
+}
+
+function cpc_friendships_filter_activity_items_by_visibility($activity, $atts, $user_id, $viewer_user_id) {
+	if (!cpc_friendships_activity_privacy_enabled() || empty($activity) || !is_array($activity)) {
+		return $activity;
+	}
+
+	$filtered = array();
+	$viewer_user_id = (int) $viewer_user_id;
+
+	foreach ($activity as $item) {
+		$item_id = isset($item['ID']) ? (int) $item['ID'] : 0;
+		if (!$item_id) {
+			continue;
+		}
+
+		if (cpc_friendships_can_view_activity($item_id, $viewer_user_id)) {
+			$filtered[] = $item;
+		}
+	}
+
+	return $filtered;
+}
+add_filter('cpc_activity_items_filter', 'cpc_friendships_filter_activity_items_by_visibility', 20, 4);
+add_filter('cpc_activity_single_item_filter', 'cpc_friendships_filter_activity_items_by_visibility', 20, 4);
 
 function cpc_friendships_get_default_profile_visibility() {
 	$default = get_option('cpc_friendships_profile_visibility_default', 'private');

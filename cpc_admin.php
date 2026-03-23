@@ -378,18 +378,20 @@ function cpccom_release_notes() {
             <table><tr>
 				<td valign="top" class="cpc_release_notes" style="<?php echo $cup_of_tea_left; ?>width:45%;">
 
-					<div style="font-size:1.6em; line-height:1.6em; color: #510051; font-weight: bold;">Core PS Community plugin</div>
+					<div style="font-size:1.6em; line-height:1.6em; color: #510051; font-weight: bold;">PS Community Plugin</div>
 					<a href="https://power-source.github.io/ps-community/" target-"_blank">Verfügbar im PSOURCE GitHub-Repository</a><br />
 
-                    <h2 style="font-style:italic; margin-top:20px;">Changelog Versionsnummer 1.0.8:</h2>
-					<p>Activity Plus Integration für Aktivitäten ergänzt (Bilder, Link-Vorschau, Video-Embed)</p>
-                    <p>Einstellungen für Activity Plus im Admin ergänzt (Aktivierung, Features, Theme, Ausrichtung)<p>
-                    <p>Upload- und Bereinigungslogik für Activity Plus in PS-Community-Struktur integriert<p>
-                    <p>Jobboard-Integration in Profil-Tab ergänzt (Startseite, Meine Jobs, Mein Profil, Jobboard, Expertenboard)<p> 
-                    <p>Navigation im Jobboard-Profil-Tab vollständig intern umgesetzt (inkl. AJAX-Sektionen und Formular-Redirects)<p>
-                    <p>Assets für Jobboard-Sektionen im Profil-Tab ergänzt (inkl. Expert-Form, Social-Icons und Anhänge/Uploader)<p>  
-                    <p>Unterstützung für Jobboardguthaben-Menüpunkt im Profil-Tab ergänzt (über bestehende Jobboard-Hooks)<p>
-                    <p>Getestet mit WP 6.8.1, CP 2.6.0 und PhP 8.4<p> 
+					<h2 style="font-style:italic; margin-top:20px;">Changelog Versionsnummer 1.1.2:</h2>
+					<p>Fix: Beim Erstellen von Gruppen im Backend (Dashboard/CPT) wird der Ersteller jetzt zuverlässig als Gruppen-Admin-Mitglied angelegt.</p>
+                    <p>Fix: Bestehende Gruppen werden beim Speichern automatisch repariert, falls dem Ersteller die Admin-Mitgliedschaft fehlt oder falschen Status/Rolle hat.</p>
+                    <p>Fix: Wenn der Gruppenersteller seiner eigenen Gruppe beitritt, wird er korrekt als Admin statt als normales Mitglied geführt.</p>
+                    <p>UX-Fix: Die automatische Projects-Widget-Sidebar (<code>cpc-projects</code>) wurde entfernt; das Task-Widget kann wie gewohnt in bestehenden Sidebars platziert werden.</p>
+                    <p>UX-Fix: Projekt-Task-Tab startet standardmäßig mit Status-Filter Offen statt Status/Alle.</p>
+                    <p>Verbesserung: Tasks werden im Projekt-Tab konsistent mit Offen zuerst und danach höchste Priorität zuerst dargestellt.</p>
+                    <p>Fix: Kein unerwünschtes Auto-Scrollen mehr bei URLs mit leerem Hash (...&amp;cpc_project_section=tasks#), Scroll nur noch bei explizitem Task-Anchor.</p>
+                    <p>Fix: Cursor wird in Textfeldern wieder angezeigt.</p>
+                    <p>Hinzugefügt: Chat-Status im Profil bei aktivierter PS Chat Integration.</p>
+                    <p>Hinzugefügt: Erweiterte Profil-Privatsphäre-Optionen.</p>
                   
                 </td>
 				<td style="width:1%">&nbsp;</td>
@@ -402,9 +404,16 @@ function cpccom_release_notes() {
 
                     <h3>Aktivität</h3>
                     <p>Wir planen die Entwicklungsumgebung auf Github weiter auszubauen und zugänglicher zu machen</p>
-                    <a href="https://psource.eimen.net//cp-community/issues" target-"_blank">Hier kannst Du Fehler melden!</a><br />
+                    <a href="https://github.com/Power-Source/ps-community/issues" target-"_blank">Hier kannst Du Fehler melden!</a><br />
                     <p>Wir freuen uns über jeden, der dieses Projekt mitgestalten möchte:</p>
-                    <a href="https://psource.eimen.net//ps-community" target-"_blank">Entwickler-Board</a><br />
+                    <a href="https://github.com/Power-Source/ps-community" target-"_blank">Entwickler-Board</a><br />
+
+                    <h3>PSOURCE MANAGER</h3>
+                    <p>Wir empfehlen Dir dringend den PSOURCE MANAGER zu installieren, um stets aktuelle Updates und Funktionen zu erhalten.</p>
+                    <a href="https://psource.eimen.net/shop/produkte/psource-manager/" target-"_blank">Hier kannst Du den PSOURCE MANAGER herunterladen!</a><br />
+                    <p>Erhalte noch mehr tolle Funktionen und Updates, indem Du den PSOURCE MANAGER installierst:</p>
+                    <p>Und erweitere die Möglichkeiten Deiner PS Community Installation!</p>
+                    <p>Zum Beispiel mit Live-Chat, PM System, erweiterten Profil-Optionen und vielem mehr.</p>
 					
 				</td>
 			</tr></table>

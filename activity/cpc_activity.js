@@ -52,6 +52,73 @@ jQuery('#cpc_activity_post_button').attr("disabled", false);
 		jQuery('.cpc_comment_settings').hide();
 		jQuery('.cpc_comment_settings_options').hide();
 	});
+
+	// Update activity visibility for existing posts
+	function cpcShowVisibilityFeedback(select, message, isSuccess) {
+		var feedback = select.closest('.cpc_activity_visibility_meta').find('.cpc_activity_visibility_feedback');
+		if (!feedback.length) {
+			return;
+		}
+
+		feedback.removeClass('is-success is-error').text(message || '');
+		if (message) {
+			feedback.addClass(isSuccess ? 'is-success' : 'is-error');
+			setTimeout(function() {
+				feedback.removeClass('is-success is-error').text('');
+			}, 2200);
+		}
+	}
+
+	jQuery('body').on('focus', '.cpc_activity_visibility_edit', function() {
+		jQuery(this).data('prev', jQuery(this).val());
+	});
+
+	jQuery('body').on('change', '.cpc_activity_visibility_edit', function() {
+		var select = jQuery(this);
+		var postId = parseInt(select.data('post-id'), 10);
+		var visibility = select.val();
+		var prev = select.data('prev');
+
+		if (!postId || !visibility) {
+			return;
+		}
+
+		select.prop('disabled', true);
+
+		jQuery.post(
+			cpc_activity_ajax.ajaxurl,
+			{
+				action: 'cpc_activity_update_visibility',
+				post_id: postId,
+				visibility: visibility,
+				security: cpc_activity_ajax.nonce
+			},
+			function(response) {
+				if (response && response.success && response.data) {
+					if (response.data.badge_html) {
+						select.closest('.cpc_activity_visibility_meta').find('.cpc_activity_visibility_label').replaceWith(response.data.badge_html);
+					} else {
+						select.closest('.cpc_activity_visibility_meta').find('.cpc_activity_visibility_label').html('&middot; ' + response.data.label);
+					}
+					select.data('prev', visibility);
+					cpcShowVisibilityFeedback(select, 'Gespeichert', true);
+				} else {
+					if (typeof prev !== 'undefined') {
+						select.val(prev);
+					}
+					var errorText = (response && response.data && response.data.message) ? response.data.message : 'Speichern fehlgeschlagen';
+					cpcShowVisibilityFeedback(select, errorText, false);
+				}
+				select.prop('disabled', false);
+			}
+		).fail(function() {
+			if (typeof prev !== 'undefined') {
+				select.val(prev);
+			}
+			cpcShowVisibilityFeedback(select, 'Netzwerkfehler', false);
+			select.prop('disabled', false);
+		});
+	});
 	
 	// Activity Plus Event Handlers (global - work for both user and group activity)
 	jQuery('body').on('click', '.cpc_activity_plus_toggle', function() {

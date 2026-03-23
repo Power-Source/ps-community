@@ -682,13 +682,14 @@ function cpc_activity_wall_collect_items($atts = array()) {
     $settings = function_exists('cpc_activity_plus_get_global_wall_settings') ? cpc_activity_plus_get_global_wall_settings() : array();
     $limit = isset($atts['limit']) ? max(20, min(400, (int)$atts['limit'])) : max(120, cpc_activity_plus_global_wall_per_page() * 20);
     $post_id = isset($atts['post_id']) ? (int)$atts['post_id'] : 0;
+    $viewer_user_id = get_current_user_id();
 
     $items = array();
 
     if ($post_id > 0) {
         if (function_exists('cpc_activity_plus_is_wall_eligible_activity') && cpc_activity_plus_is_wall_eligible_activity($post_id, $settings)) {
             $post = get_post($post_id);
-            if ($post) {
+            if ($post && (!function_exists('cpc_friendships_can_view_activity') || cpc_friendships_can_view_activity($post->ID, $viewer_user_id))) {
                 $items[] = array(
                     'ID' => (int)$post->ID,
                     'datetime' => strtotime((string)$post->post_date_gmt ? $post->post_date_gmt : $post->post_date),
@@ -717,6 +718,10 @@ function cpc_activity_wall_collect_items($atts = array()) {
 
     foreach ($query->posts as $post) {
         if (!function_exists('cpc_activity_plus_is_wall_eligible_activity') || !cpc_activity_plus_is_wall_eligible_activity($post->ID, $settings)) {
+            continue;
+        }
+
+        if (function_exists('cpc_friendships_can_view_activity') && !cpc_friendships_can_view_activity($post->ID, $viewer_user_id)) {
             continue;
         }
 

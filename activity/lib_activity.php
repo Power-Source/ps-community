@@ -29,6 +29,22 @@ if ($action) {
 			if ($new_id):
 
 				update_post_meta( $new_id, 'cpc_target', $_POST['cpc_activity_post_target'] );
+
+                $activity_visibility = 'public';
+                if (function_exists('cpc_friendships_activity_privacy_enabled') && cpc_friendships_activity_privacy_enabled()) {
+                    if (function_exists('cpc_friendships_get_default_activity_visibility')) {
+                        $activity_visibility = cpc_friendships_get_default_activity_visibility();
+                    }
+
+                    if (isset($_POST['cpc_activity_visibility']) && function_exists('cpc_friendships_get_activity_visibility_levels')) {
+                        $requested_visibility = sanitize_key($_POST['cpc_activity_visibility']);
+                        $allowed_levels = cpc_friendships_get_activity_visibility_levels();
+                        if (isset($allowed_levels[$requested_visibility])) {
+                            $activity_visibility = $requested_visibility;
+                        }
+                    }
+                }
+                update_post_meta($new_id, 'cpc_activity_visibility', $activity_visibility);
             
 				// Any further actions?
 				do_action( 'cpc_activity_post_add_hook', $_POST, $_FILES, $new_id );
