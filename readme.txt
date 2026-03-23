@@ -41,6 +41,7 @@ Kein Problem! Ändere ganz einfach den gesamten Text, den Deine Benutzer sehen, 
 * Verbesserung: Tasks werden im Projekt-Tab konsistent mit **Offen zuerst** und danach **höchste Priorität zuerst** dargestellt
 * Fix: Kein unerwünschtes Auto-Scrollen mehr bei URLs mit leerem Hash (`...&cpc_project_section=tasks#`), Scroll nur noch bei explizitem Task-Anchor
 * Fix: Cursor wird in Textfeldern wieder angezeigt
+* Hinzugefügt: Chat-Status im Profil bei aktivierter PS Chat Integration
 
 = 1.1.1 =
 
