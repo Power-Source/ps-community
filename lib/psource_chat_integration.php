@@ -57,6 +57,98 @@ function cpc_group_has_chat($group_id) {
 }
 
 /**
+ * Check if PS-Chat profile status integration can be rendered.
+ *
+ * @return bool
+ */
+function cpc_pschat_profile_status_enabled() {
+	$pschat = cpc_pschat_is_available();
+
+	return !empty($pschat['active'])
+		&& function_exists('psource_chat_get_user_status')
+		&& function_exists('psource_chat_update_user_status');
+}
+
+/**
+ * Get available PS-Chat user statuses.
+ *
+ * @return array
+ */
+function cpc_pschat_get_status_options() {
+	global $psource_chat;
+
+	if (!isset($psource_chat) || !is_object($psource_chat)) {
+		return array();
+	}
+
+	if (!isset($psource_chat->_chat_options['user-statuses']) || !is_array($psource_chat->_chat_options['user-statuses'])) {
+		return array();
+	}
+
+	return $psource_chat->_chat_options['user-statuses'];
+}
+
+/**
+ * Add PS-Chat status control to the profile header right slot.
+ */
+add_filter('cpc_profile_slot_content_filter', 'cpc_pschat_profile_slot_status', 10, 5);
+function cpc_pschat_profile_slot_status($content, $slot, $user_id, $viewer_id, $atts) {
+	if ($slot !== 'profile_header_right') {
+		return $content;
+	}
+
+	if (!cpc_pschat_profile_status_enabled()) {
+		return $content;
+	}
+
+	$user_id = (int) $user_id;
+	if (!$user_id) {
+		return $content;
+	}
+
+	$status_options = cpc_pschat_get_status_options();
+	if (empty($status_options)) {
+		return $content;
+	}
+
+	$current_status = psource_chat_get_user_status($user_id);
+	if (!$current_status || !isset($status_options[$current_status])) {
+		$current_status = key($status_options);
+	}
+
+	if (!$current_status || !isset($status_options[$current_status])) {
+		return $content;
+	}
+
+	$current_label = $status_options[$current_status];
+	$current_viewer_id = get_current_user_id();
+	$can_edit = $current_viewer_id && ($current_viewer_id === $user_id);
+
+	$status_html = '<div class="cpc-pschat-profile-status cpc-pschat-status-' . esc_attr($current_status) . '">';
+		$status_html .= '<span class="cpc-pschat-profile-status-dot" aria-hidden="true"></span>';
+		$status_html .= '<div class="cpc-pschat-profile-status-body">';
+
+			if ($can_edit) {
+				$status_html .= '<span class="cpc-pschat-profile-status-prefix">' . esc_html__('Chat-Status:', 'psource-chat') . '</span>';
+				$status_html .= '<select id="cpc-pschat-status-' . $user_id . '" class="psource-chat-status-widget cpc-pschat-profile-status-select" aria-label="' . esc_attr__('Chat-Status', 'psource-chat') . '">';
+
+				foreach ($status_options as $status_key => $status_label) {
+					$selected = selected($status_key, $current_status, false);
+					$status_html .= '<option value="' . esc_attr($status_key) . '"' . $selected . '>' . esc_html($status_label) . '</option>';
+				}
+
+				$status_html .= '</select>';
+			} else {
+				$status_html .= '<span class="cpc-pschat-profile-status-prefix">' . esc_html__('Chat-Status:', 'psource-chat') . '</span>';
+				$status_html .= '<span class="cpc-pschat-profile-status-value">' . esc_html($current_label) . '</span>';
+			}
+		$status_html .= '</div>';
+	$status_html .= '</div>';
+
+	return $content . $status_html;
+}
+
+/**
  * Get chat configuration for a group with all PS-Chat shortcode attributes
  * 
  * @param int $group_id

@@ -746,6 +746,97 @@
     font-size: 16px;
 }
 
+.cpc-pschat-profile-status {
+    display: inline-flex;
+    align-items: center;
+    justify-content: flex-start;
+    gap: 7px;
+    padding: 0;
+    border: 0;
+    border-radius: 0;
+    background: transparent;
+    box-shadow: none;
+    max-width: 100%;
+    min-height: 36px;
+    vertical-align: top;
+}
+
+.cpc-pschat-profile-status-dot {
+    width: 9px;
+    height: 9px;
+    border-radius: 50%;
+    background: #8c8f94;
+    flex: 0 0 auto;
+    box-shadow: none;
+}
+
+.cpc-pschat-status-available .cpc-pschat-profile-status-dot {
+    background: #16a34a;
+}
+
+.cpc-pschat-status-unavailable .cpc-pschat-profile-status-dot {
+    background: #f59e0b;
+}
+
+.cpc-pschat-status-away .cpc-pschat-profile-status-dot {
+    background: #6b7280;
+}
+
+.cpc-pschat-profile-status-body {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    gap: 7px;
+    min-width: 0;
+    flex-wrap: nowrap;
+}
+
+.cpc-pschat-profile-status-prefix {
+    font-size: 14px;
+    font-weight: 500;
+    color: #475467;
+    line-height: 1.2;
+    white-space: nowrap;
+}
+
+.cpc-pschat-profile-status-value,
+.cpc-pschat-profile-status-select {
+    font-size: 13px;
+    font-weight: 600;
+    color: #1d2327;
+    line-height: 1.2;
+}
+
+.cpc-pschat-profile-status-select {
+    -webkit-appearance: none;
+    -moz-appearance: none;
+    appearance: none;
+    border: 1px solid #d0d7de;
+    border-radius: 6px;
+    padding: 5px 28px 5px 10px;
+    margin: 0;
+    background-color: #fff;
+    background-image: linear-gradient(45deg, transparent 50%, #667085 50%), linear-gradient(135deg, #667085 50%, transparent 50%);
+    background-size: 6px 6px, 6px 6px;
+    background-repeat: no-repeat;
+    background-position: calc(100% - 10px) 52%, calc(100% - 5px) 52%;
+    min-width: 104px;
+    max-width: 100%;
+    cursor: pointer;
+    box-shadow: none;
+    outline: none;
+    vertical-align: middle;
+}
+
+.cpc-pschat-profile-status-select:focus {
+    border-color: #0073aa;
+    box-shadow: 0 0 0 2px rgba(0, 115, 170, 0.15);
+}
+
+.cpc-pschat-profile-status-select::-ms-expand {
+    display: none;
+}
+
 .cpc-profile-header-block {
     clear: both;
     max-width: 100%;
@@ -754,6 +845,11 @@
 .cpc-profile-header-right-slot {
     margin-top: 10px;
     min-height: 20px;
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: flex-end;
+    align-items: center;
+    gap: 10px;
 }
 
 .cpc-profile-header-meta {
@@ -788,6 +884,24 @@
     
     .cpc-pm-label {
         display: none;
+    }
+
+    .cpc-pschat-profile-status {
+        justify-content: flex-start;
+        min-height: 32px;
+    }
+
+    .cpc-pschat-profile-status-body {
+        align-items: flex-start;
+        flex-wrap: wrap;
+    }
+
+    .cpc-pschat-profile-status-prefix {
+        width: 100%;
+    }
+
+    .cpc-profile-header-right-slot {
+        justify-content: flex-start;
     }
 }
 

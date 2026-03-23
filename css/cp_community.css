@@ -127,6 +127,40 @@
     animation:  cpc-fade-in 0.25s ease;
 }
 
+/* Ensure typing caret is visible in all PS Community frontend forms. */
+body:not(.wp-admin) :where([class^="cpc"], [class*=" cpc"]) :where(
+    input[type="text"],
+    input[type="search"],
+    input[type="email"],
+    input[type="url"],
+    input[type="password"],
+    input[type="number"],
+    input[type="tel"],
+    textarea
+) {
+    color: var(--cpc-text) !important;
+    caret-color: var(--cpc-text) !important;
+}
+
+body:not(.wp-admin) :where([class^="cpc"], [class*=" cpc"]) [contenteditable="true"] {
+    caret-color: var(--cpc-text) !important;
+}
+
+body:not(.wp-admin) :where([class^="cpc"], [class*=" cpc"]) :where(
+    input[type="text"],
+    input[type="search"],
+    input[type="email"],
+    input[type="url"],
+    input[type="password"],
+    input[type="number"],
+    input[type="tel"],
+    textarea,
+    [contenteditable="true"]
+):focus {
+    outline: 2px solid var(--cpc-primary);
+    outline-offset: 1px;
+}
+
 @keyframes cpc-fade-in {
     from { opacity: 0; }
     to   { opacity: 1; }
