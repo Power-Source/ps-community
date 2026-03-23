@@ -70,6 +70,110 @@ function cpc_pschat_profile_status_enabled() {
 }
 
 /**
+ * Check whether chat reachability setting should be available on edit-profile.
+ *
+ * @return bool
+ */
+function cpc_pschat_reachability_setting_enabled() {
+	if (!cpc_pschat_profile_status_enabled()) {
+		return false;
+	}
+
+	if (function_exists('cpc_are_friends')) {
+		return true;
+	}
+
+	if (defined('CPC_CORE_PLUGINS') && strpos(CPC_CORE_PLUGINS, 'core-friendships') !== false) {
+		return true;
+	}
+
+	if (function_exists('cpc_is_active')) {
+		return cpc_is_active('friends') || cpc_is_active('friendships') || cpc_is_active('core-friendships');
+	}
+
+	return false;
+}
+
+/**
+ * Add PS-Chat reachability field to PS Community edit-profile form.
+ */
+add_filter('cpc_usermeta_change_filter', 'cpc_pschat_add_reachability_field', 20, 3);
+function cpc_pschat_add_reachability_field($tabs, $atts, $user_id) {
+	if (!cpc_pschat_reachability_setting_enabled()) {
+		return $tabs;
+	}
+
+	$user_id = (int) $user_id;
+	if (!$user_id || !is_user_logged_in() || get_current_user_id() !== $user_id) {
+		return $tabs;
+	}
+
+	$user_meta = get_user_meta($user_id, 'psource-chat-user', true);
+	if (!is_array($user_meta)) {
+		$user_meta = array();
+	}
+
+	$reachability = isset($user_meta['chat_reachability']) ? sanitize_key($user_meta['chat_reachability']) : 'public';
+	if ($reachability !== 'friends') {
+		$reachability = 'public';
+	}
+
+	$form_html  = '<div class="cpc_usermeta_change_item">';
+	$form_html .= '<div class="cpc_usermeta_change_label">' . esc_html__('Private Chat-Erreichbarkeit', 'psource-chat') . '</div>';
+	$form_html .= '<select name="cpc_pschat_chat_reachability" id="cpc_pschat_chat_reachability">';
+	$form_html .= '<option value="public"' . selected($reachability, 'public', false) . '>' . esc_html__('Öffentlich (alle Nutzer)', 'psource-chat') . '</option>';
+	$form_html .= '<option value="friends"' . selected($reachability, 'friends', false) . '>' . esc_html__('Nur Freunde', 'psource-chat') . '</option>';
+	$form_html .= '</select>';
+	$form_html .= '<div class="cpc_note" style="margin-top:6px;">' . esc_html__('Steuert, wer dich per privatem Chat direkt kontaktieren darf.', 'psource-chat') . '</div>';
+	$form_html .= '</div>';
+
+	$tabs_array = get_option('cpc_comfile_tabs');
+	$default_tab = isset($tabs_array['cpc_comfile_tab_default_tab']) ? (int) $tabs_array['cpc_comfile_tab_default_tab'] : 1;
+	if ($default_tab < 1) {
+		$default_tab = 1;
+	}
+	$tabs[] = array(
+		'tab' => $default_tab,
+		'html' => $form_html,
+		'mandatory' => false,
+	);
+
+	return $tabs;
+}
+
+/**
+ * Save PS-Chat reachability setting from PS Community edit-profile form.
+ */
+add_action('cpc_usermeta_change_hook', 'cpc_pschat_save_reachability_field', 20, 4);
+function cpc_pschat_save_reachability_field($user_id, $atts, $the_post, $the_files) {
+	if (!cpc_pschat_reachability_setting_enabled()) {
+		return;
+	}
+
+	$user_id = (int) $user_id;
+	if (!$user_id || !is_user_logged_in() || get_current_user_id() !== $user_id) {
+		return;
+	}
+
+	if (!isset($the_post['cpc_pschat_chat_reachability'])) {
+		return;
+	}
+
+	$reachability = sanitize_key($the_post['cpc_pschat_chat_reachability']);
+	if ($reachability !== 'friends') {
+		$reachability = 'public';
+	}
+
+	$user_meta = get_user_meta($user_id, 'psource-chat-user', true);
+	if (!is_array($user_meta)) {
+		$user_meta = array();
+	}
+
+	$user_meta['chat_reachability'] = $reachability;
+	update_user_meta($user_id, 'psource-chat-user', $user_meta);
+}
+
+/**
  * Get available PS-Chat user statuses.
  *
  * @return array
