@@ -38,8 +38,8 @@ add_action('plugins_loaded', 'cpc_languages');
 // Get core plugin features enabled
 // In Multisite: ensure each site has the option set
 if (!$core_plugins = get_option('cpc_default_core')):
-    // Fresh install: core-media, core-docs, core-projects are OFF by default
-    $default_core = 'core-profile,core-activity,core-avatar,core-friendships,core-alerts,core-forums';
+    // Fresh install: core-media, core-docs, core-projects and core-events are OFF by default
+    $default_core = 'core-profile,core-activity,core-avatar,core-friendships,core-alerts,core-forums,core-members,core-invite';
     update_option('cpc_default_core', $default_core);
     update_option('cpc_modules_migrated_111', 1); // fresh install needs no migration
     $core_plugins = $default_core;
@@ -47,7 +47,7 @@ endif;
 
 // Multisite fallback: if option is missing/empty for a site, initialize defaults once
 if (is_multisite() && !$core_plugins) {
-    $default_core = 'core-profile,core-activity,core-avatar,core-friendships,core-alerts,core-forums';
+    $default_core = 'core-profile,core-activity,core-avatar,core-friendships,core-alerts,core-forums,core-members,core-invite';
     update_option('cpc_default_core', $default_core);
     update_option('cpc_modules_migrated_111', 1);
     $core_plugins = $default_core;
@@ -75,6 +75,26 @@ if (!get_option('cpc_modules_migrated_111') && is_string($core_plugins)) {
         update_option('cpc_default_core', $core_plugins);
     }
     update_option('cpc_modules_migrated_111', 1);
+}
+
+// Migration 1.1.3: Mitgliederverzeichnis und Invite-Flow automatisch aktivieren,
+// wenn Profile aktiv sind (bestehende Installationen).
+if (!get_option('cpc_modules_migrated_113') && is_string($core_plugins)) {
+    $needs_save = false;
+    if (strpos($core_plugins, 'core-profile') !== false) {
+        if (strpos($core_plugins, 'core-members') === false) {
+            $core_plugins .= ',core-members';
+            $needs_save = true;
+        }
+        if (strpos($core_plugins, 'core-invite') === false) {
+            $core_plugins .= ',core-invite';
+            $needs_save = true;
+        }
+    }
+    if ($needs_save) {
+        update_option('cpc_default_core', $core_plugins);
+    }
+    update_option('cpc_modules_migrated_113', 1);
 }
 
 if (!defined('CPC_CORE_PLUGINS')) define ('CPC_CORE_PLUGINS', $core_plugins);
@@ -277,6 +297,11 @@ if (strpos(CPC_CORE_PLUGINS, 'core-profile') !== false):
     require_once('usermeta/cpc_usermeta_shortcodes.php');
     require_once('usermeta/cpc_2fa_profile.php'); // PS Security 2FA Integration
 endif;
+
+// Members Directory
+if (strpos(CPC_CORE_PLUGINS, 'core-members') !== false):
+    require_once('members/cpc_members.php');
+endif;
 // Avatar
 if (strpos(CPC_CORE_PLUGINS, 'core-avatar') !== false)
     require_once('avatar/cpc_avatar.php');
@@ -353,6 +378,16 @@ endif;
 // Projects
 if (strpos(CPC_CORE_PLUGINS, 'core-projects') !== false):
     require_once('projects/cpc_projects.php');
+endif;
+
+// Events (internal + optional external adapter)
+if (strpos(CPC_CORE_PLUGINS, 'core-events') !== false):
+    require_once('events/cpc_events.php');
+endif;
+
+// Invite Flow
+if (strpos(CPC_CORE_PLUGINS, 'core-invite') !== false):
+    require_once('lib/invite_flow.php');
 endif;
 
 // Admin

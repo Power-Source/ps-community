@@ -364,6 +364,7 @@ if (!isset($_GET['forum_action']) || ($_GET['forum_action'] != 'edit' && $_GET['
 						);
 
 						$comments = get_comments($args);
+                        $accepted_comment_id = absint(get_post_meta($post->ID, 'cpc_accepted_comment_id', true));
 						if ($comments):
 
 							// Get comment's post forum term ID
@@ -410,10 +411,13 @@ if (!isset($_GET['forum_action']) || ($_GET['forum_action'] != 'edit' && $_GET['
                                     if (!$private || $current_user->ID == $post->post_author || $comment->user_id == $current_user->ID || current_user_can('manage_options')):
 
                                         $comment_html = '';
+                                        $is_accepted_answer = ($accepted_comment_id && ((int)$comment->comment_ID === $accepted_comment_id));
                                         $private_div_style = ($private && $current_user->ID != $comment->user_id) ? ' cpc_private_post_div' : '';
                                 		$read_div_style = ($new_topic_reply) ? ' cpc_forum_post_new_reply' : ''; // new reply?
                                 		$new_padding = ($new_topic_reply && $current_user->ID != $comment->user_id) ? 10 : 0; // new reply?
-                                        $comment_html .= '<div class="cpc_forum_post_comment'.$private_div_style.$read_div_style.'" style="padding-left: '.($size+$new_padding).'px;">';
+                                            $comment_html .= '<div class="cpc_forum_post_comment'.$private_div_style.$read_div_style;
+                                        if ($is_accepted_answer) $comment_html .= ' cpc_forum_post_accepted_answer';
+                                        $comment_html .= '" style="padding-left: '.($size+$new_padding).'px;">';
                                             if ($private) $comment_html .= '<div class="cpc_private_post" style="margin-left: -'.($size/2).'px;">'.$private_reply_msg.'</div>';
 
                                             $comment_html .= '<div class="cpc_forum_post_comment_author" style="max-width: '.($size).'px; margin-left: -'.($size).'px;">';
@@ -484,6 +488,15 @@ if (!isset($_GET['forum_action']) || ($_GET['forum_action'] != 'edit' && $_GET['
                                                         if (($user_can_edit_comment || $is_forum_admin) && $timeout-$age >= 0 && $enable_timeout) $comment_html .= '<br />('.sprintf(__('Sperre in %d Sekunden', CPC2_TEXT_DOMAIN), ($timeout-$age)).')';
                                                         if (($user_can_edit_comment && $user_can_delete_comment) || $is_forum_admin) $comment_html .= ' | ';
                                                         if ($user_can_delete_comment || $is_forum_admin) $comment_html .= '<a href="'.$url.cpc_query_mark($url).'forum_action=delete&comment_id='.$comment->comment_ID.'">'.__('Löschen', CPC2_TEXT_DOMAIN).'</a>';
+                                                        if ((int)$comment->comment_parent === 0 && ((int)$post->post_author === (int)$current_user->ID || $is_forum_admin || current_user_can('manage_options'))):
+                                                            $url_answer = preg_replace("/[&?]forum_action=(accept_answer|unaccept_answer)&comment_id=[0-9]+/", "", $url);
+                                                            $comment_html .= ' | ';
+                                                            if ($is_accepted_answer):
+                                                                $comment_html .= '<a href="'.$url_answer.cpc_query_mark($url_answer).'forum_action=unaccept_answer&comment_id='.$comment->comment_ID.'">'.__('Akzeptierung entfernen', CPC2_TEXT_DOMAIN).'</a>';
+                                                            else:
+                                                                $comment_html .= '<a href="'.$url_answer.cpc_query_mark($url_answer).'forum_action=accept_answer&comment_id='.$comment->comment_ID.'">'.__('Antwort akzeptieren', CPC2_TEXT_DOMAIN).'</a>';
+                                                            endif;
+                                                        endif;
                                                         if ($report) $comment_html .= ' | <a class="cpc_activity_settings_report" rel="'.$comment->comment_ID.'" href="mailto:'.$report_email.'?subject='.$url.'">'.$report_label.'</a>';
                                                     $comment_html .= '</div>';	
 
@@ -504,6 +517,7 @@ if (!isset($_GET['forum_action']) || ($_GET['forum_action'] != 'edit' && $_GET['
                                                 $comment_content = cpc_formatted_content($comment_content);
                                                 if ($new_topic_reply && $current_user->ID != $comment->user_id) $comment_content = '<div class="cpc_forum_new_label">'.convert_smilies($new_item_label).'</div> '.$comment_content;
                                                 $comment_content = apply_filters( 'cpc_forum_item_comment_content_filter', $comment_content, $comment, $atts );
+														if ($is_accepted_answer) $comment_html .= '<div class="cpc_forum_answer_badge">'.__('Akzeptierte Antwort', CPC2_TEXT_DOMAIN).'</div>';
 
                                                 $comment_html .= '<div class="cpc_forum_item_content_comment">'.$comment_content.'</div>';
 

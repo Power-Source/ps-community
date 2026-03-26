@@ -55,9 +55,13 @@ function cpc_friends_get_dynamic_styles() {
 	$values = get_option('cpc_styles_cpc_friends_actions') ? get_option('cpc_styles_cpc_friends_actions') : array();
 	$html .= cpc_styles($values, 'cpc_friends_actions', array(
 		'.cpc_friends_add_button',
+		'.cpc_friends_add_message',
 		'.cpc_friends_add',
 		'.cpc_friends_cancel',
 		'.cpc_pending_friends_reject',
+		'.cpc_friends_block',
+		'.cpc_friends_unblock',
+		'.cpc_friends_blocked_info',
 		'.cpc_add_remove_favourite',
 	));
 
@@ -163,6 +167,13 @@ function cpc_friends_status($atts) {
 
 		if ($user_id != $current_user->ID):
 
+			if (function_exists('cpc_is_user_blocked') && cpc_is_user_blocked($current_user->ID, $user_id)) {
+				return __('Du hast diesen Benutzer blockiert.', CPC2_TEXT_DOMAIN);
+			}
+			if (function_exists('cpc_is_user_blocked') && cpc_is_user_blocked($user_id, $current_user->ID)) {
+				return __('Dieser Benutzer hat dich blockiert.', CPC2_TEXT_DOMAIN);
+			}
+
 			$friends = cpc_are_friends($current_user->ID, $user_id);
 
 			if ($friends['status']):
@@ -206,6 +217,11 @@ function cpc_friends_add_button($atts) {
 			'label' => cpc_get_shortcode_value($values, 'cpc_friends_add_button-label', __('Freundschaft schließen', CPC2_TEXT_DOMAIN)),
 			'cancel_label' => cpc_get_shortcode_value($values, 'cpc_friends_add_button-cancel_label', __('Freundschaft kündigen', CPC2_TEXT_DOMAIN)),
 			'cancel_request_label' => cpc_get_shortcode_value($values, 'cpc_friends_add_button-cancel_request_label', __('Freundschaftsanfrage abbrechen', CPC2_TEXT_DOMAIN)),
+			'show_request_message' => cpc_get_shortcode_value($values, 'cpc_friends_add_button-show_request_message', 1),
+			'request_message_placeholder' => cpc_get_shortcode_value($values, 'cpc_friends_add_button-request_message_placeholder', __('Kurze Nachricht (optional)', CPC2_TEXT_DOMAIN)),
+			'block_label' => cpc_get_shortcode_value($values, 'cpc_friends_add_button-block_label', __('Blockieren', CPC2_TEXT_DOMAIN)),
+			'unblock_label' => cpc_get_shortcode_value($values, 'cpc_friends_add_button-unblock_label', __('Blockierung aufheben', CPC2_TEXT_DOMAIN)),
+			'blocked_info' => cpc_get_shortcode_value($values, 'cpc_friends_add_button-blocked_info', __('Direkte Interaktionen sind blockiert.', CPC2_TEXT_DOMAIN)),
 			'class' => cpc_get_shortcode_value($values, 'cpc_friends_add_button-class', ''),
 			'before' => '',
 			'styles' => true,
@@ -220,17 +236,38 @@ function cpc_friends_add_button($atts) {
 
 				$html .= '<input type="hidden" id="plugins_url" value="'.plugins_url( '', __FILE__ ).'" />';
 
+				$is_blocked_by_me = function_exists('cpc_is_user_blocked') ? cpc_is_user_blocked($current_user->ID, $user_id) : false;
+				$is_blocked_by_them = function_exists('cpc_is_user_blocked') ? cpc_is_user_blocked($user_id, $current_user->ID) : false;
+				if ($is_blocked_by_me || $is_blocked_by_them) {
+					$html .= '<div class="cpc_friends_blocked_info">' . esc_html($blocked_info) . '</div>';
+					if ($is_blocked_by_me) {
+						$html .= '<button type="button" rel="'.$user_id.'" class="cpc_button cpc_friends_unblock '.$class.'">'.esc_html($unblock_label).'</button>';
+					}
+					$html .= '</div>';
+					if ($html) {
+						$html = apply_filters ('cpc_wrap_shortcode_styles_filter', $html, 'cpc_friends_add_button', $before, $after, $styles, $values);
+					}
+					return $html;
+				}
+
 				$friends = cpc_are_friends($current_user->ID, $user_id);
 				if (!$friends['status']):
 
+					if (!empty($show_request_message)) {
+						$html .= '<input type="text" class="cpc_friends_add_message" placeholder="'.esc_attr($request_message_placeholder).'" maxlength="500" /> ';
+					}
+
 					$html .= '<button type="submit" rel="'.$user_id.'" class="cpc_button cpc_friends_add '.$class.'">'.$label.'</button>';
+					$html .= ' <button type="button" rel="'.$user_id.'" class="cpc_button cpc_friends_block '.$class.'">'.esc_html($block_label).'</button>';
 
 				else:
 
 					if ($friends['status'] == 'publish'):
 						$html .= '<button type="submit" rel="'.$friends['ID'].'" class="cpc_button cpc_friends_cancel '.$class.'">'.$cancel_label.'</button>';
+						$html .= ' <button type="button" rel="'.$user_id.'" class="cpc_button cpc_friends_block '.$class.'">'.esc_html($block_label).'</button>';
 					else:
 						$html .= '<button type="submit" rel="'.$friends['ID'].'" class="cpc_button cpc_pending_friends_reject '.$class.'">'.$cancel_request_label.'</button>';
+						$html .= ' <button type="button" rel="'.$user_id.'" class="cpc_button cpc_friends_block '.$class.'">'.esc_html($block_label).'</button>';
 					endif;
 
 				endif;
@@ -469,8 +506,12 @@ function cpc_friends_pending($atts) {
 		'size' => cpc_get_shortcode_value($values, 'cpc_friends_pending-size', 64),
 		'link' => cpc_get_shortcode_value($values, 'cpc_friends_pending-link', true),
 		'class' => cpc_get_shortcode_value($values, 'cpc_friends_pending-class', ''),
+		'incoming_label' => cpc_get_shortcode_value($values, 'cpc_friends_pending-incoming_label', __('Eingehende Anfragen', CPC2_TEXT_DOMAIN)),
+		'outgoing_label' => cpc_get_shortcode_value($values, 'cpc_friends_pending-outgoing_label', __('Ausgehende Anfragen', CPC2_TEXT_DOMAIN)),
 		'accept_request_label' => cpc_get_shortcode_value($values, 'cpc_friends_pending-accept_request_label', __('Akzeptieren', CPC2_TEXT_DOMAIN)),
 		'reject_request_label' => cpc_get_shortcode_value($values, 'cpc_friends_pending-reject_request_label', __('Ablehnen', CPC2_TEXT_DOMAIN)),
+		'cancel_outgoing_label' => cpc_get_shortcode_value($values, 'cpc_friends_pending-cancel_outgoing_label', __('Anfrage zurückziehen', CPC2_TEXT_DOMAIN)),
+		'show_request_message' => cpc_get_shortcode_value($values, 'cpc_friends_pending-show_request_message', 1),
 		'none' => cpc_get_shortcode_value($values, 'cpc_friends_pending-none', ''),
 		'before' => '',
 		'styles' => true,
@@ -515,10 +556,15 @@ function cpc_friends_pending($atts) {
 
 			global $post;
 			$loop = new WP_Query( $args );
-			if ($loop->have_posts()) {
+			$incoming_has_posts = $loop->have_posts();
+			if ($incoming_has_posts) {
 				$html .= '<div class="cpc_pending_friends">';
+				if ($incoming_label) {
+					$html .= '<h4 class="cpc_pending_friends_title">' . esc_html($incoming_label) . '</h4>';
+				}
 				while ( $loop->have_posts() ) : $loop->the_post();
 					$member1 = get_post_meta( $post->ID, 'cpc_member1', true );
+					$request_message = get_post_meta($post->ID, 'cpc_friendship_message', true);
 	                
 	                $html .= '<div class="cpc_pending_friends_friend">';
 	                    if ($size):
@@ -528,6 +574,9 @@ function cpc_friends_pending($atts) {
 	                    endif;
 	                    $html .= '<div class="cpc_pending_friends_friend_display_name">';
 	                        $html .= cpc_display_name(array('user_id'=>$member1, 'link'=>$link));
+							if (!empty($show_request_message) && !empty($request_message)) {
+								$html .= '<div class="cpc_pending_friends_request_message">' . esc_html($request_message) . '</div>';
+							}
 	                        $html .= '<div class="cpc_pending_friends_accept_reject">';
 	                        $html .= '<button type="submit" rel="'.$post->ID.'" class="cpc_button cpc_pending_friends_accept '.$class.'">'.$accept_request_label.'</button>';
 	                        $html .= '<button type="submit" rel="'.$post->ID.'" class="cpc_button cpc_pending_friends_reject '.$class.'">'.$reject_request_label.'</button>';
@@ -537,11 +586,58 @@ function cpc_friends_pending($atts) {
 	                $html .= '</div>';
 
 				endwhile; 
-				$html .= '</div>';		
-			} else {
-				$html .= $none;
+				$html .= '</div>'; 		
 			}
 			wp_reset_query();
+
+			$outgoing_args = array(
+				'post_type' => 'cpc_friendship',
+				'posts_per_page' => $count,
+				'post_status' => 'pending',
+				'meta_query' => array(
+					array(
+						'key' => 'cpc_member1',
+						'compare' => '=',
+						'value' => $user_id,
+					),
+				),
+			);
+			$outgoing_loop = new WP_Query($outgoing_args);
+			$outgoing_has_posts = $outgoing_loop->have_posts();
+			if ($outgoing_has_posts) {
+				$html .= '<div class="cpc_pending_friends cpc_pending_friends_outgoing">';
+				if ($outgoing_label) {
+					$html .= '<h4 class="cpc_pending_friends_title">' . esc_html($outgoing_label) . '</h4>';
+				}
+				while ($outgoing_loop->have_posts()) : $outgoing_loop->the_post();
+					$member2 = get_post_meta($post->ID, 'cpc_member2', true);
+					$request_message = get_post_meta($post->ID, 'cpc_friendship_message', true);
+
+					$html .= '<div class="cpc_pending_friends_friend">';
+					if ($size):
+						$html .= '<div class="cpc_pending_friends_friend_avatar">';
+						$html .= cpc_friend_avatar($member2, $size, $link);
+						$html .= '</div>';
+					endif;
+					$html .= '<div class="cpc_pending_friends_friend_display_name">';
+					$html .= cpc_display_name(array('user_id' => $member2, 'link' => $link));
+					if (!empty($show_request_message) && !empty($request_message)) {
+						$html .= '<div class="cpc_pending_friends_request_message">' . esc_html($request_message) . '</div>';
+					}
+					$html .= '<div class="cpc_pending_friends_accept_reject">';
+					$html .= '<button type="submit" rel="'.$post->ID.'" class="cpc_button cpc_pending_friends_reject '.$class.'">'.$cancel_outgoing_label.'</button>';
+					$html .= '<input type="hidden" id="plugins_url" value="'.plugins_url( '', __FILE__ ).'" />';
+					$html .= '</div>';
+					$html .= '</div>';
+					$html .= '</div>';
+				endwhile;
+				$html .= '</div>';
+			}
+			wp_reset_query();
+
+			if (!$incoming_has_posts && !$outgoing_has_posts) {
+				$html .= $none;
+			}
 
 			if ($html) $html = apply_filters ('cpc_wrap_shortcode_styles_filter', $html, 'cpc_friends_pending', $before, $after, $styles, $values);
 	    
@@ -551,6 +647,49 @@ function cpc_friends_pending($atts) {
 	
 	return $html;
 
+}
+
+function cpc_friends_block_button($atts) {
+
+	// Init
+	cpc_friends_init();
+
+	$html = cpc_friends_get_dynamic_styles();
+	global $current_user;
+
+	if (!is_user_logged_in()) {
+		return $html;
+	}
+
+	$values = cpc_get_shortcode_options('cpc_friends_block_button');
+	extract(shortcode_atts(array(
+		'user_id' => 0,
+		'block_label' => cpc_get_shortcode_value($values, 'cpc_friends_block_button-block_label', __('Blockieren', CPC2_TEXT_DOMAIN)),
+		'unblock_label' => cpc_get_shortcode_value($values, 'cpc_friends_block_button-unblock_label', __('Blockierung aufheben', CPC2_TEXT_DOMAIN)),
+		'class' => cpc_get_shortcode_value($values, 'cpc_friends_block_button-class', ''),
+		'before' => '',
+		'styles' => true,
+		'after' => '',
+	), $atts, 'cpc_friends_block_button'));
+
+	if (!$user_id) {
+		$user_id = cpc_get_user_id();
+	}
+
+	if (!$user_id || $user_id == $current_user->ID) {
+		return $html;
+	}
+
+	$is_blocked = function_exists('cpc_is_user_blocked') ? cpc_is_user_blocked($current_user->ID, $user_id) : false;
+	if ($is_blocked) {
+		$html .= '<button type="button" rel="'.$user_id.'" class="cpc_button cpc_friends_unblock '.$class.'">'.esc_html($unblock_label).'</button>';
+	} else {
+		$html .= '<button type="button" rel="'.$user_id.'" class="cpc_button cpc_friends_block '.$class.'">'.esc_html($block_label).'</button>';
+	}
+
+	if ($html) $html = apply_filters ('cpc_wrap_shortcode_styles_filter', $html, 'cpc_friends_block_button', $before, $after, $styles, $values);
+
+	return $html;
 }
 
 function cpc_friends_count($atts) {
@@ -670,6 +809,7 @@ if (!is_admin()) add_shortcode(CPC_PREFIX.'-friends-add-button', 'cpc_friends_ad
 if (!is_admin()) add_shortcode(CPC_PREFIX.'-friends-count', 'cpc_friends_count');
 if (!is_admin()) add_shortcode(CPC_PREFIX.'-alerts-friends', 'cpc_alerts_friends');
 if (!is_admin()) add_shortcode(CPC_PREFIX.'-favourite-friend', 'cpc_favourite_friend');
+if (!is_admin()) add_shortcode(CPC_PREFIX.'-friends-block-button', 'cpc_friends_block_button');
 
 
 ?>

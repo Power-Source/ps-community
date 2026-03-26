@@ -24,6 +24,203 @@ function cpc_friendships_ajax_rate_limited($scope, $max_requests = 30, $window_s
     return false;
 }
 
+function cpc_get_blocked_users($user_id) {
+    $blocked = get_user_meta((int)$user_id, 'cpc_blocked_users', true);
+    if (!is_array($blocked)) {
+        return array();
+    }
+
+    $blocked = array_map('absint', $blocked);
+    $blocked = array_values(array_unique(array_filter($blocked)));
+    return $blocked;
+}
+
+function cpc_set_blocked_users($user_id, $blocked) {
+    $user_id = (int)$user_id;
+    $blocked = is_array($blocked) ? $blocked : array();
+    $blocked = array_map('absint', $blocked);
+    $blocked = array_values(array_unique(array_filter($blocked, function($id) use ($user_id) {
+        return $id > 0 && $id !== $user_id;
+    })));
+
+    if (empty($blocked)) {
+        delete_user_meta($user_id, 'cpc_blocked_users');
+    } else {
+        update_user_meta($user_id, 'cpc_blocked_users', $blocked);
+    }
+}
+
+function cpc_is_user_blocked($user_id, $target_user_id) {
+    $blocked = cpc_get_blocked_users((int)$user_id);
+    return in_array((int)$target_user_id, $blocked, true);
+}
+
+function cpc_is_blocked_either_direction($user_a, $user_b) {
+    $user_a = (int)$user_a;
+    $user_b = (int)$user_b;
+    if ($user_a <= 0 || $user_b <= 0 || $user_a === $user_b) {
+        return false;
+    }
+
+    return cpc_is_user_blocked($user_a, $user_b) || cpc_is_user_blocked($user_b, $user_a);
+}
+
+function cpc_remove_friendships_between_users($user_a, $user_b) {
+    $user_a = (int)$user_a;
+    $user_b = (int)$user_b;
+    if ($user_a <= 0 || $user_b <= 0 || $user_a === $user_b) {
+        return;
+    }
+
+    global $wpdb;
+    $sql = "SELECT p.ID FROM {$wpdb->prefix}posts p
+            INNER JOIN {$wpdb->prefix}postmeta m1 ON m1.post_id = p.ID AND m1.meta_key = 'cpc_member1'
+            INNER JOIN {$wpdb->prefix}postmeta m2 ON m2.post_id = p.ID AND m2.meta_key = 'cpc_member2'
+            WHERE p.post_type = 'cpc_friendship'
+              AND p.post_status IN ('pending','publish')
+              AND ((m1.meta_value = %d AND m2.meta_value = %d) OR (m1.meta_value = %d AND m2.meta_value = %d))";
+    $friendship_ids = $wpdb->get_col($wpdb->prepare($sql, $user_a, $user_b, $user_b, $user_a));
+    if (!empty($friendship_ids)) {
+        foreach ($friendship_ids as $friendship_id) {
+            wp_delete_post((int)$friendship_id, true);
+        }
+    }
+
+    $fav_sql = "SELECT p.ID FROM {$wpdb->prefix}posts p
+                INNER JOIN {$wpdb->prefix}postmeta m1 ON m1.post_id = p.ID AND m1.meta_key = 'cpc_favourite_member1'
+                INNER JOIN {$wpdb->prefix}postmeta m2 ON m2.post_id = p.ID AND m2.meta_key = 'cpc_favourite_member2'
+                WHERE p.post_type = 'cpc_favourite_friend'
+                  AND p.post_status IN ('pending','publish')
+                  AND ((m1.meta_value = %d AND m2.meta_value = %d) OR (m1.meta_value = %d AND m2.meta_value = %d))";
+    $fav_ids = $wpdb->get_col($wpdb->prepare($fav_sql, $user_a, $user_b, $user_b, $user_a));
+    if (!empty($fav_ids)) {
+        foreach ($fav_ids as $fav_id) {
+            wp_delete_post((int)$fav_id, true);
+        }
+    }
+}
+
+add_action('wp_ajax_cpc_friends_block', 'cpc_friends_block');
+function cpc_friends_block() {
+    check_ajax_referer('cpc-friendship-nonce', 'security');
+    if (!is_user_logged_in()) {
+        wp_send_json_error(array('message' => 'not_logged_in'), 403);
+    }
+
+    $target_user_id = isset($_POST['user_id']) ? absint($_POST['user_id']) : 0;
+    $current_user_id = get_current_user_id();
+    if ($target_user_id <= 0 || $target_user_id === $current_user_id) {
+        wp_send_json_error(array('message' => 'invalid_user'), 400);
+    }
+
+    $blocked = cpc_get_blocked_users($current_user_id);
+    if (!in_array($target_user_id, $blocked, true)) {
+        $blocked[] = $target_user_id;
+    }
+    cpc_set_blocked_users($current_user_id, $blocked);
+
+    cpc_remove_friendships_between_users($current_user_id, $target_user_id);
+    wp_send_json_success(array('status' => 'blocked'));
+}
+
+add_action('wp_ajax_cpc_friends_unblock', 'cpc_friends_unblock');
+function cpc_friends_unblock() {
+    check_ajax_referer('cpc-friendship-nonce', 'security');
+    if (!is_user_logged_in()) {
+        wp_send_json_error(array('message' => 'not_logged_in'), 403);
+    }
+
+    $target_user_id = isset($_POST['user_id']) ? absint($_POST['user_id']) : 0;
+    $current_user_id = get_current_user_id();
+    if ($target_user_id <= 0 || $target_user_id === $current_user_id) {
+        wp_send_json_error(array('message' => 'invalid_user'), 400);
+    }
+
+    $blocked = cpc_get_blocked_users($current_user_id);
+    $blocked = array_values(array_filter($blocked, function($id) use ($target_user_id) {
+        return (int)$id !== (int)$target_user_id;
+    }));
+    cpc_set_blocked_users($current_user_id, $blocked);
+
+    wp_send_json_success(array('status' => 'unblocked'));
+}
+
+function cpc_privacy_register_friendship_exporter($exporters) {
+    $exporters['cpc-friendships-blocked-users'] = array(
+        'exporter_friendly_name' => __('PS Community blockierte Benutzer', CPC2_TEXT_DOMAIN),
+        'callback' => 'cpc_privacy_friendship_exporter_callback',
+    );
+    return $exporters;
+}
+add_filter('wp_privacy_personal_data_exporters', 'cpc_privacy_register_friendship_exporter');
+
+function cpc_privacy_friendship_exporter_callback($email_address, $page = 1) {
+    $user = get_user_by('email', $email_address);
+    if (!$user) {
+        return array('data' => array(), 'done' => true);
+    }
+
+    $blocked_ids = cpc_get_blocked_users((int)$user->ID);
+    $blocked_text = array();
+    foreach ($blocked_ids as $blocked_id) {
+        $blocked_user = get_user_by('id', $blocked_id);
+        $blocked_text[] = $blocked_user
+            ? sprintf('%s (%d)', $blocked_user->user_login, $blocked_id)
+            : sprintf('%d', $blocked_id);
+    }
+
+    $data = array();
+    if (!empty($blocked_text)) {
+        $data[] = array(
+            'group_id' => 'cpc_friendships',
+            'group_label' => __('PS Community Freundschaften', CPC2_TEXT_DOMAIN),
+            'item_id' => 'cpc_blocked_users',
+            'data' => array(
+                array(
+                    'name' => __('Blockierte Benutzer', CPC2_TEXT_DOMAIN),
+                    'value' => implode(', ', $blocked_text),
+                ),
+            ),
+        );
+    }
+
+    return array(
+        'data' => $data,
+        'done' => true,
+    );
+}
+
+function cpc_privacy_register_friendship_eraser($erasers) {
+    $erasers['cpc-friendships-blocked-users'] = array(
+        'eraser_friendly_name' => __('PS Community blockierte Benutzer', CPC2_TEXT_DOMAIN),
+        'callback' => 'cpc_privacy_friendship_eraser_callback',
+    );
+    return $erasers;
+}
+add_filter('wp_privacy_personal_data_erasers', 'cpc_privacy_register_friendship_eraser');
+
+function cpc_privacy_friendship_eraser_callback($email_address, $page = 1) {
+    $user = get_user_by('email', $email_address);
+    if (!$user) {
+        return array(
+            'items_removed' => false,
+            'items_retained' => false,
+            'messages' => array(),
+            'done' => true,
+        );
+    }
+
+    $had_items = !empty(cpc_get_blocked_users((int)$user->ID));
+    delete_user_meta((int)$user->ID, 'cpc_blocked_users');
+
+    return array(
+        'items_removed' => $had_items,
+        'items_retained' => false,
+        'messages' => array(),
+        'done' => true,
+    );
+}
+
 function cpc_get_users_ajax() {
 
     check_ajax_referer('cpc-friendship-nonce', 'security');
@@ -57,10 +254,21 @@ function cpc_friends_add() {
 	// CSRF-Schutz
 	check_ajax_referer('cpc-friendship-nonce', 'security');
 
-	$user_id = absint($_POST['user_id']);
+    $user_id = absint($_POST['user_id']);
+    $request_message = isset($_POST['request_message']) ? sanitize_textarea_field(wp_unslash($_POST['request_message'])) : '';
+    if (function_exists('mb_substr')) {
+        $request_message = trim(mb_substr($request_message, 0, 500));
+    } else {
+        $request_message = trim(substr($request_message, 0, 500));
+    }
 	global $current_user;
 
 	if ($user_id != $current_user->ID):
+
+        if (cpc_is_blocked_either_direction($current_user->ID, $user_id)) {
+            echo 'blocked';
+            exit;
+        }
 
 		$friends = cpc_are_friends($current_user->ID, $user_id);
 		if (!$friends['status']):
@@ -82,6 +290,9 @@ function cpc_friends_add() {
 				update_post_meta( $post_id, 'cpc_member2', $user_id );
 				// Since date, as from pending (until accepted/rejected)
 				update_post_meta( $post_id, 'cpc_friendship_since', date('Y-m-d H:i:s') );
+                if ($request_message !== '') {
+                    update_post_meta($post_id, 'cpc_friendship_message', $request_message);
+                }
 
 				// Add alert
 				$subject = __('Neue Freundschaftsanfrage', CPC2_TEXT_DOMAIN);
@@ -182,6 +393,12 @@ function cpc_friends_accept() {
 
 	if ($member1 == $current_user->ID || $member2 == $current_user->ID):
 
+        if (cpc_is_blocked_either_direction($member1, $member2)) {
+            wp_delete_post(absint($_POST['post_id']), true);
+            echo 'blocked';
+            exit;
+        }
+
 		$my_post = array(
 			'ID'           => $_POST['post_id'],
 			'post_status' => 'publish',
@@ -279,7 +496,8 @@ function cpc_get_friends($user_id, $array) {
                 $member1 = get_post_meta( $post->ID, 'cpc_member1', true );
                 $member2 = get_post_meta( $post->ID, 'cpc_member2', true );
                 $other_member = ($member1 == $user_id) ? $member2 : $member1;
-                if (!$array || in_array($other_member, $array))
+				$skip_blocked = cpc_is_blocked_either_direction($user_id, $other_member);
+                if ((!$array || in_array($other_member, $array)) && !$skip_blocked)
                 	array_push($friends, array('ID' => $other_member));
             endwhile;
         }
@@ -324,7 +542,8 @@ function cpc_get_pending_friends($user_id, $array) {
                 $member1 = get_post_meta( $post->ID, 'cpc_member1', true );
                 $member2 = get_post_meta( $post->ID, 'cpc_member2', true );
                 $other_member = ($member1 == $user_id) ? $member2 : $member1;
-                if (!$array || in_array($other_member, $array))
+				$skip_blocked = cpc_is_blocked_either_direction($user_id, $other_member);
+                if ((!$array || in_array($other_member, $array)) && !$skip_blocked)
                 	array_push($friends, array('ID' => $other_member));
             endwhile;
         }

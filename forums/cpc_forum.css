@@ -224,6 +224,32 @@
 	clear: both;
 }
 
+.cpc_forum_post_accepted_answer {
+	border-left: 4px solid #3a9d23;
+	padding-left: 8px !important;
+}
+
+.cpc_forum_answer_badge {
+	display: inline-block;
+	margin-bottom: 8px;
+	padding: 2px 8px;
+	font-size: 0.85em;
+	font-weight: bold;
+	background: #e8f6e4;
+	border: 1px solid #3a9d23;
+	color: #21630f;
+	border-radius: 3px;
+}
+
+.cpc_forum_unanswered_item,
+.cpc_forum_expert_item {
+	margin-bottom: 8px;
+}
+
+.cpc_forum_expert_rank {
+	font-weight: bold;
+}
+
 .cpc_forum_last_poster {
 	width: 15%;
 	float: right;

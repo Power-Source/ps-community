@@ -29,6 +29,111 @@ Kein Problem! Ändere ganz einfach den gesamten Text, den Deine Benutzer sehen, 
 
 [POWERED BY PSOURCE](https://psource.eimen.net/)
 
+== Neue Module und Shortcodes ==
+
+Die folgenden Funktionen sind über den Tab **PS Community > Einstellungen > Funktionen** als Core-Module aktivierbar:
+
+* Mitgliederverzeichnis (`core-members`)
+* Events (`core-events`)
+* Einladungen (`core-invite`)
+* Lounge-Modus (als Teil der Aktivitätswall, kein eigenes Core-Modul)
+
+=== Mitgliederverzeichnis ===
+
+Shortcodes:
+
+* `[cpc-members]`
+* `[cpc-members-directory]`
+
+Wichtige Attribute:
+
+* `per_page` (5-100, Standard: 24)
+* `role` (z.B. subscriber, editor)
+* `show_search` (1/0)
+* `show_atoz` (1/0)
+* `show_last_active` (1/0)
+* `order` (ASC/DESC)
+
+Beispiel:
+
+`[cpc-members-directory per_page="30" show_search="1" show_atoz="1" order="ASC"]`
+
+=== Events (Hybrid intern + PS Events) ===
+
+Shortcode:
+
+* `[cpc-events]`
+
+Wichtige Attribute:
+
+* `limit` (1-100, Standard: 12)
+* `upcoming` (1 = nur kommende, 0 = auch vergangene)
+
+Beispiel:
+
+`[cpc-events limit="10" upcoming="1"]`
+
+Provider-Steuerung im Admin:
+
+* **Events-Provider**: Auto, Intern, Extern (PS Events)
+* **Bevorzugter PS-Events-Shortcode**: Auto, `eab_archive`, `eab_calendar`, `eab_single`, `eab_expired`, `eab_events_map`, `eab_my_events`
+
+Hinweis: Bei externer Nutzung wird das Plugin **events-and-bookings** (PS Events) automatisch erkannt. Falls kein externer Shortcode rendert, erfolgt ein Fallback über den CPT `psource_event`.
+
+=== Einladungen ===
+
+Shortcode:
+
+* `[cpc-invite]`
+
+Optionales Attribut:
+
+* `redirect` (Ziel-URL im gleichen Netzwerk)
+
+Beispiel:
+
+`[cpc-invite redirect="https://example.com/community/"]`
+
+Der Invite-Flow nutzt signierte Token (Transient), E-Mail-Validierung und sichere Redirect-Prüfung auf dieselbe Host-Domain.
+
+=== Lounge (Wall-Modus) ===
+
+Shortcode:
+
+* `[cpc-lounge]`
+
+Die Lounge verwendet intern die Aktivitätswall im Modus `lounge` (schneller Social-Stream) und ist kein separates Legacy-Modul.
+
+Beispiel:
+
+`[cpc-lounge title="Community Lounge" page_size="20" show_post_form="1"]`
+
+=== Forum Q&A (Akzeptierte Antwort + Übersicht) ===
+
+Im Forum kann der Themen-Ersteller (oder Forum-Admin) eine Antwort als **akzeptiert** markieren.
+
+Neue Shortcodes:
+
+* `[cpc-forum-unanswered]` (zeigt Themen ohne akzeptierte Antwort)
+* `[cpc-forum-experts]` (zeigt Top-Nutzer nach akzeptierten Antworten)
+
+Wichtige Attribute für `[cpc-forum-unanswered]`:
+
+* `slug` (optional: nur ein Forum-Slug)
+* `days` (Zeitraum in Tagen, Standard: 30)
+* `max` (max. Einträge, Standard: 10)
+
+Wichtige Attribute für `[cpc-forum-experts]`:
+
+* `slug` (optional: nur ein Forum-Slug)
+* `days` (Zeitraum in Tagen, Standard: 30)
+* `max` (max. Einträge, Standard: 10)
+* `show_rank` (1/0, Ranglabel anzeigen)
+
+Hinweis zum Rangsystem:
+
+* Die Expertenliste kann optional Ranglabels anzeigen (Rookie/Helper/Pro/Master), basierend auf Anzahl akzeptierter Antworten im Zeitraum.
+
 == ChangeLog ==
 
 = 1.1.2 =
@@ -43,6 +148,10 @@ Kein Problem! Ändere ganz einfach den gesamten Text, den Deine Benutzer sehen, 
 * Fix: Cursor wird in Textfeldern wieder angezeigt
 * Hinzugefügt: Chat-Status im Profil bei aktivierter PS Chat Integration
 * Hinzugefügt: Erweiterte Profil-Privatsphäre-Optionen
+* Hinzugefügt: Events-Hybridsteuerung im Funktionen-Tab (Provider-Modus: Auto/Intern/Extern) inkl. Auswahl eines bevorzugten PS-Events-Shortcodes (eab_*)
+* Hinzugefügt: Forum-Q&A mit akzeptierter Antwort direkt im Thema (inkl. Markieren/Entfernen)
+* Hinzugefügt: Neue Forum-Shortcodes `[cpc-forum-unanswered]` und `[cpc-forum-experts]`
+* Hinzugefügt: Optionales Experten-Ranglabel (Rookie/Helper/Pro/Master) in `[cpc-forum-experts]`
 
 = 1.1.1 =
 

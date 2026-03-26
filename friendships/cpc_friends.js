@@ -191,15 +191,24 @@ jQuery(document).ready(function() {
 	// ***** Friendships (user interface) *****	
 
 	// Make (add) friendship request
-	jQuery(".cpc_friends_add").on('click', function (event) {
+	jQuery('body').on('click', '.cpc_friends_add', function (event) {
+
+		event.preventDefault();
+		var $button = jQuery(this);
+		var requestMessage = '';
+		var $messageField = $button.closest('.cpc_friends_add_button').find('.cpc_friends_add_message');
+		if ($messageField.length) {
+			requestMessage = jQuery.trim($messageField.val());
+		}
 
 		jQuery("body").addClass("cpc_wait_loading");		    			    	
 		jQuery.post(
 		    cpc_friendships_ajax.ajaxurl,
 		    {
 		        action : 'cpc_friends_add',
-		        user_id: jQuery(this).attr('rel'),
-		        security : cpc_ajax.nonce
+		        user_id: $button.attr('rel'),
+		        request_message: requestMessage,
+		        security : cpc_friendships_ajax.nonce
 		    },
 		    function(response) {
 		    	location.reload();
@@ -209,7 +218,9 @@ jQuery(document).ready(function() {
 	});
 
 	// Accept friendship request
-	jQuery(".cpc_pending_friends_accept").on('click', function (event) {
+	jQuery('body').on('click', '.cpc_pending_friends_accept', function (event) {
+
+		event.preventDefault();
 
 		jQuery("body").addClass("cpc_wait_loading");		    			    	
 		jQuery.post(
@@ -217,7 +228,7 @@ jQuery(document).ready(function() {
 		    {
 		        action : 'cpc_friends_accept',
 		        post_id: jQuery(this).attr('rel'),
-		        security : cpc_ajax.nonce
+		        security : cpc_friendships_ajax.nonce
 		    },
 		    function(response) {
 		    	location.reload();
@@ -227,7 +238,9 @@ jQuery(document).ready(function() {
 	});
 
 	// Reject friendship request
-	jQuery(".cpc_pending_friends_reject").on('click', function (event) {
+	jQuery('body').on('click', '.cpc_pending_friends_reject', function (event) {
+
+		event.preventDefault();
 
 		jQuery("body").addClass("cpc_wait_loading");		    			    	
 		jQuery.post(
@@ -235,7 +248,7 @@ jQuery(document).ready(function() {
 		    {
 		        action : 'cpc_friends_reject',
 		        post_id: jQuery(this).attr('rel'),
-		        security : cpc_ajax.nonce
+		        security : cpc_friendships_ajax.nonce
 		    },
 		    function(response) {
 		    	location.reload();
@@ -245,7 +258,9 @@ jQuery(document).ready(function() {
 	});
 
 	// Cancel friendship
-	jQuery(".cpc_friends_cancel").on('click', function (event) {
+	jQuery('body').on('click', '.cpc_friends_cancel', function (event) {
+
+		event.preventDefault();
 
 		jQuery("body").addClass("cpc_wait_loading");		    	                	
 		jQuery.post(
@@ -253,7 +268,7 @@ jQuery(document).ready(function() {
 		    {
 		        action : 'cpc_friends_reject',
 		        post_id: jQuery(this).attr('rel'),
-		        security : cpc_ajax.nonce
+		        security : cpc_friendships_ajax.nonce
 		    },
 		    function(response) {
 		    	location.reload();
@@ -263,7 +278,9 @@ jQuery(document).ready(function() {
 	});
 
     // Remove all friends
-	jQuery("#cpc_remove_all_friends").on('click', function (event) {
+	jQuery('body').on('click', '#cpc_remove_all_friends', function (event) {
+
+		event.preventDefault();
 
         var answer = confirm(jQuery(this).data('sure'));
         if (answer) {
@@ -273,7 +290,7 @@ jQuery(document).ready(function() {
                 cpc_friendships_ajax.ajaxurl,
                 {
                     action : 'cpc_remove_all_friends',
-                    security : cpc_ajax.nonce
+		            security : cpc_friendships_ajax.nonce
                 },
                 function(response) {
                     location.reload();
@@ -284,5 +301,43 @@ jQuery(document).ready(function() {
 
 	});
     
+		// Block user
+		jQuery('body').on('click', '.cpc_friends_block', function (event) {
+
+			event.preventDefault();
+			jQuery("body").addClass("cpc_wait_loading");
+			jQuery.post(
+				cpc_friendships_ajax.ajaxurl,
+				{
+					action : 'cpc_friends_block',
+					user_id: jQuery(this).attr('rel'),
+					security : cpc_friendships_ajax.nonce
+				},
+				function(response) {
+					location.reload();
+				}
+			);
+
+		});
+
+		// Unblock user
+		jQuery('body').on('click', '.cpc_friends_unblock', function (event) {
+
+			event.preventDefault();
+			jQuery("body").addClass("cpc_wait_loading");
+			jQuery.post(
+				cpc_friendships_ajax.ajaxurl,
+				{
+					action : 'cpc_friends_unblock',
+					user_id: jQuery(this).attr('rel'),
+					security : cpc_friendships_ajax.nonce
+				},
+				function(response) {
+					location.reload();
+				}
+			);
+
+		});
+
 
 })

@@ -378,8 +378,49 @@ function cpc_integrations_page() {
 	if (!current_user_can('manage_options')) {
 		wp_die('Keine Berechtigung');
 	}
-	
+
 	// Handle form submissions
+	if (
+		isset($_POST['cpc_events_integrations_submit'])
+		&& isset($_POST['cpc_events_integrations_nonce'])
+		&& wp_verify_nonce(sanitize_text_field(wp_unslash($_POST['cpc_events_integrations_nonce'])), 'cpc_events_integrations_save')
+	) {
+		$provider_mode = isset($_POST['cpc_events_provider_mode'])
+			? sanitize_text_field(wp_unslash($_POST['cpc_events_provider_mode']))
+			: 'auto';
+		if (!in_array($provider_mode, array('auto', 'internal', 'external'), true)) {
+			$provider_mode = 'auto';
+		}
+
+		$external_shortcode = isset($_POST['cpc_events_external_shortcode'])
+			? sanitize_key(wp_unslash($_POST['cpc_events_external_shortcode']))
+			: 'auto';
+		$allowed_shortcodes = array('auto', 'eab_archive', 'eab_calendar', 'eab_single', 'eab_expired', 'eab_events_map', 'eab_my_events');
+		if (!in_array($external_shortcode, $allowed_shortcodes, true)) {
+			$external_shortcode = 'auto';
+		}
+
+		update_option('cpc_events_provider_mode', $provider_mode);
+		update_option('cpc_events_external_shortcode', $external_shortcode);
+
+		echo '<div class="notice notice-success is-dismissible"><p>' . esc_html__('Events-Integrations-Einstellungen gespeichert.', CPC2_TEXT_DOMAIN) . '</p></div>';
+	}
+
+	$events_provider_mode = get_option('cpc_events_provider_mode', 'auto');
+	if (!in_array($events_provider_mode, array('auto', 'internal', 'external'), true)) {
+		$events_provider_mode = 'auto';
+	}
+
+	$events_external_shortcode = get_option('cpc_events_external_shortcode', 'auto');
+	$events_shortcode_options = array('auto', 'eab_archive', 'eab_calendar', 'eab_single', 'eab_expired', 'eab_events_map', 'eab_my_events');
+	if (!in_array($events_external_shortcode, $events_shortcode_options, true)) {
+		$events_external_shortcode = 'auto';
+	}
+
+	$events_external_shortcode_disabled = ($events_provider_mode === 'internal') ? ' disabled="disabled"' : '';
+	$events_external_shortcode_wrap_style = ($events_provider_mode === 'internal')
+		? 'margin-top:12px;opacity:.55;'
+		: 'margin-top:12px;';
 	
 	$pschat_status = cpc_pschat_is_available();
 	?>
@@ -388,13 +429,67 @@ function cpc_integrations_page() {
 		<h1><?php _e('Integrationen', CPC2_TEXT_DOMAIN); ?></h1>
 		
 		<p><?php _e('Verwalte die Integration von PSOURCE Plugins mit PS Community.', CPC2_TEXT_DOMAIN); ?></p>
+
+		<!-- Events Integration Section -->
+		<div class="cpc-integration-box" style="border: 1px solid #ddd; padding: 20px; margin-top: 20px; background-color: #f9f9f9; border-radius: 5px;">
+			<h2><?php _e('Events Integration (PS Events / events-and-bookings)', CPC2_TEXT_DOMAIN); ?></h2>
+
+			<p><?php _e('Hier steuerst du, wie der Shortcode [cpc-events] rendert: internes Modul oder externer PS-Events-Provider.', CPC2_TEXT_DOMAIN); ?></p>
+
+			<form method="post" action="">
+				<?php wp_nonce_field('cpc_events_integrations_save', 'cpc_events_integrations_nonce'); ?>
+
+				<p>
+					<label for="cpc_events_provider_mode"><strong><?php _e('Events-Provider', CPC2_TEXT_DOMAIN); ?></strong></label><br />
+					<select id="cpc_events_provider_mode" name="cpc_events_provider_mode" style="min-width:320px;">
+						<option value="auto"<?php echo selected($events_provider_mode, 'auto', false); ?>><?php _e('Automatisch (extern wenn vorhanden)', CPC2_TEXT_DOMAIN); ?></option>
+						<option value="internal"<?php echo selected($events_provider_mode, 'internal', false); ?>><?php _e('Nur internes PS Community Events-Modul', CPC2_TEXT_DOMAIN); ?></option>
+						<option value="external"<?php echo selected($events_provider_mode, 'external', false); ?>><?php _e('Nur externer Provider (PS Events)', CPC2_TEXT_DOMAIN); ?></option>
+					</select>
+				</p>
+
+				<div id="cpc_events_external_shortcode_wrap" style="<?php echo esc_attr($events_external_shortcode_wrap_style); ?>">
+					<label for="cpc_events_external_shortcode"><strong><?php _e('Bevorzugter PS-Events-Shortcode', CPC2_TEXT_DOMAIN); ?></strong></label><br />
+					<select id="cpc_events_external_shortcode" name="cpc_events_external_shortcode" style="min-width:320px;"<?php echo $events_external_shortcode_disabled; ?>>
+						<option value="auto"<?php echo selected($events_external_shortcode, 'auto', false); ?>><?php _e('Automatisch wählen', CPC2_TEXT_DOMAIN); ?></option>
+						<option value="eab_archive"<?php echo selected($events_external_shortcode, 'eab_archive', false); ?>>eab_archive</option>
+						<option value="eab_calendar"<?php echo selected($events_external_shortcode, 'eab_calendar', false); ?>>eab_calendar</option>
+						<option value="eab_single"<?php echo selected($events_external_shortcode, 'eab_single', false); ?>>eab_single</option>
+						<option value="eab_expired"<?php echo selected($events_external_shortcode, 'eab_expired', false); ?>>eab_expired</option>
+						<option value="eab_events_map"<?php echo selected($events_external_shortcode, 'eab_events_map', false); ?>>eab_events_map</option>
+						<option value="eab_my_events"<?php echo selected($events_external_shortcode, 'eab_my_events', false); ?>>eab_my_events</option>
+					</select>
+					<p class="description" style="margin-top:6px;"><?php _e('Nur relevant bei externem Provider. Bei "Automatisch" wird der erste verfügbare EAB-Shortcode verwendet.', CPC2_TEXT_DOMAIN); ?></p>
+				</div>
+
+				<p style="margin-top:16px;">
+					<button type="submit" name="cpc_events_integrations_submit" value="1" class="button button-primary"><?php _e('Events-Integration speichern', CPC2_TEXT_DOMAIN); ?></button>
+				</p>
+			</form>
+
+			<script>
+			(function(){
+				var mode=document.getElementById('cpc_events_provider_mode');
+				var ext=document.getElementById('cpc_events_external_shortcode');
+				var wrap=document.getElementById('cpc_events_external_shortcode_wrap');
+				if(!mode||!ext||!wrap){return;}
+				var sync=function(){
+					var internal=(mode.value==='internal');
+					ext.disabled=internal;
+					wrap.style.opacity=internal?'0.55':'1';
+				};
+				mode.addEventListener('change',sync);
+				sync();
+			})();
+			</script>
+		</div>
 		
 		<!-- PS-Chat Integration Section -->
 		<div class="cpc-integration-box" style="border: 1px solid #ddd; padding: 20px; margin-top: 20px; background-color: #f9f9f9; border-radius: 5px;">
 			<h2><?php _e('PS-Chat Integration', CPC2_TEXT_DOMAIN); ?></h2>
 			
 			<?php if ($pschat_status['installed'] && $pschat_status['active']): ?>
-				<div class="notice notice-success" style="margin: 0 0 20px 0;">
+				<div style="margin:0 0 20px 0; padding:10px 12px; border:1px solid #b7dfc3; border-left:4px solid #46b450; background:#fff;">
 					<p>
 						<strong><?php _e('Status:', CPC2_TEXT_DOMAIN); ?></strong>
 						<span style="color: #155724;">✓ <?php _e('Aktiviert', CPC2_TEXT_DOMAIN); ?></span>
@@ -413,7 +508,7 @@ function cpc_integrations_page() {
 				</p>
 				
 			<?php elseif ($pschat_status['installed'] && !$pschat_status['active']): ?>
-				<div class="notice notice-warning" style="margin: 0 0 20px 0;">
+				<div style="margin:0 0 20px 0; padding:10px 12px; border:1px solid #f2d7b0; border-left:4px solid #ffb900; background:#fff;">
 					<p>
 						<strong><?php _e('Status:', CPC2_TEXT_DOMAIN); ?></strong>
 						<span style="color: #856404;">⚠ <?php _e('Installiert aber deaktiviert', CPC2_TEXT_DOMAIN); ?></span>
@@ -434,7 +529,7 @@ function cpc_integrations_page() {
 				</p>
 				
 			<?php else: ?>
-				<div class="notice notice-info" style="margin: 0 0 20px 0;">
+				<div style="margin:0 0 20px 0; padding:10px 12px; border:1px solid #b8daff; border-left:4px solid #00a0d2; background:#fff;">
 					<p>
 						<strong><?php _e('Status:', CPC2_TEXT_DOMAIN); ?></strong>
 						<span style="color: #0c5460;">ℹ <?php _e('Nicht installiert', CPC2_TEXT_DOMAIN); ?></span>

@@ -1190,6 +1190,16 @@ function cpc_forum($atts) {
 	                $html = cpc_admin_tip($html, 'cpc_forum_login', __('Füge login_url="/example" zum Shortcode [cpc-forum] hinzu, damit sich Benutzer anmelden und hierher zurückleiten können, wenn sie nicht angemeldet sind, und das Forum als privat festgelegt wird.', CPC2_TEXT_DOMAIN));
 	            endif;   
 
+	            if (isset($_GET['forum_action']) && isset($_GET['comment_id'])) {
+	                $forum_action = sanitize_key($_GET['forum_action']);
+	                if ($forum_action === 'accept_answer' || $forum_action === 'unaccept_answer') {
+	                    $answer_result = cpc_forum_toggle_accepted_answer(absint($_GET['comment_id']), $forum_action, $current_user->ID, $is_forum_admin);
+	                    if ($answer_result['message']) {
+	                        $html .= '<div class="'.($answer_result['ok'] ? 'cpc_success' : 'cpc_error').'" style="margin-top:20px">'.$answer_result['message'].'</div>';
+	                    }
+	                }
+	            }
+
 				if ( ( isset($_POST['action']) && $_POST['action'] == 'cpc_forum_post_delete') ) {
 	                
 					// Delete entire post and then show remaining forum posts
@@ -2028,6 +2038,256 @@ function cpc_is_forum_single_post($atts, $content="") {
 
 }
 
+function cpc_forum_toggle_accepted_answer($comment_id, $action, $current_user_id, $is_forum_admin=false) {
+
+	$comment = get_comment($comment_id);
+	if (!$comment || (int)$comment->comment_parent !== 0 || $comment->comment_approved != 1) {
+		return array(
+			'ok' => false,
+			'message' => __('Antwort konnte nicht als akzeptiert markiert werden.', CPC2_TEXT_DOMAIN),
+		);
+	}
+
+	$post = get_post($comment->comment_post_ID);
+	if (!$post || $post->post_type !== 'cpc_forum_post') {
+		return array(
+			'ok' => false,
+			'message' => __('Ungültiger Forumsbeitrag.', CPC2_TEXT_DOMAIN),
+		);
+	}
+
+	$can_manage = ((int)$post->post_author === (int)$current_user_id) || $is_forum_admin || current_user_can('manage_options');
+	if (!$can_manage) {
+		return array(
+			'ok' => false,
+			'message' => __('Du hast keine Berechtigung für diese Aktion.', CPC2_TEXT_DOMAIN),
+		);
+	}
+
+	$existing = absint(get_post_meta($post->ID, 'cpc_accepted_comment_id', true));
+
+	if ($action === 'accept_answer') {
+		if ($existing && $existing !== (int)$comment_id) {
+			delete_comment_meta($existing, 'cpc_forum_answer');
+		}
+		update_post_meta($post->ID, 'cpc_accepted_comment_id', (int)$comment_id);
+		update_comment_meta((int)$comment_id, 'cpc_forum_answer', 1);
+
+		return array(
+			'ok' => true,
+			'message' => __('Antwort wurde als akzeptiert markiert.', CPC2_TEXT_DOMAIN),
+		);
+	}
+
+	if ($action === 'unaccept_answer') {
+		if ($existing === (int)$comment_id) {
+			delete_post_meta($post->ID, 'cpc_accepted_comment_id');
+		}
+		delete_comment_meta((int)$comment_id, 'cpc_forum_answer');
+
+		return array(
+			'ok' => true,
+			'message' => __('Akzeptierte Antwort wurde entfernt.', CPC2_TEXT_DOMAIN),
+		);
+	}
+
+	return array(
+		'ok' => false,
+		'message' => __('Unbekannte Aktion.', CPC2_TEXT_DOMAIN),
+	);
+}
+
+function cpc_forum_unanswered($atts) {
+
+	cpc_forum_init();
+
+	$values = cpc_get_shortcode_options('cpc_forum_unanswered');
+	extract(shortcode_atts(array(
+		'slug' => '',
+		'days' => cpc_get_shortcode_value($values, 'cpc_forum_unanswered-days', 30),
+		'max' => cpc_get_shortcode_value($values, 'cpc_forum_unanswered-max', 10),
+		'show_count' => cpc_get_shortcode_value($values, 'cpc_forum_unanswered-show_count', true),
+		'empty' => cpc_get_shortcode_value($values, 'cpc_forum_unanswered-empty', __('Keine unbeantworteten Themen gefunden.', CPC2_TEXT_DOMAIN)),
+		'before' => '',
+		'after' => '',
+		'styles' => true,
+	), $atts, 'cpc_forum_unanswered'));
+
+	$days = max(1, absint($days));
+	$max = max(1, absint($max));
+
+	$query_args = array(
+		'post_type' => 'cpc_forum_post',
+		'post_status' => 'publish',
+		'posts_per_page' => max($max * 3, 30),
+		'date_query' => array(
+			array(
+				'after' => $days . ' days ago',
+			),
+		),
+		'orderby' => 'date',
+		'order' => 'DESC',
+	);
+
+	if ($slug) {
+		$query_args['tax_query'] = array(
+			array(
+				'taxonomy' => 'cpc_forum',
+				'field' => 'slug',
+				'terms' => sanitize_title($slug),
+			),
+		);
+	}
+
+	$loop = new WP_Query($query_args);
+	$html = '<div class="cpc_forum_unanswered_list">';
+	$shown = 0;
+
+	if ($loop->have_posts()) {
+		while ($loop->have_posts()) {
+			$loop->the_post();
+			$post_id = get_the_ID();
+			$accepted = absint(get_post_meta($post_id, 'cpc_accepted_comment_id', true));
+			if ($accepted) {
+				$accepted_comment = get_comment($accepted);
+				if ($accepted_comment && (int)$accepted_comment->comment_approved === 1) {
+					continue;
+				}
+			}
+
+			$replies = get_comments(array(
+				'post_id' => $post_id,
+				'status' => 1,
+				'parent' => 0,
+				'count' => true,
+			));
+
+			$html .= '<div class="cpc_forum_unanswered_item">';
+			$html .= '<a href="'.esc_url(get_permalink($post_id)).'">'.esc_html(get_the_title()).'</a>';
+			if ($show_count) {
+				$html .= ' <span class="cpc_forum_unanswered_count">('.intval($replies).' '.__('Antworten', CPC2_TEXT_DOMAIN).')</span>';
+			}
+			$html .= '</div>';
+
+			$shown++;
+			if ($shown >= $max) {
+				break;
+			}
+		}
+		wp_reset_postdata();
+	}
+
+	if (!$shown) {
+		$html .= '<div class="cpc_forum_unanswered_empty">'.$empty.'</div>';
+	}
+
+	$html .= '</div>';
+
+	if ($html) {
+		$html = apply_filters('cpc_wrap_shortcode_styles_filter', $html, 'cpc_forum_unanswered', $before, $after, $styles, $values);
+	}
+
+	return $html;
+}
+
+function cpc_forum_experts($atts) {
+
+	cpc_forum_init();
+	global $wpdb;
+
+	$values = cpc_get_shortcode_options('cpc_forum_experts');
+	extract(shortcode_atts(array(
+		'slug' => '',
+		'days' => cpc_get_shortcode_value($values, 'cpc_forum_experts-days', 30),
+		'max' => cpc_get_shortcode_value($values, 'cpc_forum_experts-max', 10),
+		'show_rank' => cpc_get_shortcode_value($values, 'cpc_forum_experts-show_rank', true),
+		'rank_newbie' => cpc_get_shortcode_value($values, 'cpc_forum_experts-rank_newbie', __('Rookie', CPC2_TEXT_DOMAIN)),
+		'rank_helper' => cpc_get_shortcode_value($values, 'cpc_forum_experts-rank_helper', __('Helper', CPC2_TEXT_DOMAIN)),
+		'rank_pro' => cpc_get_shortcode_value($values, 'cpc_forum_experts-rank_pro', __('Pro', CPC2_TEXT_DOMAIN)),
+		'rank_master' => cpc_get_shortcode_value($values, 'cpc_forum_experts-rank_master', __('Master', CPC2_TEXT_DOMAIN)),
+		'empty' => cpc_get_shortcode_value($values, 'cpc_forum_experts-empty', __('Noch keine Experten-Daten verfügbar.', CPC2_TEXT_DOMAIN)),
+		'before' => '',
+		'after' => '',
+		'styles' => true,
+	), $atts, 'cpc_forum_experts'));
+
+	$days = max(1, absint($days));
+	$max = max(1, absint($max));
+
+	$sql = "SELECT c.user_id, COUNT(c.comment_ID) AS accepted_count
+		FROM {$wpdb->comments} c
+		INNER JOIN {$wpdb->commentmeta} cm ON cm.comment_id = c.comment_ID
+		INNER JOIN {$wpdb->posts} p ON p.ID = c.comment_post_ID
+		WHERE cm.meta_key = 'cpc_forum_answer'
+		AND cm.meta_value = '1'
+		AND c.comment_approved = '1'
+		AND c.comment_parent = 0
+		AND c.user_id > 0
+		AND p.post_type = 'cpc_forum_post'
+		AND p.post_status = 'publish'
+		AND c.comment_date_gmt >= (UTC_TIMESTAMP() - INTERVAL %d DAY)";
+
+	$params = array($days);
+
+	if ($slug) {
+		$sql .= " AND EXISTS (
+			SELECT 1
+			FROM {$wpdb->term_relationships} tr
+			INNER JOIN {$wpdb->term_taxonomy} tt ON tt.term_taxonomy_id = tr.term_taxonomy_id
+			INNER JOIN {$wpdb->terms} t ON t.term_id = tt.term_id
+			WHERE tr.object_id = p.ID
+			AND tt.taxonomy = 'cpc_forum'
+			AND t.slug = %s
+		)";
+		$params[] = sanitize_title($slug);
+	}
+
+	$sql .= " GROUP BY c.user_id ORDER BY accepted_count DESC LIMIT %d";
+	$params[] = $max;
+
+	$rows = $wpdb->get_results($wpdb->prepare($sql, $params));
+
+	$html = '<div class="cpc_forum_experts_list">';
+	if ($rows) {
+		foreach ($rows as $row) {
+			$user_id = (int)$row->user_id;
+			$count = (int)$row->accepted_count;
+			$display_name = cpc_display_name(array('user_id' => $user_id, 'link' => 1));
+
+			$rank_label = '';
+			if ($show_rank) {
+				if ($count >= 25) {
+					$rank_label = $rank_master;
+				} elseif ($count >= 10) {
+					$rank_label = $rank_pro;
+				} elseif ($count >= 3) {
+					$rank_label = $rank_helper;
+				} else {
+					$rank_label = $rank_newbie;
+				}
+			}
+
+			$html .= '<div class="cpc_forum_expert_item">';
+			$html .= '<span class="cpc_forum_expert_user">'.$display_name.'</span>';
+			$html .= ' <span class="cpc_forum_expert_score">'.sprintf(__('%d akzeptierte Antworten', CPC2_TEXT_DOMAIN), $count).'</span>';
+			if ($rank_label) {
+				$html .= ' <span class="cpc_forum_expert_rank">['.esc_html($rank_label).']</span>';
+			}
+			$html .= '</div>';
+		}
+	} else {
+		$html .= '<div class="cpc_forum_experts_empty">'.$empty.'</div>';
+	}
+
+	$html .= '</div>';
+
+	if ($html) {
+		$html = apply_filters('cpc_wrap_shortcode_styles_filter', $html, 'cpc_forum_experts', $before, $after, $styles, $values);
+	}
+
+	return $html;
+}
+
 if (!is_admin()) add_shortcode(CPC_PREFIX.'-forum-page', 'cpc_forum_page');
 if (!is_admin()) add_shortcode(CPC_PREFIX.'-forum', 'cpc_forum');
 if (!is_admin()) add_shortcode(CPC_PREFIX.'-forum-post', 'cpc_forum_post');
@@ -2038,6 +2298,8 @@ if (!is_admin()) add_shortcode(CPC_PREFIX.'-forums', 'cpc_forums');
 if (!is_admin()) add_shortcode(CPC_PREFIX.'-forum-show-posts', 'cpc_forum_show_posts');
 if (!is_admin()) add_shortcode(CPC_PREFIX.'-forum-sharethis', 'cpc_forum_sharethis_insert');
 if (!is_admin()) add_shortcode(CPC_PREFIX.'-forum-children', 'cpc_forum_children');
+if (!is_admin()) add_shortcode(CPC_PREFIX.'-forum-unanswered', 'cpc_forum_unanswered');
+if (!is_admin()) add_shortcode(CPC_PREFIX.'-forum-experts', 'cpc_forum_experts');
 if (!is_admin()) add_shortcode(CPC_PREFIX.'-is-forum-posts-list', 'cpc_is_forum_posts_list');
 if (!is_admin()) add_shortcode(CPC_PREFIX.'-is-forum-single-post', 'cpc_is_forum_single_post');
 

@@ -679,7 +679,9 @@ if (!is_admin()) {
 }
 
 function cpc_activity_wall_collect_items($atts = array()) {
-    $settings = function_exists('cpc_activity_plus_get_global_wall_settings') ? cpc_activity_plus_get_global_wall_settings() : array();
+    $settings = (isset($atts['settings']) && is_array($atts['settings']))
+        ? $atts['settings']
+        : (function_exists('cpc_activity_plus_get_global_wall_settings') ? cpc_activity_plus_get_global_wall_settings() : array());
     $limit = isset($atts['limit']) ? max(20, min(400, (int)$atts['limit'])) : max(120, cpc_activity_plus_global_wall_per_page() * 20);
     $post_id = isset($atts['post_id']) ? (int)$atts['post_id'] : 0;
     $viewer_user_id = get_current_user_id();
@@ -778,6 +780,7 @@ function cpc_activity_wall($atts) {
 
     $values = cpc_get_shortcode_options('cpc_activity_wall');
     extract(shortcode_atts(array(
+        'mode' => 'wall',
         'title' => isset($settings['title']) ? $settings['title'] : __('Aktivitätswall', CPC2_TEXT_DOMAIN),
         'page_size' => isset($settings['per_page']) ? $settings['per_page'] : 12,
         'show_post_form' => 1,
@@ -785,6 +788,17 @@ function cpc_activity_wall($atts) {
         'before' => '',
         'after' => '',
     ), $atts, 'cpc_activity_wall'));
+
+    if ($mode === 'lounge') {
+        if ($title === '' || $title === __('Aktivitätswall', CPC2_TEXT_DOMAIN)) {
+            $title = __('Lounge', CPC2_TEXT_DOMAIN);
+        }
+        if ((int)$page_size < 20) {
+            $page_size = 20;
+        }
+        // Lounge should include non-system activity snippets as a fast social stream.
+        $settings['exclude_system_posts'] = false;
+    }
 
     $html .= '<div class="cpc_activity_wall">';
     if ($title !== '') {
@@ -800,6 +814,7 @@ function cpc_activity_wall($atts) {
     $activity = cpc_activity_wall_collect_items(array(
         'limit' => max(120, (int)$page_size * 20),
         'post_id' => $view_post_id,
+        'settings' => $settings,
     ));
 
     $html .= cpc_activity_wall_render_items_container($activity, (int)$page_size, (int)$current_user_id);
@@ -810,6 +825,18 @@ function cpc_activity_wall($atts) {
     }
 
     return $html;
+}
+
+function cpc_activity_lounge($atts) {
+    // Usage: [cpc-lounge title="Lounge" page_size="20" show_post_form="1"]
+    $atts = shortcode_atts(array(
+        'mode' => 'lounge',
+        'title' => __('Lounge', CPC2_TEXT_DOMAIN),
+        'page_size' => 20,
+        'show_post_form' => 1,
+    ), $atts, 'cpc_lounge');
+
+    return cpc_activity_wall($atts);
 }
 
 function cpc_activity_wall_render_page_content($content) {
@@ -841,6 +868,7 @@ function cpc_activity_wall_render_page_content($content) {
 
 if (!is_admin()) {
     add_shortcode(CPC_PREFIX.'-activity-wall', 'cpc_activity_wall');
+    add_shortcode(CPC_PREFIX.'-lounge', 'cpc_activity_lounge');
     add_filter('the_content', 'cpc_activity_wall_render_page_content', 25);
 }
 
