@@ -257,22 +257,111 @@ function cpc_events_sync_to_external($cpc_event_id) {
     }
 
     $end_ts = (int)get_post_meta($cpc_event_id, 'cpc_event_end_ts', true);
-    $duration = ($start_ts > 0 && $end_ts > $start_ts) ? (int)($end_ts - $start_ts) : 0;
+    if ($end_ts <= 0 && $start_ts > 0) {
+        $end_ts = $start_ts + HOUR_IN_SECONDS;
+    }
+    if ($end_ts > 0 && $start_ts > 0 && $end_ts < $start_ts) {
+        $end_ts = $start_ts + HOUR_IN_SECONDS;
+    }
+
     $location = (string)get_post_meta($cpc_event_id, 'cpc_event_location', true);
     $group_id = (int)get_post_meta($cpc_event_id, 'cpc_event_group_id', true);
 
+    // EAB erwartet Mehrfach-Meta für Start/Ende (MySQL-Datetime) und no_start/no_end-Flags.
+    delete_post_meta($saved_external_id, 'psource_event_start');
+    delete_post_meta($saved_external_id, 'psource_event_end');
+    delete_post_meta($saved_external_id, 'psource_event_no_start');
+    delete_post_meta($saved_external_id, 'psource_event_no_end');
+
     if ($start_ts > 0) {
-        update_post_meta($saved_external_id, 'psource_event_start', $start_ts);
+        add_post_meta($saved_external_id, 'psource_event_start', date_i18n('Y-m-d H:i:s', $start_ts));
+        add_post_meta($saved_external_id, 'psource_event_no_start', 0);
     }
-    update_post_meta($saved_external_id, 'psource_event_duration', $duration);
+    if ($end_ts > 0) {
+        add_post_meta($saved_external_id, 'psource_event_end', date_i18n('Y-m-d H:i:s', $end_ts));
+        add_post_meta($saved_external_id, 'psource_event_no_end', 0);
+    }
+
+    update_post_meta($saved_external_id, 'psource_event_status', 'open');
     update_post_meta($saved_external_id, 'psource_event_venue', $location);
+
+    // Zusätzliche EAB-/Addon-Metafelder vom Community-Event durchreichen.
+    cpc_events_bridge_copy_addon_meta($cpc_event_id, $saved_external_id);
+
     if ($group_id > 0) {
         update_post_meta($saved_external_id, 'cpc_event_group_id', $group_id);
     } else {
         delete_post_meta($saved_external_id, 'cpc_event_group_id');
     }
 
+    if (function_exists('do_action')) {
+        $meta = get_post_custom($saved_external_id);
+        do_action('eab-event_meta-save_meta', $saved_external_id);
+        do_action('psource_event_save_where_meta', $saved_external_id, $meta);
+        do_action('psource_event_save_status_meta', $saved_external_id, $meta);
+        do_action('psource_event_save_when_meta', $saved_external_id, $meta);
+        do_action('psource_event_save_payments_meta', $saved_external_id, $meta);
+        do_action('eab-event_meta-after_save_meta', $saved_external_id);
+    }
+
     return $saved_external_id;
+}
+
+function cpc_events_bridge_copy_addon_meta($cpc_event_id, $external_id) {
+    $cpc_event_id = (int)$cpc_event_id;
+    $external_id = (int)$external_id;
+    if ($cpc_event_id <= 0 || $external_id <= 0) {
+        return;
+    }
+
+    $all_keys = get_post_custom_keys($cpc_event_id);
+    if (empty($all_keys) || !is_array($all_keys)) {
+        return;
+    }
+
+    $skip_exact = array(
+        '_cpc_event_external_id',
+        '_cpc_event_activity_logged',
+        '_edit_lock',
+        '_edit_last',
+        '_thumbnail_id',
+        'cpc_event_start',
+        'cpc_event_end',
+        'cpc_event_location',
+        'cpc_event_start_ts',
+        'cpc_event_end_ts',
+        'cpc_event_group_id',
+    );
+
+    $managed_psource = array(
+        'psource_event_start',
+        'psource_event_end',
+        'psource_event_no_start',
+        'psource_event_no_end',
+        'psource_event_venue',
+        'psource_event_status',
+    );
+
+    foreach ($all_keys as $meta_key) {
+        if (!is_string($meta_key) || in_array($meta_key, $skip_exact, true)) {
+            continue;
+        }
+
+        $is_eab = strpos($meta_key, 'eab_') === 0;
+        $is_psource = strpos($meta_key, 'psource_event_') === 0;
+        if (!$is_eab && !$is_psource) {
+            continue;
+        }
+        if (in_array($meta_key, $managed_psource, true)) {
+            continue;
+        }
+
+        $values = get_post_meta($cpc_event_id, $meta_key, false);
+        delete_post_meta($external_id, $meta_key);
+        foreach ((array)$values as $value) {
+            add_post_meta($external_id, $meta_key, maybe_unserialize($value));
+        }
+    }
 }
 
 function cpc_events_resync_all_to_external($limit = 0) {
