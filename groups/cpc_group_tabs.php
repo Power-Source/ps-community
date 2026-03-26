@@ -403,7 +403,8 @@ function cpc_render_group_tab_settings($group_id, $atts = array()) {
 	// Forum Settings (only if forum module is active)
 	// Module Settings (Medien, Projekte)
 	$has_modules = (function_exists('cpc_media_is_enabled') && cpc_media_is_enabled())
-	             || (function_exists('cpc_projects_is_enabled') && cpc_projects_is_enabled());
+	             || (function_exists('cpc_projects_is_enabled') && cpc_projects_is_enabled())
+	             || (function_exists('cpc_events_is_core_enabled') && cpc_events_is_core_enabled());
 
 	if ($has_modules):
 		$html .= '<hr>';
@@ -432,6 +433,18 @@ function cpc_render_group_tab_settings($group_id, $atts = array()) {
 			$html .= __('Projekte für diese Gruppe aktivieren', CPC2_TEXT_DOMAIN);
 			$html .= '</label>';
 			$html .= '<p class="description">'.__('Zeigt den Projekte-Tab und ermöglicht Projektverwaltung in dieser Gruppe.', CPC2_TEXT_DOMAIN).'</p>';
+			$html .= '</div>';
+		endif;
+
+		if (function_exists('cpc_events_is_core_enabled') && cpc_events_is_core_enabled()):
+			$has_events = (bool)get_post_meta($group_id, 'cpc_group_has_events', true);
+			$html .= '<div class="cpc-form-field">';
+			$html .= '<label>';
+			$html .= '<input type="checkbox" name="enable_events" id="enable_events" '.checked($has_events, true, false).'> ';
+			$html .= '<span class="dashicons dashicons-calendar-alt" style="vertical-align:middle;"></span> ';
+			$html .= __('Events für diese Gruppe aktivieren', CPC2_TEXT_DOMAIN);
+			$html .= '</label>';
+			$html .= '<p class="description">'.__('Zeigt den Events-Tab und ermöglicht Gruppen-Events.', CPC2_TEXT_DOMAIN).'</p>';
 			$html .= '</div>';
 		endif;
 

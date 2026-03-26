@@ -148,7 +148,13 @@ function cpc_ajax_save_group_module_settings() {
 		update_post_meta($group_id, 'cpc_group_has_projects', (bool)$enable_projects);
 	}
 
+	if (function_exists('cpc_events_is_core_enabled') && cpc_events_is_core_enabled()) {
+		$enable_events = !empty($_POST['enable_events']);
+		update_post_meta($group_id, 'cpc_group_has_events', (bool)$enable_events);
+	}
+
 	wp_send_json_success(array('message' => __('Modul-Einstellungen gespeichert.', CPC2_TEXT_DOMAIN)));
+
 }
 
 function cpc_ajax_save_group_settings() {
@@ -356,6 +362,7 @@ function cpc_ajax_create_group() {
 	// Optional modules are disabled by default per new group.
 	update_post_meta($group_id, 'cpc_group_has_media', false);
 	update_post_meta($group_id, 'cpc_group_has_projects', false);
+	update_post_meta($group_id, 'cpc_group_has_events', false);
 
 	// Add creator as admin member
 	cpc_add_group_member($user_id, $group_id, 'admin', 'active', $current_blog_id);

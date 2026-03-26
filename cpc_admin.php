@@ -381,17 +381,12 @@ function cpccom_release_notes() {
 					<div style="font-size:1.6em; line-height:1.6em; color: #510051; font-weight: bold;">PS Community Plugin</div>
 					<a href="https://power-source.github.io/ps-community/" target-"_blank">Verfügbar im PSOURCE GitHub-Repository</a><br />
 
-					<h2 style="font-style:italic; margin-top:20px;">Changelog Versionsnummer 1.1.2:</h2>
-					<p>Fix: Beim Erstellen von Gruppen im Backend (Dashboard/CPT) wird der Ersteller jetzt zuverlässig als Gruppen-Admin-Mitglied angelegt.</p>
-                    <p>Fix: Bestehende Gruppen werden beim Speichern automatisch repariert, falls dem Ersteller die Admin-Mitgliedschaft fehlt oder falschen Status/Rolle hat.</p>
-                    <p>Fix: Wenn der Gruppenersteller seiner eigenen Gruppe beitritt, wird er korrekt als Admin statt als normales Mitglied geführt.</p>
-                    <p>UX-Fix: Die automatische Projects-Widget-Sidebar (<code>cpc-projects</code>) wurde entfernt; das Task-Widget kann wie gewohnt in bestehenden Sidebars platziert werden.</p>
-                    <p>UX-Fix: Projekt-Task-Tab startet standardmäßig mit Status-Filter Offen statt Status/Alle.</p>
-                    <p>Verbesserung: Tasks werden im Projekt-Tab konsistent mit Offen zuerst und danach höchste Priorität zuerst dargestellt.</p>
-                    <p>Fix: Kein unerwünschtes Auto-Scrollen mehr bei URLs mit leerem Hash (...&amp;cpc_project_section=tasks#), Scroll nur noch bei explizitem Task-Anchor.</p>
-                    <p>Fix: Cursor wird in Textfeldern wieder angezeigt.</p>
-                    <p>Hinzugefügt: Chat-Status im Profil bei aktivierter PS Chat Integration.</p>
-                    <p>Hinzugefügt: Erweiterte Profil-Privatsphäre-Optionen.</p>
+					<h2 style="font-style:italic; margin-top:20px;">Changelog Versionsnummer 1.1.3:</h2>
+					<p>Hinzugefügt: Neues Core-Modul <strong>Mitgliederverzeichnis</strong> inkl. Shortcodes <code>[cpc-members]</code> und <code>[cpc-members-directory]</code> mit Profilbild, Name, Rolle, Chat-Status und Aktionen (Profil / Freund / PM).</p>
+                    <p>Hinzugefügt: Neues Core-Modul <strong>Events</strong> mit Hybrid-Rendering (intern + PS Events) über <code>[cpc-events]</code>.</p>
+                    <p>Hinzugefügt: Neues Core-Modul <strong>Einladungen</strong> mit signiertem Token-Flow und Shortcode <code>[cpc-invite]</code>.</p>
+                    <p>Hinzugefügt: Forum-Q&amp;A mit akzeptierter Antwort inkl. Auswertung über <code>[cpc-forum-unanswered]</code> und <code>[cpc-forum-experts]</code>.</p>
+                    <p>Verbesserung: Expertenliste im Forum optional mit Ranglabels (Rookie/Helper/Pro/Master).</p>
                   
                 </td>
 				<td style="width:1%">&nbsp;</td>

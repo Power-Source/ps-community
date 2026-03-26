@@ -16,7 +16,7 @@ function cpc_2fa_enqueue_assets() {
 		'cpc-2fa-profile',
 		plugins_url( 'cpc_2fa_profile.js', __FILE__ ),
 		array( 'jquery' ),
-		'1.1.2',
+		get_option( 'cp_community_ver', '1.0.0' ),
 		true
 	);
 	wp_localize_script( 'cpc-2fa-profile', 'cpc2fa', array(

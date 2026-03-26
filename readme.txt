@@ -3,8 +3,8 @@ Contributors: DerN3rd
 Tags: wp community, social network, social networking, social media, cp-community, wp community, community
 Requires at least: 4.9
 Tested up to: 6.8.1
-ClassicPress: 2.6.0
-Stable tag: 1.1.2
+ClassicPress: 2.7.0
+Stable tag: 1.1.3
 License URI: https://www.gnu.org/licenses/gpl-2.0.html
 
 == Description ==
@@ -40,6 +40,8 @@ Die folgenden Funktionen sind über den Tab **PS Community > Einstellungen > Fun
 
 === Mitgliederverzeichnis ===
 
+Das Mitgliederverzeichnis wird über den Shortcode auf einer Seite ausgegeben (z.B. Seite "Mitglieder"). Ist das Modul **Mitgliederverzeichnis** aktiviert, kannst Du unter **PS Community > Einstellungen > System-Optionen** eine bestehende Seite auswählen oder direkt eine Seite erstellen lassen, bei der `[cpc-members-directory]` automatisch eingefügt wird.
+
 Shortcodes:
 
 * `[cpc-members]`
@@ -52,11 +54,12 @@ Wichtige Attribute:
 * `show_search` (1/0)
 * `show_atoz` (1/0)
 * `show_last_active` (1/0)
+* `show_actions` (1/0, zeigt Profil/Freund/PM Aktionen wenn verfügbar)
 * `order` (ASC/DESC)
 
 Beispiel:
 
-`[cpc-members-directory per_page="30" show_search="1" show_atoz="1" order="ASC"]`
+`[cpc-members-directory per_page="30" show_search="1" show_atoz="1" show_actions="1" order="ASC"]`
 
 === Events (Hybrid intern + PS Events) ===
 
@@ -76,9 +79,8 @@ Beispiel:
 Provider-Steuerung im Admin:
 
 * **Events-Provider**: Auto, Intern, Extern (PS Events)
-* **Bevorzugter PS-Events-Shortcode**: Auto, `eab_archive`, `eab_calendar`, `eab_single`, `eab_expired`, `eab_events_map`, `eab_my_events`
 
-Hinweis: Bei externer Nutzung wird das Plugin **events-and-bookings** (PS Events) automatisch erkannt. Falls kein externer Shortcode rendert, erfolgt ein Fallback über den CPT `psource_event`.
+Hinweis: Bei externer Nutzung wird das Plugin **events-and-bookings** (PS Events) automatisch erkannt. Als externer Shortcode wird bevorzugt `eab_archive`, dann `eab_calendar` verwendet. Falls kein externer Shortcode rendert, erfolgt ein Fallback über den CPT `psource_event`.
 
 === Einladungen ===
 
@@ -95,18 +97,6 @@ Beispiel:
 `[cpc-invite redirect="https://example.com/community/"]`
 
 Der Invite-Flow nutzt signierte Token (Transient), E-Mail-Validierung und sichere Redirect-Prüfung auf dieselbe Host-Domain.
-
-=== Lounge (Wall-Modus) ===
-
-Shortcode:
-
-* `[cpc-lounge]`
-
-Die Lounge verwendet intern die Aktivitätswall im Modus `lounge` (schneller Social-Stream) und ist kein separates Legacy-Modul.
-
-Beispiel:
-
-`[cpc-lounge title="Community Lounge" page_size="20" show_post_form="1"]`
 
 === Forum Q&A (Akzeptierte Antwort + Übersicht) ===
 
@@ -135,6 +125,14 @@ Hinweis zum Rangsystem:
 * Die Expertenliste kann optional Ranglabels anzeigen (Rookie/Helper/Pro/Master), basierend auf Anzahl akzeptierter Antworten im Zeitraum.
 
 == ChangeLog ==
+
+= 1.1.3 =
+
+* Hinzugefügt: Neues Core-Modul **Mitgliederverzeichnis** inkl. Shortcodes `[cpc-members]` und `[cpc-members-directory]`
+* Hinzugefügt: Neues Core-Modul **Events** mit Hybrid-Rendering (intern + PS Events) über `[cpc-events]`
+* Hinzugefügt: Neues Core-Modul **Einladungen** mit signiertem Token-Flow und Shortcode `[cpc-invite]`
+* Hinzugefügt: Forum-Q&A mit akzeptierter Antwort inkl. Auswertung über `[cpc-forum-unanswered]` und `[cpc-forum-experts]`
+* Verbesserung: Expertenliste im Forum optional mit Ranglabels (Rookie/Helper/Pro/Master)
 
 = 1.1.2 =
 

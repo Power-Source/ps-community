@@ -780,7 +780,6 @@ function cpc_activity_wall($atts) {
 
     $values = cpc_get_shortcode_options('cpc_activity_wall');
     extract(shortcode_atts(array(
-        'mode' => 'wall',
         'title' => isset($settings['title']) ? $settings['title'] : __('Aktivitätswall', CPC2_TEXT_DOMAIN),
         'page_size' => isset($settings['per_page']) ? $settings['per_page'] : 12,
         'show_post_form' => 1,
@@ -788,17 +787,6 @@ function cpc_activity_wall($atts) {
         'before' => '',
         'after' => '',
     ), $atts, 'cpc_activity_wall'));
-
-    if ($mode === 'lounge') {
-        if ($title === '' || $title === __('Aktivitätswall', CPC2_TEXT_DOMAIN)) {
-            $title = __('Lounge', CPC2_TEXT_DOMAIN);
-        }
-        if ((int)$page_size < 20) {
-            $page_size = 20;
-        }
-        // Lounge should include non-system activity snippets as a fast social stream.
-        $settings['exclude_system_posts'] = false;
-    }
 
     $html .= '<div class="cpc_activity_wall">';
     if ($title !== '') {
@@ -825,18 +813,6 @@ function cpc_activity_wall($atts) {
     }
 
     return $html;
-}
-
-function cpc_activity_lounge($atts) {
-    // Usage: [cpc-lounge title="Lounge" page_size="20" show_post_form="1"]
-    $atts = shortcode_atts(array(
-        'mode' => 'lounge',
-        'title' => __('Lounge', CPC2_TEXT_DOMAIN),
-        'page_size' => 20,
-        'show_post_form' => 1,
-    ), $atts, 'cpc_lounge');
-
-    return cpc_activity_wall($atts);
 }
 
 function cpc_activity_wall_render_page_content($content) {
@@ -868,7 +844,6 @@ function cpc_activity_wall_render_page_content($content) {
 
 if (!is_admin()) {
     add_shortcode(CPC_PREFIX.'-activity-wall', 'cpc_activity_wall');
-    add_shortcode(CPC_PREFIX.'-lounge', 'cpc_activity_lounge');
     add_filter('the_content', 'cpc_activity_wall_render_page_content', 25);
 }
 

@@ -1,0 +1,132 @@
+/* ===========================================================================
+   PS Community – Events-Modul
+   =========================================================================== */
+
+/* Gemeinsame Karten-Basis
+   --------------------------------------------------------------------------- */
+.cpc-events-list {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+    gap: 16px;
+    margin: 16px 0;
+}
+
+.cpc-event-card {
+    background: #fff;
+    border: 1px solid #e2e4e7;
+    border-radius: 6px;
+    padding: 16px;
+    transition: box-shadow 0.15s ease;
+}
+
+.cpc-event-card:hover {
+    box-shadow: 0 2px 8px rgba(0,0,0,.10);
+}
+
+.cpc-event-title {
+    font-size: 1em;
+    font-weight: 600;
+    margin: 0 0 8px;
+    line-height: 1.3;
+}
+
+.cpc-event-title a {
+    text-decoration: none;
+    color: inherit;
+}
+
+.cpc-event-title a:hover {
+    text-decoration: underline;
+}
+
+.cpc-event-time {
+    font-size: .85em;
+    color: #0073aa;
+    margin-bottom: 6px;
+}
+
+.cpc-event-time::before {
+    content: "📅 ";
+}
+
+.cpc-event-location {
+    font-size: .85em;
+    color: #555;
+    margin-bottom: 6px;
+}
+
+.cpc-event-location::before {
+    content: "📍 ";
+}
+
+.cpc-event-excerpt {
+    font-size: .875em;
+    color: #666;
+    margin-top: 8px;
+    line-height: 1.5;
+}
+
+/* Leer-/Externes-Fallback
+   --------------------------------------------------------------------------- */
+.cpc-events-empty,
+.cpc-events-external-missing {
+    padding: 20px;
+    text-align: center;
+    color: #777;
+    font-style: italic;
+}
+
+/* Externer Provider: einzelne Karten
+   --------------------------------------------------------------------------- */
+.cpc-events-external-list .cpc-event-card-external {
+    border-left: 3px solid #0073aa;
+}
+
+/* Profil- und Gruppen-Tab-Wrapper
+   --------------------------------------------------------------------------- */
+.cpc-events-profile-tab,
+.cpc-events-group-tab {
+    padding: 8px 0;
+}
+
+.cpc-events-notice {
+    margin: 10px 0 14px;
+    padding: 10px 12px;
+    border-left: 4px solid #46b450;
+    background: #fff;
+    border: 1px solid #ccd0d4;
+}
+
+.cpc-events-notice-error {
+    border-left-color: #cc1818;
+}
+
+.cpc-events-create-toggle {
+    margin: 12px 0 16px;
+}
+
+.cpc-events-create-summary {
+    display: inline-block;
+    cursor: pointer;
+}
+
+.cpc-events-create-form {
+    margin-top: 10px;
+    padding: 12px;
+    border: 1px solid #e2e4e7;
+    border-radius: 6px;
+    background: #fafafa;
+}
+
+.cpc-events-profile-tab h3,
+.cpc-events-group-tab h3 {
+    margin-top: 0;
+}
+
+/* Responsiv: auf kleinen Screens einspaltiger Stack
+   --------------------------------------------------------------------------- */
+@media (max-width: 540px) {
+    .cpc-events-list {
+        grid-template-columns: 1fr;
+    }
+}

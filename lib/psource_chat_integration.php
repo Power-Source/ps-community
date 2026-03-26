@@ -391,37 +391,27 @@ function cpc_integrations_page() {
 		if (!in_array($provider_mode, array('auto', 'internal', 'external'), true)) {
 			$provider_mode = 'auto';
 		}
-
-		$external_shortcode = isset($_POST['cpc_events_external_shortcode'])
-			? sanitize_key(wp_unslash($_POST['cpc_events_external_shortcode']))
-			: 'auto';
-		$allowed_shortcodes = array('auto', 'eab_archive', 'eab_calendar', 'eab_single', 'eab_expired', 'eab_events_map', 'eab_my_events');
-		if (!in_array($external_shortcode, $allowed_shortcodes, true)) {
-			$external_shortcode = 'auto';
-		}
-
 		update_option('cpc_events_provider_mode', $provider_mode);
-		update_option('cpc_events_external_shortcode', $external_shortcode);
 
-		echo '<div class="notice notice-success is-dismissible"><p>' . esc_html__('Events-Integrations-Einstellungen gespeichert.', CPC2_TEXT_DOMAIN) . '</p></div>';
+		echo '<div class="notice notice-success is-dismissible"><p>' . esc_html__('PS-Events-Einstellungen gespeichert.', CPC2_TEXT_DOMAIN) . '</p></div>';
 	}
 
 	$events_provider_mode = get_option('cpc_events_provider_mode', 'auto');
 	if (!in_array($events_provider_mode, array('auto', 'internal', 'external'), true)) {
 		$events_provider_mode = 'auto';
 	}
-
-	$events_external_shortcode = get_option('cpc_events_external_shortcode', 'auto');
-	$events_shortcode_options = array('auto', 'eab_archive', 'eab_calendar', 'eab_single', 'eab_expired', 'eab_events_map', 'eab_my_events');
-	if (!in_array($events_external_shortcode, $events_shortcode_options, true)) {
-		$events_external_shortcode = 'auto';
+	$events_ext_available  = function_exists('cpc_events_external_is_available') && cpc_events_external_is_available();
+	$events_ext_caps = apply_filters('cpc_events_external_capabilities', array(
+		'paid_events' => null,
+		'rsvp' => null,
+		'attendees' => null,
+		'tickets' => null,
+		'recurrence' => null,
+	));
+	if (!is_array($events_ext_caps)) {
+		$events_ext_caps = array();
 	}
 
-	$events_external_shortcode_disabled = ($events_provider_mode === 'internal') ? ' disabled="disabled"' : '';
-	$events_external_shortcode_wrap_style = ($events_provider_mode === 'internal')
-		? 'margin-top:12px;opacity:.55;'
-		: 'margin-top:12px;';
-	
 	$pschat_status = cpc_pschat_is_available();
 	?>
 	
@@ -433,8 +423,13 @@ function cpc_integrations_page() {
 		<!-- Events Integration Section -->
 		<div class="cpc-integration-box" style="border: 1px solid #ddd; padding: 20px; margin-top: 20px; background-color: #f9f9f9; border-radius: 5px;">
 			<h2><?php _e('Events Integration (PS Events / events-and-bookings)', CPC2_TEXT_DOMAIN); ?></h2>
-
 			<p><?php _e('Hier steuerst du, wie der Shortcode [cpc-events] rendert: internes Modul oder externer PS-Events-Provider.', CPC2_TEXT_DOMAIN); ?></p>
+
+			<?php if (!function_exists('cpc_events_provider_mode')): ?>
+				<div style="padding:10px 12px; border:1px solid #f2d7b0; border-left:4px solid #ffb900; background:#fff; margin-bottom:16px;">
+					<p><strong><?php _e('Hinweis:', CPC2_TEXT_DOMAIN); ?></strong> <?php _e('Das Events-Modul ist nicht aktiv. Aktiviere es unter Einstellungen → Funktionen (core-events).', CPC2_TEXT_DOMAIN); ?></p>
+				</div>
+			<?php else: ?>
 
 			<form method="post" action="">
 				<?php wp_nonce_field('cpc_events_integrations_save', 'cpc_events_integrations_nonce'); ?>
@@ -446,44 +441,53 @@ function cpc_integrations_page() {
 						<option value="internal"<?php echo selected($events_provider_mode, 'internal', false); ?>><?php _e('Nur internes PS Community Events-Modul', CPC2_TEXT_DOMAIN); ?></option>
 						<option value="external"<?php echo selected($events_provider_mode, 'external', false); ?>><?php _e('Nur externer Provider (PS Events)', CPC2_TEXT_DOMAIN); ?></option>
 					</select>
+					<?php if ($events_ext_available): ?>
+						<br /><span class="description" style="color:#46b450;">&#10003; <?php _e('PS Events (events-and-bookings) ist erkannt.', CPC2_TEXT_DOMAIN); ?></span>
+					<?php else: ?>
+						<br /><span class="description"><?php _e('PS Events nicht erkannt – internes Modul wird verwendet.', CPC2_TEXT_DOMAIN); ?></span>
+					<?php endif; ?>
 				</p>
 
-				<div id="cpc_events_external_shortcode_wrap" style="<?php echo esc_attr($events_external_shortcode_wrap_style); ?>">
-					<label for="cpc_events_external_shortcode"><strong><?php _e('Bevorzugter PS-Events-Shortcode', CPC2_TEXT_DOMAIN); ?></strong></label><br />
-					<select id="cpc_events_external_shortcode" name="cpc_events_external_shortcode" style="min-width:320px;"<?php echo $events_external_shortcode_disabled; ?>>
-						<option value="auto"<?php echo selected($events_external_shortcode, 'auto', false); ?>><?php _e('Automatisch wählen', CPC2_TEXT_DOMAIN); ?></option>
-						<option value="eab_archive"<?php echo selected($events_external_shortcode, 'eab_archive', false); ?>>eab_archive</option>
-						<option value="eab_calendar"<?php echo selected($events_external_shortcode, 'eab_calendar', false); ?>>eab_calendar</option>
-						<option value="eab_single"<?php echo selected($events_external_shortcode, 'eab_single', false); ?>>eab_single</option>
-						<option value="eab_expired"<?php echo selected($events_external_shortcode, 'eab_expired', false); ?>>eab_expired</option>
-						<option value="eab_events_map"<?php echo selected($events_external_shortcode, 'eab_events_map', false); ?>>eab_events_map</option>
-						<option value="eab_my_events"<?php echo selected($events_external_shortcode, 'eab_my_events', false); ?>>eab_my_events</option>
-					</select>
-					<p class="description" style="margin-top:6px;"><?php _e('Nur relevant bei externem Provider. Bei "Automatisch" wird der erste verfügbare EAB-Shortcode verwendet.', CPC2_TEXT_DOMAIN); ?></p>
-				</div>
+				<?php if ($events_ext_available): ?>
+					<?php
+						$cap_labels = array(
+							'paid_events' => __('Paid Events', CPC2_TEXT_DOMAIN),
+							'rsvp' => __('Teilnahme-Zusagen (RSVP)', CPC2_TEXT_DOMAIN),
+							'attendees' => __('Teilnehmer-Listen', CPC2_TEXT_DOMAIN),
+							'tickets' => __('Ticketing/Buchungen', CPC2_TEXT_DOMAIN),
+							'recurrence' => __('Wiederkehrende Events', CPC2_TEXT_DOMAIN),
+						);
+					?>
+					<div style="padding:10px 12px; border:1px solid #dcdcde; background:#fff; margin:10px 0 16px 0;">
+						<p style="margin-top:0;"><strong><?php _e('Externe Feature-Matrix', CPC2_TEXT_DOMAIN); ?></strong></p>
+						<ul style="margin:0 0 0 18px; list-style:disc;">
+							<?php foreach ($cap_labels as $key => $label): ?>
+								<?php $value = array_key_exists($key, $events_ext_caps) ? $events_ext_caps[$key] : null; ?>
+								<li>
+									<?php echo esc_html($label); ?>:
+									<?php
+									if ($value === true) {
+										echo '<span style="color:#46b450;">' . esc_html__('Ja', CPC2_TEXT_DOMAIN) . '</span>';
+									} elseif ($value === false) {
+										echo '<span style="color:#a00;">' . esc_html__('Nein', CPC2_TEXT_DOMAIN) . '</span>';
+									} else {
+										echo '<span>' . esc_html__('Unbekannt (Provider meldet nichts)', CPC2_TEXT_DOMAIN) . '</span>';
+									}
+									?>
+								</li>
+							<?php endforeach; ?>
+						</ul>
+						<p class="description" style="margin-bottom:0;"><?php _e('Diese Features kommen aus dem externen Event-Plugin selbst, nicht aus dem internen PS-Community-Events-Modul.', CPC2_TEXT_DOMAIN); ?></p>
+					</div>
+				<?php endif; ?>
 
-				<p style="margin-top:16px;">
-					<button type="submit" name="cpc_events_integrations_submit" value="1" class="button button-primary"><?php _e('Events-Integration speichern', CPC2_TEXT_DOMAIN); ?></button>
+				<p style="margin-top:10px;">
+					<button type="submit" name="cpc_events_integrations_submit" value="1" class="button button-primary"><?php _e('Events-Einstellungen speichern', CPC2_TEXT_DOMAIN); ?></button>
 				</p>
 			</form>
-
-			<script>
-			(function(){
-				var mode=document.getElementById('cpc_events_provider_mode');
-				var ext=document.getElementById('cpc_events_external_shortcode');
-				var wrap=document.getElementById('cpc_events_external_shortcode_wrap');
-				if(!mode||!ext||!wrap){return;}
-				var sync=function(){
-					var internal=(mode.value==='internal');
-					ext.disabled=internal;
-					wrap.style.opacity=internal?'0.55':'1';
-				};
-				mode.addEventListener('change',sync);
-				sync();
-			})();
-			</script>
+			<?php endif; ?>
 		</div>
-		
+
 		<!-- PS-Chat Integration Section -->
 		<div class="cpc-integration-box" style="border: 1px solid #ddd; padding: 20px; margin-top: 20px; background-color: #f9f9f9; border-radius: 5px;">
 			<h2><?php _e('PS-Chat Integration', CPC2_TEXT_DOMAIN); ?></h2>

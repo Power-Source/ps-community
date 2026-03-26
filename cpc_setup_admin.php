@@ -135,7 +135,6 @@ function cpc_admin_getting_started_options() {
                                 echo cpc_show_shortcode($cpc_expand_tab, $cpc_expand_shortcode, 'conditional', 'cpc_user_id_tab', CPC_PREFIX.'-user-id');
                                 echo cpc_show_shortcode($cpc_expand_tab, $cpc_expand_shortcode, 'conditional', 'cpc_is_logged_in_tab', CPC_PREFIX.'-is-logged-in');
                                 echo cpc_show_shortcode($cpc_expand_tab, $cpc_expand_shortcode, 'conditional', 'cpc_not_logged_in_tab', CPC_PREFIX.'-not-logged-in');
-                                echo cpc_show_shortcode($cpc_expand_tab, $cpc_expand_shortcode, 'conditional', 'cpc_is_forum_posts_list_tab', CPC_PREFIX.'-is-forum-posts-list');
                                 echo cpc_show_shortcode($cpc_expand_tab, $cpc_expand_shortcode, 'conditional', 'cpc_is_forum_single_post_tab', CPC_PREFIX.'-is-forum-single-post');
 
                                 // Friendships
@@ -2865,7 +2864,7 @@ function cpc_admin_getting_started_core_save($the_post) {
 		delete_option('cpccom_flag_colors');
 	endif;
 
-	if (isset($the_post['cpc_filter_feed_comments'])):
+    if (isset($the_post['cpc_filter_feed_comments'])):
 		update_option('cpc_filter_feed_comments', true);
 	else:
 		delete_option('cpc_filter_feed_comments');
