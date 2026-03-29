@@ -4,7 +4,7 @@ Tags: wp community, social network, social networking, social media, cp-communit
 Requires at least: 4.9
 Tested up to: 6.8.1
 ClassicPress: 2.7.0
-Stable tag: 1.1.3
+Stable tag: 1.1.4
 License URI: https://www.gnu.org/licenses/gpl-2.0.html
 
 == Description ==
@@ -61,7 +61,7 @@ Beispiel:
 
 `[cpc-members-directory per_page="30" show_search="1" show_atoz="1" show_actions="1" order="ASC"]`
 
-=== Events (Hybrid intern + PS Events) ===
+=== Events (modernes internes Kalender-Modul) ===
 
 Shortcode:
 
@@ -76,11 +76,7 @@ Beispiel:
 
 `[cpc-events limit="10" upcoming="1"]`
 
-Provider-Steuerung im Admin:
-
-* **Events-Provider**: Auto, Intern, Extern (PS Events)
-
-Hinweis: Bei externer Nutzung wird das Plugin **events-and-bookings** (PS Events) automatisch erkannt. Als externer Shortcode wird bevorzugt `eab_archive`, dann `eab_calendar` verwendet. Falls kein externer Shortcode rendert, erfolgt ein Fallback über den CPT `psource_event`.
+Das Events-Modul rendert intern und bietet eine moderne Kalenderansicht mit Monatsnavigation, Tageszellen mit Event-Markern sowie Event-Karten mit Inline-Bearbeitung (je nach Berechtigung).
 
 === Einladungen ===
 
@@ -126,10 +122,15 @@ Hinweis zum Rangsystem:
 
 == ChangeLog ==
 
+= 1.1.4 =
+
+* Eventsystem überarbeitet
+
 = 1.1.3 =
 
 * Hinzugefügt: Neues Core-Modul **Mitgliederverzeichnis** inkl. Shortcodes `[cpc-members]` und `[cpc-members-directory]`
-* Hinzugefügt: Neues Core-Modul **Events** mit Hybrid-Rendering (intern + PS Events) über `[cpc-events]`
+* Hinzugefügt: Neues Core-Modul **Events** als internes Kalender-Modul über `[cpc-events]`
+* Hinzugefügt: E-Mail-Benachrichtigungen bei neuen Gruppen-Events (sofern aktiviert)
 * Hinzugefügt: Neues Core-Modul **Einladungen** mit signiertem Token-Flow und Shortcode `[cpc-invite]`
 * Hinzugefügt: Forum-Q&A mit akzeptierter Antwort inkl. Auswertung über `[cpc-forum-unanswered]` und `[cpc-forum-experts]`
 * Verbesserung: Expertenliste im Forum optional mit Ranglabels (Rookie/Helper/Pro/Master)
@@ -146,7 +147,7 @@ Hinweis zum Rangsystem:
 * Fix: Cursor wird in Textfeldern wieder angezeigt
 * Hinzugefügt: Chat-Status im Profil bei aktivierter PS Chat Integration
 * Hinzugefügt: Erweiterte Profil-Privatsphäre-Optionen
-* Hinzugefügt: Events-Hybridsteuerung im Funktionen-Tab (Provider-Modus: Auto/Intern/Extern) inkl. Auswahl eines bevorzugten PS-Events-Shortcodes (eab_*)
+* Historisch: Frühere Hybrid-Provider-Steuerung für Events (Legacy-Stand)
 * Hinzugefügt: Forum-Q&A mit akzeptierter Antwort direkt im Thema (inkl. Markieren/Entfernen)
 * Hinzugefügt: Neue Forum-Shortcodes `[cpc-forum-unanswered]` und `[cpc-forum-experts]`
 * Hinzugefügt: Optionales Experten-Ranglabel (Rookie/Helper/Pro/Master) in `[cpc-forum-experts]`

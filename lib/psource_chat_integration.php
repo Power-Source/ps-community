@@ -379,39 +379,6 @@ function cpc_integrations_page() {
 		wp_die('Keine Berechtigung');
 	}
 
-	// Handle form submissions
-	if (
-		isset($_POST['cpc_events_integrations_submit'])
-		&& isset($_POST['cpc_events_integrations_nonce'])
-		&& wp_verify_nonce(sanitize_text_field(wp_unslash($_POST['cpc_events_integrations_nonce'])), 'cpc_events_integrations_save')
-	) {
-		$provider_mode = isset($_POST['cpc_events_provider_mode'])
-			? sanitize_text_field(wp_unslash($_POST['cpc_events_provider_mode']))
-			: 'auto';
-		if (!in_array($provider_mode, array('auto', 'internal', 'external'), true)) {
-			$provider_mode = 'auto';
-		}
-		update_option('cpc_events_provider_mode', $provider_mode);
-
-		echo '<div class="notice notice-success is-dismissible"><p>' . esc_html__('PS-Events-Einstellungen gespeichert.', CPC2_TEXT_DOMAIN) . '</p></div>';
-	}
-
-	$events_provider_mode = get_option('cpc_events_provider_mode', 'auto');
-	if (!in_array($events_provider_mode, array('auto', 'internal', 'external'), true)) {
-		$events_provider_mode = 'auto';
-	}
-	$events_ext_available  = function_exists('cpc_events_external_is_available') && cpc_events_external_is_available();
-	$events_ext_caps = apply_filters('cpc_events_external_capabilities', array(
-		'paid_events' => null,
-		'rsvp' => null,
-		'attendees' => null,
-		'tickets' => null,
-		'recurrence' => null,
-	));
-	if (!is_array($events_ext_caps)) {
-		$events_ext_caps = array();
-	}
-
 	$pschat_status = cpc_pschat_is_available();
 	?>
 	
@@ -422,70 +389,12 @@ function cpc_integrations_page() {
 
 		<!-- Events Integration Section -->
 		<div class="cpc-integration-box" style="border: 1px solid #ddd; padding: 20px; margin-top: 20px; background-color: #f9f9f9; border-radius: 5px;">
-			<h2><?php _e('Events Integration (PS Events / events-and-bookings)', CPC2_TEXT_DOMAIN); ?></h2>
-			<p><?php _e('Hier steuerst du, wie der Shortcode [cpc-events] rendert: internes Modul oder externer PS-Events-Provider.', CPC2_TEXT_DOMAIN); ?></p>
-
-			<?php if (!function_exists('cpc_events_provider_mode')): ?>
-				<div style="padding:10px 12px; border:1px solid #f2d7b0; border-left:4px solid #ffb900; background:#fff; margin-bottom:16px;">
-					<p><strong><?php _e('Hinweis:', CPC2_TEXT_DOMAIN); ?></strong> <?php _e('Das Events-Modul ist nicht aktiv. Aktiviere es unter Einstellungen → Funktionen (core-events).', CPC2_TEXT_DOMAIN); ?></p>
-				</div>
-			<?php else: ?>
-
-			<form method="post" action="">
-				<?php wp_nonce_field('cpc_events_integrations_save', 'cpc_events_integrations_nonce'); ?>
-
-				<p>
-					<label for="cpc_events_provider_mode"><strong><?php _e('Events-Provider', CPC2_TEXT_DOMAIN); ?></strong></label><br />
-					<select id="cpc_events_provider_mode" name="cpc_events_provider_mode" style="min-width:320px;">
-						<option value="auto"<?php echo selected($events_provider_mode, 'auto', false); ?>><?php _e('Automatisch (extern wenn vorhanden)', CPC2_TEXT_DOMAIN); ?></option>
-						<option value="internal"<?php echo selected($events_provider_mode, 'internal', false); ?>><?php _e('Nur internes PS Community Events-Modul', CPC2_TEXT_DOMAIN); ?></option>
-						<option value="external"<?php echo selected($events_provider_mode, 'external', false); ?>><?php _e('Nur externer Provider (PS Events)', CPC2_TEXT_DOMAIN); ?></option>
-					</select>
-					<?php if ($events_ext_available): ?>
-						<br /><span class="description" style="color:#46b450;">&#10003; <?php _e('PS Events (events-and-bookings) ist erkannt.', CPC2_TEXT_DOMAIN); ?></span>
-					<?php else: ?>
-						<br /><span class="description"><?php _e('PS Events nicht erkannt – internes Modul wird verwendet.', CPC2_TEXT_DOMAIN); ?></span>
-					<?php endif; ?>
-				</p>
-
-				<?php if ($events_ext_available): ?>
-					<?php
-						$cap_labels = array(
-							'paid_events' => __('Paid Events', CPC2_TEXT_DOMAIN),
-							'rsvp' => __('Teilnahme-Zusagen (RSVP)', CPC2_TEXT_DOMAIN),
-							'attendees' => __('Teilnehmer-Listen', CPC2_TEXT_DOMAIN),
-							'tickets' => __('Ticketing/Buchungen', CPC2_TEXT_DOMAIN),
-							'recurrence' => __('Wiederkehrende Events', CPC2_TEXT_DOMAIN),
-						);
-					?>
-					<div style="padding:10px 12px; border:1px solid #dcdcde; background:#fff; margin:10px 0 16px 0;">
-						<p style="margin-top:0;"><strong><?php _e('Externe Feature-Matrix', CPC2_TEXT_DOMAIN); ?></strong></p>
-						<ul style="margin:0 0 0 18px; list-style:disc;">
-							<?php foreach ($cap_labels as $key => $label): ?>
-								<?php $value = array_key_exists($key, $events_ext_caps) ? $events_ext_caps[$key] : null; ?>
-								<li>
-									<?php echo esc_html($label); ?>:
-									<?php
-									if ($value === true) {
-										echo '<span style="color:#46b450;">' . esc_html__('Ja', CPC2_TEXT_DOMAIN) . '</span>';
-									} elseif ($value === false) {
-										echo '<span style="color:#a00;">' . esc_html__('Nein', CPC2_TEXT_DOMAIN) . '</span>';
-									} else {
-										echo '<span>' . esc_html__('Unbekannt (Provider meldet nichts)', CPC2_TEXT_DOMAIN) . '</span>';
-									}
-									?>
-								</li>
-							<?php endforeach; ?>
-						</ul>
-						<p class="description" style="margin-bottom:0;"><?php _e('Diese Features kommen aus dem externen Event-Plugin selbst, nicht aus dem internen PS-Community-Events-Modul.', CPC2_TEXT_DOMAIN); ?></p>
-					</div>
-				<?php endif; ?>
-
-				<p style="margin-top:10px;">
-					<button type="submit" name="cpc_events_integrations_submit" value="1" class="button button-primary"><?php _e('Events-Einstellungen speichern', CPC2_TEXT_DOMAIN); ?></button>
-				</p>
-			</form>
-			<?php endif; ?>
+			<h2><?php _e('Events Integration', CPC2_TEXT_DOMAIN); ?></h2>
+			<p><?php _e('Das Events-Modul arbeitet jetzt ausschliesslich intern in PS Community.', CPC2_TEXT_DOMAIN); ?></p>
+			<div style="padding:10px 12px; border:1px solid #dcdcde; border-left:4px solid #2271b1; background:#fff; margin-bottom:16px;">
+				<p style="margin:0;"><strong><?php _e('Status:', CPC2_TEXT_DOMAIN); ?></strong> <?php _e('Externe Provider-Anbindung wurde entfernt.', CPC2_TEXT_DOMAIN); ?></p>
+			</div>
+			<p class="description"><?php _e('Aktiviere das Modul weiterhin wie gewohnt unter Einstellungen -> Funktionen (core-events).', CPC2_TEXT_DOMAIN); ?></p>
 		</div>
 
 		<!-- PS-Chat Integration Section -->

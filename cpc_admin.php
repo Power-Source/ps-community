@@ -381,7 +381,7 @@ function cpccom_release_notes() {
 					<div style="font-size:1.6em; line-height:1.6em; color: #510051; font-weight: bold;">PS Community Plugin</div>
 					<a href="https://power-source.github.io/ps-community/" target-"_blank">Verfügbar im PSOURCE GitHub-Repository</a><br />
 
-					<h2 style="font-style:italic; margin-top:20px;">Changelog Versionsnummer 1.1.3:</h2>
+					<h2 style="font-style:italic; margin-top:20px;">Changelog Versionsnummer 1.1.4</h2>
 					<p>Hinzugefügt: Neues Core-Modul <strong>Mitgliederverzeichnis</strong> inkl. Shortcodes <code>[cpc-members]</code> und <code>[cpc-members-directory]</code> mit Profilbild, Name, Rolle, Chat-Status und Aktionen (Profil / Freund / PM).</p>
                     <p>Hinzugefügt: Neues Core-Modul <strong>Events</strong> mit Hybrid-Rendering (intern + PS Events) über <code>[cpc-events]</code>.</p>
                     <p>Hinzugefügt: Neues Core-Modul <strong>Einladungen</strong> mit signiertem Token-Flow und Shortcode <code>[cpc-invite]</code>.</p>

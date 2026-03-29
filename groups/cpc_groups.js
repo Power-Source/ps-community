@@ -984,7 +984,9 @@ jQuery(document).ready(function($) {
                 nonce: cpc_groups_ajax.nonce,
                 group_id: groupId,
                 enable_media: form.find('#enable_media').is(':checked') ? 1 : 0,
-                enable_projects: form.find('#enable_projects').is(':checked') ? 1 : 0
+                enable_projects: form.find('#enable_projects').is(':checked') ? 1 : 0,
+                enable_events: form.find('#enable_events').is(':checked') ? 1 : 0,
+                enable_event_emails: form.find('#enable_event_emails').is(':checked') ? 1 : 0
             },
             success: function(response) {
                 submitBtn.prop('disabled', false).text('Module speichern');

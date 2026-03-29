@@ -151,6 +151,8 @@ function cpc_ajax_save_group_module_settings() {
 	if (function_exists('cpc_events_is_core_enabled') && cpc_events_is_core_enabled()) {
 		$enable_events = !empty($_POST['enable_events']);
 		update_post_meta($group_id, 'cpc_group_has_events', (bool)$enable_events);
+		$enable_event_emails = !empty($_POST['enable_event_emails']);
+		update_post_meta($group_id, 'cpc_group_events_email_notifications', $enable_event_emails ? 1 : 0);
 	}
 
 	wp_send_json_success(array('message' => __('Modul-Einstellungen gespeichert.', CPC2_TEXT_DOMAIN)));

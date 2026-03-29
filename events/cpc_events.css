@@ -1,33 +1,177 @@
-/* ===========================================================================
-   PS Community – Events-Modul
-   =========================================================================== */
+.cpc-events-context {
+    display: block;
+    margin-top: 10px;
+}
 
-/* Gemeinsame Karten-Basis
-   --------------------------------------------------------------------------- */
+.cpc-events-headline {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+    margin-bottom: 12px;
+}
+
+.cpc-events-headline h3 {
+    margin: 0;
+}
+
+.cpc-events-month-nav {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    font-size: .9em;
+}
+
+.cpc-events-month-nav a {
+    text-decoration: none;
+}
+
+.cpc-events-today-link {
+    padding: 2px 8px;
+    border: 1px solid #d0d4da;
+    border-radius: 999px;
+}
+
+.cpc-events-notice {
+    margin: 10px 0 14px;
+    padding: 10px 12px;
+    border-left: 4px solid #1e8e3e;
+    background: #fff;
+    border: 1px solid #d4d8de;
+}
+
+.cpc-events-notice-error {
+    border-left-color: #b42318;
+}
+
+.cpc-events-create-toggle {
+    margin: 14px 0;
+}
+
+.cpc-events-create-summary {
+    display: inline-block;
+    cursor: pointer;
+}
+
+.cpc-events-create-form,
+.cpc-events-edit-form {
+    margin-top: 10px;
+    padding: 12px;
+    border: 1px solid #e2e6eb;
+    border-radius: 8px;
+    background: #fbfcfd;
+}
+
+.cpc-events-form-grid {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 10px;
+}
+
+.cpc-events-form-grid p {
+    margin: 0;
+}
+
+.cpc-events-form-grid input[type="datetime-local"],
+.cpc-events-form-grid input[type="text"] {
+    width: 100%;
+}
+
+.cpc-events-calendar {
+    display: grid;
+    grid-template-columns: repeat(7, minmax(0, 1fr));
+    border: 1px solid #e2e6eb;
+    border-radius: 10px;
+    overflow: hidden;
+    background: #fff;
+}
+
+.cpc-events-calendar-head {
+    padding: 8px;
+    font-weight: 600;
+    font-size: .85em;
+    text-align: center;
+    background: #f4f6f8;
+    border-bottom: 1px solid #e2e6eb;
+}
+
+.cpc-events-day {
+    min-height: 105px;
+    padding: 8px;
+    border-right: 1px solid #eef1f4;
+    border-bottom: 1px solid #eef1f4;
+}
+
+.cpc-events-day:nth-child(7n) {
+    border-right: 0;
+}
+
+.cpc-events-day-empty {
+    background: #fafbfd;
+}
+
+.cpc-events-day-number {
+    font-weight: 600;
+    margin-bottom: 8px;
+}
+
+.cpc-events-day.is-today {
+    background: #fffbe9;
+}
+
+.cpc-events-day.has-events {
+    background: #f8fbff;
+}
+
+.cpc-events-day-list {
+    display: grid;
+    gap: 6px;
+}
+
+.cpc-events-chip,
+.cpc-events-chip-more {
+    display: inline-block;
+    padding: 2px 6px;
+    border-radius: 6px;
+    font-size: .78em;
+    line-height: 1.3;
+}
+
+.cpc-events-chip {
+    text-decoration: none;
+    background: #dbeafe;
+    color: #0f3f78;
+}
+
+.cpc-events-chip-more {
+    background: #eceff3;
+    color: #4a5565;
+}
+
+.cpc-events-list-title {
+    margin: 18px 0 10px;
+}
+
 .cpc-events-list {
     display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
-    gap: 16px;
-    margin: 16px 0;
+    grid-template-columns: repeat(auto-fill, minmax(290px, 1fr));
+    gap: 14px;
+    margin: 0 0 14px;
 }
 
 .cpc-event-card {
     background: #fff;
-    border: 1px solid #e2e4e7;
-    border-radius: 6px;
-    padding: 16px;
-    transition: box-shadow 0.15s ease;
-}
-
-.cpc-event-card:hover {
-    box-shadow: 0 2px 8px rgba(0,0,0,.10);
+    border: 1px solid #e2e6eb;
+    border-radius: 10px;
+    padding: 14px;
+    box-shadow: 0 1px 1px rgba(16, 24, 40, .03);
 }
 
 .cpc-event-title {
     font-size: 1em;
     font-weight: 600;
     margin: 0 0 8px;
-    line-height: 1.3;
+    line-height: 1.35;
 }
 
 .cpc-event-title a {
@@ -40,92 +184,75 @@
 }
 
 .cpc-event-time {
-    font-size: .85em;
-    color: #0073aa;
-    margin-bottom: 6px;
-}
-
-.cpc-event-time::before {
-    content: "📅 ";
+    font-size: .86em;
+    color: #145591;
+    margin-bottom: 5px;
 }
 
 .cpc-event-location {
-    font-size: .85em;
-    color: #555;
-    margin-bottom: 6px;
-}
-
-.cpc-event-location::before {
-    content: "📍 ";
+    font-size: .86em;
+    color: #455468;
+    margin-bottom: 5px;
 }
 
 .cpc-event-excerpt {
-    font-size: .875em;
-    color: #666;
+    font-size: .87em;
+    color: #5c6675;
     margin-top: 8px;
-    line-height: 1.5;
+    line-height: 1.45;
 }
 
-/* Leer-/Externes-Fallback
-   --------------------------------------------------------------------------- */
-.cpc-events-empty,
-.cpc-events-external-missing {
-    padding: 20px;
-    text-align: center;
-    color: #777;
-    font-style: italic;
-}
-
-/* Externer Provider: einzelne Karten
-   --------------------------------------------------------------------------- */
-.cpc-events-external-list .cpc-event-card-external {
-    border-left: 3px solid #0073aa;
-}
-
-/* Profil- und Gruppen-Tab-Wrapper
-   --------------------------------------------------------------------------- */
-.cpc-events-profile-tab,
-.cpc-events-group-tab {
-    padding: 8px 0;
-}
-
-.cpc-events-notice {
-    margin: 10px 0 14px;
-    padding: 10px 12px;
-    border-left: 4px solid #46b450;
-    background: #fff;
-    border: 1px solid #ccd0d4;
-}
-
-.cpc-events-notice-error {
-    border-left-color: #cc1818;
-}
-
-.cpc-events-create-toggle {
-    margin: 12px 0 16px;
-}
-
-.cpc-events-create-summary {
-    display: inline-block;
-    cursor: pointer;
-}
-
-.cpc-events-create-form {
+.cpc-events-edit-toggle {
     margin-top: 10px;
-    padding: 12px;
-    border: 1px solid #e2e4e7;
-    border-radius: 6px;
-    background: #fafafa;
 }
 
-.cpc-events-profile-tab h3,
-.cpc-events-group-tab h3 {
-    margin-top: 0;
+.cpc-events-edit-toggle > summary {
+    cursor: pointer;
+    font-size: .86em;
+    color: #1f5f9b;
 }
 
-/* Responsiv: auf kleinen Screens einspaltiger Stack
-   --------------------------------------------------------------------------- */
-@media (max-width: 540px) {
+.cpc-events-delete-form {
+    margin-top: 8px;
+}
+
+.cpc-btn-danger {
+    border-color: #d92d20;
+    color: #d92d20;
+}
+
+.cpc-events-empty {
+    padding: 14px;
+    text-align: center;
+    color: #667085;
+    border: 1px dashed #d0d5dd;
+    border-radius: 8px;
+}
+
+@media (max-width: 900px) {
+    .cpc-events-headline {
+        flex-direction: column;
+        align-items: flex-start;
+    }
+
+    .cpc-events-form-grid {
+        grid-template-columns: 1fr;
+    }
+}
+
+@media (max-width: 640px) {
+    .cpc-events-month-nav {
+        flex-wrap: wrap;
+    }
+
+    .cpc-events-calendar {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+
+    .cpc-events-calendar-head {
+        display: none;
+    }
+
     .cpc-events-list {
         grid-template-columns: 1fr;
     }
