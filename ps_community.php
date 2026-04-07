@@ -3,7 +3,7 @@
 Plugin Name: PS Community
 Plugin URI: https://psource.eimen.net/wiki/ps-community-dokumentation/
 Description: Füge Deiner ClassicPress-Webseite schnell und einfach ein soziales Netzwerk hinzu!
-Version: 1.1.4
+Version: 1.1.5
 Author: PSOURCE
 Author URI: https://psource.eimen.net/
 License: GPLv2 or later
@@ -385,7 +385,8 @@ if (strpos(CPC_CORE_PLUGINS, 'core-projects') !== false):
 endif;
 
 // Events (requires PS Events plugin)
-if (strpos(CPC_CORE_PLUGINS, 'core-events') !== false && cpc_events_external_plugin_active()):
+// Events Integration activates automatically when PS Events plugin is active
+if (cpc_events_external_plugin_active()):
     require_once('events/cpc_events.php');
     require_once('events/cpc_events_views.php');
 endif;
@@ -422,7 +423,7 @@ add_action( 'wp_footer', 'cpc_add_wait_modal_box' );
 function cpc_update_routine() {
 		
 	global $wpdb;
-	$new_version = '1.1.4';
+	$new_version = '1.1.5';
 //echo get_option('cp_community_ver').'<br />';
 //echo $new_version.'<br />';
 	$do_update = (is_blog_admin() && current_user_can('manage_options') && get_option('cp_community_ver') != $new_version);

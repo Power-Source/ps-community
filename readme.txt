@@ -4,7 +4,7 @@ Tags: wp community, social network, social networking, social media, cp-communit
 Requires at least: 4.9
 Tested up to: 6.8.1
 ClassicPress: 2.7.0
-Stable tag: 1.1.4
+Stable tag: 1.1.5
 License URI: https://www.gnu.org/licenses/gpl-2.0.html
 
 == Description ==
@@ -124,6 +124,12 @@ Hinweis zum Rangsystem:
 
 = 1.1.5 =
 
+* Breaking: Events ist nicht mehr als "Core Plugin Feature" aktivierbar - wird automatisch durch PS Events Plugin gesteuert
+* Redesign: Events-Integration vollständig überarbeitet: PS Events Plugin übernimmt alle Core-Funktionen
+* Entfernt: Redundante und verwirrende Events-Settings aus PS Community Admin (alle Settings in PS Events)
+* Entfernt: Admin-Tab "Events" aus PS Community Settings (nicht mehr nötig, da PS Events Plugin zuständig ist)
+* Verbesserung: "Meine Veranstaltungen" Addon registriert seinen eigenen Profile-Tab (Tab nur sichtbar wenn Addon aktiv ist)
+* Verbesserung: Saubere Separation: PS Community integriert Events nur noch als reines Frontend-Addon
 * Fix: Externe Aufrufe der Aktivitätswall scheitern nicht mehr an veralteten Nonces; Sichtbarkeit wird serverseitig pro Beitrag geprüft
 * Neu: PDF-Vorschau in Medien/Dokumenten-Galerien inkl. Lightbox-Unterstützung
 * Neu: Lokaler PDF.js-Fallback ohne CDN (Modus: nativ/auto/pdfjs)

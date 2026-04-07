@@ -404,7 +404,7 @@ function cpc_render_group_tab_settings($group_id, $atts = array()) {
 	// Module Settings (Medien, Projekte)
 	$has_modules = (function_exists('cpc_media_is_enabled') && cpc_media_is_enabled())
 	             || (function_exists('cpc_projects_is_enabled') && cpc_projects_is_enabled())
-	             || (function_exists('cpc_events_is_core_enabled') && cpc_events_is_core_enabled());
+	             || (function_exists('cpc_events_external_plugin_active') && cpc_events_external_plugin_active());
 
 	if ($has_modules):
 		$html .= '<hr>';
@@ -436,7 +436,7 @@ function cpc_render_group_tab_settings($group_id, $atts = array()) {
 			$html .= '</div>';
 		endif;
 
-		if (function_exists('cpc_events_is_core_enabled') && cpc_events_is_core_enabled()):
+		if (function_exists('cpc_events_external_plugin_active') && cpc_events_external_plugin_active()):
 			$has_events = (bool)get_post_meta($group_id, 'cpc_group_has_events', true);
 			$events_email_enabled = get_post_meta($group_id, 'cpc_group_events_email_notifications', true);
 			if ($events_email_enabled === '') {

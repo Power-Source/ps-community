@@ -148,7 +148,7 @@ function cpc_ajax_save_group_module_settings() {
 		update_post_meta($group_id, 'cpc_group_has_projects', (bool)$enable_projects);
 	}
 
-	if (function_exists('cpc_events_is_core_enabled') && cpc_events_is_core_enabled()) {
+	if (function_exists('cpc_events_external_plugin_active') && cpc_events_external_plugin_active()) {
 		$enable_events = !empty($_POST['enable_events']);
 		update_post_meta($group_id, 'cpc_group_has_events', (bool)$enable_events);
 		$enable_event_emails = !empty($_POST['enable_event_emails']);

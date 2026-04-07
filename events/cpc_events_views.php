@@ -613,41 +613,10 @@ function cpc_events_render_context_layout($component, $component_id, $title) {
     return $html;
 }
 
-function cpc_events_add_profile_tab($tabs, $user_id, $viewer_id) {
-    if (!cpc_events_is_core_enabled()) {
-        return $tabs;
-    }
-
-    if (function_exists('cpc_events_allow_user_calendar') && !cpc_events_allow_user_calendar()) {
-        return $tabs;
-    }
-
-    $count = (int)(new WP_Query(array(
-        'post_type' => function_exists('cpc_events_get_post_type') ? cpc_events_get_post_type() : 'cpc_event',
-        'post_status' => 'publish',
-        'author' => (int)$user_id,
-        'posts_per_page' => 1,
-        'no_found_rows' => false,
-        'fields' => 'ids',
-    )))->found_posts;
-
-    $label = __('Events', CPC2_TEXT_DOMAIN);
-    if ($count > 0) {
-        $label .= ' (' . $count . ')';
-    }
-
-    $tabs['events'] = array(
-        'label' => $label,
-        'icon' => 'calendar-alt',
-        'priority' => 27,
-    );
-
-    return $tabs;
-}
-add_filter('cpc_profile_tabs', 'cpc_events_add_profile_tab', 20, 3);
-
 function cpc_events_render_profile_tab_content($html, $active_tab, $user_id, $shortcode_atts) {
-    if ($active_tab !== 'events') {
+    // DEPRECATED: Tab registration is now handled by eab-pscommunity-my_events addon
+    // This function is kept for backward compatibility only
+    if ($active_tab !== 'events' && $active_tab !== 'my-events') {
         return $html;
     }
 
@@ -804,7 +773,8 @@ function cpc_events_group_meta_box_html($post) {
 }
 
 function cpc_events_enqueue_styles() {
-    if (!cpc_events_is_core_enabled()) {
+    // Load styles when PS Events plugin is active
+    if (!function_exists('cpc_events_external_plugin_active') || !cpc_events_external_plugin_active()) {
         return;
     }
     $ver = get_option('cp_community_ver', '1.0.0');

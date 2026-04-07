@@ -10,6 +10,87 @@ function cpc_events_get_post_type() {
         : 'cpc_event';
 }
 
+function cpc_events_ps_groups_available() {
+    return function_exists('cpc_events_external_plugin_active')
+        && cpc_events_external_plugin_active()
+        && function_exists('cpc_is_group_member');
+}
+
+function cpc_events_user_can_view_group_event($group_id, $user_id = 0) {
+    $group_id = (int)$group_id;
+    if ($group_id <= 0) {
+        return true;
+    }
+
+    if ((int)$user_id <= 0) {
+        $user_id = get_current_user_id();
+    }
+
+    $group = get_post($group_id);
+    if (!$group || $group->post_type !== 'cpc_group') {
+        if (function_exists('groups_is_user_member')) {
+            return $user_id > 0 && groups_is_user_member((int)$user_id, $group_id);
+        }
+        return true;
+    }
+
+    if (current_user_can('manage_options')) {
+        return true;
+    }
+
+    $group_type = get_post_meta($group_id, 'cpc_group_type', true);
+    if (!$group_type) {
+        $group_type = 'public';
+    }
+
+    if ($group_type === 'public') {
+        return true;
+    }
+
+    if ((int)$user_id <= 0) {
+        return false;
+    }
+
+    if (function_exists('cpc_is_group_member') && cpc_is_group_member((int)$user_id, $group_id, get_current_blog_id())) {
+        return true;
+    }
+
+    $role = function_exists('cpc_get_group_member_role')
+        ? cpc_get_group_member_role((int)$user_id, $group_id, get_current_blog_id())
+        : false;
+
+    return in_array($role, array('admin', 'moderator'), true);
+}
+
+function cpc_events_filter_external_event_visibility($query) {
+    if (!cpc_events_ps_groups_available() || !($query instanceof WP_Query)) {
+        return $query;
+    }
+
+    if (cpc_events_get_post_type() !== (string)($query->query_vars['post_type'] ?? '')) {
+        return $query;
+    }
+
+    if (empty($query->posts) || !is_array($query->posts)) {
+        return $query;
+    }
+
+    $visible = array();
+    $user_id = get_current_user_id();
+    foreach ($query->posts as $post) {
+        $group_id = (int)get_post_meta($post->ID, 'eab_event-bp-group_event', true);
+        if ($group_id > 0 && !cpc_events_user_can_view_group_event($group_id, $user_id)) {
+            continue;
+        }
+        $visible[] = $post;
+    }
+
+    $query->posts = $visible;
+    $query->post_count = count($visible);
+
+    return $query;
+}
+
 function cpc_events_register_post_type() {
     $labels = array(
         'name' => __('Events', CPC2_TEXT_DOMAIN),
@@ -193,8 +274,9 @@ if (!is_admin()) {
 }
 
 function cpc_events_is_core_enabled() {
-    $core = get_option('cpc_default_core', '');
-    return is_string($core) && strpos($core, 'core-events') !== false;
+    // DEPRECATED: Events are now integrated automatically when PS Events plugin is active
+    // This function is kept for backward compatibility only
+    return function_exists('cpc_events_external_plugin_active') && cpc_events_external_plugin_active();
 }
 
 function cpc_events_get_directory_page_id() {
@@ -438,6 +520,10 @@ function cpc_events_user_matches_publish_scope($user_id) {
 }
 
 function cpc_events_enforce_publish_scope($data, $postarr) {
+    if (function_exists('cpc_events_external_plugin_active') && cpc_events_external_plugin_active()) {
+        return $data;
+    }
+
     if (!is_array($data) || empty($data['post_type']) || $data['post_type'] !== 'cpc_event') {
         return $data;
     }
@@ -458,116 +544,3 @@ function cpc_events_enforce_publish_scope($data, $postarr) {
     return $data;
 }
 add_filter('wp_insert_post_data', 'cpc_events_enforce_publish_scope', 10, 2);
-
-if (is_admin()) {
-    add_action('cpc_admin_getting_started_hook', 'cpc_admin_events_section', 20);
-    add_action('cpc_admin_setup_form_save_hook', 'cpc_admin_events_settings_save', 20, 1);
-}
-
-function cpc_admin_events_section() {
-    if (!cpc_events_is_core_enabled()) {
-        return;
-    }
-
-    $expand_id = 'cpc_admin_getting_started_events';
-    $is_open = (isset($_POST['cpc_expand']) && $_POST['cpc_expand'] === $expand_id)
-        || (isset($_GET['cpc_expand']) && $_GET['cpc_expand'] === $expand_id);
-    $css = $is_open ? 'cpc_admin_getting_started_menu_item_remove_icon ' : '';
-    $display = $is_open ? 'block' : 'none';
-
-    echo '<div class="' . $css . 'cpc_admin_getting_started_menu_item" id="' . $expand_id . '_div" rel="' . $expand_id . '">' . esc_html__('Events', CPC2_TEXT_DOMAIN) . '</div>';
-    echo '<div class="cpc_admin_getting_started_content" id="' . $expand_id . '" style="display:' . $display . '">';
-    echo '<table class="form-table">';
-
-    echo '<tr class="form-field">';
-    echo '<th scope="row" valign="top"><label>' . esc_html__('Events-Seite', CPC2_TEXT_DOMAIN) . '</label></th>';
-    echo '<td>';
-    echo wp_dropdown_pages(array(
-        'name' => 'cpc_events_directory_page',
-        'echo' => 0,
-        'show_option_none' => esc_html__('Keine feste Seite', CPC2_TEXT_DOMAIN),
-        'option_none_value' => '0',
-        'selected' => cpc_events_get_directory_page_id(),
-    ));
-    echo '<br /><span class="description">' . esc_html__('Waehle eine bestehende Seite mit [cpc-events].', CPC2_TEXT_DOMAIN) . '</span>';
-    echo '<br /><label><input type="checkbox" style="width:10px" name="cpc_events_create_page" /> ' . esc_html__('Events-Seite neu erstellen (fuegt [cpc-events] ein).', CPC2_TEXT_DOMAIN) . '</label>';
-    echo '</td>';
-    echo '</tr>';
-
-    $role_permissions = cpc_events_get_role_permissions();
-    $editable_roles = function_exists('get_editable_roles') ? get_editable_roles() : array();
-
-    echo '<tr class="form-field">';
-    echo '<th scope="row" valign="top"><label>' . esc_html__('Berechtigungsmaske (Rollen)', CPC2_TEXT_DOMAIN) . '</label></th>';
-    echo '<td>';
-    echo '<table class="widefat" style="max-width:760px">';
-    echo '<thead><tr>';
-    echo '<th style="width:28%">' . esc_html__('Rolle', CPC2_TEXT_DOMAIN) . '</th>';
-    echo '<th>' . esc_html__('Direkt veroeffentlichen', CPC2_TEXT_DOMAIN) . '</th>';
-    echo '<th>' . esc_html__('Im Profil erstellen', CPC2_TEXT_DOMAIN) . '</th>';
-    echo '<th>' . esc_html__('In Gruppen erstellen', CPC2_TEXT_DOMAIN) . '</th>';
-    echo '</tr></thead><tbody>';
-    foreach ($editable_roles as $role_key => $role_info) {
-        $role_label = isset($role_info['name']) ? translate_user_role($role_info['name']) : $role_key;
-        echo '<tr>';
-        echo '<td><strong>' . esc_html($role_label) . '</strong><br /><small>' . esc_html($role_key) . '</small></td>';
-        echo '<td><label><input type="checkbox" style="width:10px" name="cpc_events_permissions[' . esc_attr($role_key) . '][publish]" value="1"' . checked(!empty($role_permissions[$role_key]['publish']), true, false) . ' /> ' . esc_html__('Ja', CPC2_TEXT_DOMAIN) . '</label></td>';
-        echo '<td><label><input type="checkbox" style="width:10px" name="cpc_events_permissions[' . esc_attr($role_key) . '][submit_profile]" value="1"' . checked(!empty($role_permissions[$role_key]['submit_profile']), true, false) . ' /> ' . esc_html__('Ja', CPC2_TEXT_DOMAIN) . '</label></td>';
-        echo '<td><label><input type="checkbox" style="width:10px" name="cpc_events_permissions[' . esc_attr($role_key) . '][submit_group]" value="1"' . checked(!empty($role_permissions[$role_key]['submit_group']), true, false) . ' /> ' . esc_html__('Ja', CPC2_TEXT_DOMAIN) . '</label></td>';
-        echo '</tr>';
-    }
-    echo '</tbody></table>';
-    echo '<span class="description">' . esc_html__('Wenn "Direkt veroeffentlichen" nicht gesetzt ist, wird das Event als "Ausstehend" gespeichert.', CPC2_TEXT_DOMAIN) . '</span>';
-    echo '</td>';
-    echo '</tr>';
-
-    echo '<tr class="form-field">';
-    echo '<th scope="row" valign="top"><label>' . esc_html__('Kalender-Kontexte', CPC2_TEXT_DOMAIN) . '</label></th>';
-    echo '<td>';
-    echo '<label><input type="checkbox" style="width:10px" name="cpc_events_allow_user_calendar" value="1"' . checked(cpc_events_allow_user_calendar(), true, false) . ' /> ' . esc_html__('Benutzer-Kalender im Profil aktivieren', CPC2_TEXT_DOMAIN) . '</label>';
-    echo '<br /><label><input type="checkbox" style="width:10px" name="cpc_events_allow_group_calendar" value="1"' . checked(cpc_events_allow_group_calendar(), true, false) . ' /> ' . esc_html__('Gruppen-Kalender aktivieren', CPC2_TEXT_DOMAIN) . '</label>';
-    echo '<br /><label><input type="checkbox" style="width:10px" name="cpc_events_group_email_notifications" value="1"' . checked(cpc_events_group_email_notifications_enabled(), true, false) . ' /> ' . esc_html__('E-Mail-Benachrichtigungen bei neuen Gruppen-Events senden', CPC2_TEXT_DOMAIN) . '</label>';
-    echo '<br /><span class="description">' . esc_html__('Gruppen-Kalender benoetigt zusaetzlich den Gruppen-Schalter im jeweiligen Gruppen-Settings-Tab.', CPC2_TEXT_DOMAIN) . '</span>';
-    echo '</td>';
-    echo '</tr>';
-
-    echo '</table>';
-    echo '</div>';
-}
-
-function cpc_admin_events_settings_save($the_post) {
-    if (isset($the_post['cpc_events_directory_page'])) {
-        update_option('cpc_events_directory_page', max(0, (int)$the_post['cpc_events_directory_page']));
-    }
-
-    $editable_roles = function_exists('get_editable_roles') ? get_editable_roles() : array();
-    $posted_permissions = isset($the_post['cpc_events_permissions']) && is_array($the_post['cpc_events_permissions'])
-        ? $the_post['cpc_events_permissions']
-        : array();
-    $saved_permissions = array();
-    foreach ($editable_roles as $role_key => $role_info) {
-        $saved_permissions[$role_key] = array();
-        foreach (cpc_events_role_permission_keys() as $perm_key) {
-            $saved_permissions[$role_key][$perm_key] = !empty($posted_permissions[$role_key][$perm_key]) ? 1 : 0;
-        }
-    }
-    update_option('cpc_events_role_permissions', $saved_permissions);
-
-    update_option('cpc_events_allow_user_calendar', isset($the_post['cpc_events_allow_user_calendar']) ? 1 : 0);
-    update_option('cpc_events_allow_group_calendar', isset($the_post['cpc_events_allow_group_calendar']) ? 1 : 0);
-    update_option('cpc_events_group_email_notifications', isset($the_post['cpc_events_group_email_notifications']) ? 1 : 0);
-
-    if (isset($the_post['cpc_events_create_page']) && function_exists('cpc_admin_create_standard_page')) {
-        $new_id = cpc_admin_create_standard_page('cpc_events_directory_page', array(
-            'post_name' => sanitize_title(__('events', CPC2_TEXT_DOMAIN)),
-            'post_title' => __('Events', CPC2_TEXT_DOMAIN),
-            'post_content' => '[cpc-events]',
-            'post_status' => 'publish',
-            'post_type' => 'page',
-            'comment_status' => 'closed',
-        ), 'cpc-events');
-        if (!is_wp_error($new_id) && $new_id) {
-            update_option('cpc_events_directory_page', (int)$new_id);
-        }
-    }
-}
