@@ -61,11 +61,11 @@ Beispiel:
 
 `[cpc-members-directory per_page="30" show_search="1" show_atoz="1" show_actions="1" order="ASC"]`
 
-=== Events (modernes internes Kalender-Modul) ===
+=== Events (Integration mit PS Events) ===
 
 Shortcode:
 
-* `[cpc-events]`
+* `[cpc-events]` (Wrapper für PS Events)
 
 Wichtige Attribute:
 
@@ -76,7 +76,7 @@ Beispiel:
 
 `[cpc-events limit="10" upcoming="1"]`
 
-Das Events-Modul rendert intern und bietet eine moderne Kalenderansicht mit Monatsnavigation, Tageszellen mit Event-Markern sowie Event-Karten mit Inline-Bearbeitung (je nach Berechtigung).
+Das Events-Modul in PS Community erweitert das Plugin **PS Events (events-and-bookings)** und bindet dessen Frontend-Funktionen in den Profil-Tab ein. Das Core-Modul `core-events` ist nur aktivierbar, wenn PS Events aktiv ist.
 
 === Einladungen ===
 
@@ -139,7 +139,7 @@ Hinweis zum Rangsystem:
 = 1.1.3 =
 
 * Hinzugefügt: Neues Core-Modul **Mitgliederverzeichnis** inkl. Shortcodes `[cpc-members]` und `[cpc-members-directory]`
-* Hinzugefügt: Neues Core-Modul **Events** als internes Kalender-Modul über `[cpc-events]`
+* Hinzugefügt: Neues Core-Modul **Events** als Integration zu PS Events über `[cpc-events]`
 * Hinzugefügt: E-Mail-Benachrichtigungen bei neuen Gruppen-Events (sofern aktiviert)
 * Hinzugefügt: Neues Core-Modul **Einladungen** mit signiertem Token-Flow und Shortcode `[cpc-invite]`
 * Hinzugefügt: Forum-Q&A mit akzeptierter Antwort inkl. Auswertung über `[cpc-forum-unanswered]` und `[cpc-forum-experts]`

@@ -545,14 +545,22 @@ function user_avatar_delete_files($uid)
  */
 function user_avatar_fetch_avatar_filter( $avatar, $user, $size, $default, $alt ) {
 	global $pagenow;
+	$id = 0;
 	
 	//If user is on discussion page, return $avatar 
     if($pagenow == "options-discussion.php")
     	return $avatar;
     	
-	// If passed an object, assume $user->user_id
-	if ( is_object( $user ) )
-		$id = $user->user_id;
+	// Handle the different object shapes WP can pass (WP_User, WP_Comment, etc.)
+	if ( is_object( $user ) ) {
+		if ( isset( $user->user_id ) && is_numeric( $user->user_id ) ) {
+			$id = (int) $user->user_id;
+		} elseif ( isset( $user->ID ) && is_numeric( $user->ID ) ) {
+			$id = (int) $user->ID;
+		} elseif ( isset( $user->id ) && is_numeric( $user->id ) ) {
+			$id = (int) $user->id;
+		}
+	}
 
 	// If passed a number, assume it was a $user_id
 	else if ( is_numeric( $user ) )

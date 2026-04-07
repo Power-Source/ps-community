@@ -244,7 +244,7 @@ function cpc_events_handle_frontend_submission() {
     }
 
     $event = get_post($event_id);
-    if (!$event || $event->post_type !== 'cpc_event') {
+    if (!$event || $event->post_type !== (function_exists('cpc_events_get_post_type') ? cpc_events_get_post_type() : 'cpc_event')) {
         cpc_events_redirect_with_notice('missing');
     }
 
@@ -329,7 +329,7 @@ function cpc_events_get_context_events($component, $component_id, $statuses, $mo
     $component_id = (int)$component_id;
 
     $args = array(
-        'post_type' => 'cpc_event',
+           'post_type' => function_exists('cpc_events_get_post_type') ? cpc_events_get_post_type() : 'cpc_event',
         'post_status' => $statuses,
         'posts_per_page' => 200,
         'orderby' => 'meta_value_num',
@@ -465,12 +465,12 @@ function cpc_events_render_create_form($component, $component_id) {
     $component = sanitize_key((string)$component);
     $component_id = (int)$component_id;
     $user_id = get_current_user_id();
+    $allowed = false;
 
     if (!is_user_logged_in()) {
         return '';
     }
 
-    $allowed = false;
     if ($component === 'members') {
         $allowed = cpc_events_user_can_submit_member_event($component_id, $user_id);
     }
@@ -623,7 +623,7 @@ function cpc_events_add_profile_tab($tabs, $user_id, $viewer_id) {
     }
 
     $count = (int)(new WP_Query(array(
-        'post_type' => 'cpc_event',
+        'post_type' => function_exists('cpc_events_get_post_type') ? cpc_events_get_post_type() : 'cpc_event',
         'post_status' => 'publish',
         'author' => (int)$user_id,
         'posts_per_page' => 1,
@@ -656,11 +656,19 @@ function cpc_events_render_profile_tab_content($html, $active_tab, $user_id, $sh
         return '<p>' . esc_html__('Benutzer nicht gefunden.', CPC2_TEXT_DOMAIN) . '</p>';
     }
 
+    if (function_exists('cpc_events_external_plugin_active') && cpc_events_external_plugin_active()) {
+        return '<div class="cpc-events-context">' . do_shortcode('[eab_my_events user="' . (int)$user_id . '" show_titles="yes" sections="organized,yes,maybe,no"]') . '</div>';
+    }
+
     return cpc_events_render_context_layout('members', $user_id, __('Events', CPC2_TEXT_DOMAIN));
 }
 add_filter('cpc_profile_tab_content', 'cpc_events_render_profile_tab_content', 20, 4);
 
 function cpc_events_add_group_tab($tabs, $group_id, $user_id) {
+    if (function_exists('cpc_events_external_plugin_active') && cpc_events_external_plugin_active()) {
+        return $tabs;
+    }
+
     if (!cpc_events_is_core_enabled()) {
         return $tabs;
     }
@@ -702,6 +710,10 @@ function cpc_events_render_group_tab_content($html, $group_id, $shortcode_atts) 
 add_filter('cpc_group_tab_content_events', 'cpc_events_render_group_tab_content', 20, 3);
 
 function cpc_events_on_save_post($post_id, $post) {
+    if (!is_object($post) || empty($post->post_type) || $post->post_type !== (function_exists('cpc_events_get_post_type') ? cpc_events_get_post_type() : 'cpc_event')) {
+        return;
+    }
+
     if (defined('DOING_AUTOSAVE') && DOING_AUTOSAVE) {
         return;
     }
@@ -738,9 +750,9 @@ function cpc_events_on_save_post($post_id, $post) {
 
     cpc_api_insert_activity_post($message, $author_id, $author_id);
 }
-add_action('save_post_cpc_event', 'cpc_events_on_save_post', 20, 2);
+add_action('save_post', 'cpc_events_on_save_post', 20, 2);
 
-if (is_admin()) {
+if (is_admin() && (!function_exists('cpc_events_external_plugin_active') || !cpc_events_external_plugin_active())) {
     add_action('add_meta_boxes_cpc_event', 'cpc_events_add_group_meta_box');
 }
 

@@ -2826,7 +2826,7 @@ function cpc_admin_getting_started_core_save($the_post) {
 	if (isset($the_post['core-media']))  	   $cpc_default_core .= 'core-media,';
 	if (isset($the_post['core-docs']))   	   $cpc_default_core .= 'core-docs,';
 	if (isset($the_post['core-projects']))	   $cpc_default_core .= 'core-projects,';
-    if (isset($the_post['core-events']))     $cpc_default_core .= 'core-events,';
+    if (isset($the_post['core-events']) && (!function_exists('cpc_events_external_plugin_active') || cpc_events_external_plugin_active())) $cpc_default_core .= 'core-events,';
     if (isset($the_post['core-invite']))     $cpc_default_core .= 'core-invite,';
 	update_option('cpc_default_core', $cpc_default_core);  
 
@@ -2968,7 +2968,9 @@ if (!function_exists('cpc_admin_getting_started_extensions')):
                 echo cpc_show_core($values, 'core-media', __('Medien', CPC2_TEXT_DOMAIN), '', '');
                 echo cpc_show_core($values, 'core-docs', __('Dokumente', CPC2_TEXT_DOMAIN), '', '');
                 echo cpc_show_core($values, 'core-projects', __('Projekte', CPC2_TEXT_DOMAIN), '', '');
-                echo cpc_show_core($values, 'core-events', __('Events', CPC2_TEXT_DOMAIN), '', '');
+                $events_available = !function_exists('cpc_events_external_plugin_active') || cpc_events_external_plugin_active();
+                $events_hint = $events_available ? '' : __('(benötigt aktives Plugin PS Events / events-and-bookings)', CPC2_TEXT_DOMAIN);
+                echo cpc_show_core($values, 'core-events', __('Events', CPC2_TEXT_DOMAIN), '', '', !$events_available, $events_hint);
                 echo cpc_show_core($values, 'core-invite', __('Einladungen', CPC2_TEXT_DOMAIN), '', '');
                 ?>
             </td>
@@ -2981,11 +2983,13 @@ if (!function_exists('cpc_admin_getting_started_extensions')):
     }
 endif;
 
-function cpc_show_core($values, $field, $label, $help, $video) {
+function cpc_show_core($values, $field, $label, $help, $video, $disabled = false, $disabled_hint = '') {
 
     $html = '<input type="checkbox" class="cpc_extension_checkbox" style="width:10px;" name="'.$field.'"';
     if (in_array($field, $values)) $html .= ' CHECKED';
+    if ($disabled) $html .= ' disabled="disabled"';
     $html .= '>'.$label;
+    if ($disabled && $disabled_hint) $html .= ' <span class="description">'.esc_html($disabled_hint).'</span>';
 
     if ($help) $html .= sprintf('<a href="%s" target="_blank"><img style="width:16px;height:16px" src="'.plugins_url('../ps-community/css/images/help.png', __FILE__).'" title="'.__('Hilfe', CPC2_TEXT_DOMAIN).'" /></a>', $help);
     if ($video) $html .= sprintf('<a href="%s" target="_blank"><img style="width:16px;height:16px" src="'.plugins_url('../ps-community/css/images/video.png', __FILE__).'" title="'.__('Video', CPC2_TEXT_DOMAIN).'" /></a>', $video);

@@ -99,6 +99,10 @@ if (!get_option('cpc_modules_migrated_113') && is_string($core_plugins)) {
 
 if (!defined('CPC_CORE_PLUGINS')) define ('CPC_CORE_PLUGINS', $core_plugins);
 
+function cpc_events_external_plugin_active() {
+    return class_exists('Eab_EventsHub') || function_exists('events_and_bookings') || defined('EAB_PLUGIN_DIR');
+}
+
 // Permalink re-writes
 function cpc_show_rewrite() {
 	global $wp_rewrite;
@@ -380,8 +384,8 @@ if (strpos(CPC_CORE_PLUGINS, 'core-projects') !== false):
     require_once('projects/cpc_projects.php');
 endif;
 
-// Events (internal + optional external adapter)
-if (strpos(CPC_CORE_PLUGINS, 'core-events') !== false):
+// Events (requires PS Events plugin)
+if (strpos(CPC_CORE_PLUGINS, 'core-events') !== false && cpc_events_external_plugin_active()):
     require_once('events/cpc_events.php');
     require_once('events/cpc_events_views.php');
 endif;

@@ -390,11 +390,11 @@ function cpc_integrations_page() {
 		<!-- Events Integration Section -->
 		<div class="cpc-integration-box" style="border: 1px solid #ddd; padding: 20px; margin-top: 20px; background-color: #f9f9f9; border-radius: 5px;">
 			<h2><?php _e('Events Integration', CPC2_TEXT_DOMAIN); ?></h2>
-			<p><?php _e('Das Events-Modul arbeitet jetzt ausschliesslich intern in PS Community.', CPC2_TEXT_DOMAIN); ?></p>
+			<p><?php _e('Das Events-Modul in PS Community erweitert PS Events und zeigt Frontend-Funktionen im Profil-Tab.', CPC2_TEXT_DOMAIN); ?></p>
 			<div style="padding:10px 12px; border:1px solid #dcdcde; border-left:4px solid #2271b1; background:#fff; margin-bottom:16px;">
-				<p style="margin:0;"><strong><?php _e('Status:', CPC2_TEXT_DOMAIN); ?></strong> <?php _e('Externe Provider-Anbindung wurde entfernt.', CPC2_TEXT_DOMAIN); ?></p>
+				<p style="margin:0;"><strong><?php _e('Status:', CPC2_TEXT_DOMAIN); ?></strong> <?php echo (function_exists('cpc_events_external_plugin_active') && cpc_events_external_plugin_active()) ? esc_html__('PS Events aktiv', CPC2_TEXT_DOMAIN) : esc_html__('PS Events nicht aktiv', CPC2_TEXT_DOMAIN); ?></p>
 			</div>
-			<p class="description"><?php _e('Aktiviere das Modul weiterhin wie gewohnt unter Einstellungen -> Funktionen (core-events).', CPC2_TEXT_DOMAIN); ?></p>
+			<p class="description"><?php _e('Das Core-Modul "Events" ist erst aktivierbar, wenn das Plugin PS Events (events-and-bookings) aktiv ist.', CPC2_TEXT_DOMAIN); ?></p>
 		</div>
 
 		<!-- PS-Chat Integration Section -->

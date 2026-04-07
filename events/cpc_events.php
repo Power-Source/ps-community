@@ -4,6 +4,12 @@ if (!defined('ABSPATH')) {
     exit;
 }
 
+function cpc_events_get_post_type() {
+    return (function_exists('cpc_events_external_plugin_active') && cpc_events_external_plugin_active())
+        ? 'psource_event'
+        : 'cpc_event';
+}
+
 function cpc_events_register_post_type() {
     $labels = array(
         'name' => __('Events', CPC2_TEXT_DOMAIN),
@@ -28,12 +34,16 @@ function cpc_events_register_post_type() {
         'rewrite' => array('slug' => 'cpc-event'),
     ));
 }
-add_action('init', 'cpc_events_register_post_type');
+if (!function_exists('cpc_events_external_plugin_active') || !cpc_events_external_plugin_active()) {
+    add_action('init', 'cpc_events_register_post_type');
+}
 
 function cpc_events_add_meta_boxes() {
     add_meta_box('cpc_event_details', __('Event-Details', CPC2_TEXT_DOMAIN), 'cpc_events_meta_box_html', 'cpc_event', 'normal', 'high');
 }
-add_action('add_meta_boxes', 'cpc_events_add_meta_boxes');
+if (!function_exists('cpc_events_external_plugin_active') || !cpc_events_external_plugin_active()) {
+    add_action('add_meta_boxes', 'cpc_events_add_meta_boxes');
+}
 
 function cpc_events_meta_box_html($post) {
     wp_nonce_field('cpc_event_save', 'cpc_event_nonce');
@@ -59,7 +69,7 @@ function cpc_events_save_meta($post_id) {
     if (defined('DOING_AUTOSAVE') && DOING_AUTOSAVE) {
         return;
     }
-    if (get_post_type($post_id) !== 'cpc_event') {
+    if (get_post_type($post_id) !== cpc_events_get_post_type()) {
         return;
     }
     if (!current_user_can('edit_post', $post_id)) {
@@ -86,9 +96,23 @@ function cpc_events_save_meta($post_id) {
         delete_post_meta($post_id, 'cpc_event_group_id');
     }
 }
-add_action('save_post', 'cpc_events_save_meta');
+if (!function_exists('cpc_events_external_plugin_active') || !cpc_events_external_plugin_active()) {
+    add_action('save_post', 'cpc_events_save_meta');
+}
 
 function cpc_events_render_internal($atts) {
+    if (function_exists('cpc_events_external_plugin_active') && cpc_events_external_plugin_active()) {
+        $upcoming = isset($atts['upcoming']) ? (int)$atts['upcoming'] : 1;
+        $limit = isset($atts['limit']) ? max(1, min(100, (int)$atts['limit'])) : 12;
+        $date = $upcoming ? date('Y-m-d H:i:s', current_time('timestamp')) : '';
+        $shortcode = '[eab_archive limit="' . (int)$limit . '"';
+        if ($date !== '') {
+            $shortcode .= ' date="' . esc_attr($date) . '"';
+        }
+        $shortcode .= ']';
+        return do_shortcode($shortcode);
+    }
+
     $upcoming = isset($atts['upcoming']) ? (int)$atts['upcoming'] : 1;
     $limit = isset($atts['limit']) ? max(1, min(100, (int)$atts['limit'])) : 12;
 
@@ -261,7 +285,7 @@ function cpc_events_send_group_event_notifications($event_id, $group_id, $actor_
     }
 
     $event = get_post($event_id);
-    if (!$event || $event->post_type !== 'cpc_event' || $event->post_status !== 'publish') {
+    if (!$event || $event->post_type !== cpc_events_get_post_type() || $event->post_status !== 'publish') {
         return;
     }
 

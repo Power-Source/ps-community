@@ -383,7 +383,7 @@ function cpccom_release_notes() {
 
 					<h2 style="font-style:italic; margin-top:20px;">Changelog Versionsnummer 1.1.4</h2>
 					<p>Hinzugefügt: Neues Core-Modul <strong>Mitgliederverzeichnis</strong> inkl. Shortcodes <code>[cpc-members]</code> und <code>[cpc-members-directory]</code> mit Profilbild, Name, Rolle, Chat-Status und Aktionen (Profil / Freund / PM).</p>
-                    <p>Hinzugefügt: Neues Core-Modul <strong>Events</strong> mit Hybrid-Rendering (intern + PS Events) über <code>[cpc-events]</code>.</p>
+                    <p>Hinzugefügt: Neues Core-Modul <strong>Events</strong> als Integration mit <strong>PS Events</strong> über <code>[cpc-events]</code> (nur aktivierbar bei aktivem PS Events).</p>
                     <p>Hinzugefügt: Neues Core-Modul <strong>Einladungen</strong> mit signiertem Token-Flow und Shortcode <code>[cpc-invite]</code>.</p>
                     <p>Hinzugefügt: Forum-Q&amp;A mit akzeptierter Antwort inkl. Auswertung über <code>[cpc-forum-unanswered]</code> und <code>[cpc-forum-experts]</code>.</p>
                     <p>Verbesserung: Expertenliste im Forum optional mit Ranglabels (Rookie/Helper/Pro/Master).</p>
