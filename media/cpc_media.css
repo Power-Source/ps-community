@@ -324,6 +324,46 @@
     letter-spacing: 0.05em;
 }
 
+.cpc_gallery_item_doc_preview {
+    display: block;
+    position: relative;
+    width: 100%;
+    height: 100%;
+    background: #e7edf3;
+}
+
+.cpc_gallery_item_doc_preview img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    display: block;
+}
+
+.cpc_gallery_item_doc_badge {
+    position: absolute;
+    top: 8px;
+    right: 8px;
+    padding: 2px 7px;
+    border-radius: 999px;
+    background: rgba(11, 25, 41, 0.78);
+    color: #fff;
+    font-size: 10px;
+    font-weight: 700;
+    letter-spacing: 0.05em;
+}
+
+.cpc_gallery_item_doc_fallback {
+    width: 100%;
+    height: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 24px;
+    font-weight: 700;
+    color: #3e5165;
+    background: #e7edf3;
+}
+
 .cpc_gallery_items_list .cpc_gallery_item {
     display: grid;
     grid-template-columns: 150px minmax(0, 1fr);

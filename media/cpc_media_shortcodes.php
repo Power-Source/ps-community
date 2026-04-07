@@ -54,7 +54,7 @@ function cpc_gallery_list($atts) {
 
         $html .= '<div class="cpc_gallery_list_item mpp-gallery-card" data-gallery-id="'.esc_attr($gallery->ID).'">';
         if ($cover_url) {
-            $html .= '<a class="cpc_gallery_list_cover cpc_media_lightbox_trigger" data-gallery-id="'.esc_attr($gallery->ID).'" href="'.esc_url(get_permalink($gallery)).'"><img src="'.esc_url($cover_url).'" alt="'.esc_attr($gallery->post_title).'" /></a>';
+            $html .= '<a class="cpc_gallery_list_cover cpc_media_lightbox_trigger" data-gallery-id="'.esc_attr($gallery->ID).'" href="'.esc_url(get_permalink($gallery)).'"><img src="'.cpc_media_esc_image_src($cover_url).'" alt="'.esc_attr($gallery->post_title).'" /></a>';
         }
         $html .= '<div class="cpc_gallery_list_body">';
         $html .= '<div class="cpc_gallery_list_badges"><span class="cpc_media_gallery_badge cpc_media_gallery_badge_type">'.esc_html(cpc_media_get_gallery_type_label($type)).'</span><span class="cpc_media_gallery_badge cpc_media_gallery_badge_status">'.esc_html(cpc_media_get_gallery_status_label($status, $component)).'</span></div>';
@@ -339,7 +339,7 @@ function cpc_media_directory_shortcode($atts) {
 
                 $html .= '<div class="cpc_gallery_list_item mpp-gallery-card" data-gallery-id="'.esc_attr($gallery->ID).'">';
                 if ($cover_url) {
-                    $html .= '<a class="cpc_gallery_list_cover cpc_media_lightbox_trigger" data-gallery-id="'.esc_attr($gallery->ID).'" href="'.esc_url(get_permalink($gallery)).'"><img src="'.esc_url($cover_url).'" alt="'.esc_attr($gallery->post_title).'" /></a>';
+                    $html .= '<a class="cpc_gallery_list_cover cpc_media_lightbox_trigger" data-gallery-id="'.esc_attr($gallery->ID).'" href="'.esc_url(get_permalink($gallery)).'"><img src="'.cpc_media_esc_image_src($cover_url).'" alt="'.esc_attr($gallery->post_title).'" /></a>';
                 }
                 $html .= '<div class="cpc_gallery_list_body">';
                 $html .= '<div class="cpc_gallery_list_badges"><span class="cpc_media_gallery_badge cpc_media_gallery_badge_type">'.esc_html(cpc_media_get_gallery_type_label($gallery_type)).'</span><span class="cpc_media_gallery_badge cpc_media_gallery_badge_status">'.esc_html(cpc_media_get_gallery_status_label($status, $component)).'</span></div>';
@@ -401,6 +401,7 @@ function cpc_media_render_media_item_html($item) {
     $extension_raw = strtolower(pathinfo((string)$display_url, PATHINFO_EXTENSION));
     $extension = strtoupper(pathinfo((string)$display_url, PATHINFO_EXTENSION));
     $is_pdf = (strpos((string)$mime_type, 'application/pdf') === 0) || ($extension_raw === 'pdf');
+    $doc_thumb = cpc_media_get_item_thumbnail_url($media_id, 'medium');
     $date = get_the_date('', $item);
     $lightbox_enabled = cpc_media_lightbox_enabled();
     $reorder_enabled = cpc_media_reorder_enabled() && $can_manage;
@@ -438,7 +439,19 @@ function cpc_media_render_media_item_html($item) {
         $html .= '</a>';
     } elseif ($display_url) {
         $trigger_class = $lightbox_enabled ? 'cpc_media_lightbox_trigger' : '';
-        $html .= '<a class="cpc_gallery_item_file '.$trigger_class.'" href="'.($lightbox_enabled ? '#' : esc_url($display_url)).'" '.($lightbox_enabled ? 'data-media-id="'.esc_attr($media_id).'" data-gallery-id="'.esc_attr($gallery_id).'"' : 'target="_blank" rel="noopener noreferrer"').'>'.esc_html($item->post_title ? $item->post_title : basename($display_url)).'</a>';
+        $href = $lightbox_enabled ? '#' : esc_url($display_url);
+        $attrs = $lightbox_enabled
+            ? 'data-media-id="'.esc_attr($media_id).'" data-gallery-id="'.esc_attr($gallery_id).'"'
+            : 'target="_blank" rel="noopener noreferrer"';
+
+        $html .= '<a class="cpc_gallery_item_doc_preview '.$trigger_class.'" href="'.$href.'" '.$attrs.'>';
+        if ($doc_thumb) {
+            $html .= '<img src="'.cpc_media_esc_image_src($doc_thumb).'" alt="'.esc_attr($item->post_title ? $item->post_title : 'Dokument').'" />';
+        } else {
+            $html .= '<span class="cpc_gallery_item_doc_fallback">'.esc_html($extension ? $extension : 'FILE').'</span>';
+        }
+        $html .= '<span class="cpc_gallery_item_doc_badge">'.esc_html($extension ? $extension : 'FILE').'</span>';
+        $html .= '</a>';
     } else {
         $html .= '<span>'.esc_html($item->post_title).'</span>';
     }

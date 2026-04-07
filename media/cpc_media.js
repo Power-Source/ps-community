@@ -617,6 +617,50 @@
         });
     }
 
+    function prefetchLightboxItemByIndex(targetIndex) {
+        if (!cpcVanillaLightbox.items || !cpcVanillaLightbox.items.length) {
+            return;
+        }
+
+        var total = cpcVanillaLightbox.items.length;
+        if (targetIndex < 0) {
+            targetIndex = total - 1;
+        }
+        if (targetIndex >= total) {
+            targetIndex = 0;
+        }
+
+        var item = cpcVanillaLightbox.items[targetIndex] || {};
+        if (item.src) {
+            return;
+        }
+
+        var mediaId = item.data && item.data.media_id ? parseInt(item.data.media_id, 10) : 0;
+        if (!mediaId) {
+            return;
+        }
+
+        if (cpcVanillaLightbox.loading[mediaId]) {
+            return;
+        }
+
+        cpcVanillaLightbox.loading[mediaId] = fetchLightboxItemHtml(mediaId).then(function(contentHtml) {
+            if (contentHtml) {
+                item.src = contentHtml;
+            }
+            delete cpcVanillaLightbox.loading[mediaId];
+        });
+    }
+
+    function prefetchLightboxNeighbors(index) {
+        if (!cpcVanillaLightbox.items || cpcVanillaLightbox.items.length < 2) {
+            return;
+        }
+
+        prefetchLightboxItemByIndex(index + 1);
+        prefetchLightboxItemByIndex(index - 1);
+    }
+
     function ensureVanillaLightbox() {
         if (cpcVanillaLightbox.root) {
             return;
@@ -809,6 +853,9 @@
         cpcVanillaLightbox.next.tabIndex = showNav ? 0 : -1;
 
         runPdfFallback(cpcVanillaLightbox.content);
+
+        // Warm up neighboring slides for near-instant navigation.
+        prefetchLightboxNeighbors(index);
     }
 
     function closeVanillaLightbox() {
@@ -860,8 +907,7 @@
         $.post(cpc_media_ajax.ajaxurl, {
             action: 'cpc_media_fetch_gallery_media',
             gallery_id: galleryId,
-            start_media_id: startMediaId || 0,
-            cookie: encodeURIComponent(document.cookie)
+            start_media_id: startMediaId || 0
         }).done(function(resp) {
             resp = normalizeAjaxResponse(resp);
             if (!resp || !resp.success || !resp.data || !resp.data.items) {
@@ -870,10 +916,13 @@
             }
 
             var items = resp.data.items || [];
-            var position = 0;
+            var position = parseInt(resp.data.start_index, 10);
+            if (isNaN(position) || position < 0) {
+                position = 0;
+            }
 
             // Find position of start media if specified
-            if (startMediaId) {
+            if (startMediaId && (!resp.data || typeof resp.data.start_index === 'undefined')) {
                 position = findMediaPositionInItems(items, startMediaId);
             }
 

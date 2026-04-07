@@ -157,7 +157,7 @@ function cpc_media_render_gallery_block($gallery) {
     $html .= '<div class="cpc_media_gallery_shell">';
     $html .= '<div class="cpc_media_gallery_cover_wrap">';
     if ($cover_url) {
-        $html .= '<div class="cpc_media_gallery_cover cpc_media_lightbox_trigger" data-gallery-id="'.esc_attr($gallery_id).'" role="button" tabindex="0"><img src="'.esc_url($cover_url).'" alt="'.esc_attr($gallery->post_title).'" /></div>';
+        $html .= '<div class="cpc_media_gallery_cover cpc_media_lightbox_trigger" data-gallery-id="'.esc_attr($gallery_id).'" role="button" tabindex="0"><img src="'.cpc_media_esc_image_src($cover_url).'" alt="'.esc_attr($gallery->post_title).'" /></div>';
     } else {
         $html .= '<div class="cpc_media_gallery_cover cpc_media_gallery_cover_empty cpc_media_lightbox_trigger" data-gallery-id="'.esc_attr($gallery_id).'" role="button" tabindex="0"><span>'.esc_html__('Keine Vorschau', CPC2_TEXT_DOMAIN).'</span></div>';
     }
@@ -165,11 +165,14 @@ function cpc_media_render_gallery_block($gallery) {
     if ($preview_items) {
         $html .= '<div class="cpc_media_gallery_preview_strip">';
         foreach ($preview_items as $preview_item) {
-            $preview_url = cpc_media_get_media_file_url($preview_item->ID);
+            $preview_url = cpc_media_get_item_thumbnail_url($preview_item->ID, 'thumbnail');
+            if (!$preview_url) {
+                $preview_url = cpc_media_get_media_file_url($preview_item->ID);
+            }
             if (!$preview_url) {
                 continue;
             }
-            $html .= '<span class="cpc_media_gallery_preview_thumb"><img src="'.esc_url($preview_url).'" alt="'.esc_attr($preview_item->post_title).'" /></span>';
+            $html .= '<span class="cpc_media_gallery_preview_thumb"><img src="'.cpc_media_esc_image_src($preview_url).'" alt="'.esc_attr($preview_item->post_title).'" /></span>';
         }
         $html .= '</div>';
     }

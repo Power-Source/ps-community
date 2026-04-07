@@ -122,6 +122,16 @@ Hinweis zum Rangsystem:
 
 == ChangeLog ==
 
+= 1.1.5 =
+
+* Fix: Externe Aufrufe der Aktivitätswall scheitern nicht mehr an veralteten Nonces; Sichtbarkeit wird serverseitig pro Beitrag geprüft
+* Neu: PDF-Vorschau in Medien/Dokumenten-Galerien inkl. Lightbox-Unterstützung
+* Neu: Lokaler PDF.js-Fallback ohne CDN (Modus: nativ/auto/pdfjs)
+* Verbesserung: Veraltete Magnific-Popup-Abhängigkeit entfernt und durch moderne Vanilla-Lightbox ersetzt
+* Verbesserung: Accessibility für Lightbox erweitert (Tastatursteuerung, Fokus-Management, ARIA-Status, i18n-Labels)
+* Performance: Schnellere Profil-Tab- und Lightbox-Ladezeiten durch Lazy Loading und reduzierten Initial-Payload
+* Verbesserung: Dokumente zeigen jetzt Dateityp-Fallback-Icons (z.B. PDF/ZIP/RAR/7Z), auch in Cover- und Vorschau-Ansichten
+
 = 1.1.4 =
 
 * Eventsystem überarbeitet

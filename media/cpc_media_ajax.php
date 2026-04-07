@@ -238,31 +238,50 @@ function cpc_media_ajax_fetch_gallery_media() {
         wp_send_json_error(array('message' => __('Keine Berechtigung.', CPC2_TEXT_DOMAIN)), 403);
     }
 
-    $items = cpc_media_get_gallery_items($gallery_id, array(
+    $media_ids = get_posts(array(
+        'post_type' => 'cpc_media',
+        'post_status' => 'publish',
         'posts_per_page' => -1,
-        'orderby' => 'menu_order',
+        'orderby' => 'menu_order date',
         'order' => 'ASC',
+        'meta_key' => 'cpc_media_gallery_id',
+        'meta_value' => (int)$gallery_id,
+        'fields' => 'ids',
+        'no_found_rows' => true,
+        'update_post_meta_cache' => false,
+        'update_post_term_cache' => false,
     ));
 
-    if (empty($items)) {
+    if (empty($media_ids)) {
         wp_send_json_success(array('items' => array()));
     }
 
+    if ($start_media_id <= 0 || !in_array($start_media_id, $media_ids, true)) {
+        $start_media_id = (int)$media_ids[0];
+    }
+
+    $start_index = array_search($start_media_id, $media_ids, true);
+    if ($start_index === false) {
+        $start_index = 0;
+    }
+
     $lightbox_items = array();
-    foreach ($items as $item) {
-        $is_start_item = ($start_media_id > 0 && (int)$item->ID === $start_media_id);
+    foreach ($media_ids as $media_id) {
+        $media_id = (int)$media_id;
+        $is_start_item = ($media_id === (int)$start_media_id);
         $lightbox_items[] = array(
-            'src' => $is_start_item ? cpc_media_render_lightbox_content($item) : '',
+            'src' => $is_start_item ? cpc_media_render_lightbox_content($media_id) : '',
             'type' => 'inline',
             'data' => array(
-                'media_id' => $item->ID,
-                'title' => $item->post_title,
-                'description' => $item->post_content,
+                'media_id' => $media_id,
             ),
         );
     }
 
-    wp_send_json_success(array('items' => $lightbox_items));
+    wp_send_json_success(array(
+        'items' => $lightbox_items,
+        'start_index' => (int)$start_index,
+    ));
 }
 
 /**
@@ -359,7 +378,7 @@ function cpc_media_ajax_get_cover_selector() {
             $html .= '<label class="cpc_media_cover_option' . ($is_selected ? ' cpc_media_cover_selected' : '') . '">';
             $html .= '<input type="radio" name="cover_id" value="' . esc_attr($item->ID) . '" ' . ($is_selected ? 'checked' : '') . ' />';
             if ($thumb_url) {
-                $html .= '<img src="' . esc_url($thumb_url) . '" alt="' . esc_attr($item->post_title) . '" />';
+                $html .= '<img src="' . cpc_media_esc_image_src($thumb_url) . '" alt="' . esc_attr($item->post_title) . '" />';
             }
             $html .= '</label>';
         }

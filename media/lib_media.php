@@ -677,7 +677,10 @@ function cpc_media_get_gallery_cover_url($gallery_id) {
         $cover_id = (int)get_post_meta($gallery_id, 'cpc_gallery_cover_id', true);
     }
     if ($cover_id > 0) {
-        $cover_url = cpc_media_get_media_file_url($cover_id);
+        $cover_url = cpc_media_get_item_thumbnail_url($cover_id, 'medium');
+        if (!$cover_url) {
+            $cover_url = cpc_media_get_media_file_url($cover_id);
+        }
         if ($cover_url) {
             return $cover_url;
         }
@@ -693,7 +696,13 @@ function cpc_media_get_gallery_cover_url($gallery_id) {
         return '';
     }
 
-    return cpc_media_get_media_file_url($items[0]->ID);
+    $first_id = (int)$items[0]->ID;
+    $cover_url = cpc_media_get_item_thumbnail_url($first_id, 'medium');
+    if ($cover_url) {
+        return $cover_url;
+    }
+
+    return cpc_media_get_media_file_url($first_id);
 }
 
 function cpc_media_get_gallery_preview_items($gallery_id, $limit = 3) {
@@ -768,6 +777,44 @@ function cpc_media_get_media_file_url($media_id) {
 
 function cpc_media_get_media_mime_type($media_id) {
     return (string)get_post_meta((int)$media_id, 'cpc_media_mime_type', true);
+}
+
+function cpc_media_esc_image_src($url) {
+    return esc_url((string)$url, array('http', 'https', 'data'));
+}
+
+function cpc_media_get_document_icon_data_uri($extension = 'FILE') {
+    $ext = strtoupper(trim((string)$extension));
+    if ($ext === '') {
+        $ext = 'FILE';
+    }
+    if (strlen($ext) > 6) {
+        $ext = substr($ext, 0, 6);
+    }
+
+    $color = '#4f6a88';
+    if (in_array($ext, array('PDF'), true)) {
+        $color = '#c63c3c';
+    } elseif (in_array($ext, array('ZIP', 'RAR', '7Z', 'TAR', 'GZ'), true)) {
+        $color = '#b2742b';
+    } elseif (in_array($ext, array('DOC', 'DOCX', 'ODT', 'RTF', 'TXT', 'MD'), true)) {
+        $color = '#3467b8';
+    } elseif (in_array($ext, array('XLS', 'XLSX', 'CSV', 'ODS'), true)) {
+        $color = '#2f8a57';
+    }
+
+    $svg = '<svg xmlns="http://www.w3.org/2000/svg" width="640" height="640" viewBox="0 0 640 640">'
+        . '<rect width="640" height="640" fill="#eef3f8"/>'
+        . '<rect x="148" y="96" width="344" height="448" rx="20" fill="#ffffff" stroke="#d7e1ea" stroke-width="8"/>'
+        . '<path d="M428 96v108h108" fill="#e7edf5"/>'
+        . '<rect x="176" y="408" width="288" height="84" rx="12" fill="'.$color.'"/>'
+        . '<text x="320" y="462" text-anchor="middle" font-family="Arial, Helvetica, sans-serif" font-size="42" font-weight="700" fill="#ffffff">'.$ext.'</text>'
+        . '<rect x="198" y="196" width="244" height="18" rx="9" fill="#e5edf5"/>'
+        . '<rect x="198" y="236" width="206" height="18" rx="9" fill="#e5edf5"/>'
+        . '<rect x="198" y="276" width="228" height="18" rx="9" fill="#e5edf5"/>'
+        . '</svg>';
+
+    return 'data:image/svg+xml;utf8,' . rawurlencode($svg);
 }
 
 function cpc_media_user_can_manage_media($media_id, $user_id = 0) {
@@ -1768,7 +1815,13 @@ function cpc_media_get_item_thumbnail_url($media_id, $size = 'medium') {
     }
 
     // For non-images, return placeholder
-    return apply_filters('cpc_media_get_item_thumbnail_url', '', $media_id, $size);
+    $extension = strtoupper(pathinfo((string)$file_url, PATHINFO_EXTENSION));
+    if (!$extension) {
+        $extension = 'FILE';
+    }
+
+    $thumb = cpc_media_get_document_icon_data_uri($extension);
+    return apply_filters('cpc_media_get_item_thumbnail_url', $thumb, $media_id, $size);
 }
 
 /**
