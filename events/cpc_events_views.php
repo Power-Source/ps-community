@@ -88,9 +88,6 @@ function cpc_events_user_can_submit_group_event($group_id, $user_id = 0) {
     if (!cpc_events_role_can($user_id, 'submit_group')) {
         return false;
     }
-    if (!get_post_meta($group_id, 'cpc_group_has_events', true)) {
-        return false;
-    }
     if (function_exists('cpc_can_view_group') && !cpc_can_view_group($user_id, $group_id)) {
         return false;
     }
@@ -258,29 +255,6 @@ function cpc_events_handle_frontend_submission() {
     }
 
     $payload = cpc_events_build_event_payload($_POST);
-
-function cpc_events_render_notification_pref_form($component, $component_id) {
-    if (!is_user_logged_in()) {
-        return '';
-    }
-
-    $current = get_user_meta(get_current_user_id(), 'cpc_events_notify_group_events', true);
-    $enabled = !in_array((string)$current, array('0', 'no', 'off', 'false'), true);
-
-    $html = '<form method="post" class="cpc-events-notify-pref-form">';
-    $html .= '<input type="hidden" name="cpc_events_action" value="save_notify_pref" />';
-    $html .= '<input type="hidden" name="cpc_events_component" value="' . esc_attr($component) . '" />';
-    $html .= '<input type="hidden" name="cpc_events_component_id" value="' . (int)$component_id . '" />';
-    $html .= '<input type="hidden" name="cpc_events_nonce" value="' . esc_attr(wp_create_nonce('cpc_events_frontend_action')) . '" />';
-    $html .= '<label>';
-    $html .= '<input type="checkbox" name="cpc_events_notify_group_events" value="1" ' . checked($enabled, true, false) . ' /> ';
-    $html .= esc_html__('E-Mail bei neuen Gruppen-Events erhalten', CPC2_TEXT_DOMAIN);
-    $html .= '</label> ';
-    $html .= '<button type="submit" class="cpc-btn cpc-btn-secondary">' . esc_html__('Speichern', CPC2_TEXT_DOMAIN) . '</button>';
-    $html .= '</form>';
-
-    return $html;
-}
     if (is_wp_error($payload)) {
         cpc_events_redirect_with_notice('invalid');
     }
@@ -304,6 +278,29 @@ function cpc_events_render_notification_pref_form($component, $component_id) {
     cpc_events_redirect_with_notice('updated');
 }
 add_action('init', 'cpc_events_handle_frontend_submission');
+
+function cpc_events_render_notification_pref_form($component, $component_id) {
+    if (!is_user_logged_in()) {
+        return '';
+    }
+
+    $current = get_user_meta(get_current_user_id(), 'cpc_events_notify_group_events', true);
+    $enabled = !in_array((string)$current, array('0', 'no', 'off', 'false'), true);
+
+    $html = '<form method="post" class="cpc-events-notify-pref-form">';
+    $html .= '<input type="hidden" name="cpc_events_action" value="save_notify_pref" />';
+    $html .= '<input type="hidden" name="cpc_events_component" value="' . esc_attr($component) . '" />';
+    $html .= '<input type="hidden" name="cpc_events_component_id" value="' . (int)$component_id . '" />';
+    $html .= '<input type="hidden" name="cpc_events_nonce" value="' . esc_attr(wp_create_nonce('cpc_events_frontend_action')) . '" />';
+    $html .= '<label>';
+    $html .= '<input type="checkbox" name="cpc_events_notify_group_events" value="1" ' . checked($enabled, true, false) . ' /> ';
+    $html .= esc_html__('E-Mail bei neuen Gruppen-Events erhalten', CPC2_TEXT_DOMAIN);
+    $html .= '</label> ';
+    $html .= '<button type="submit" class="cpc-btn cpc-btn-secondary">' . esc_html__('Speichern', CPC2_TEXT_DOMAIN) . '</button>';
+    $html .= '</form>';
+
+    return $html;
+}
 
 function cpc_events_get_context_statuses($component, $component_id) {
     $component = sanitize_key((string)$component);
@@ -581,6 +578,8 @@ function cpc_events_render_event_cards(array $events, $component, $component_id)
 }
 
 function cpc_events_render_context_layout($component, $component_id, $title) {
+    // Shared renderer used by PS Community events views.
+    // Group tab ownership/registration is handled in events-and-bookings addon (eab-pscommunity-group_events.php).
     $month = cpc_events_get_requested_month();
     $statuses = cpc_events_get_context_statuses($component, $component_id);
     $month_events = cpc_events_get_context_events($component, $component_id, $statuses, $month);
@@ -600,9 +599,6 @@ function cpc_events_render_context_layout($component, $component_id, $title) {
     $html .= '</div>';
 
     $html .= cpc_events_render_frontend_notice();
-    if ($component === 'groups') {
-        $html .= cpc_events_render_notification_pref_form($component, $component_id);
-    }
     $html .= cpc_events_render_create_form($component, $component_id);
     $html .= cpc_events_render_month_calendar($component, $component_id, $month_events, $month);
 
@@ -633,50 +629,7 @@ function cpc_events_render_profile_tab_content($html, $active_tab, $user_id, $sh
 }
 add_filter('cpc_profile_tab_content', 'cpc_events_render_profile_tab_content', 20, 4);
 
-function cpc_events_add_group_tab($tabs, $group_id, $user_id) {
-    if (function_exists('cpc_events_external_plugin_active') && cpc_events_external_plugin_active()) {
-        return $tabs;
-    }
 
-    if (!cpc_events_is_core_enabled()) {
-        return $tabs;
-    }
-
-    if (function_exists('cpc_events_allow_group_calendar') && !cpc_events_allow_group_calendar()) {
-        return $tabs;
-    }
-
-    if (!get_post_meta((int)$group_id, 'cpc_group_has_events', true)) {
-        return $tabs;
-    }
-
-    if (function_exists('cpc_can_view_group') && !cpc_can_view_group($user_id, $group_id)) {
-        return $tabs;
-    }
-
-    $tabs['events'] = array(
-        'label' => __('Events', CPC2_TEXT_DOMAIN),
-        'icon' => 'calendar-alt',
-        'priority' => 25,
-    );
-
-    return $tabs;
-}
-add_filter('cpc_group_tabs', 'cpc_events_add_group_tab', 20, 3);
-
-function cpc_events_render_group_tab_content($html, $group_id, $shortcode_atts) {
-    $group_id = (int)$group_id;
-    if (!$group_id) {
-        return '<p>' . esc_html__('Gruppe nicht gefunden.', CPC2_TEXT_DOMAIN) . '</p>';
-    }
-
-    if (function_exists('cpc_can_view_group') && !cpc_can_view_group(get_current_user_id(), $group_id)) {
-        return '<p>' . esc_html__('Keine Berechtigung.', CPC2_TEXT_DOMAIN) . '</p>';
-    }
-
-    return cpc_events_render_context_layout('groups', $group_id, __('Gruppen-Events', CPC2_TEXT_DOMAIN));
-}
-add_filter('cpc_group_tab_content_events', 'cpc_events_render_group_tab_content', 20, 3);
 
 function cpc_events_on_save_post($post_id, $post) {
     if (!is_object($post) || empty($post->post_type) || $post->post_type !== (function_exists('cpc_events_get_post_type') ? cpc_events_get_post_type() : 'cpc_event')) {
@@ -752,13 +705,6 @@ function cpc_events_group_meta_box_html($post) {
         'order' => 'ASC',
         'no_found_rows' => true,
         'fields' => 'ids',
-        'meta_query' => array(
-            array(
-                'key' => 'cpc_group_has_events',
-                'value' => '1',
-                'compare' => '=',
-            ),
-        ),
     ));
 
     echo '<p>';
@@ -769,7 +715,6 @@ function cpc_events_group_meta_box_html($post) {
     }
     echo '</select>';
     echo '</p>';
-    echo '<p class="description">' . esc_html__('Nur Gruppen mit aktiviertem Events-Modul werden angezeigt.', CPC2_TEXT_DOMAIN) . '</p>';
 }
 
 function cpc_events_enqueue_styles() {

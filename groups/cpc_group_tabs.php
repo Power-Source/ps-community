@@ -436,26 +436,6 @@ function cpc_render_group_tab_settings($group_id, $atts = array()) {
 			$html .= '</div>';
 		endif;
 
-		if (function_exists('cpc_events_external_plugin_active') && cpc_events_external_plugin_active()):
-			$has_events = (bool)get_post_meta($group_id, 'cpc_group_has_events', true);
-			$events_email_enabled = get_post_meta($group_id, 'cpc_group_events_email_notifications', true);
-			if ($events_email_enabled === '') {
-				$events_email_enabled = 1;
-			}
-			$html .= '<div class="cpc-form-field">';
-			$html .= '<label>';
-			$html .= '<input type="checkbox" name="enable_events" id="enable_events" '.checked($has_events, true, false).'> ';
-			$html .= '<span class="dashicons dashicons-calendar-alt" style="vertical-align:middle;"></span> ';
-			$html .= __('Events für diese Gruppe aktivieren', CPC2_TEXT_DOMAIN);
-			$html .= '</label>';
-			$html .= '<p class="description">'.__('Zeigt den Events-Tab und ermöglicht Gruppen-Events.', CPC2_TEXT_DOMAIN).'</p>';
-			$html .= '<label style="display:block; margin-top:8px;">';
-			$html .= '<input type="checkbox" name="enable_event_emails" id="enable_event_emails" '.checked((bool)$events_email_enabled, true, false).'> ';
-			$html .= __('E-Mail-Benachrichtigungen bei neuen Gruppen-Events senden', CPC2_TEXT_DOMAIN);
-			$html .= '</label>';
-			$html .= '</div>';
-		endif;
-
 		$html .= '<button type="submit" class="cpc-btn cpc-btn-primary">'.__('Module speichern', CPC2_TEXT_DOMAIN).'</button>';
 		$html .= '</form>';
 	endif;
