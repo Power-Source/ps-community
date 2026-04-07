@@ -398,7 +398,9 @@ function cpc_media_render_media_item_html($item) {
     $display_url = cpc_media_get_media_file_url($media_id);
     $mime_type = cpc_media_get_media_mime_type($media_id);
     $can_manage = cpc_media_user_can_manage_media($media_id);
+    $extension_raw = strtolower(pathinfo((string)$display_url, PATHINFO_EXTENSION));
     $extension = strtoupper(pathinfo((string)$display_url, PATHINFO_EXTENSION));
+    $is_pdf = (strpos((string)$mime_type, 'application/pdf') === 0) || ($extension_raw === 'pdf');
     $date = get_the_date('', $item);
     $lightbox_enabled = cpc_media_lightbox_enabled();
     $reorder_enabled = cpc_media_reorder_enabled() && $can_manage;
@@ -422,6 +424,18 @@ function cpc_media_render_media_item_html($item) {
             $html .= '<img src="'.esc_url($display_url).'" alt="'.esc_attr($item->post_title).'" />';
             $html .= '</a>';
         }
+    } elseif ($display_url && $is_pdf) {
+        $pdf_url = esc_url($display_url.'#toolbar=0&navpanes=0&scrollbar=0&view=FitH');
+        $trigger_class = $lightbox_enabled ? 'cpc_media_lightbox_trigger' : '';
+        $href = $lightbox_enabled ? '#' : esc_url($display_url);
+        $attrs = $lightbox_enabled
+            ? 'data-media-id="'.esc_attr($media_id).'" data-gallery-id="'.esc_attr($gallery_id).'"'
+            : 'target="_blank" rel="noopener noreferrer"';
+
+        $html .= '<a class="cpc_gallery_item_pdf_preview_link '.$trigger_class.'" href="'.$href.'" '.$attrs.'>';
+        $html .= '<iframe class="cpc_gallery_item_pdf_preview_frame" src="'.$pdf_url.'" loading="lazy" title="'.esc_attr($item->post_title ? $item->post_title : 'PDF').'" tabindex="-1"></iframe>';
+        $html .= '<span class="cpc_gallery_item_pdf_badge">PDF</span>';
+        $html .= '</a>';
     } elseif ($display_url) {
         $trigger_class = $lightbox_enabled ? 'cpc_media_lightbox_trigger' : '';
         $html .= '<a class="cpc_gallery_item_file '.$trigger_class.'" href="'.($lightbox_enabled ? '#' : esc_url($display_url)).'" '.($lightbox_enabled ? 'data-media-id="'.esc_attr($media_id).'" data-gallery-id="'.esc_attr($gallery_id).'"' : 'target="_blank" rel="noopener noreferrer"').'>'.esc_html($item->post_title ? $item->post_title : basename($display_url)).'</a>';

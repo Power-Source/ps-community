@@ -165,6 +165,20 @@ function cpc_admin_getting_started_media() {
     echo '</tr>';
 
     echo '<tr class="form-field">';
+    echo '<td scope="row" valign="top"><label>'.__('PDF-Viewer-Modus', CPC2_TEXT_DOMAIN).'</label></td>';
+    echo '<td><select name="cpc_media_pdf_viewer_mode" style="min-width:220px;">';
+    $pdf_mode = sanitize_key((string)get_option('cpc_media_pdf_viewer_mode', 'auto'));
+    if (!in_array($pdf_mode, array('native', 'auto', 'pdfjs'), true)) {
+        $pdf_mode = 'auto';
+    }
+    echo '<option value="native"'.selected($pdf_mode, 'native', false).'>'.esc_html__('Nativ (Browser)', CPC2_TEXT_DOMAIN).'</option>';
+    echo '<option value="auto"'.selected($pdf_mode, 'auto', false).'>'.esc_html__('Auto (PDF.js bei Bedarf)', CPC2_TEXT_DOMAIN).'</option>';
+    echo '<option value="pdfjs"'.selected($pdf_mode, 'pdfjs', false).'>'.esc_html__('Immer PDF.js', CPC2_TEXT_DOMAIN).'</option>';
+    echo '</select>';
+    echo '<span class="description">'.__('Verwendet lokalen PDF.js-Fallback ohne CDN fuer Browser mit schwaecherer PDF-Unterstuetzung.', CPC2_TEXT_DOMAIN).'</span></td>';
+    echo '</tr>';
+
+    echo '<tr class="form-field">';
     echo '<td scope="row" valign="top"><label>'.__('Reorder-Funktion aktivieren', CPC2_TEXT_DOMAIN).'</label></td>';
     echo '<td><input type="checkbox" style="width:20px; height:20px;" name="cpc_media_enable_reorder" '.(get_option('cpc_media_enable_reorder', 1) ? 'CHECKED' : '').' />';
     echo '<span class="description">'.__('Drag-and-Drop zur Umordnung der Medien', CPC2_TEXT_DOMAIN).'</span></td>';
@@ -379,6 +393,14 @@ function cpc_admin_media_save($the_post) {
         update_option('cpc_media_lightbox_loop', 1);
     } else {
         delete_option('cpc_media_lightbox_loop');
+    }
+
+    if (isset($the_post['cpc_media_pdf_viewer_mode'])) {
+        $pdf_mode = sanitize_key($the_post['cpc_media_pdf_viewer_mode']);
+        if (!in_array($pdf_mode, array('native', 'auto', 'pdfjs'), true)) {
+            $pdf_mode = 'auto';
+        }
+        update_option('cpc_media_pdf_viewer_mode', $pdf_mode);
     }
 
     if (isset($the_post['cpc_media_enable_reorder'])) {

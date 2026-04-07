@@ -34,6 +34,220 @@
         }
     }
 
+    function getLightboxI18n() {
+        var defaults = {
+            lightboxTitle: 'Medienansicht',
+            close: 'Schliessen',
+            previous: 'Vorheriges',
+            next: 'Naechstes',
+            itemOf: 'Element %1$d von %2$d',
+            itemOfWithTitle: '%1$s - Element %2$d von %3$d'
+        };
+
+        if (!window.cpc_media_ajax || !window.cpc_media_ajax.i18n) {
+            return defaults;
+        }
+
+        return $.extend({}, defaults, window.cpc_media_ajax.i18n);
+    }
+
+    function formatIndexed(template, values) {
+        return String(template).replace(/%([0-9]+)\$[sd]/g, function(_, idx) {
+            var key = parseInt(idx, 10) - 1;
+            return typeof values[key] !== 'undefined' ? values[key] : '';
+        });
+    }
+
+    function focusNavControl(direction) {
+        if (!cpcVanillaLightbox.isOpen) {
+            return;
+        }
+        if (direction === 'prev' && cpcVanillaLightbox.prev && cpcVanillaLightbox.prev.style.display !== 'none') {
+            cpcVanillaLightbox.prev.focus();
+            return;
+        }
+        if (direction === 'next' && cpcVanillaLightbox.next && cpcVanillaLightbox.next.style.display !== 'none') {
+            cpcVanillaLightbox.next.focus();
+        }
+    }
+
+    function getPdfConfig() {
+        if (!window.cpc_media_ajax || !window.cpc_media_ajax.pdf) {
+            return null;
+        }
+        return window.cpc_media_ajax.pdf;
+    }
+
+    function browserHasNativePdfSupport() {
+        if (typeof navigator.pdfViewerEnabled === 'boolean') {
+            return navigator.pdfViewerEnabled;
+        }
+
+        var ua = (navigator.userAgent || '').toLowerCase();
+        if (ua.indexOf('iphone') !== -1 || ua.indexOf('ipad') !== -1 || ua.indexOf('ipod') !== -1) {
+            return false;
+        }
+
+        if (navigator.mimeTypes && navigator.mimeTypes['application/pdf']) {
+            return true;
+        }
+
+        return false;
+    }
+
+    function shouldUsePdfJsFallback() {
+        var cfg = getPdfConfig();
+        if (!cfg || !parseInt(cfg.enabled, 10) || typeof window.pdfjsLib === 'undefined') {
+            return false;
+        }
+
+        if (cfg.mode === 'pdfjs') {
+            return true;
+        }
+        if (cfg.mode === 'native') {
+            return false;
+        }
+
+        return !browserHasNativePdfSupport();
+    }
+
+    function initPdfJsWorker() {
+        var cfg = getPdfConfig();
+        if (!cfg || typeof window.pdfjsLib === 'undefined') {
+            return false;
+        }
+        if (cfg.worker) {
+            window.pdfjsLib.GlobalWorkerOptions.workerSrc = cfg.worker;
+        }
+        return true;
+    }
+
+    function basePdfUrl(url) {
+        if (!url) {
+            return '';
+        }
+        return String(url).split('#')[0];
+    }
+
+    function renderPdfPageToCanvas(url, canvas, pageNum, fitWidth) {
+        return window.pdfjsLib.getDocument(url).promise.then(function(pdfDoc) {
+            return pdfDoc.getPage(pageNum).then(function(page) {
+                var viewport = page.getViewport({ scale: 1 });
+                var targetWidth = Math.max(100, fitWidth || viewport.width);
+                var scale = targetWidth / viewport.width;
+                var scaled = page.getViewport({ scale: scale });
+                var ctx = canvas.getContext('2d');
+
+                canvas.width = Math.round(scaled.width);
+                canvas.height = Math.round(scaled.height);
+
+                return page.render({
+                    canvasContext: ctx,
+                    viewport: scaled
+                }).promise.then(function() {
+                    return {
+                        totalPages: pdfDoc.numPages,
+                        page: pageNum
+                    };
+                });
+            });
+        });
+    }
+
+    function enhancePdfTilePreview($iframe) {
+        if (!$iframe || !$iframe.length || $iframe.data('pdfjsDone')) {
+            return;
+        }
+
+        var url = basePdfUrl($iframe.attr('src'));
+        if (!url) {
+            return;
+        }
+
+        var $wrap = $iframe.closest('.cpc_gallery_item_pdf_preview_link');
+        var canvas = document.createElement('canvas');
+        canvas.className = 'cpc_gallery_item_pdf_canvas';
+
+        renderPdfPageToCanvas(url, canvas, 1, $wrap.width() || 260).then(function() {
+            $iframe.hide();
+            $wrap.append(canvas);
+            $iframe.data('pdfjsDone', 1);
+        }).catch(function() {
+            // Keep native iframe if rendering fails.
+        });
+    }
+
+    function enhancePdfLightbox($iframe) {
+        if (!$iframe || !$iframe.length || $iframe.data('pdfjsDone')) {
+            return;
+        }
+
+        var url = basePdfUrl($iframe.attr('src'));
+        if (!url) {
+            return;
+        }
+
+        var $container = $iframe.closest('.cpc_media_pdf_container');
+        if (!$container.length) {
+            return;
+        }
+
+        var $viewer = $('<div class="cpc_media_pdfjs_viewer"></div>');
+        var $toolbar = $('<div class="cpc_media_pdfjs_toolbar"><button type="button" class="button cpc_media_pdfjs_prev">&lsaquo;</button><span class="cpc_media_pdfjs_page">1 / 1</span><button type="button" class="button cpc_media_pdfjs_next">&rsaquo;</button></div>');
+        var canvas = document.createElement('canvas');
+        canvas.className = 'cpc_media_lightbox_pdf_canvas';
+
+        $viewer.append($toolbar).append(canvas);
+        $iframe.after($viewer).hide();
+
+        var page = 1;
+        var total = 1;
+
+        function paint(pageNum) {
+            var width = Math.max(320, $container.width() - 20);
+            return renderPdfPageToCanvas(url, canvas, pageNum, width).then(function(info) {
+                total = info.totalPages;
+                page = info.page;
+                $viewer.find('.cpc_media_pdfjs_page').text(page + ' / ' + total);
+                $viewer.find('.cpc_media_pdfjs_prev').prop('disabled', page <= 1);
+                $viewer.find('.cpc_media_pdfjs_next').prop('disabled', page >= total);
+            });
+        }
+
+        $viewer.on('click', '.cpc_media_pdfjs_prev', function() {
+            if (page > 1) {
+                paint(page - 1);
+            }
+        });
+
+        $viewer.on('click', '.cpc_media_pdfjs_next', function() {
+            if (page < total) {
+                paint(page + 1);
+            }
+        });
+
+        paint(1).then(function() {
+            $iframe.data('pdfjsDone', 1);
+        }).catch(function() {
+            $viewer.remove();
+            $iframe.show();
+        });
+    }
+
+    function runPdfFallback(root) {
+        if (!shouldUsePdfJsFallback() || !initPdfJsWorker()) {
+            return;
+        }
+
+        var $root = root ? $(root) : $(document);
+        $root.find('iframe.cpc_gallery_item_pdf_preview_frame').each(function() {
+            enhancePdfTilePreview($(this));
+        });
+        $root.find('iframe.cpc_media_lightbox_pdf_frame').each(function() {
+            enhancePdfLightbox($(this));
+        });
+    }
+
     function setProgress($form, percent) {
         var $wrap = $form.find('.cpc_media_upload_progress');
         var $bar = $form.find('.cpc_media_upload_progress_bar');
@@ -332,8 +546,209 @@
 
     /**
      * ========== LIGHTBOX FUNCTIONALITY ==========
-     * Uses Magnific Popup for modal image/media gallery
+     * Vanilla modal gallery (no jQuery plugin dependency)
      */
+
+    var cpcVanillaLightbox = {
+        root: null,
+        dialog: null,
+        content: null,
+        status: null,
+        close: null,
+        prev: null,
+        next: null,
+        items: [],
+        index: 0,
+        isOpen: false,
+        lastFocused: null
+    };
+
+    function ensureVanillaLightbox() {
+        if (cpcVanillaLightbox.root) {
+            return;
+        }
+
+        var root = document.createElement('div');
+        var i18n = getLightboxI18n();
+        root.className = 'cpc_media_vlightbox';
+        root.setAttribute('aria-hidden', 'true');
+        root.innerHTML = '' +
+            '<div class="cpc_media_vlightbox_backdrop"></div>' +
+            '<div class="cpc_media_vlightbox_dialog cpc-media-lightbox-popup mpp-lightbox-popup" role="dialog" aria-modal="true" tabindex="-1" aria-label="' + i18n.lightboxTitle + '">' +
+                '<button type="button" class="cpc_media_lightbox_close" aria-label="' + i18n.close + '">×</button>' +
+                '<button type="button" class="cpc_media_vlightbox_nav cpc_media_vlightbox_prev" aria-label="' + i18n.previous + '">&#10094;</button>' +
+                '<div class="cpc_media_vlightbox_content"></div>' +
+                '<button type="button" class="cpc_media_vlightbox_nav cpc_media_vlightbox_next" aria-label="' + i18n.next + '">&#10095;</button>' +
+                '<div class="cpc_media_vlightbox_status" aria-live="polite" aria-atomic="true"></div>' +
+            '</div>';
+
+        document.body.appendChild(root);
+
+        cpcVanillaLightbox.root = root;
+        cpcVanillaLightbox.dialog = root.querySelector('.cpc_media_vlightbox_dialog');
+        cpcVanillaLightbox.content = root.querySelector('.cpc_media_vlightbox_content');
+        cpcVanillaLightbox.status = root.querySelector('.cpc_media_vlightbox_status');
+        cpcVanillaLightbox.close = root.querySelector('.cpc_media_lightbox_close');
+        cpcVanillaLightbox.prev = root.querySelector('.cpc_media_vlightbox_prev');
+        cpcVanillaLightbox.next = root.querySelector('.cpc_media_vlightbox_next');
+
+        root.addEventListener('click', function(e) {
+            if (e.target.classList.contains('cpc_media_vlightbox_backdrop') || e.target.classList.contains('cpc_media_lightbox_close')) {
+                closeVanillaLightbox();
+            }
+        });
+
+        cpcVanillaLightbox.prev.addEventListener('click', function() {
+            showVanillaLightboxItem(cpcVanillaLightbox.index - 1);
+        });
+        cpcVanillaLightbox.next.addEventListener('click', function() {
+            showVanillaLightboxItem(cpcVanillaLightbox.index + 1);
+        });
+
+        document.addEventListener('keydown', function(e) {
+            if (!cpcVanillaLightbox.isOpen) {
+                return;
+            }
+
+            if (e.key === 'Tab') {
+                trapLightboxFocus(e);
+                return;
+            }
+
+            if (e.key === 'Escape') {
+                closeVanillaLightbox();
+                return;
+            }
+            if (e.key === 'ArrowLeft') {
+                showVanillaLightboxItem(cpcVanillaLightbox.index - 1);
+                focusNavControl('prev');
+                return;
+            }
+            if (e.key === 'ArrowRight') {
+                showVanillaLightboxItem(cpcVanillaLightbox.index + 1);
+                focusNavControl('next');
+            }
+        });
+    }
+
+    function getVisibleFocusableInLightbox() {
+        if (!cpcVanillaLightbox.root) {
+            return [];
+        }
+
+        var nodes = cpcVanillaLightbox.root.querySelectorAll(
+            'button, [href], input, select, textarea, [tabindex]:not([tabindex="-1"])'
+        );
+
+        var result = [];
+        for (var i = 0; i < nodes.length; i++) {
+            var el = nodes[i];
+            if (el.disabled) {
+                continue;
+            }
+            if (el.offsetParent === null && getComputedStyle(el).position !== 'fixed') {
+                continue;
+            }
+            result.push(el);
+        }
+
+        return result;
+    }
+
+    function trapLightboxFocus(e) {
+        var focusable = getVisibleFocusableInLightbox();
+        if (!focusable.length) {
+            if (cpcVanillaLightbox.dialog) {
+                cpcVanillaLightbox.dialog.focus();
+            }
+            e.preventDefault();
+            return;
+        }
+
+        var first = focusable[0];
+        var last = focusable[focusable.length - 1];
+        var current = document.activeElement;
+
+        if (e.shiftKey) {
+            if (current === first || !cpcVanillaLightbox.root.contains(current)) {
+                last.focus();
+                e.preventDefault();
+            }
+        } else if (current === last) {
+            first.focus();
+            e.preventDefault();
+        }
+    }
+
+    function focusInitialLightboxElement() {
+        var focusable = getVisibleFocusableInLightbox();
+        if (focusable.length) {
+            focusable[0].focus();
+            return;
+        }
+
+        if (cpcVanillaLightbox.dialog) {
+            cpcVanillaLightbox.dialog.focus();
+        }
+    }
+
+    function showVanillaLightboxItem(index) {
+        if (!cpcVanillaLightbox.items.length) {
+            return;
+        }
+
+        if (index < 0) {
+            index = cpcVanillaLightbox.items.length - 1;
+        }
+        if (index >= cpcVanillaLightbox.items.length) {
+            index = 0;
+        }
+
+        cpcVanillaLightbox.index = index;
+        var item = cpcVanillaLightbox.items[index] || {};
+        var html = item.src || '';
+        cpcVanillaLightbox.content.innerHTML = html;
+
+        var title = '';
+        var i18n = getLightboxI18n();
+        if (item.data && item.data.title) {
+            title = String(item.data.title);
+        }
+        var label = title
+            ? formatIndexed(i18n.itemOfWithTitle, [title, (index + 1), cpcVanillaLightbox.items.length])
+            : formatIndexed(i18n.itemOf, [(index + 1), cpcVanillaLightbox.items.length]);
+        if (cpcVanillaLightbox.dialog) {
+            cpcVanillaLightbox.dialog.setAttribute('aria-label', label);
+        }
+        if (cpcVanillaLightbox.status) {
+            cpcVanillaLightbox.status.textContent = label;
+        }
+
+        var showNav = cpcVanillaLightbox.items.length > 1;
+        cpcVanillaLightbox.prev.style.display = showNav ? 'flex' : 'none';
+        cpcVanillaLightbox.next.style.display = showNav ? 'flex' : 'none';
+        cpcVanillaLightbox.prev.setAttribute('aria-hidden', showNav ? 'false' : 'true');
+        cpcVanillaLightbox.next.setAttribute('aria-hidden', showNav ? 'false' : 'true');
+        cpcVanillaLightbox.prev.tabIndex = showNav ? 0 : -1;
+        cpcVanillaLightbox.next.tabIndex = showNav ? 0 : -1;
+
+        runPdfFallback(cpcVanillaLightbox.content);
+    }
+
+    function closeVanillaLightbox() {
+        if (!cpcVanillaLightbox.root) {
+            return;
+        }
+
+        cpcVanillaLightbox.isOpen = false;
+        cpcVanillaLightbox.root.setAttribute('aria-hidden', 'true');
+        document.body.classList.remove('cpc_media_vlightbox_open');
+        cpcVanillaLightbox.content.innerHTML = '';
+        if (cpcVanillaLightbox.lastFocused && typeof cpcVanillaLightbox.lastFocused.focus === 'function') {
+            cpcVanillaLightbox.lastFocused.focus();
+        }
+        cpcVanillaLightbox.lastFocused = null;
+    }
 
     // Initialize lightbox on click
     $(document).on('click', '.cpc_media_lightbox_trigger, .cpc_gallery_list .cpc_gallery_list_cover, .cpc_media_gallery_cover', function(e) {
@@ -400,42 +815,23 @@
         return 0;
     }
 
-    // Open popup using Magnific Popup
+    // Open popup using vanilla lightbox
     function openLightboxPopup(items, position) {
         position = Math.max(0, Math.min(items.length - 1, position || 0));
 
-        if (typeof $.magnificPopup === 'undefined') {
-            console.error('Magnific Popup not loaded');
+        if (!items || !items.length) {
+            console.error('Lightbox: no items to render');
             return;
         }
 
-        $.magnificPopup.open({
-            items: items,
-            type: 'inline',
-            mainClass: 'cpc-media-lightbox-popup mpp-lightbox-popup',
-            closeBtnInside: true,
-            closeMarkup: '<button type="button" class="mfp-close cpc_media_lightbox_close">×</button>',
-            preload: [1, 3],
-            showCloseBtn: true,
-            closeOnBgClick: true,
-            enableEscapeKey: true,
-            gallery: {
-                enabled: true,
-                navigateByImgClick: true,
-                preload: [0, 1]
-            },
-            callbacks: {
-                elementParse: function(item) {
-                    // Item already has src with HTML content
-                },
-                markupParse: function(template, values, item) {
-                    // Customize popup markup if needed
-                },
-                imageLoadComplete: function() {
-                    // Called when image is loaded
-                }
-            }
-        }, position);
+        ensureVanillaLightbox();
+        cpcVanillaLightbox.lastFocused = document.activeElement;
+        cpcVanillaLightbox.items = items;
+        cpcVanillaLightbox.root.setAttribute('aria-hidden', 'false');
+        cpcVanillaLightbox.isOpen = true;
+        document.body.classList.add('cpc_media_vlightbox_open');
+        showVanillaLightboxItem(position);
+        focusInitialLightboxElement();
 
         $(document).trigger('cpc:lightbox:opened', [items, position]);
     }
@@ -470,7 +866,7 @@
                 return;
             }
             // Close lightbox and refresh gallery
-            $.magnificPopup.instance.close();
+            closeVanillaLightbox();
         }).fail(function(xhr) {
             console.error('Delete failed:', xhr);
         });
@@ -623,5 +1019,12 @@
     $(document).on('cpc_profile_tab_loaded', function() {
         syncRedirectField($(document));
         initializeSortable();
+        runPdfFallback(document);
+    });
+
+    runPdfFallback(document);
+
+    $(document).on('cpc:lightbox:opened', function() {
+        runPdfFallback(document);
     });
 })(jQuery);

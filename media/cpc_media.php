@@ -19,17 +19,24 @@ function cpc_media_enqueue_assets() {
         return;
     }
 
-    // Magnific Popup Library
-    wp_enqueue_style('magnificpopup-css', 'https://cdnjs.cloudflare.com/ajax/libs/magnific-popup.js/1.1.0/magnific-popup.min.css', array(), '1.1.0');
-    wp_enqueue_script('magnificpopup-js', 'https://cdnjs.cloudflare.com/ajax/libs/magnific-popup.js/1.1.0/jquery.magnific-popup.min.js', array('jquery'), '1.1.0', true);
+    $pdfjs_enabled = cpc_media_pdfjs_enabled() && cpc_media_pdfjs_assets_available();
+    $pdfjs_worker_url = '';
+    if ($pdfjs_enabled) {
+        wp_enqueue_script('cpc-pdfjs', plugins_url('../assets/pdfjs/pdf.min.js', __FILE__), array(), '3.11.174', true);
+        $pdfjs_worker_url = plugins_url('../assets/pdfjs/pdf.worker.min.js', __FILE__);
+    }
 
     // PSource Sortable (native drag/drop - replacement for deprecated jQuery UI sortable)
     wp_enqueue_style('psource-sortable-css', plugins_url('../assets/psource-ui/sortable/psource-sortable.css', __FILE__), array(), '1.0.0');
     wp_enqueue_script('psource-sortable-js', plugins_url('../assets/psource-ui/sortable/psource-sortable.js', __FILE__), array(), '1.0.0', true);
 
     // CPC Media Assets
-    wp_enqueue_style('cpc-media-css', plugins_url('cpc_media.css', __FILE__), array('magnificpopup-css'), '1.0.0');
-    wp_enqueue_script('cpc-media-js', plugins_url('cpc_media.js', __FILE__), array('jquery', 'magnificpopup-js', 'psource-sortable-js'), '1.0.0', true);
+    wp_enqueue_style('cpc-media-css', plugins_url('cpc_media.css', __FILE__), array(), '1.0.0');
+    $media_script_deps = array('jquery', 'psource-sortable-js');
+    if ($pdfjs_enabled) {
+        $media_script_deps[] = 'cpc-pdfjs';
+    }
+    wp_enqueue_script('cpc-media-js', plugins_url('cpc_media.js', __FILE__), $media_script_deps, '1.0.0', true);
 
     wp_localize_script('cpc-media-js', 'cpc_media_ajax', array(
         'ajaxurl' => admin_url('admin-ajax.php'),
@@ -42,6 +49,19 @@ function cpc_media_enqueue_assets() {
         'lightbox_enabled' => cpc_media_lightbox_enabled() ? 1 : 0,
         'reorder_enabled' => cpc_media_reorder_enabled() ? 1 : 0,
         'cover_selector_enabled' => cpc_media_cover_selector_enabled() ? 1 : 0,
+        'i18n' => array(
+            'lightboxTitle' => __('Medienansicht', CPC2_TEXT_DOMAIN),
+            'close' => __('Schliessen', CPC2_TEXT_DOMAIN),
+            'previous' => __('Vorheriges', CPC2_TEXT_DOMAIN),
+            'next' => __('Naechstes', CPC2_TEXT_DOMAIN),
+            'itemOf' => __('Element %1$d von %2$d', CPC2_TEXT_DOMAIN),
+            'itemOfWithTitle' => __('%1$s - Element %2$d von %3$d', CPC2_TEXT_DOMAIN),
+        ),
+        'pdf' => array(
+            'mode' => cpc_media_get_pdf_viewer_mode(),
+            'enabled' => $pdfjs_enabled ? 1 : 0,
+            'worker' => $pdfjs_worker_url,
+        ),
     ));
 }
 add_action('wp_enqueue_scripts', 'cpc_media_enqueue_assets', 20);

@@ -64,78 +64,87 @@ function cpc_return_activity_posts() {
 
 	global $current_user;
     $items = '';
+    $viewer_user_id = get_current_user_id();
 
     $data = isset($_POST['data']) && is_array($_POST['data']) ? $_POST['data'] : array();
     $arr = isset($data['arr']) ? $data['arr'] : array();
     $atts = isset($data['atts']) ? $data['atts'] : array();
     $user_id = isset($_POST['user_id']) ? absint($_POST['user_id']) : 0;
-    $nonce = isset($_POST['nonce']) ? sanitize_text_field(wp_unslash($_POST['nonce'])) : '';
     
-    $nonce_check = wp_verify_nonce( $nonce, 'cpc_get_activity_nonce_'.$user_id );
+    $arr = cpc_parse_request_array($arr);
+    if (!empty($arr)) {
 
-    if ($nonce_check):
-    
-        $arr = cpc_parse_request_array($arr);
-        if (!empty($arr)) {
+        if ($arr):
 
-            if ($arr):
+            $atts = cpc_parse_request_array($atts);
 
-                $atts = cpc_parse_request_array($atts);
+            // Get shortcode parameters
+            $values = cpc_get_shortcode_options('cpc_activity');    
+            extract( shortcode_atts( array(
+                'class' => cpc_get_shortcode_value($values, 'cpc_activity-class', ''),                    
+                'report' => cpc_get_shortcode_value($values, 'cpc_activity-report', true),
+                'report_label' => cpc_get_shortcode_value($values, 'cpc_activity-report_label', __('Melden', CPC2_TEXT_DOMAIN)), 
+                'report_email' => cpc_get_shortcode_value($values, 'cpc_activity-report_email', get_bloginfo('admin_email')), 
+                'sticky_label' => cpc_get_shortcode_value($values, 'cpc_activity-sticky_label', __('Sticky', CPC2_TEXT_DOMAIN)), // blank to hide
+                'unsticky_label' => cpc_get_shortcode_value($values, 'cpc_activity-unsticky_label', __('Lösen', CPC2_TEXT_DOMAIN)),
+                'delete_label' => cpc_get_shortcode_value($values, 'cpc_activity-delete_label', __('Löschen', CPC2_TEXT_DOMAIN)), // blank to hide
+                'hide_label' => cpc_get_shortcode_value($values, 'cpc_activity-hide_label', __('Verbergen', CPC2_TEXT_DOMAIN)), // blank to hide
+                'avatar_size' => cpc_get_shortcode_value($values, 'cpc_activity-avatar_size', 64),                    
+                'label' => cpc_get_shortcode_value($values, 'cpc_activity-label', __('Kommentar', CPC2_TEXT_DOMAIN)),
+                'link' => cpc_get_shortcode_value($values, 'cpc_activity-link', true),
+                'more' =>  cpc_get_shortcode_value($values, 'cpc_activity-more', 50),
+                'more_label' =>  cpc_get_shortcode_value($values, 'cpc_activity-more_label', __('mehr', CPC2_TEXT_DOMAIN)),    
+                'comment_avatar_size' => cpc_get_shortcode_value($values, 'cpc_activity-comment_avatar_size', 40),
+                'comment_size' => cpc_get_shortcode_value($values, 'cpc_activity-comment_size', 5),
+                'comment_size_text_plural' => cpc_get_shortcode_value($values, 'cpc_activity-comment_size_text_plural', __('Vorherige %d Kommentare anzeigen...', CPC2_TEXT_DOMAIN)),
+                'comment_size_text_singular' => cpc_get_shortcode_value($values, 'cpc_activity-comment_size_text_singular', __('Vorherigen Kommentar anzeigen...', CPC2_TEXT_DOMAIN)),          
+                'date_format' => cpc_get_shortcode_value($values, 'cpc_activity-date_format', __('vor %s', CPC2_TEXT_DOMAIN)),                    
+                'allow_replies' => cpc_get_shortcode_value($values, 'cpc_activity-allow_replies', true),                    
+                'load_more_label' => cpc_get_shortcode_value($values, 'cpc_activity-load_more_label', __('mehr...', CPC2_TEXT_DOMAIN)),                    
+            ), $atts, 'cpc_activity' ) );
 
-                // Get shortcode parameters
-                $values = cpc_get_shortcode_options('cpc_activity');    
-                extract( shortcode_atts( array(
-                    'class' => cpc_get_shortcode_value($values, 'cpc_activity-class', ''),                    
-                    'report' => cpc_get_shortcode_value($values, 'cpc_activity-report', true),
-                    'report_label' => cpc_get_shortcode_value($values, 'cpc_activity-report_label', __('Melden', CPC2_TEXT_DOMAIN)), 
-                    'report_email' => cpc_get_shortcode_value($values, 'cpc_activity-report_email', get_bloginfo('admin_email')), 
-                    'sticky_label' => cpc_get_shortcode_value($values, 'cpc_activity-sticky_label', __('Sticky', CPC2_TEXT_DOMAIN)), // blank to hide
-                    'unsticky_label' => cpc_get_shortcode_value($values, 'cpc_activity-unsticky_label', __('Lösen', CPC2_TEXT_DOMAIN)),
-                    'delete_label' => cpc_get_shortcode_value($values, 'cpc_activity-delete_label', __('Löschen', CPC2_TEXT_DOMAIN)), // blank to hide
-                    'hide_label' => cpc_get_shortcode_value($values, 'cpc_activity-hide_label', __('Verbergen', CPC2_TEXT_DOMAIN)), // blank to hide
-                    'avatar_size' => cpc_get_shortcode_value($values, 'cpc_activity-avatar_size', 64),                    
-                    'label' => cpc_get_shortcode_value($values, 'cpc_activity-label', __('Kommentar', CPC2_TEXT_DOMAIN)),
-                    'link' => cpc_get_shortcode_value($values, 'cpc_activity-link', true),
-                    'more' =>  cpc_get_shortcode_value($values, 'cpc_activity-more', 50),
-                    'more_label' =>  cpc_get_shortcode_value($values, 'cpc_activity-more_label', __('mehr', CPC2_TEXT_DOMAIN)),    
-                    'comment_avatar_size' => cpc_get_shortcode_value($values, 'cpc_activity-comment_avatar_size', 40),
-                    'comment_size' => cpc_get_shortcode_value($values, 'cpc_activity-comment_size', 5),
-                    'comment_size_text_plural' => cpc_get_shortcode_value($values, 'cpc_activity-comment_size_text_plural', __('Vorherige %d Kommentare anzeigen...', CPC2_TEXT_DOMAIN)),
-                    'comment_size_text_singular' => cpc_get_shortcode_value($values, 'cpc_activity-comment_size_text_singular', __('Vorherigen Kommentar anzeigen...', CPC2_TEXT_DOMAIN)),          
-                    'date_format' => cpc_get_shortcode_value($values, 'cpc_activity-date_format', __('vor %s', CPC2_TEXT_DOMAIN)),                    
-                    'allow_replies' => cpc_get_shortcode_value($values, 'cpc_activity-allow_replies', true),                    
-                    'load_more_label' => cpc_get_shortcode_value($values, 'cpc_activity-load_more_label', __('mehr...', CPC2_TEXT_DOMAIN)),                    
-                ), $atts, 'cpc_activity' ) );
+            // Protect email from tags
+            $report_email = str_replace('@', '[@]', $report_email);            
 
-                // Protect email from tags
-                $report_email = str_replace('@', '[@]', $report_email);            
+            $shown_count = 0;
+            $array_count = 0;
+            $page_size = isset($_POST['page']) ? max(1, min(100, intval($_POST['page']))) : 10;
+            $start = isset($_POST['start']) ? max(0, intval($_POST['start'])) : 0;
+            $this_user = $viewer_user_id;
 
-                $shown_count = 0;
-                $array_count = 0;
-                $page_size = isset($_POST['page']) ? max(1, min(100, intval($_POST['page']))) : 10;
-                $start = isset($_POST['start']) ? max(0, intval($_POST['start'])) : 0;
-                $this_user = isset($_POST['this_user']) ? absint($_POST['this_user']) : 0;
+            $shown = array();
 
-                $shown = array();
+            foreach ($arr as $i):
 
-                foreach ($arr as $i):
+                $array_count++;
 
-                    $array_count++;
+                if ($array_count >= $start && $shown_count < $page_size && !in_array($i['ID'], $shown) && $i['ID']):
 
-                    if ($array_count >= $start && $shown_count < $page_size && !in_array($i['ID'], $shown) && $i['ID']):
+                    // Check not hidden
+                    $hidden_list = get_post_meta ($i['ID'], 'cpc_activity_hidden', true);    
+                    $hidden = ($hidden_list && in_array((int)$user_id, $hidden_list)) ? true : false;
 
-                        // Check not hidden
-                        $hidden_list = get_post_meta ($i['ID'], 'cpc_activity_hidden', true);    
-                        $hidden = ($hidden_list && in_array((int)$user_id, $hidden_list)) ? true : false;
+                    if (!$hidden):
 
-                        if (!$hidden):
+                        array_push($shown, $i['ID']);
+                        $item = get_post($i['ID']);
 
-                            array_push($shown, $i['ID']);
-                            $item = get_post($i['ID']);
+                        if (!$item || 'publish' !== $item->post_status) {
+                            continue;
+                        }
 
-                            $item_html = '';
-                            $is_sticky = get_post_meta( $item->ID, 'cpc_sticky', true );
-                            $is_sticky_css = $is_sticky ? ' cpc_sticky' : '';
+                        if (function_exists('cpc_friendships_can_view_activity') && !cpc_friendships_can_view_activity($item->ID, $viewer_user_id)) {
+                            continue;
+                        }
+
+                        $user_can_see_activity = apply_filters('cpc_check_activity_security_filter', true, $item->post_author, $viewer_user_id);
+                        if (!$user_can_see_activity) {
+                            continue;
+                        }
+
+                        $item_html = '';
+                        $is_sticky = get_post_meta( $item->ID, 'cpc_sticky', true );
+                        $is_sticky_css = $is_sticky ? ' cpc_sticky' : '';
 
                             $item_html .= '<div class="cpc_activity_item'.$is_sticky_css.'" id="cpc_activity_'.$item->ID.'" style="position:relative;padding-left: '.($avatar_size+10).'px">';
 
@@ -378,35 +387,30 @@ function cpc_return_activity_posts() {
 
                             $items .= $item_html;
 
-                            $shown_count++;
+                        $shown_count++;
 
-                            if ($shown_count == $page_size) break;
-
-                        endif;
+                        if ($shown_count == $page_size) break;
 
                     endif;
 
-                endforeach;
+                endif;
 
-                if (count($arr) > $array_count)
-                    $items .= '<div id="cpc_activity_load_more_div"><button id="cpc_activity_load_more" class="cpc_button" data-count="'.$array_count.'">'.$load_more_label.'</button></div>';
+            endforeach;
 
-                echo $items; // return HTML
+            if (count($arr) > $array_count)
+                $items .= '<div id="cpc_activity_load_more_div"><button id="cpc_activity_load_more" class="cpc_button" data-count="'.$array_count.'">'.$load_more_label.'</button></div>';
 
-            else:
-                echo 'no activity: ';
-                echo $data['arr'];
-            endif;
+            echo $items; // return HTML
 
-        } else {
-            echo 'could not unserialize activity: ';
+        else:
+            echo 'no activity: ';
             echo $data['arr'];
-        }
-    
-    else:
-        echo 'could not verify nonce for cpc_get_activity_nonce_'.$user_id.': ';
-        echo $nonce;
-    endif;
+        endif;
+
+    } else {
+        echo 'could not unserialize activity: ';
+        echo $data['arr'];
+    }
 
 	exit;
 

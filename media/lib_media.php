@@ -1704,6 +1704,33 @@ function cpc_media_lightbox_loop() {
 }
 
 /**
+ * Get PDF viewer mode: native, auto, pdfjs
+ */
+function cpc_media_get_pdf_viewer_mode() {
+    $mode = sanitize_key((string)get_option('cpc_media_pdf_viewer_mode', 'auto'));
+    if (!in_array($mode, array('native', 'auto', 'pdfjs'), true)) {
+        $mode = 'auto';
+    }
+    return (string)apply_filters('cpc_media_pdf_viewer_mode', $mode);
+}
+
+/**
+ * Check if PDF.js mode is requested
+ */
+function cpc_media_pdfjs_enabled() {
+    $mode = cpc_media_get_pdf_viewer_mode();
+    return ($mode === 'auto' || $mode === 'pdfjs');
+}
+
+/**
+ * Check whether local PDF.js assets exist
+ */
+function cpc_media_pdfjs_assets_available() {
+    $base = dirname(__DIR__).'/assets/pdfjs/';
+    return file_exists($base.'pdf.min.js') && file_exists($base.'pdf.worker.min.js');
+}
+
+/**
  * Check if item descriptions should be shown
  */
 function cpc_media_show_item_descriptions() {
@@ -1825,6 +1852,8 @@ function cpc_media_render_lightbox_content($media) {
 
     $media_type = cpc_media_get_item_type($media->ID);
     $file_url = cpc_media_get_item_url($media->ID);
+    $mime_type = cpc_media_get_media_mime_type($media->ID);
+    $is_pdf = (strpos((string)$mime_type, 'application/pdf') === 0) || (strtolower(pathinfo((string)$file_url, PATHINFO_EXTENSION)) === 'pdf');
     $gallery_id = (int)get_post_meta($media->ID, 'cpc_media_gallery_id', true);
     $gallery = $gallery_id ? get_post($gallery_id) : null;
 
@@ -1851,6 +1880,23 @@ function cpc_media_render_lightbox_content($media) {
                         <source src="<?php echo esc_url($file_url); ?>" />
                         <?php esc_html_e('Ihr Browser unterstützt dieses Audio nicht.', CPC2_TEXT_DOMAIN); ?>
                     </audio>
+                </div>
+            <?php elseif ($is_pdf): ?>
+                <div class="cpc_media_lightbox_pdf cpc_media_pdf_container">
+                    <iframe
+                        src="<?php echo esc_url($file_url.'#toolbar=1&navpanes=0&view=FitH'); ?>"
+                        class="cpc_media_lightbox_pdf_frame"
+                        loading="lazy"
+                        title="<?php echo esc_attr($media->post_title ? $media->post_title : 'PDF'); ?>">
+                    </iframe>
+                    <div class="cpc_media_lightbox_pdf_actions">
+                        <a href="<?php echo esc_url($file_url); ?>" class="button" target="_blank" rel="noopener noreferrer">
+                            <?php esc_html_e('Im neuen Tab oeffnen', CPC2_TEXT_DOMAIN); ?>
+                        </a>
+                        <a href="<?php echo esc_url($file_url); ?>" class="button button-primary cpc_media_file_download" download>
+                            <?php esc_html_e('PDF herunterladen', CPC2_TEXT_DOMAIN); ?>
+                        </a>
+                    </div>
                 </div>
             <?php else: ?>
                 <div class="cpc_media_lightbox_file cpc_media_file_container">
