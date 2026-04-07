@@ -221,6 +221,7 @@ function cpc_media_ajax_delete_media() {
  */
 function cpc_media_ajax_fetch_gallery_media() {
     $gallery_id = isset($_POST['gallery_id']) ? (int)$_POST['gallery_id'] : 0;
+    $start_media_id = isset($_POST['start_media_id']) ? (int)$_POST['start_media_id'] : 0;
     $user_id = get_current_user_id();
 
     if (!$gallery_id) {
@@ -249,8 +250,9 @@ function cpc_media_ajax_fetch_gallery_media() {
 
     $lightbox_items = array();
     foreach ($items as $item) {
+        $is_start_item = ($start_media_id > 0 && (int)$item->ID === $start_media_id);
         $lightbox_items[] = array(
-            'src' => cpc_media_render_lightbox_content($item),
+            'src' => $is_start_item ? cpc_media_render_lightbox_content($item) : '',
             'type' => 'inline',
             'data' => array(
                 'media_id' => $item->ID,

@@ -40,10 +40,11 @@ return cpcLoadedExternalScripts[src];
 
 // Inject stylesheet/link nodes into <head> from parsed HTML.
 function cpcInjectStyles(stylesHtml) {
-if (!stylesHtml || !stylesHtml.trim()) { return; }
+if (!stylesHtml || !stylesHtml.trim()) { return cpcResolvedPromise(); }
 var parser = new DOMParser();
 var doc = parser.parseFromString('<body>' + stylesHtml + '</body>', 'text/html');
 var styleEls = doc.body.querySelectorAll('link[rel="stylesheet"], style');
+var loaders = [];
 
 Array.prototype.forEach.call(styleEls, function(el) {
 if (el.tagName.toLowerCase() === 'link') {
@@ -63,6 +64,24 @@ linkEl.rel = 'stylesheet';
 linkEl.href = href;
 linkEl.media = el.getAttribute('media') || 'all';
 if (el.id) { linkEl.id = el.id; }
+var d = $.Deferred();
+var done = false;
+linkEl.onload = function() {
+if (done) { return; }
+done = true;
+d.resolve();
+};
+linkEl.onerror = function() {
+if (done) { return; }
+done = true;
+d.resolve();
+};
+setTimeout(function() {
+if (done) { return; }
+done = true;
+d.resolve();
+}, 2500);
+loaders.push(d.promise());
 document.head.appendChild(linkEl);
 return;
 }
@@ -77,6 +96,9 @@ styleNode.setAttribute('data-cpc-inline-style', styleHash);
 styleNode.textContent = cssText;
 document.head.appendChild(styleNode);
 });
+
+if (!loaders.length) { return cpcResolvedPromise(); }
+return $.when.apply($, loaders).promise();
 }
 
 // Inject scripts using DOMParser (avoids jQuery stripping inline scripts), returns Promise
@@ -229,8 +251,8 @@ return;
 
 var extracted = cpcExtractAssetsFromHtml(tabHtml);
 
-// 1. Inject styles into <head> before content swap
-cpcInjectStyles(stylesHtml + '\n' + extracted.styles);
+// 1. Inject styles into <head> before content swap (await stylesheet load)
+$.when(cpcInjectStyles(stylesHtml + '\n' + extracted.styles)).always(function() {
 
 // 2. Swap content, then load scripts
 $contentWrapper.fadeOut(200, function() {
@@ -248,6 +270,7 @@ cpcInitLoadedTab(tab);
 if (tab === 'jobboard') {
 cpcFixJobboardExpertLayout();
 }
+});
 });
 });
 });
