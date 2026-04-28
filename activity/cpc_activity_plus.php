@@ -768,7 +768,7 @@ function cpc_activity_plus_render_tags($item_html, $atts, $item_id, $post_title,
         $plus_html .= '<a class="cpc_activity_plus_link_preview_anchor" href="'.$link_url.'" target="_blank" rel="noopener noreferrer">';
         if ($link_image) {
             $plus_html .= '<div class="cpc_activity_plus_link_preview_image_wrap">';
-            $plus_html .= '<img src="'.$link_image.'" alt="" class="cpc_activity_plus_link_preview_image" loading="lazy" />';
+            $plus_html .= '<img src="'.$link_image.'" alt="" class="cpc_activity_plus_link_preview_image active" loading="lazy" />';
             $plus_html .= '</div>';
         }
         $plus_html .= '<div class="cpc_activity_plus_link_preview_content">';
@@ -792,7 +792,26 @@ function cpc_activity_plus_render_tags($item_html, $atts, $item_id, $post_title,
     }
 
     if ($plus_html) {
-        $item_html .= $plus_html;
+        $inserted = false;
+
+        // Keep Activity Plus media in the main message area, before comments/reply UI.
+        $insertion_markers = array(
+            '<div class="cpc_activity_comments">',
+            '<div class="cpc_activity_post_comment_div">'
+        );
+
+        foreach ($insertion_markers as $marker) {
+            $pos = strpos($item_html, $marker);
+            if ($pos !== false) {
+                $item_html = substr_replace($item_html, $plus_html, $pos, 0);
+                $inserted = true;
+                break;
+            }
+        }
+
+        if (!$inserted) {
+            $item_html .= $plus_html;
+        }
     }
 
     return $item_html;

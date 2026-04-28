@@ -122,6 +122,14 @@ Hinweis zum Rangsystem:
 
 == ChangeLog ==
 
+= 1.1.6 =
+
+* UX-Fix: Activity Plus Link-Vorschau wird im Aktivitätsstream jetzt direkt in der Hauptnachricht unter dem Text gerendert (nicht mehr optisch getrennt unterhalb des Beitrags)
+* Fix: Einfügeposition der Activity-Plus-Medienkarten angepasst - Ausgabe erfolgt vor Kommentarbereich/Antwortformular für konsistentes Post-Layout
+* UX-Fix: Composer-Linkvorschau verwendet jetzt dieselbe Card-Struktur wie die finale Feed-Ausgabe (Titel/Beschreibung/URL/Bild konsistent)
+* Fix: Link-Card-Bild bleibt im finalen Feed sichtbar (aktive Bildklasse für konsistente Darstellung mit bestehendem CSS)
+* Verbesserung: Link-Card-Styles für Composer und Feed vereinheitlicht (Spacing, Typografie, Hover- und Mobile-Verhalten)
+
 = 1.1.5 =
 
 * Breaking: Events ist nicht mehr als "Core Plugin Feature" aktivierbar - wird automatisch durch PS Events Plugin gesteuert

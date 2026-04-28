@@ -144,10 +144,10 @@ jQuery('#cpc_activity_post_button').attr("disabled", false);
 			},
 			function(response) {
 				if (response && response.success && response.data) {
-					var html = '<div class="cpc_activity_plus_link_preview_card">' +
-						'<table class="cpc_activity_plus_link_preview_table">' +
-						'<tr>' +
-							'<td><div class="cpc_activity_plus_link_preview_image_container">';
+					var html = '<div class="cpc_activity_plus_link cpc_activity_plus_link_preview_card">' +
+						'<a class="cpc_activity_plus_link_preview_anchor" href="'+response.data.url+'" target="_blank" rel="noopener noreferrer">' +
+							'<div class="cpc_activity_plus_link_preview_image_wrap">' +
+								'<div class="cpc_activity_plus_link_preview_image_container">';
 					
 					if (response.data.images && response.data.images.length) {
 						jQuery.each(response.data.images, function(idx, img) {
@@ -155,14 +155,18 @@ jQuery('#cpc_activity_post_button').attr("disabled", false);
 						});
 					}
 					
-					html += '</div></td>' +
-						'<td>' +
-							'<div class="cpc_activity_plus_link_preview_title">'+response.data.title+'</div>' +
-							'<div class="cpc_activity_plus_link_preview_url">'+response.data.url+'</div>';
+					html += '</div>' +
+							'</div>' +
+							'<div class="cpc_activity_plus_link_preview_content">' +
+								'<div class="cpc_activity_plus_link_preview_title">'+response.data.title+'</div>';
 					
 					if (response.data.description && response.data.description.length) {
 						html += '<div class="cpc_activity_plus_link_preview_desc">'+response.data.description+'</div>';
 					}
+
+					html += '<div class="cpc_activity_plus_link_preview_url">'+response.data.url+'</div>' +
+							'</div>' +
+						'</a>';
 					
 					if (response.data.images && response.data.images.length > 1) {
 						html += '<div class="cpc_activity_plus_thumbnail_chooser">' +
@@ -178,10 +182,7 @@ jQuery('#cpc_activity_post_button').attr("disabled", false);
 						'</div>';
 					}
 					
-					html += '</td>' +
-						'</tr>' +
-						'</table>' +
-						'</div>';
+					html += '</div>';
 					
 					jQuery('#cpc_activity_plus_link_preview').html(html);
 				} else {
