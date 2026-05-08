@@ -636,7 +636,7 @@ function cpc_docs_render_profile_tab_content($html, $active_tab, $user_id, $shor
         return '<p>'.esc_html__('Benutzer nicht gefunden.', CPC2_TEXT_DOMAIN).'</p>';
     }
 
-    $docs = cpc_docs_get_docs(array(
+    $member_docs = cpc_docs_get_docs(array(
         'component' => 'members',
         'component_id' => $user_id,
         'posts_per_page' => 250,
@@ -644,16 +644,42 @@ function cpc_docs_render_profile_tab_content($html, $active_tab, $user_id, $shor
         'order' => 'ASC',
     ));
 
+    $group_docs = cpc_docs_get_docs(array(
+        'component' => 'groups',
+        'author' => $user_id,
+        'posts_per_page' => 250,
+        'orderby' => 'menu_order title',
+        'order' => 'ASC',
+    ));
+
+    $docs = array();
+    foreach (array_merge($member_docs, $group_docs) as $doc_item) {
+        if ($doc_item && $doc_item->post_type === 'cpc_doc') {
+            $docs[(int)$doc_item->ID] = $doc_item;
+        }
+    }
+    $docs = array_values($docs);
+
     $inline_args = array(
         'inline' => true,
         'inline_base_url' => cpc_docs_get_inline_base_url(),
     );
     $selected_doc = cpc_docs_get_requested_doc_for_context('members', $user_id);
+    if (!$selected_doc && !empty($_GET['cpc_docs_doc_id'])) {
+        $requested_doc_id = (int)$_GET['cpc_docs_doc_id'];
+        foreach ($docs as $doc_item) {
+            if ((int)$doc_item->ID === $requested_doc_id) {
+                $selected_doc = $doc_item;
+                break;
+            }
+        }
+    }
 
     $html = '';
     $html .= cpc_docs_render_notice_html();
     $html .= '<div class="cpc_docs_profile_tab">';
     $html .= '<h3>'.esc_html__('Profil-Dokumente', CPC2_TEXT_DOMAIN).'</h3>';
+    $html .= '<p class="cpc_docs_context_hint">'.esc_html__('Zeigt eigene Profil-Dokumente sowie Gruppen-Dokumente, die Du erstellt hast.', CPC2_TEXT_DOMAIN).'</p>';
 
     if ($selected_doc) {
         $html .= '<p class="cpc_docs_inline_back"><a href="'.esc_url(cpc_docs_get_inline_base_url($inline_args)).'">'.esc_html__('Zur Dokumentenliste', CPC2_TEXT_DOMAIN).'</a></p>';

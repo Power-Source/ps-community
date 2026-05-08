@@ -263,21 +263,49 @@ function cpc_media_render_profile_tab_content($html, $active_tab, $user_id, $sho
     $html .= cpc_media_render_notice_html();
     $html .= '<div class="cpc_media_profile_tab">';
     $html .= '<h3>'.esc_html__('Profil-Galerien', CPC2_TEXT_DOMAIN).'</h3>';
+    $html .= '<p class="cpc_media_context_hint">'.esc_html__('Zeigt eigene Profil-Galerien sowie Gruppen-Galerien, die Du erstellt hast.', CPC2_TEXT_DOMAIN).'</p>';
     $html .= cpc_media_render_create_gallery_form('members', $user_id, 'photo');
 
-    $galleries = cpc_media_get_galleries(array(
+    $member_galleries = cpc_media_get_galleries(array(
         'author' => $user_id,
         'component' => 'members',
         'component_id' => $user_id,
         'posts_per_page' => 50,
     ));
 
-    if (!$galleries) {
-        $html .= '<p>'.esc_html__('Noch keine Galerien vorhanden.', CPC2_TEXT_DOMAIN).'</p>';
-    } else {
-        foreach ($galleries as $gallery) {
-            $html .= cpc_media_render_gallery_block($gallery);
+    $group_galleries = cpc_media_get_galleries(array(
+        'author' => $user_id,
+        'component' => 'groups',
+        'posts_per_page' => 50,
+        'include_system' => false,
+    ));
+
+    $rendered_total = 0;
+
+    if ($member_galleries) {
+        $html .= '<h4>'.esc_html__('Profil', CPC2_TEXT_DOMAIN).'</h4>';
+        foreach ($member_galleries as $gallery) {
+            $block = cpc_media_render_gallery_block($gallery);
+            if ($block !== '') {
+                $html .= $block;
+                $rendered_total++;
+            }
         }
+    }
+
+    if ($group_galleries) {
+        $html .= '<h4>'.esc_html__('Gruppen', CPC2_TEXT_DOMAIN).'</h4>';
+        foreach ($group_galleries as $gallery) {
+            $block = cpc_media_render_gallery_block($gallery);
+            if ($block !== '') {
+                $html .= $block;
+                $rendered_total++;
+            }
+        }
+    }
+
+    if ($rendered_total === 0) {
+        $html .= '<p>'.esc_html__('Noch keine Galerien vorhanden.', CPC2_TEXT_DOMAIN).'</p>';
     }
 
     $html .= '</div>';

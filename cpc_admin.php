@@ -379,38 +379,36 @@ function cpccom_release_notes() {
 				<td valign="top" class="cpc_release_notes" style="<?php echo $cup_of_tea_left; ?>width:45%;">
 
 					<div style="font-size:1.6em; line-height:1.6em; color: #510051; font-weight: bold;">PS Community Plugin</div>
-					<a href="https://power-source.github.io/ps-community/" target-"_blank">Verfügbar im PSOURCE GitHub-Repository</a><br />
+					<a href="https://power-source.github.io/ps-community/" target="_blank">Verfügbar im PSOURCE GitHub-Repository</a><br />
 
-					<h2 style="font-style:italic; margin-top:20px;">Changelog Versionsnummer 1.1.5</h2>
-					<p><strong>Breaking:</strong> Events ist nicht mehr als "Core Plugin Feature" aktivierbar - wird automatisch durch PS Events Plugin gesteuert.</p>
-                    <p><strong>Redesign:</strong> Events-Integration vollständig überarbeitet: PS Events Plugin übernimmt alle Core-Funktionen und Settings.</p>
-                    <p><strong>Entfernt:</strong> Redundante Events-Settings aus PS Community Admin (nicht mehr nötig, da PS Events Plugin zuständig ist).</p>
-                    <p><strong>Verbesserung:</strong> "Meine Veranstaltungen" Addon registriert seinen eigenen Profile-Tab (nur sichtbar wenn Addon aktiv ist).</p>
-                    <p><strong>Verbesserung:</strong> Saubere Separation - PS Community integriert Events nur noch als reines Frontend-Addon.</p>
-                    <p><strong>Neu:</strong> PDF-Vorschau in Medien/Dokumenten-Galerien inkl. Lightbox-Unterstützung.</p>
-                    <p><strong>Verbesserung:</strong> Moderne Vanilla-Lightbox ersetzt veraltete Magnific-Popup-Abhängigkeit (Accessibility, Keyboard-Steuerung).</p>
+					<h2 style="font-style:italic; margin-top:20px;">Changelog Versionsnummer 1.1.6</h2>
+					<p><strong>Security-Fix:</strong> Sichtbarkeit in Gruppen ist jetzt konsequent kontextbasiert – "Nur Mitglieder" greift bei Projekten und Galerien wieder strikt.</p>
+                    <p><strong>UX-Upgrade:</strong> Profil-Tabs zeigen jetzt nicht nur eigene Inhalte, sondern auch Deine gruppenbezogenen Dokumente und Galerien auf einen Blick.</p>
+                    <p><strong>Mobile-Fix:</strong> Die Lightbox reagiert auf Touch-Geräten deutlich zuverlässiger und unterstützt Wisch-Navigation für schnelle Medienwechsel.</p>
+                    <p><strong>PDF-Fix:</strong> Der Viewer startet robuster auf Smartphones (Auto-Modus mit mobilem PDF.js-Fallback und stabilerer Darstellung in der Lightbox).</p>
+                    <p><strong>Polish:</strong> Mehr Stabilität, weniger Reibung – 1.1.6 fühlt sich im Alltag spürbar runder und moderner an.</p>
+
                   
                 </td>
 				<td style="width:1%">&nbsp;</td>
 				<td valign="top" class="cpc_release_notes" style="<?php echo $cup_of_tea_right; ?>">
 
                     <div style="font-size:1.6em; line-height:1.6em; color: #510051; font-weight: bold;">PS Community Entwicklung</div>
-					<a href="https://nerdservice.eimen.net/" target-"_blank">Hilf mit PS Community noch besser zu machen!</a><br />			
+					<a href="https://nerdservice.eimen.net/" target="_blank">Hilf mit, PS Community noch besser zu machen!</a><br />			
 
-                    <h2 style="font-style:italic; margin-top:20px;">Entwicklung</h2>
+                    <h2 style="font-style:italic; margin-top:20px;">Ausblick & Entwicklung</h2>
 
-                    <h3>Aktivität</h3>
-                    <p>Wir planen die Entwicklungsumgebung auf Github weiter auszubauen und zugänglicher zu machen</p>
-                    <a href="https://github.com/Power-Source/ps-community/issues" target-"_blank">Hier kannst Du Fehler melden!</a><br />
-                    <p>Wir freuen uns über jeden, der dieses Projekt mitgestalten möchte:</p>
-                    <a href="https://github.com/Power-Source/ps-community" target-"_blank">Entwickler-Board</a><br />
+                    <h3>Was als Nächstes kommt</h3>
+                    <p>PS Community wird Schritt für Schritt moderner, robuster und angenehmer im Alltag. Unser Fokus liegt auf klarer UX, stabilen mobilen Abläufen und einer Codebasis, an der man gerne weiterarbeitet.</p>
+                    <p>Wenn Du Bugs, Ideen oder Verbesserungen hast, bring sie direkt ein – genau daraus entstehen die stärksten Releases.</p>
+                    <a href="https://github.com/Power-Source/ps-community/issues" target="_blank">Hier kannst Du Fehler melden und Ideen einreichen</a><br />
+                    <p>Wenn Du mitentwickeln oder einfach reinschauen willst:</p>
+                    <a href="https://github.com/Power-Source/ps-community" target="_blank">Zum Entwickler-Board auf GitHub</a><br />
 
                     <h3>PSOURCE MANAGER</h3>
-                    <p>Wir empfehlen Dir dringend den PSOURCE MANAGER zu installieren, um stets aktuelle Updates und Funktionen zu erhalten.</p>
-                    <a href="https://psource.eimen.net/shop/produkte/psource-manager/" target-"_blank">Hier kannst Du den PSOURCE MANAGER herunterladen!</a><br />
-                    <p>Erhalte noch mehr tolle Funktionen und Updates, indem Du den PSOURCE MANAGER installierst:</p>
-                    <p>Und erweitere die Möglichkeiten Deiner PS Community Installation!</p>
-                    <p>Zum Beispiel mit Live-Chat, PM System, erweiterten Profil-Optionen und vielem mehr.</p>
+                    <p>Für Updates, neue Funktionen und zusätzliche Erweiterungen empfehlen wir Dir den PSOURCE MANAGER.</p>
+                    <a href="https://psource.eimen.net/shop/produkte/psource-manager/" target="_blank">PSOURCE MANAGER herunterladen</a><br />
+                    <p>Damit holst Du noch mehr aus Deiner Community heraus – zum Beispiel mit Live-Chat, privatem Nachrichtensystem, erweiterten Profilfunktionen und weiteren Add-ons.</p>
 					
 				</td>
 			</tr></table>

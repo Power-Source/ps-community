@@ -252,6 +252,9 @@ function cpc_projects_user_can_view_project($project_id, $user_id = 0) {
     }
 
     if ($status === 'members') {
+        if ($component === 'groups' && $component_id > 0) {
+            return function_exists('cpc_is_group_member') && cpc_is_group_member($user_id, $component_id);
+        }
         return is_user_logged_in();
     }
 

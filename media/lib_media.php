@@ -904,9 +904,11 @@ function cpc_media_user_can_view_gallery($gallery_id, $user_id = 0) {
         if (!cpc_can_view_group($user_id, $component_id)) {
             return false;
         }
-        if ($status === 'private' && function_exists('cpc_is_group_member')) {
+
+        if (($status === 'private' || $status === 'loggedin') && function_exists('cpc_is_group_member')) {
             return cpc_is_group_member($user_id, $component_id);
         }
+
         return true;
     }
 
@@ -1939,7 +1941,7 @@ function cpc_media_render_lightbox_content($media) {
                     <iframe
                         src="<?php echo esc_url($file_url.'#toolbar=1&navpanes=0&view=FitH'); ?>"
                         class="cpc_media_lightbox_pdf_frame"
-                        loading="lazy"
+                        loading="eager"
                         title="<?php echo esc_attr($media->post_title ? $media->post_title : 'PDF'); ?>">
                     </iframe>
                     <div class="cpc_media_lightbox_pdf_actions">

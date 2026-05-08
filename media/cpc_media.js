@@ -99,7 +99,10 @@
         script.src = cfg.lib;
         script.async = true;
         script.onload = function() { dfd.resolve(); };
-        script.onerror = function() { dfd.reject(); };
+        script.onerror = function() {
+            cpcPdfJsLoaderPromise = null;
+            dfd.reject();
+        };
         document.body.appendChild(script);
         cpcPdfJsLoaderPromise = dfd.promise();
         return cpcPdfJsLoaderPromise;
@@ -122,6 +125,12 @@
         return false;
     }
 
+    function isLikelyMobileBrowser() {
+        var ua = (navigator.userAgent || '').toLowerCase();
+        // Includes Samsung Internet (SamsungBrowser) and generic mobile UA tokens.
+        return /android|iphone|ipad|ipod|mobile|samsungbrowser/.test(ua);
+    }
+
     function shouldUsePdfJsFallback() {
         var cfg = getPdfConfig();
         if (!cfg || !parseInt(cfg.enabled, 10)) {
@@ -133,6 +142,11 @@
         }
         if (cfg.mode === 'native') {
             return false;
+        }
+
+        // Mobile browsers are inconsistent with inline PDF support inside overlays.
+        if (isLikelyMobileBrowser()) {
+            return true;
         }
 
         return !browserHasNativePdfSupport();
@@ -285,6 +299,25 @@
             });
         });
     }
+
+    function openLightboxFromTrigger($trigger) {
+        var $item = $trigger.closest('.cpc_gallery_item, .cpc_gallery_list_item');
+        var galleryId = $item.data('gallery-id');
+        var mediaId = $item.data('media-id');
+
+        if (!galleryId) {
+            galleryId = $trigger.data('gallery-id');
+        }
+        if (!mediaId) {
+            mediaId = $trigger.data('media-id');
+        }
+
+        if (galleryId) {
+            openGalleryLightbox(galleryId, mediaId);
+        }
+    }
+
+    var cpcLightboxTouchStamp = 0;
 
     function setProgress($form, percent) {
         var $wrap = $form.find('.cpc_media_upload_progress');
@@ -727,6 +760,57 @@
                 focusNavControl('next');
             }
         });
+
+        // Swipe-to-navigate for touch devices (iOS Safari, Chrome Android, Samsung Internet).
+        // We track on the dialog so vertical scrolling of the content area still works
+        // (touch-action: pan-y on the content div; horizontal delta triggers nav).
+        var _swipeTouchStartX = 0;
+        var _swipeTouchStartY = 0;
+        var _swipeActive = false;
+
+        cpcVanillaLightbox.dialog.addEventListener('touchstart', function(e) {
+            if (!cpcVanillaLightbox.isOpen || cpcVanillaLightbox.items.length < 2) {
+                _swipeActive = false;
+                return;
+            }
+            // Only single-finger swipe.
+            if (e.touches.length !== 1) {
+                _swipeActive = false;
+                return;
+            }
+            _swipeTouchStartX = e.touches[0].clientX;
+            _swipeTouchStartY = e.touches[0].clientY;
+            _swipeActive = true;
+        }, { passive: true });
+
+        cpcVanillaLightbox.dialog.addEventListener('touchend', function(e) {
+            if (!_swipeActive || !cpcVanillaLightbox.isOpen) {
+                _swipeActive = false;
+                return;
+            }
+            _swipeActive = false;
+
+            var touch = e.changedTouches && e.changedTouches[0];
+            if (!touch) {
+                return;
+            }
+
+            var dx = touch.clientX - _swipeTouchStartX;
+            var dy = touch.clientY - _swipeTouchStartY;
+
+            // Require a predominantly horizontal gesture of at least 40px.
+            if (Math.abs(dx) < 40 || Math.abs(dx) < Math.abs(dy) * 1.5) {
+                return;
+            }
+
+            if (dx < 0) {
+                // Swipe left → next item.
+                showVanillaLightboxItem(cpcVanillaLightbox.index + 1);
+            } else {
+                // Swipe right → previous item.
+                showVanillaLightboxItem(cpcVanillaLightbox.index - 1);
+            }
+        }, { passive: true });
     }
 
     function getVisibleFocusableInLightbox() {
@@ -874,24 +958,30 @@
         cpcVanillaLightbox.lastFocused = null;
     }
 
-    // Initialize lightbox on click
-    $(document).on('click', '.cpc_media_lightbox_trigger, .cpc_gallery_list .cpc_gallery_list_cover, .cpc_media_gallery_cover', function(e) {
+    // Initialize lightbox on click.
+    // Include fallback selectors for preview anchors with href="#" to prevent hash scroll-to-top.
+    var cpcLightboxTriggerSelector = [
+        '.cpc_media_lightbox_trigger',
+        '.cpc_gallery_list .cpc_gallery_list_cover',
+        '.cpc_media_gallery_cover',
+        '.cpc_gallery_item_preview a[href="#"]',
+        '.cpc_gallery_item_pdf_preview_link[href="#"]',
+        '.cpc_gallery_item_doc_preview[href="#"]'
+    ].join(', ');
+
+    $(document).on('click', cpcLightboxTriggerSelector, function(e) {
+        if (Date.now() - cpcLightboxTouchStamp < 700) {
+            e.preventDefault();
+            return;
+        }
         e.preventDefault();
-        
-        var $item = $(this).closest('.cpc_gallery_item, .cpc_gallery_list_item');
-        var galleryId = $item.data('gallery-id');
-        var mediaId = $item.data('media-id');
+        openLightboxFromTrigger($(this));
+    });
 
-        if (!galleryId) {
-            galleryId = $(this).data('gallery-id');
-        }
-        if (!mediaId) {
-            mediaId = $(this).data('media-id');
-        }
-
-        if (galleryId) {
-            openGalleryLightbox(galleryId, mediaId);
-        }
+    $(document).on('touchend', cpcLightboxTriggerSelector, function(e) {
+        cpcLightboxTouchStamp = Date.now();
+        e.preventDefault();
+        openLightboxFromTrigger($(this));
     });
 
     // Keyboard activation for non-anchor trigger elements

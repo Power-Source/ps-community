@@ -4,7 +4,7 @@ Tags: wp community, social network, social networking, social media, cp-communit
 Requires at least: 4.9
 Tested up to: 6.8.1
 ClassicPress: 2.7.0
-Stable tag: 1.1.5
+Stable tag: 1.1.6
 License URI: https://www.gnu.org/licenses/gpl-2.0.html
 
 == Description ==
@@ -129,6 +129,17 @@ Hinweis zum Rangsystem:
 * UX-Fix: Composer-Linkvorschau verwendet jetzt dieselbe Card-Struktur wie die finale Feed-Ausgabe (Titel/Beschreibung/URL/Bild konsistent)
 * Fix: Link-Card-Bild bleibt im finalen Feed sichtbar (aktive Bildklasse für konsistente Darstellung mit bestehendem CSS)
 * Verbesserung: Link-Card-Styles für Composer und Feed vereinheitlicht (Spacing, Typografie, Hover- und Mobile-Verhalten)
+* Security-Fix: Gruppen-Projekte mit Sichtbarkeit "Nur Mitglieder" respektieren jetzt strikt die Gruppenmitgliedschaft (kein Zugriff mehr nur durch Login)
+* UX-Verbesserung: Profil-Tab "Dokumente" zeigt jetzt neben Profil-Dokumenten auch gruppenbezogene Dokumente, die der Benutzer erstellt hat
+* UX-Verbesserung: Profil-Tab "Galerien" zeigt jetzt neben Profil-Galerien auch gruppenbezogene Galerien, die der Benutzer erstellt hat
+* Security-Fix: Gruppen-Galerien mit Status "Angemeldet" oder "Privat" sind jetzt nur fuer Gruppenmitglieder sichtbar
+* Navigation: Inline-Öffnen von Dokumenten im Profil-Tab funktioniert nun auch für die aggregierte Dokumentliste aus Profil- und Gruppenkontext
+* Mobile-Fix: Lightbox-Trigger in Medien/Galerien reagieren auf Touch-Geräten jetzt zuverlässiger (verbesserte Touch-Aktivierung)
+* PDF-Fix: PDF-Viewer in der Lightbox startet robuster auf Mobilgeräten (Auto-Modus bevorzugt PDF.js-Fallback auf Mobile, sofortiger iframe-Start)
+* UX-Fix: Mobile Darstellung von PDF-Inhalten in der Lightbox stabilisiert (verbesserte Höhe/Viewport-Anpassung)
+* Mobile-Fix: Lightbox unterstützt jetzt Wisch-Navigation (Swipe left/right) auf iOS Safari, Chrome Android und Samsung Internet
+* Mobile-Fix: Samsung Internet (SamsungBrowser UA) wird jetzt korrekt als mobiler Browser erkannt (PDF.js-Fallback aktiv)
+* UX: Lightbox Content-Bereich erlaubt vertikales Scrollen auf Touch-Geräten (touch-action: pan-y), horizontaler Swipe löst Navigation aus
 
 = 1.1.5 =
 

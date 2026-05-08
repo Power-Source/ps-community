@@ -514,6 +514,8 @@
 
 .cpc_media_vlightbox_content {
     height: 100%;
+    /* Allow vertical scrolling of long content; horizontal swipe is handled by JS. */
+    touch-action: pan-y;
 }
 
 .cpc_media_lightbox_loading {
@@ -553,6 +555,8 @@
     justify-content: center;
     cursor: pointer;
     z-index: 8;
+    /* Prevent the nav buttons from intercepting swipe gestures. */
+    touch-action: manipulation;
 }
 
 .cpc_media_vlightbox_prev {
@@ -613,6 +617,7 @@ body.cpc_media_vlightbox_open {
 .cpc_media_pdf_container {
     width: 100%;
     height: 100%;
+    min-height: 0;
     display: flex;
     flex-direction: column;
     gap: 12px;
@@ -852,6 +857,7 @@ body.cpc_media_vlightbox_open {
     padding: 4px 8px;
     font-size: 18px;
     display: inline-block;
+    -webkit-user-select: none;
     user-select: none;
     transition: color 0.2s;
 }
@@ -988,7 +994,7 @@ body.cpc_media_vlightbox_open {
 @media (max-width: 900px) {
     .cpc_media_lightbox_entry {
         grid-template-columns: 1fr;
-        min-height: auto;
+        min-height: 0;
         max-height: auto;
     }
 
@@ -1001,6 +1007,11 @@ body.cpc_media_vlightbox_open {
 
     .cpc_media_lightbox_media {
         min-height: 300px;
+    }
+
+    .cpc_media_lightbox_pdf_frame {
+        min-height: 46vh;
+        height: 46vh;
     }
 
     .cpc_media_cover_options {
@@ -1016,6 +1027,11 @@ body.cpc_media_vlightbox_open {
     .cpc_media_lightbox_media {
         padding: 20px;
         min-height: 250px;
+    }
+
+    .cpc_media_lightbox_pdf_frame {
+        min-height: 42vh;
+        height: 42vh;
     }
 
     .cpc_media_lightbox_info {
