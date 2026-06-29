@@ -122,6 +122,10 @@ Hinweis zum Rangsystem:
 
 == ChangeLog ==
 
+= 1.1.7 =
+
+* Fix: PHP Warning "Attempt to read property post_name on null" in ps_community.php behoben – `get_post()` für die Profil-Seiten-ID wird jetzt auf null geprüft, bevor auf `->post_name` zugegriffen wird (tritt auf Multisite-Sub-Sites auf, wenn die unter `cpccom_profile_page` gespeicherte Seite nicht existiert)
+
 = 1.1.6 =
 
 * UX-Fix: Activity Plus Link-Vorschau wird im Aktivitätsstream jetzt direkt in der Hauptnachricht unter dem Text gerendert (nicht mehr optisch getrennt unterhalb des Beitrags)

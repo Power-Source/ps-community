@@ -136,8 +136,10 @@ function cpc_forum_insert_rewrite_rules( $rules ) {
 			// Usernames ---------------------
 			if (strpos(CPC_CORE_PLUGINS, 'core-profile') !== false && $page_id = get_option('cpccom_profile_page')):
 				$profile_page = get_post($page_id);
-				$profile_page_slug = $profile_page->post_name;
-				$newrules[$profile_page_slug.'/([^/]+)/?'] = ltrim($blog_details->path,'/').'?pagename='.$profile_page_slug.'&user=$matches[1]';
+				if ( $profile_page ):
+					$profile_page_slug = $profile_page->post_name;
+					$newrules[$profile_page_slug.'/([^/]+)/?'] = ltrim($blog_details->path,'/').'?pagename='.$profile_page_slug.'&user=$matches[1]';
+				endif;
 			endif;
 			// Forum slugs -------------------
 			if (strpos(CPC_CORE_PLUGINS, 'core-forums') !== false):
