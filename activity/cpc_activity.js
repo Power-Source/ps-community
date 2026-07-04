@@ -504,7 +504,7 @@ jQuery('#cpc_activity_post_button').attr("disabled", false);
     });
     
 	// Admin - new activity
-	if (jQuery("#cpc_target").length) {
+	if (jQuery("#cpc_target").length && jQuery.fn && jQuery.fn.select2) {
 
 		if (jQuery("#cpc_target").val() == '') {
 			jQuery("#cpc_target").select2({

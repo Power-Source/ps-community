@@ -43,28 +43,26 @@ jQuery(document).ready(function() {
         // ... and then add if necessary
 
         jQuery('.cpc_mandatory_field').each(function(i, obj) {
-			
-            if (jQuery(this).val().trim() == '') {
-                if (jQuery('#s2id_'+jQuery(this).attr('id')).length > 0) {
-                    jQuery('#s2id_'+jQuery(this).attr('id')).addClass('cpc_field_error');
-					all_filled = false;
+
+            var $field = jQuery(this);
+            var isSelect2Field = $field.hasClass('select2-hidden-accessible') || $field.next('.select2').length > 0;
+
+            if ($field.val().trim() == '') {
+                if (isSelect2Field) {
+                    $field.next('.select2').addClass('cpc_field_error');
                 } else {
-					if(typeof jQuery(this).attr('id') != 'undefined') {
-						if (jQuery(this).attr('id').substr(0, 4) != 's2id') {
-							jQuery(this).addClass('cpc_field_error');
-							jQuery(this).val(''); // in case spaces entered, remove them
-							all_filled = false;
-						}
-					}
+                    $field.addClass('cpc_field_error');
+                    $field.val(''); // in case spaces entered, remove them
                 }
+                all_filled = false;
                 // highlight the tab
                 var tab_div = jQuery(this).closest('.cpc-tab');
                 jQuery('#cpc-'+jQuery(tab_div).attr('id')).addClass('cpc_field_error');
             } else {
-                if (jQuery('#s2id_'+jQuery(this).attr('id')).length > 0) {
-                    jQuery('#s2id_'+jQuery(this).attr('id')).removeClass('cpc_field_error');
+                if (isSelect2Field) {
+                    $field.next('.select2').removeClass('cpc_field_error');
                 } else {
-                    jQuery(this).removeClass('cpc_field_error');
+                    $field.removeClass('cpc_field_error');
                 }
                 // remove highlight from the tab
                 var tab_div = jQuery(this).closest('.cpc-tab');
@@ -158,7 +156,7 @@ jQuery(document).ready(function() {
     });
 
     // Language list
-    if (jQuery("#cpccom_lang").length) {
+    if (jQuery("#cpccom_lang").length && jQuery.fn && jQuery.fn.select2) {
         jQuery("#cpccom_lang").select2({ minimumResultsForSearch: -1 });
     };
 

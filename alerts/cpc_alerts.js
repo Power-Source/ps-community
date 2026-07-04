@@ -1,16 +1,14 @@
 jQuery(document).ready(function() {
 
-	if (jQuery("#cpc_alerts_activity").length) {
+    var hasSelect2 = jQuery.fn && jQuery.fn.select2;
+
+    if (jQuery("#cpc_alerts_activity").length && hasSelect2) {
 		jQuery("#cpc_alerts_activity").select2({
 			minimumInputLength: -1,
             minimumResultsForSearch: -1,
 			dropdownCssClass: 'cpc_alerts_activity',
 		});
 	};
-
-    jQuery(".select2, .select2-multiple").on('select2:open', function (e) {
-         jQuery('.select2-search input').prop('focus',false);
-    });
 
 	jQuery('#cpc_alerts_activity').on("change", function(e) { 
 
@@ -22,7 +20,6 @@ jQuery(document).ready(function() {
 
             jQuery(".cpc_alerts_unread").removeClass("cpc_alerts_unread");
             jQuery("#cpc_alerts_activity option[value='count']").remove();
-            jQuery(this).parent().find(".select2-chosen").html('');
                     
 			jQuery.post(
 			    cpc_alerts.ajaxurl,
@@ -42,7 +39,6 @@ jQuery(document).ready(function() {
 
                 jQuery(".cpc_alert_item").remove();
                 jQuery("#cpc_alerts_activity option[value='count']").remove();
-                jQuery(this).parent().find(".select2-chosen").html('');
 
                 jQuery.post(
                     cpc_alerts.ajaxurl,
@@ -78,7 +74,7 @@ jQuery(document).ready(function() {
 	});	
 
 	// ***** Users for custom post *****	
-	if (jQuery("#cpc_alert_recipient").length) {
+    if (jQuery("#cpc_alert_recipient").length && hasSelect2) {
 
 		if (jQuery("#cpc_alert_recipient").val() == '') {
 			jQuery("#cpc_alert_recipient").select2({

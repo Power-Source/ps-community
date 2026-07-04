@@ -77,7 +77,7 @@ jQuery(document).ready(function() {
 
 	// ***** Favourite Friendships (admin) *****	
 
-	if (jQuery("#cpc_favourite_member1").length) {
+	if (jQuery("#cpc_favourite_member1").length && jQuery.fn && jQuery.fn.select2) {
 
 		if (jQuery("#cpc_favourite_member1").val() == '') {
 			jQuery("#cpc_favourite_member1").select2({
@@ -134,7 +134,7 @@ jQuery(document).ready(function() {
 /* -------------------------------------------------------------------- */
 	// ***** Friendships (admin) *****	
 
-	if (jQuery("#cpc_member1").length) {
+	if (jQuery("#cpc_member1").length && jQuery.fn && jQuery.fn.select2) {
 
 		if (jQuery("#cpc_member1").val() == '') {
 			jQuery("#cpc_member1").select2({

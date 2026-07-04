@@ -472,13 +472,17 @@ jQuery(document).ready(function() {
 
 	/* Choose forum */
 	if (jQuery("#cpc_forum_post_choose").length) {
-		jQuery("#cpc_forum_post_choose").select2();
+		if (jQuery.fn && jQuery.fn.select2) {
+			jQuery("#cpc_forum_post_choose").select2();
+		}
 	}
 
 	/* Edit Post */
 
 	if (jQuery("#cpc_post_forum_slug").length) {
-		jQuery("#cpc_post_forum_slug").select2();
+		if (jQuery.fn && jQuery.fn.select2) {
+			jQuery("#cpc_post_forum_slug").select2();
+		}
 	}
     
 	/* Forum Settings */
