@@ -4,7 +4,7 @@ Tags: wp community, social network, social networking, social media, cp-communit
 Requires at least: 4.9
 Tested up to: 6.8.1
 ClassicPress: 2.7.0
-Stable tag: 1.1.7
+Stable tag: 1.1.8
 License URI: https://www.gnu.org/licenses/gpl-2.0.html
 
 == Description ==
@@ -122,14 +122,17 @@ Hinweis zum Rangsystem:
 
 == ChangeLog ==
 
-= 1.1.7 =
+= 1.1.8 =
 
-* Fix: PHP Warning "Attempt to read property post_name on null" in ps_community.php behoben – `get_post()` für die Profil-Seiten-ID wird jetzt auf null geprüft, bevor auf `->post_name` zugegriffen wird (tritt auf Multisite-Sub-Sites auf, wenn die unter `cpccom_profile_page` gespeicherte Seite nicht existiert)
 * Fix: JavaScript-Fehler `jQuery(...).select2 is not a function` im Alerts-Modul behoben (fehlerhaften Legacy-Pfad von `cp-community` auf lokalen Plugin-Pfad korrigiert)
 * Fix: Select2-Ladereihenfolge im Alerts-Modul korrigiert (`cpc-alerts.js` lädt jetzt mit `cpc-select2-js` als Abhängigkeit)
 * Stabilitäts-Fix: Select2-Aufrufe in Alerts/Aktivität/Forum/Freundschaften/Profil robust abgesichert, damit ohne geladenes Select2 kein Frontend-Crash entsteht
 * Bereinigung: Veraltete Select2-v3-Altselektoren (`.select2-chosen`, `#s2id_*`) entfernt und auf Select2-v4-kompatible Wrapper-Logik umgestellt
 * Compliance: Keine CDN-Einbindung für Select2 - Assets bleiben lokal im Plugin (`js/select2.js`, `js/select2.css`)
+
+= 1.1.7 =
+
+* Fix: PHP Warning "Attempt to read property post_name on null" in ps_community.php behoben – `get_post()` für die Profil-Seiten-ID wird jetzt auf null geprüft, bevor auf `->post_name` zugegriffen wird (tritt auf Multisite-Sub-Sites auf, wenn die unter `cpccom_profile_page` gespeicherte Seite nicht existiert)
 
 = 1.1.6 =
 
