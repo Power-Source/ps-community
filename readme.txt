@@ -122,6 +122,10 @@ Hinweis zum Rangsystem:
 
 == ChangeLog ==
 
+= 1.1.9 =
+
+* Fix: verbessere Hover-Ereignisse für Aktivitäts- und Kommentar-Einstellungen; ersetze 'hover' durch 'mouseenter' und 'mouseleave'
+
 = 1.1.8 =
 
 * Fix: JavaScript-Fehler `jQuery(...).select2 is not a function` im Alerts-Modul behoben (fehlerhaften Legacy-Pfad von `cp-community` auf lokalen Plugin-Pfad korrigiert)
