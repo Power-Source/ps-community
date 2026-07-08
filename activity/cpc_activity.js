@@ -23,11 +23,14 @@ jQuery('#cpc_activity_post_button').attr("disabled", false);
     });
     
 	// Activity Settings
-    jQuery('body').on('hover', '.cpc_activity_content', function() {
-        jQuery('.cpc_activity_settings').hide();
-        jQuery('.cpc_comment_settings').hide();
-        jQuery('.cpc_comment_settings_options').hide();
-        jQuery(this).children('.cpc_activity_settings').show();
+	jQuery('body').on('mouseenter', '.cpc_activity_content', function() {
+		jQuery('.cpc_activity_settings').hide();
+		jQuery('.cpc_comment_settings').hide();
+		jQuery('.cpc_comment_settings_options').hide();
+		jQuery(this).children('.cpc_activity_settings').show();
+	});
+	jQuery('body').on('mouseleave', '.cpc_activity_content', function() {
+		jQuery(this).children('.cpc_activity_settings').hide();
 	});
     jQuery('body').on('click', '.cpc_activity_settings', function() {
 		jQuery('.cpc_activity_settings_options').hide();
@@ -36,9 +39,12 @@ jQuery('#cpc_activity_post_button').attr("disabled", false);
 	});
 
 	// Comment Settings
-    jQuery('body').on('hover', '.cpc_activity_comment', function() {
-        jQuery('.cpc_comment_settings').hide();
-        jQuery(this).children('.cpc_comment_settings').show();
+	jQuery('body').on('mouseenter', '.cpc_activity_comment', function() {
+		jQuery('.cpc_comment_settings').hide();
+		jQuery(this).children('.cpc_comment_settings').show();
+	});
+	jQuery('body').on('mouseleave', '.cpc_activity_comment', function() {
+		jQuery(this).children('.cpc_comment_settings').hide();
 	});
     jQuery('body').on('click', '.cpc_comment_settings', function() {
         jQuery('.cpc_comment_settings').hide();
