@@ -4,7 +4,7 @@ Tags: wp community, social network, social networking, social media, cp-communit
 Requires at least: 4.9
 Tested up to: 6.8.1
 ClassicPress: 2.7.0
-Stable tag: 1.1.8
+Stable tag: 1.1.9
 License URI: https://www.gnu.org/licenses/gpl-2.0.html
 
 == Description ==
@@ -125,6 +125,17 @@ Hinweis zum Rangsystem:
 = 1.1.9 =
 
 * Fix: verbessere Hover-Ereignisse für Aktivitäts- und Kommentar-Einstellungen; ersetze 'hover' durch 'mouseenter' und 'mouseleave'
+* Neu: Multisite-Netzwerkmenü **PS Community** im Netzwerk-Admin mit zentralen Richtlinien für Subsites
+* Neu: Netzwerkweite Modulfreigaben für Subsites; Mainblog bleibt bewusst ausgenommen und kann weiterhin alle Module nutzen
+* Neu: PS-Bloghosting-Integration für modulare Rechte nach Level (Basisregeln für Subsites ohne Level + eigene Regeln je erkanntem Level)
+* Neu: Runtime-Auswertung der Core-Module pro Site anhand Mainblog/Level/Fallback-Regeln für konsistentes Laden der Funktionen
+* Neu: Vorschautabelle im Netzwerk-Admin zeigt pro Site Blog-ID, erkanntes Level und effektiv erlaubte Module laut Matrix
+* Verbesserung: Subsite-Admin berücksichtigt Netzwerkregeln beim Speichern der Core-Module und filtert nicht erlaubte Module zuverlässig heraus
+* Neu: Netzwerksteuerung für User-Cloud-Scope (netzwerkweit oder site-lokal) inkl. netzwerkweitem Benutzer-Limit
+* Neu: Migration für User-Cloud-Ordner beim Scope-Wechsel (Bestandsordner werden, wenn möglich, automatisch auf das neue Schema übernommen)
+* Neu: Profil-Medien-Policy für Multisite (netzwerkweit in allen Profilen oder nur Main-Site-Anzeige) mit Schutz gegen Konflikte bei site-lokalem Storage
+* Neu: Avatar-Scope separat konfigurierbar (User-Cloud folgen, immer netzwerkweit oder immer site-lokal)
+* Verbesserung: Activity+ und Media nutzen in Multisite jetzt konsistent scope-abhängige Cloud-Pfade und Netzwerk-Limits
 
 = 1.1.8 =
 

@@ -14,17 +14,27 @@ function cpc_media_get_user_cloud_folder_name($user_id) {
         return cpc_activity_plus_get_user_cloud_folder_name($user_id);
     }
 
-    if (function_exists('user_avatar_core_get_cloud_folder_name')) {
-        return user_avatar_core_get_cloud_folder_name($user_id);
+    if (function_exists('cpc_multisite_maybe_migrate_user_cloud_folder')) {
+        return cpc_multisite_maybe_migrate_user_cloud_folder($user_id);
     }
 
+    $scope = function_exists('cpc_multisite_get_user_cloud_scope') ? cpc_multisite_get_user_cloud_scope() : 'network';
     $user = get_user_by('id', $user_id);
     $slug = $user ? sanitize_title($user->user_login) : '';
     if ($slug === '') {
         $slug = 'user';
     }
 
-    return $slug.'-'.$user_id;
+    if (function_exists('user_avatar_core_get_cloud_folder_name')) {
+        $avatar_folder = user_avatar_core_get_cloud_folder_name($user_id);
+        if ($scope === 'site' && is_multisite()) {
+            return 'site-'.get_current_blog_id().'-'.$avatar_folder;
+        }
+
+        return $avatar_folder;
+    }
+
+    return ($scope === 'site' && is_multisite()) ? 'site-'.get_current_blog_id().'-'.$slug.'-'.$user_id : $slug.'-'.$user_id;
 }
 
 function cpc_media_get_user_media_dir($user_id, $create = true) {
@@ -280,7 +290,11 @@ function cpc_media_can_view_group_stream_album($group_id, $user_id = 0) {
 }
 
 function cpc_media_get_user_storage_limit_mb() {
-    return max(0, min(10240, (int)get_option('cpc_media_user_storage_limit_mb', 0)));
+    $limit = max(0, min(10240, (int)get_option('cpc_media_user_storage_limit_mb', 0)));
+    if (function_exists('cpc_multisite_get_user_cloud_limit_mb')) {
+        $limit = cpc_multisite_get_user_cloud_limit_mb($limit);
+    }
+    return $limit;
 }
 
 function cpc_media_get_group_storage_limit_mb() {

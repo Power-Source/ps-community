@@ -5,6 +5,10 @@ function cpc_media_add_profile_tab($tabs, $user_id, $viewer_id) {
         return $tabs;
     }
 
+    if (is_multisite() && function_exists('cpc_multisite_profile_media_visible_on_current_site') && !cpc_multisite_profile_media_visible_on_current_site()) {
+        return $tabs;
+    }
+
     $tabs['galleries'] = array(
         'label' => __('Galerien', CPC2_TEXT_DOMAIN),
         'icon' => 'format-gallery',
@@ -251,6 +255,10 @@ function cpc_media_render_gallery_block($gallery) {
 
 function cpc_media_render_profile_tab_content($html, $active_tab, $user_id, $shortcode_atts) {
     if ($active_tab !== 'galleries') {
+        return $html;
+    }
+
+    if (is_multisite() && function_exists('cpc_multisite_profile_media_visible_on_current_site') && !cpc_multisite_profile_media_visible_on_current_site()) {
         return $html;
     }
 

@@ -69,9 +69,11 @@ function cpc_activity_plus_get_user_cloud_folder_name($user_id) {
         return 'user-0';
     }
 
-    $stored = get_user_meta($user_id, 'cpc_activity_plus_cloud_folder', true);
-    if (!empty($stored) && preg_match('/^[a-z0-9\-]+$/', $stored)) {
-        return $stored;
+    $scope = function_exists('cpc_multisite_get_user_cloud_scope') ? cpc_multisite_get_user_cloud_scope() : 'network';
+    $blog_id = is_multisite() ? get_current_blog_id() : 0;
+
+    if (function_exists('cpc_multisite_maybe_migrate_user_cloud_folder')) {
+        return cpc_multisite_maybe_migrate_user_cloud_folder($user_id, $scope, $blog_id);
     }
 
     $user = get_user_by('id', $user_id);
@@ -80,14 +82,12 @@ function cpc_activity_plus_get_user_cloud_folder_name($user_id) {
         $slug = 'user';
     }
 
-    $folder = $slug.'-'.$user_id;
+    $folder = ($scope === 'site' && is_multisite()) ? 'site-'.$blog_id.'-'.$slug.'-'.$user_id : $slug.'-'.$user_id;
     $folder = apply_filters('cpc_activity_plus_user_cloud_folder_name', $folder, $user_id, $user);
     $folder = sanitize_title($folder);
     if ($folder === '') {
-        $folder = 'user-'.$user_id;
+        $folder = ($scope === 'site' && is_multisite()) ? 'site-'.$blog_id.'-user-'.$user_id : 'user-'.$user_id;
     }
-
-    update_user_meta($user_id, 'cpc_activity_plus_cloud_folder', $folder);
 
     return $folder;
 }
@@ -113,7 +113,9 @@ function cpc_activity_plus_get_settings() {
         'media_max_width_value' => $media_max_width_value,
         'media_max_width_unit' => $media_max_width_unit,
         'use_builtin_lightbox' => (bool)get_option('cpc_activity_plus_use_builtin_lightbox'),
-        'user_cloud_limit_mb' => cpc_activity_plus_normalize_user_cloud_limit_mb(get_option('cpc_activity_plus_user_cloud_limit_mb', 50)),
+        'user_cloud_limit_mb' => function_exists('cpc_multisite_get_user_cloud_limit_mb')
+            ? cpc_multisite_get_user_cloud_limit_mb(cpc_activity_plus_normalize_user_cloud_limit_mb(get_option('cpc_activity_plus_user_cloud_limit_mb', 50)))
+            : cpc_activity_plus_normalize_user_cloud_limit_mb(get_option('cpc_activity_plus_user_cloud_limit_mb', 50)),
     );
 
     if (!$settings['max_images']) {

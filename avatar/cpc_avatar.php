@@ -97,6 +97,12 @@ function user_avatar_core_get_cloud_folder_name($uid) {
 		return 'user-0';
 	}
 
+	if (function_exists('cpc_multisite_get_effective_avatar_scope') && function_exists('cpc_multisite_maybe_migrate_user_cloud_folder')) {
+		$scope = cpc_multisite_get_effective_avatar_scope();
+		$blog_id = is_multisite() ? get_current_blog_id() : 0;
+		return cpc_multisite_maybe_migrate_user_cloud_folder($uid, $scope, $blog_id);
+	}
+
 	if (function_exists('cpc_activity_plus_get_user_cloud_folder_name')) {
 		return cpc_activity_plus_get_user_cloud_folder_name($uid);
 	}

@@ -110,10 +110,15 @@ function cpc_admin_getting_started_media() {
     echo '<span class="description">'.__('Bilder aus Activity+ landen zusätzlich in einer versteckten privaten System-Galerie pro Profil bzw. Gruppe.', CPC2_TEXT_DOMAIN).'</span></td>';
     echo '</tr>';
 
+    $user_cloud_network_managed = function_exists('cpc_multisite_is_user_cloud_network_scoped') && cpc_multisite_is_user_cloud_network_scoped();
     echo '<tr class="form-field">';
     echo '<td scope="row" valign="top"><label>'.__('Nutzer-Speicherlimit (MB)', CPC2_TEXT_DOMAIN).'</label></td>';
-    echo '<td><input type="number" min="0" max="10240" name="cpc_media_user_storage_limit_mb" value="'.(int)cpc_media_get_user_storage_limit_mb().'" class="small-text" style="max-width:90px;" />';
-    echo '<span class="description">'.__('0 = vorhandenes Activity+/Cloud-Limit weiterverwenden, sonst gemeinsames Limit für Galerie- und Activity-Dateien.', CPC2_TEXT_DOMAIN).'</span></td>';
+    echo '<td><input type="number" min="0" max="10240" name="cpc_media_user_storage_limit_mb" value="'.(int)cpc_media_get_user_storage_limit_mb().'" class="small-text" style="max-width:90px;"'.($user_cloud_network_managed ? ' disabled="disabled"' : '').' />';
+    echo '<span class="description">'.__('0 = vorhandenes Activity+/Cloud-Limit weiterverwenden, sonst gemeinsames Limit für Galerie- und Activity-Dateien.', CPC2_TEXT_DOMAIN).'</span>';
+    if ($user_cloud_network_managed) {
+        echo '<span class="description" style="display:block">'.__('Dieses Limit wird im Netzwerk verwaltet.', CPC2_TEXT_DOMAIN).'</span>';
+    }
+    echo '</td>';
     echo '</tr>';
 
     echo '<tr class="form-field">';
@@ -357,8 +362,10 @@ function cpc_admin_media_save($the_post) {
         delete_option('cpc_media_activity_wall_sync');
     }
 
-    if (isset($the_post['cpc_media_user_storage_limit_mb'])) {
-        update_option('cpc_media_user_storage_limit_mb', max(0, min(10240, (int)$the_post['cpc_media_user_storage_limit_mb'])));
+    if (!function_exists('cpc_multisite_is_user_cloud_network_scoped') || !cpc_multisite_is_user_cloud_network_scoped()) {
+        if (isset($the_post['cpc_media_user_storage_limit_mb'])) {
+            update_option('cpc_media_user_storage_limit_mb', max(0, min(10240, (int)$the_post['cpc_media_user_storage_limit_mb'])));
+        }
     }
 
     if (isset($the_post['cpc_media_group_storage_limit_mb'])) {

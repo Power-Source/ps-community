@@ -3,7 +3,7 @@
 Plugin Name: PS Community
 Plugin URI: https://psource.eimen.net/wiki/ps-community-dokumentation/
 Description: Füge Deiner ClassicPress-Webseite schnell und einfach ein soziales Netzwerk hinzu!
-Version: 1.1.8
+Version: 1.1.9
 Author: PSOURCE
 Author URI: https://psource.eimen.net/
 License: GPLv2 or later
@@ -13,6 +13,8 @@ Domain Path: /languages
 
 if ( !defined('CPC2_TEXT_DOMAIN') ) define('CPC2_TEXT_DOMAIN', 'cp-community');
 if ( !defined('CPC_PREFIX') ) define('CPC_PREFIX', 'cpc');
+
+require_once('multisite/cpc_multisite_admin.php');
 
 // Emoji Styles entfernen im Admin
 add_action('admin_init', function() {
@@ -97,7 +99,7 @@ if (!get_option('cpc_modules_migrated_113') && is_string($core_plugins)) {
     update_option('cpc_modules_migrated_113', 1);
 }
 
-if (!defined('CPC_CORE_PLUGINS')) define ('CPC_CORE_PLUGINS', $core_plugins);
+if (!defined('CPC_CORE_PLUGINS')) define ('CPC_CORE_PLUGINS', function_exists('cpc_multisite_get_effective_core_plugins') ? cpc_multisite_get_effective_core_plugins($core_plugins) : $core_plugins);
 
 function cpc_events_external_plugin_active() {
     return class_exists('Eab_EventsHub') || function_exists('events_and_bookings') || defined('EAB_PLUGIN_DIR');
@@ -425,7 +427,7 @@ add_action( 'wp_footer', 'cpc_add_wait_modal_box' );
 function cpc_update_routine() {
 		
 	global $wpdb;
-    $new_version = '1.1.8';
+    $new_version = '1.1.9';
 //echo get_option('cp_community_ver').'<br />';
 //echo $new_version.'<br />';
 	$do_update = (is_blog_admin() && current_user_can('manage_options') && get_option('cp_community_ver') != $new_version);

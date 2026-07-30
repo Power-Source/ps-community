@@ -81,11 +81,15 @@ function cpc_admin_getting_started_activity_plus() {
         echo '</td>';
     echo '</tr>';
 
+    $user_cloud_network_managed = function_exists('cpc_multisite_is_user_cloud_network_scoped') && cpc_multisite_is_user_cloud_network_scoped();
     echo '<tr class="form-field">';
         echo '<th scope="row" valign="top"><label for="cpc_activity_plus_user_cloud_limit_mb">'.__('User-Cloud Größe Beschränken (MB)', CPC2_TEXT_DOMAIN).'</label></th>';
         echo '<td>';
-            echo '<input name="cpc_activity_plus_user_cloud_limit_mb" id="cpc_activity_plus_user_cloud_limit_mb" type="number" min="1" max="10240" step="1" style="width:90px" value="'.esc_attr($user_cloud_limit_mb).'" />';
+            echo '<input name="cpc_activity_plus_user_cloud_limit_mb" id="cpc_activity_plus_user_cloud_limit_mb" type="number" min="1" max="10240" step="1" style="width:90px" value="'.esc_attr($user_cloud_limit_mb).'"'.($user_cloud_network_managed ? ' disabled="disabled"' : '').' />';
             echo '<span class="description">'.__('Maximaler Speicher pro Benutzer für Activity-Plus-Dateien. Standard: 50 MB.', CPC2_TEXT_DOMAIN).'</span>';
+            if ($user_cloud_network_managed) {
+                echo '<span class="description" style="display:block">'.__('Dieses Limit wird im Netzwerk verwaltet.', CPC2_TEXT_DOMAIN).'</span>';
+            }
         echo '</td>';
     echo '</tr>';
 
@@ -260,14 +264,16 @@ function cpc_admin_activity_plus_options_save($the_post) {
         update_option('cpc_activity_plus_max_images', 5);
     endif;
 
-    if (isset($the_post['cpc_activity_plus_user_cloud_limit_mb']) && is_numeric($the_post['cpc_activity_plus_user_cloud_limit_mb'])):
-        $user_cloud_limit_mb = (int)$the_post['cpc_activity_plus_user_cloud_limit_mb'];
-        if ($user_cloud_limit_mb < 1) $user_cloud_limit_mb = 1;
-        if ($user_cloud_limit_mb > 10240) $user_cloud_limit_mb = 10240;
-        update_option('cpc_activity_plus_user_cloud_limit_mb', $user_cloud_limit_mb);
-    else:
-        update_option('cpc_activity_plus_user_cloud_limit_mb', 50);
-    endif;
+    if (!function_exists('cpc_multisite_is_user_cloud_network_scoped') || !cpc_multisite_is_user_cloud_network_scoped()) {
+        if (isset($the_post['cpc_activity_plus_user_cloud_limit_mb']) && is_numeric($the_post['cpc_activity_plus_user_cloud_limit_mb'])):
+            $user_cloud_limit_mb = (int)$the_post['cpc_activity_plus_user_cloud_limit_mb'];
+            if ($user_cloud_limit_mb < 1) $user_cloud_limit_mb = 1;
+            if ($user_cloud_limit_mb > 10240) $user_cloud_limit_mb = 10240;
+            update_option('cpc_activity_plus_user_cloud_limit_mb', $user_cloud_limit_mb);
+        else:
+            update_option('cpc_activity_plus_user_cloud_limit_mb', 50);
+        endif;
+    }
 
     $media_max_width_unit = (isset($the_post['cpc_activity_plus_media_max_width_unit']) && in_array($the_post['cpc_activity_plus_media_max_width_unit'], array('%', 'px'), true))
         ? $the_post['cpc_activity_plus_media_max_width_unit']

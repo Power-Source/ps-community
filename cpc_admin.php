@@ -381,12 +381,12 @@ function cpccom_release_notes() {
 					<div style="font-size:1.6em; line-height:1.6em; color: #510051; font-weight: bold;">PS Community Plugin</div>
 					<a href="https://power-source.github.io/ps-community/" target="_blank">Verfügbar im PSOURCE GitHub-Repository</a><br />
 
-					<h2 style="font-style:italic; margin-top:20px;">Changelog Versionsnummer 1.1.6</h2>
-					<p><strong>Security-Fix:</strong> Sichtbarkeit in Gruppen ist jetzt konsequent kontextbasiert – "Nur Mitglieder" greift bei Projekten und Galerien wieder strikt.</p>
-                    <p><strong>UX-Upgrade:</strong> Profil-Tabs zeigen jetzt nicht nur eigene Inhalte, sondern auch Deine gruppenbezogenen Dokumente und Galerien auf einen Blick.</p>
-                    <p><strong>Mobile-Fix:</strong> Die Lightbox reagiert auf Touch-Geräten deutlich zuverlässiger und unterstützt Wisch-Navigation für schnelle Medienwechsel.</p>
-                    <p><strong>PDF-Fix:</strong> Der Viewer startet robuster auf Smartphones (Auto-Modus mit mobilem PDF.js-Fallback und stabilerer Darstellung in der Lightbox).</p>
-                    <p><strong>Polish:</strong> Mehr Stabilität, weniger Reibung – 1.1.6 fühlt sich im Alltag spürbar runder und moderner an.</p>
+					<h2 style="font-style:italic; margin-top:20px;">Changelog Versionsnummer 1.1.9</h2>
+					<p><strong>Multisite-Upgrade:</strong> Neues Netzwerk-Menü für PS Community mit zentraler Steuerung der Subsite-Module, während der Mainblog weiterhin frei bleibt.</p>
+                    <p><strong>Bloghosting-Integration:</strong> Module lassen sich jetzt gezielt für Subsites ohne Level und zusätzlich pro erkanntem PS-Bloghosting-Level freigeben.</p>
+                    <p><strong>Transparenz:</strong> Neue Site-Vorschau im Netzwerk-Admin zeigt pro Seite Blog-ID, erkanntes Level und die effektiv erlaubten Module laut Matrix.</p>
+                    <p><strong>Cloud-Policy:</strong> User-Cloud-Scope (netzwerkweit/site-lokal), Netzwerk-Limits und Scope-Migration wurden für Activity+ und Media zentral vereinheitlicht.</p>
+                    <p><strong>Medien & Avatare:</strong> Profil-Medien-Regeln in Multisite inklusive Konfliktschutz sowie separat konfigurierbarer Avatar-Scope (inherit/network/site).</p>
 
                   
                 </td>

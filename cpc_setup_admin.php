@@ -2827,6 +2827,20 @@ function cpc_admin_getting_started_core_save($the_post) {
 	if (isset($the_post['core-docs']))   	   $cpc_default_core .= 'core-docs,';
 	if (isset($the_post['core-projects']))	   $cpc_default_core .= 'core-projects,';
     if (isset($the_post['core-invite']))     $cpc_default_core .= 'core-invite,';
+
+    if (function_exists('cpc_multisite_is_module_allowed_for_subsites') && function_exists('cpc_multisite_is_main_blog') && is_multisite() && !cpc_multisite_is_main_blog()) {
+        $allowed_modules = function_exists('cpc_multisite_get_allowed_modules_for_subsites') ? cpc_multisite_get_allowed_modules_for_subsites() : array();
+        $current_modules = array_values(array_filter(explode(',', $cpc_default_core)));
+        $filtered_modules = array();
+        foreach ($current_modules as $module) {
+            if (!in_array($module, cpc_multisite_get_module_registry(), true) || in_array($module, $allowed_modules, true)) {
+                $filtered_modules[] = $module;
+            }
+        }
+        $cpc_default_core = implode(',', $filtered_modules);
+    }
+
+    $cpc_default_core = implode(',', array_values(array_unique(array_filter(explode(',', $cpc_default_core)))));
 	update_option('cpc_default_core', $cpc_default_core);  
 
 	if (isset($the_post['cpc_core_options_tips'])):
@@ -2980,6 +2994,13 @@ if (!function_exists('cpc_admin_getting_started_extensions')):
 endif;
 
 function cpc_show_core($values, $field, $label, $help, $video, $disabled = false, $disabled_hint = '') {
+
+    if (function_exists('cpc_multisite_is_module_allowed_for_subsites') && function_exists('cpc_multisite_is_main_blog') && is_multisite() && !cpc_multisite_is_main_blog() && !cpc_multisite_is_module_allowed_for_subsites($field)) {
+        $disabled = true;
+        if (!$disabled_hint) {
+            $disabled_hint = __('Für Subseiten gesperrt', CPC2_TEXT_DOMAIN);
+        }
+    }
 
     $html = '<input type="checkbox" class="cpc_extension_checkbox" style="width:10px;" name="'.$field.'"';
     if (in_array($field, $values)) $html .= ' CHECKED';
