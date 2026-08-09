@@ -64,47 +64,109 @@ function cpc_update_group_member_count($group_id, $blog_id = null) {
 }
 
 /**
- * Check if user is member of group
+ * Get all membership IDs for a user/group pair.
  */
-function cpc_is_group_member($user_id, $group_id, $blog_id = null) {
-	if (!$user_id) $user_id = get_current_user_id();
-	if (!$user_id) return false;
+function cpc_get_group_membership_ids($user_id, $group_id, $status = null, $blog_id = null) {
+	$user_id = (int) $user_id;
+	$group_id = (int) $group_id;
+	if (!$user_id || !$group_id) return array();
 
-	// Multisite support
 	$switched = false;
 	if (is_multisite() && $blog_id && $blog_id != get_current_blog_id()) {
 		switch_to_blog($blog_id);
 		$switched = true;
 	}
 
-	$args = array(
-		'post_type' => 'cpc_group_members',
-		'posts_per_page' => 1,
-		'post_status' => 'publish',
-		'meta_query' => array(
-			array(
-				'key' => 'cpc_member_user_id',
-				'value' => $user_id,
-			),
-			array(
-				'key' => 'cpc_member_group_id',
-				'value' => $group_id,
-			),
-			array(
-				'key' => 'cpc_member_status',
-				'value' => 'active',
-			),
+	$meta_query = array(
+		array(
+			'key' => 'cpc_member_user_id',
+			'value' => $user_id,
+			'type' => 'NUMERIC',
+		),
+		array(
+			'key' => 'cpc_member_group_id',
+			'value' => $group_id,
+			'type' => 'NUMERIC',
 		),
 	);
-	$args = cpc_groups_fast_query_args($args, true);
-	$membership = get_posts($args);
-	$is_member = !empty($membership);
-	
+
+	if ($status !== null) {
+		$meta_query[] = array(
+			'key' => 'cpc_member_status',
+			'value' => $status,
+		);
+	}
+
+	$membership_ids = get_posts(cpc_groups_fast_query_args(array(
+		'post_type' => 'cpc_group_members',
+		'posts_per_page' => -1,
+		'post_status' => 'publish',
+		'orderby' => 'ID',
+		'order' => 'DESC',
+		'meta_query' => $meta_query,
+	), true));
+
 	if ($switched) {
 		restore_current_blog();
 	}
-	
-	return $is_member;
+
+	return array_map('absint', $membership_ids);
+}
+
+/**
+ * Choose the effective record when legacy data contains duplicate memberships.
+ */
+function cpc_get_preferred_group_membership_id($membership_ids) {
+	$status_priority = array('pending' => 1, 'banned' => 2, 'active' => 3);
+	$role_priority = array('member' => 1, 'moderator' => 2, 'admin' => 3);
+	$preferred_id = 0;
+	$preferred_score = -1;
+
+	foreach ($membership_ids as $membership_id) {
+		$membership_id = (int) $membership_id;
+		$status = get_post_meta($membership_id, 'cpc_member_status', true);
+		$role = get_post_meta($membership_id, 'cpc_member_role', true);
+		$score = (isset($status_priority[$status]) ? $status_priority[$status] : 0) * 10;
+		$score += isset($role_priority[$role]) ? $role_priority[$role] : 0;
+
+		if ($score > $preferred_score || ($score === $preferred_score && $membership_id > $preferred_id)) {
+			$preferred_id = $membership_id;
+			$preferred_score = $score;
+		}
+	}
+
+	return $preferred_id;
+}
+
+/**
+ * Check whether a user is the group author or explicitly stored creator.
+ */
+function cpc_is_group_creator($user_id, $group_id, $blog_id = null) {
+	$switched = false;
+	if (is_multisite() && $blog_id && $blog_id != get_current_blog_id()) {
+		switch_to_blog($blog_id);
+		$switched = true;
+	}
+
+	$group = get_post($group_id);
+	$creator_id = (int) get_post_meta($group_id, 'cpc_group_creator', true);
+	$is_creator = $group && ((int) $group->post_author === (int) $user_id || $creator_id === (int) $user_id);
+
+	if ($switched) {
+		restore_current_blog();
+	}
+
+	return (bool) $is_creator;
+}
+
+/**
+ * Check if user is member of group
+ */
+function cpc_is_group_member($user_id, $group_id, $blog_id = null) {
+	if (!$user_id) $user_id = get_current_user_id();
+	if (!$user_id) return false;
+
+	return !empty(cpc_get_group_membership_ids($user_id, $group_id, 'active', $blog_id));
 }
 
 /**
@@ -121,34 +183,15 @@ function cpc_get_group_member_role($user_id, $group_id, $blog_id = null) {
 		$switched = true;
 	}
 
-	$args = array(
-		'post_type' => 'cpc_group_members',
-		'posts_per_page' => 1,
-		'post_status' => 'publish',
-		'meta_query' => array(
-			array(
-				'key' => 'cpc_member_user_id',
-				'value' => $user_id,
-			),
-			array(
-				'key' => 'cpc_member_group_id',
-				'value' => $group_id,
-			),
-		),
-	);
-	$args = cpc_groups_fast_query_args($args, true);
-	$membership = get_posts($args);
-	$role = false;
-	
-	if (!empty($membership)) {
-		$role = get_post_meta((int) $membership[0], 'cpc_member_role', true);
-	}
-	
-	// Fallback: Check if user is group creator/author
+	$role = cpc_is_group_creator($user_id, $group_id) ? 'admin' : false;
+
 	if (!$role) {
-		$group = get_post($group_id);
-		if ($group && $group->post_author == $user_id) {
-			$role = 'admin';
+		$role_priority = array('member' => 1, 'moderator' => 2, 'admin' => 3);
+		foreach (cpc_get_group_membership_ids($user_id, $group_id, 'active') as $membership_id) {
+			$membership_role = get_post_meta($membership_id, 'cpc_member_role', true);
+			if (isset($role_priority[$membership_role]) && (!$role || $role_priority[$membership_role] > $role_priority[$role])) {
+				$role = $membership_role;
+			}
 		}
 	}
 	
@@ -211,18 +254,54 @@ function cpc_add_group_member($user_id, $group_id, $role = 'member', $status = '
 		$switched = true;
 	}
 	
-	// Check if already member
-	if (cpc_is_group_member($user_id, $group_id)) {
-		if ($switched) restore_current_blog();
-		return false;
-	}
-
 	$user = get_user_by('id', $user_id);
 	$group = get_post($group_id);
 
 	if (!$user || !$group) {
 		if ($switched) restore_current_blog();
 		return false;
+	}
+
+	$valid_roles = array('member', 'moderator', 'admin');
+	$valid_statuses = array('active', 'pending', 'banned');
+	$role = in_array($role, $valid_roles, true) ? $role : 'member';
+	$status = in_array($status, $valid_statuses, true) ? $status : 'active';
+	$membership_ids = cpc_get_group_membership_ids($user_id, $group_id);
+
+	if (!empty($membership_ids)) {
+		$membership_id = cpc_get_preferred_group_membership_id($membership_ids);
+		$current_role = get_post_meta($membership_id, 'cpc_member_role', true);
+		$current_status = get_post_meta($membership_id, 'cpc_member_status', true);
+		$is_creator = cpc_is_group_creator($user_id, $group_id);
+
+		if ($current_status === 'banned' && !$is_creator) {
+			if ($switched) restore_current_blog();
+			return false;
+		}
+
+		$role_priority = array('member' => 1, 'moderator' => 2, 'admin' => 3);
+		if (isset($role_priority[$current_role]) && $role_priority[$current_role] > $role_priority[$role]) {
+			$role = $current_role;
+		}
+		if ($current_status === 'active') {
+			$status = 'active';
+		}
+		if ($is_creator) {
+			$role = 'admin';
+			$status = 'active';
+		}
+
+		update_post_meta($membership_id, 'cpc_member_role', $role);
+		update_post_meta($membership_id, 'cpc_member_status', $status);
+		foreach ($membership_ids as $duplicate_id) {
+			if ((int) $duplicate_id !== $membership_id) {
+				wp_delete_post((int) $duplicate_id, true);
+			}
+		}
+		cpc_update_group_member_count($group_id);
+
+		if ($switched) restore_current_blog();
+		return $membership_id;
 	}
 
 	// Create membership post
@@ -267,26 +346,12 @@ function cpc_remove_group_member($user_id, $group_id, $blog_id = null) {
 		$switched = true;
 	}
 	
-	$args = array(
-		'post_type' => 'cpc_group_members',
-		'posts_per_page' => 1,
-		'post_status' => 'publish',
-		'meta_query' => array(
-			array(
-				'key' => 'cpc_member_user_id',
-				'value' => $user_id,
-			),
-			array(
-				'key' => 'cpc_member_group_id',
-				'value' => $group_id,
-			),
-		),
-	);
-	$args = cpc_groups_fast_query_args($args, true);
-	$membership = get_posts($args);
+	$membership_ids = cpc_get_group_membership_ids($user_id, $group_id);
 
-	if (!empty($membership)) {
-		wp_delete_post((int) $membership[0], true);
+	if (!empty($membership_ids)) {
+		foreach ($membership_ids as $membership_id) {
+			wp_delete_post((int) $membership_id, true);
+		}
 		
 		// Update group member count
 		cpc_update_group_member_count($group_id);

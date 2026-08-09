@@ -297,6 +297,10 @@ function cpc_ajax_leave_group() {
 		wp_send_json_error(array('message' => __('Ungültige Gruppe.', CPC2_TEXT_DOMAIN)));
 	}
 
+	if (cpc_is_group_creator($user_id, $group_id, $current_blog_id)) {
+		wp_send_json_error(array('message' => __('Der Gruppenersteller kann die Gruppe nicht verlassen.', CPC2_TEXT_DOMAIN)));
+	}
+
 	// Check if user is the creator/only admin
 	$admins = cpc_get_group_admins($group_id);
 	if (is_array($admins) && count($admins) == 1 && $admins[0]->ID == $user_id) {
@@ -407,34 +411,23 @@ function cpc_ajax_update_member_role() {
 		wp_send_json_error(array('message' => __('Ungültige Rolle.', CPC2_TEXT_DOMAIN)));
 	}
 
-	// Get membership
-	$args = array(
-		'post_type'              => 'cpc_group_members',
-		'posts_per_page'         => 1,
-		'post_status'            => 'publish',
-		'fields'                 => 'ids',
-		'no_found_rows'          => true,
-		'update_post_meta_cache' => false,
-		'update_post_term_cache' => false,
-		'suppress_filters'       => true,
-		'meta_query'             => array(
-			array(
-				'key'   => 'cpc_member_user_id',
-				'value' => $member_id,
-			),
-			array(
-				'key'   => 'cpc_member_group_id',
-				'value' => $group_id,
-			),
-		),
-	);
-	$membership = get_posts($args);
+	if ($new_role !== 'admin' && cpc_is_group_creator($member_id, $group_id)) {
+		wp_send_json_error(array('message' => __('Die Rolle des Gruppenerstellers muss Admin bleiben.', CPC2_TEXT_DOMAIN)));
+	}
 
-	if (empty($membership)) {
+	$membership_ids = cpc_get_group_membership_ids($member_id, $group_id, 'active');
+
+	if (empty($membership_ids)) {
 		wp_send_json_error(array('message' => __('Mitgliedschaft nicht gefunden.', CPC2_TEXT_DOMAIN)));
 	}
 
-	update_post_meta((int) $membership[0], 'cpc_member_role', $new_role);
+	$membership_id = cpc_get_preferred_group_membership_id($membership_ids);
+	update_post_meta($membership_id, 'cpc_member_role', $new_role);
+	foreach ($membership_ids as $duplicate_id) {
+		if ((int) $duplicate_id !== $membership_id) {
+			wp_delete_post((int) $duplicate_id, true);
+		}
+	}
 
 	wp_send_json_success(array('message' => __('Rolle erfolgreich aktualisiert.', CPC2_TEXT_DOMAIN)));
 }
@@ -462,6 +455,10 @@ function cpc_ajax_remove_member() {
 	// Can't remove self this way
 	if ($member_id == $current_user_id) {
 		wp_send_json_error(array('message' => __('Nutze die "Gruppe verlassen" Funktion.', CPC2_TEXT_DOMAIN)));
+	}
+
+	if (cpc_is_group_creator($member_id, $group_id, $current_blog_id)) {
+		wp_send_json_error(array('message' => __('Der Gruppenersteller kann nicht entfernt werden.', CPC2_TEXT_DOMAIN)));
 	}
 
 	$success = cpc_remove_group_member($member_id, $group_id, $current_blog_id);
@@ -492,39 +489,17 @@ function cpc_ajax_approve_member() {
 		wp_send_json_error(array('message' => __('Du hast keine Berechtigung dazu.', CPC2_TEXT_DOMAIN)));
 	}
 
-	// Get membership
-	$args = array(
-		'post_type'              => 'cpc_group_members',
-		'posts_per_page'         => 1,
-		'post_status'            => 'publish',
-		'fields'                 => 'ids',
-		'no_found_rows'          => true,
-		'update_post_meta_cache' => false,
-		'update_post_term_cache' => false,
-		'suppress_filters'       => true,
-		'meta_query'             => array(
-			array(
-				'key'   => 'cpc_member_user_id',
-				'value' => $member_id,
-			),
-			array(
-				'key'   => 'cpc_member_group_id',
-				'value' => $group_id,
-			),
-			array(
-				'key'   => 'cpc_member_status',
-				'value' => 'pending',
-			),
-		),
-	);
-	$membership = get_posts($args);
+	$membership_ids = cpc_get_group_membership_ids($member_id, $group_id, 'pending');
 
-	if (empty($membership)) {
+	if (empty($membership_ids)) {
 		wp_send_json_error(array('message' => __('Ausstehende Mitgliedschaft nicht gefunden.', CPC2_TEXT_DOMAIN)));
 	}
 
-	update_post_meta((int) $membership[0], 'cpc_member_status', 'active');
-	cpc_update_group_member_count($group_id);
+	$membership_id = cpc_get_preferred_group_membership_id($membership_ids);
+	$role = get_post_meta($membership_id, 'cpc_member_role', true);
+	if (!cpc_add_group_member($member_id, $group_id, $role, 'active')) {
+		wp_send_json_error(array('message' => __('Mitgliedschaft konnte nicht genehmigt werden.', CPC2_TEXT_DOMAIN)));
+	}
 
 	do_action('cpc_member_approved', $member_id, $group_id);
 
@@ -619,16 +594,22 @@ function cpc_ajax_approve_membership() {
 	if (!$request || $request->post_type !== 'cpc_group_members') {
 		wp_send_json_error(array('message' => 'Anfrage nicht gefunden'));
 	}
-	
-	// Approve the request
-	update_post_meta($request_id, 'cpc_member_status', 'active');
-	update_post_meta($request_id, 'cpc_member_joined', current_time('mysql'));
-	
-	// Update member count
-	cpc_update_group_member_count($group_id);
-	
-	// Fire action for other plugins
-	$user_id = get_post_meta($request_id, 'cpc_member_user_id', true);
+
+	$user_id = (int) get_post_meta($request_id, 'cpc_member_user_id', true);
+	$request_group_id = (int) get_post_meta($request_id, 'cpc_member_group_id', true);
+	if (!$user_id || $request_group_id !== $group_id || get_post_meta($request_id, 'cpc_member_status', true) !== 'pending') {
+		wp_send_json_error(array('message' => 'Anfrage gehört nicht zu dieser Gruppe'));
+	}
+
+	$pending_ids = cpc_get_group_membership_ids($user_id, $group_id, 'pending');
+	$preferred_id = cpc_get_preferred_group_membership_id($pending_ids);
+	$role = get_post_meta($preferred_id, 'cpc_member_role', true);
+	$membership_id = cpc_add_group_member($user_id, $group_id, $role, 'active');
+	if (!$membership_id) {
+		wp_send_json_error(array('message' => 'Mitgliedschaft konnte nicht genehmigt werden'));
+	}
+	update_post_meta($membership_id, 'cpc_member_joined', current_time('timestamp'));
+
 	do_action('cpc_membership_approved', $user_id, $group_id);
 	
 	wp_send_json_success(array('message' => __('Mitgliedschaft genehmigt', CPC2_TEXT_DOMAIN)));
@@ -661,14 +642,17 @@ function cpc_ajax_reject_membership() {
 	if (!$request || $request->post_type !== 'cpc_group_members') {
 		wp_send_json_error(array('message' => 'Anfrage nicht gefunden'));
 	}
-	
-	// Get user ID before deleting
-	$user_id = get_post_meta($request_id, 'cpc_member_user_id', true);
-	
-	// Delete the request
-	wp_delete_post($request_id, true);
-	
-	// Fire action for other plugins
+
+	$user_id = (int) get_post_meta($request_id, 'cpc_member_user_id', true);
+	$request_group_id = (int) get_post_meta($request_id, 'cpc_member_group_id', true);
+	if (!$user_id || $request_group_id !== $group_id || get_post_meta($request_id, 'cpc_member_status', true) !== 'pending') {
+		wp_send_json_error(array('message' => 'Anfrage gehört nicht zu dieser Gruppe'));
+	}
+
+	foreach (cpc_get_group_membership_ids($user_id, $group_id, 'pending') as $pending_id) {
+		wp_delete_post((int) $pending_id, true);
+	}
+
 	do_action('cpc_membership_rejected', $user_id, $group_id);
 	
 	wp_send_json_success(array('message' => __('Anfrage abgelehnt', CPC2_TEXT_DOMAIN)));

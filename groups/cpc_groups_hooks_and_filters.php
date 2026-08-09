@@ -176,61 +176,89 @@ function cpc_groups_ensure_creator_admin_membership($post_id, $post, $update) {
 	}
 
 	$author_id = (int) $post->post_author;
-	if ($author_id <= 0) {
-		return;
-	}
-
-	// Keep creator meta consistent for admin-created groups.
 	if (!get_post_meta($post_id, 'cpc_group_creator', true)) {
 		update_post_meta($post_id, 'cpc_group_creator', $author_id);
 	}
 
-	$args = array(
-		'post_type'              => 'cpc_group_members',
-		'posts_per_page'         => 1,
-		'post_status'            => 'publish',
-		'fields'                 => 'ids',
-		'no_found_rows'          => true,
-		'update_post_meta_cache' => false,
-		'update_post_term_cache' => false,
-		'suppress_filters'       => true,
-		'meta_query'             => array(
-			array(
-				'key'   => 'cpc_member_user_id',
-				'value' => $author_id,
-			),
-			array(
-				'key'   => 'cpc_member_group_id',
-				'value' => $post_id,
-			),
-		),
-	);
+	$creator_id = (int) get_post_meta($post_id, 'cpc_group_creator', true);
+	$admin_ids = array_unique(array_filter(array($author_id, $creator_id)));
+	$current_blog_id = is_multisite() ? get_current_blog_id() : null;
 
-	$membership_ids = get_posts($args);
+	foreach ($admin_ids as $admin_id) {
+		cpc_add_group_member($admin_id, $post_id, 'admin', 'active', $current_blog_id);
+	}
+}
 
-	if (empty($membership_ids)) {
-		$current_blog_id = is_multisite() ? get_current_blog_id() : null;
-		cpc_add_group_member($author_id, $post_id, 'admin', 'active', $current_blog_id);
+/**
+ * Reconcile legacy group memberships once per site.
+ */
+add_action('admin_init', 'cpc_groups_reconcile_memberships');
+function cpc_groups_reconcile_memberships() {
+	if (get_option('cpc_group_memberships_reconciled_119') || !current_user_can('manage_options')) {
 		return;
 	}
 
-	$membership_id = (int) $membership_ids[0];
-	$changed = false;
-
-	if (get_post_meta($membership_id, 'cpc_member_role', true) !== 'admin') {
-		update_post_meta($membership_id, 'cpc_member_role', 'admin');
-		$changed = true;
+	if ((function_exists('wp_doing_ajax') && wp_doing_ajax()) || (defined('DOING_AJAX') && DOING_AJAX)) {
+		return;
 	}
 
-	if (get_post_meta($membership_id, 'cpc_member_status', true) !== 'active') {
-		update_post_meta($membership_id, 'cpc_member_status', 'active');
-		$changed = true;
+	$membership_ids = get_posts(cpc_groups_fast_query_args(array(
+		'post_type' => 'cpc_group_members',
+		'posts_per_page' => -1,
+		'post_status' => 'publish',
+		'orderby' => 'ID',
+		'order' => 'DESC',
+	), true));
+	$memberships_by_pair = array();
+	$affected_group_ids = array();
+
+	foreach ($membership_ids as $membership_id) {
+		$membership_id = (int) $membership_id;
+		$user_id = (int) get_post_meta($membership_id, 'cpc_member_user_id', true);
+		$group_id = (int) get_post_meta($membership_id, 'cpc_member_group_id', true);
+		if (!$user_id || !$group_id) continue;
+
+		if (!get_post_meta($membership_id, 'cpc_member_role', true)) {
+			update_post_meta($membership_id, 'cpc_member_role', 'member');
+		}
+		if (!get_post_meta($membership_id, 'cpc_member_status', true)) {
+			update_post_meta($membership_id, 'cpc_member_status', 'active');
+		}
+
+		$pair_key = $user_id.':'.$group_id;
+		$memberships_by_pair[$pair_key][] = $membership_id;
+		$affected_group_ids[$group_id] = $group_id;
 	}
 
-	if ($changed) {
-		cpc_update_group_member_count($post_id);
-		cpc_update_group_activity($post_id);
+	foreach ($memberships_by_pair as $pair_membership_ids) {
+		$preferred_id = cpc_get_preferred_group_membership_id($pair_membership_ids);
+		foreach ($pair_membership_ids as $membership_id) {
+			if ((int) $membership_id !== $preferred_id) {
+				wp_delete_post((int) $membership_id, true);
+			}
+		}
 	}
+
+	$groups = get_posts(cpc_groups_fast_query_args(array(
+		'post_type' => 'cpc_group',
+		'posts_per_page' => -1,
+		'post_status' => 'any',
+	), false));
+
+	foreach ($groups as $group) {
+		$creator_id = (int) get_post_meta($group->ID, 'cpc_group_creator', true);
+		$admin_ids = array_unique(array_filter(array((int) $group->post_author, $creator_id)));
+		foreach ($admin_ids as $admin_id) {
+			cpc_add_group_member($admin_id, $group->ID, 'admin', 'active');
+		}
+		$affected_group_ids[$group->ID] = $group->ID;
+	}
+
+	foreach ($affected_group_ids as $group_id) {
+		cpc_update_group_member_count($group_id);
+	}
+
+	update_option('cpc_group_memberships_reconciled_119', current_time('mysql'));
 }
 
 /**

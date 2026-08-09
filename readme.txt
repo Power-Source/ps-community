@@ -4,7 +4,7 @@ Tags: wp community, social network, social networking, social media, cp-communit
 Requires at least: 4.9
 Tested up to: 6.8.1
 ClassicPress: 2.7.0
-Stable tag: 1.1.9
+Stable tag: 1.2.0
 License URI: https://www.gnu.org/licenses/gpl-2.0.html
 
 == Description ==
@@ -121,6 +121,16 @@ Hinweis zum Rangsystem:
 * Die Expertenliste kann optional Ranglabels anzeigen (Rookie/Helper/Pro/Master), basierend auf Anzahl akzeptierter Antworten im Zeitraum.
 
 == ChangeLog ==
+
+= 1.2.0 =
+
+* Fix: PS-Community-Logo im ClassicPress-Adminmenü wird auf allen Adminseiten einheitlich in der vorgesehenen Größe dargestellt
+* Fix: Gruppenadmins werden zuverlässig erkannt und erhalten alle verfügbaren Gruppenoptionen und Einstellungen
+* Fix: Gruppenrollen werden nur noch aus aktiven Mitgliedschaften ermittelt; bei doppelten Datensätzen werden Status und Rollenstärke deterministisch priorisiert
+* Fix: Mitgliedschaften werden pro Benutzer und Gruppe konsolidiert, statt bei ausstehenden oder gesperrten Datensätzen weitere Duplikate anzulegen
+* Fix: Gruppenersteller aus `post_author` und `cpc_group_creator` bleiben dauerhaft aktive Gruppenadmins und können nicht versehentlich entfernt, herabgestuft oder aus der Gruppe ausgetragen werden
+* Verbesserung: Einmalige Bestandsbereinigung normalisiert bestehende Gruppenmitgliedschaften, entfernt Duplikate und aktualisiert die Mitgliederzahlen
+* Security-Fix: Genehmigen und Ablehnen von Gruppenanfragen validiert jetzt zuverlässig die Zuordnung von Anfrage, Benutzer und Gruppe
 
 = 1.1.9 =
 

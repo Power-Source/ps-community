@@ -1,6 +1,11 @@
 <?php
 // Admin dependencies
 add_action('admin_enqueue_scripts', 'cpc_usermeta_admin_init');
+add_action('admin_head', 'cpc_admin_menu_icon_css');
+
+function cpc_admin_menu_icon_css() {
+    echo '<style id="cpc-admin-menu-icon-css">#adminmenu #toplevel_page_cpc_com .wp-menu-image img{width:20px;height:20px;object-fit:contain}</style>';
+}
 
 // Load integration modules
 require_once(plugin_dir_path(__FILE__) . 'lib/psource_chat_integration.php');
@@ -381,12 +386,13 @@ function cpccom_release_notes() {
 					<div style="font-size:1.6em; line-height:1.6em; color: #510051; font-weight: bold;">PS Community Plugin</div>
 					<a href="https://power-source.github.io/ps-community/" target="_blank">Verfügbar im PSOURCE GitHub-Repository</a><br />
 
-					<h2 style="font-style:italic; margin-top:20px;">Changelog Versionsnummer 1.1.9</h2>
-					<p><strong>Multisite-Upgrade:</strong> Neues Netzwerk-Menü für PS Community mit zentraler Steuerung der Subsite-Module, während der Mainblog weiterhin frei bleibt.</p>
-                    <p><strong>Bloghosting-Integration:</strong> Module lassen sich jetzt gezielt für Subsites ohne Level und zusätzlich pro erkanntem PS-Bloghosting-Level freigeben.</p>
-                    <p><strong>Transparenz:</strong> Neue Site-Vorschau im Netzwerk-Admin zeigt pro Seite Blog-ID, erkanntes Level und die effektiv erlaubten Module laut Matrix.</p>
-                    <p><strong>Cloud-Policy:</strong> User-Cloud-Scope (netzwerkweit/site-lokal), Netzwerk-Limits und Scope-Migration wurden für Activity+ und Media zentral vereinheitlicht.</p>
-                    <p><strong>Medien & Avatare:</strong> Profil-Medien-Regeln in Multisite inklusive Konfliktschutz sowie separat konfigurierbarer Avatar-Scope (inherit/network/site).</p>
+					<h2 style="font-style:italic; margin-top:20px;">Changelog Versionsnummer 1.2.0</h2>
+					<p><strong>Admin-Menü:</strong> Das PS-Community-Logo wird auf allen ClassicPress-Adminseiten einheitlich in der vorgesehenen Größe dargestellt.</p>
+                    <p><strong>Gruppenadmins:</strong> Aktive Administratoren werden zuverlässig erkannt und erhalten wieder sämtliche Gruppenoptionen und Einstellungen.</p>
+                    <p><strong>Mitgliedschaften:</strong> Doppelte Datensätze werden konsolidiert; aktive Mitgliedschaften und stärkere Rollen werden deterministisch priorisiert.</p>
+                    <p><strong>Gruppenersteller:</strong> Autor und explizit gespeicherter Ersteller bleiben dauerhaft aktive Gruppenadmins und können nicht versehentlich entfernt oder herabgestuft werden.</p>
+                    <p><strong>Bestandsbereinigung:</strong> Bestehende Gruppenmitgliedschaften werden einmalig normalisiert, Duplikate entfernt und Mitgliederzahlen aktualisiert.</p>
+                    <p><strong>Sicherheit:</strong> Gruppenanfragen werden beim Genehmigen und Ablehnen zuverlässig Benutzer und Gruppe zugeordnet.</p>
 
                   
                 </td>
