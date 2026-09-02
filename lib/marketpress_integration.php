@@ -1,11 +1,4 @@
 <?php
-/*
-Plugin Name: PS MarketPress x PS Community Bridge
-Description: Bringt MarketPress-Ereignisse in PS Community: Profil-Tab, Benachrichtigungen, Aktivitaet und Gruppenkontext.
-Version: 1.0.0
-Author: PSOURCE
-Text Domain: mpcpc
-*/
 
 if ( ! defined( 'ABSPATH' ) ) {
     exit;
@@ -18,8 +11,7 @@ if ( ! class_exists( 'PS_MarketPress_Community_Bridge' ) ) {
         const OPTION_KEY = 'mpcpc_settings';
 
         public function __construct() {
-            add_action( 'admin_menu', array( $this, 'register_admin_menu' ) );
-            add_action( 'admin_init', array( $this, 'register_settings' ) );
+            add_action( 'cpc_integrations_settings', array( $this, 'render_settings_page' ) );
             add_action( 'add_meta_boxes', array( $this, 'register_product_meta_box' ) );
             add_action( 'save_post', array( $this, 'save_product_group_meta' ), 10, 2 );
             add_action( 'plugins_loaded', array( $this, 'register_runtime_hooks' ), 30 );
@@ -66,6 +58,24 @@ if ( ! class_exists( 'PS_MarketPress_Community_Bridge' ) ) {
                 $saved = array();
             }
             return array_merge( self::defaults(), $saved );
+        }
+
+        private function get_marketpress_status() {
+            if ( ! function_exists( 'get_plugins' ) ) {
+                require_once ABSPATH . 'wp-admin/includes/plugin.php';
+            }
+
+            $plugin_file = 'marketpress/marketpress.php';
+            $plugins = get_plugins();
+            $installed = isset( $plugins[ $plugin_file ] );
+
+            return array(
+                'installed' => $installed,
+                'active' => $installed && is_plugin_active( $plugin_file ),
+                'file' => $plugin_file,
+                'name' => $installed ? $plugins[ $plugin_file ]['Name'] : null,
+                'version' => $installed ? $plugins[ $plugin_file ]['Version'] : null,
+            );
         }
 
         public function register_runtime_hooks() {
@@ -125,11 +135,11 @@ if ( ! class_exists( 'PS_MarketPress_Community_Bridge' ) ) {
             }
 
             if ( ! is_user_logged_in() ) {
-                return '<div class="cpc-error">' . esc_html__( 'Bitte melde Dich an, um Deine Bestellungen zu sehen.', 'mpcpc' ) . '</div>';
+                return '<div class="cpc-error">' . esc_html__( 'Bitte melde Dich an, um Deine Bestellungen zu sehen.', 'cp-community' ) . '</div>';
             }
 
             if ( ! $this->can_view_orders_tab( (int) $user_id, get_current_user_id() ) ) {
-                return '<div class="cpc-error">' . esc_html__( 'Du darfst diesen Bereich nicht ansehen.', 'mpcpc' ) . '</div>';
+                return '<div class="cpc-error">' . esc_html__( 'Du darfst diesen Bereich nicht ansehen.', 'cp-community' ) . '</div>';
             }
 
             if ( class_exists( 'MP_Short_Codes' ) ) {
@@ -137,11 +147,11 @@ if ( ! class_exists( 'PS_MarketPress_Community_Bridge' ) ) {
             }
 
             if ( ! function_exists( 'mp_order_status' ) ) {
-                return '<div class="cpc-error">' . esc_html__( 'MarketPress ist nicht verfuegbar.', 'mpcpc' ) . '</div>';
+                return '<div class="cpc-error">' . esc_html__( 'MarketPress ist nicht verfuegbar.', 'cp-community' ) . '</div>';
             }
 
             $out  = '<div class="mpcpc-profile-orders">';
-            $out .= '<h3>' . esc_html__( 'Meine Bestellungen', 'mpcpc' ) . '</h3>';
+            $out .= '<h3>' . esc_html__( 'Meine Bestellungen', 'cp-community' ) . '</h3>';
             $out .= mp_order_status( array( 'echo' => false ) );
             $out .= '</div>';
 
@@ -222,12 +232,12 @@ if ( ! class_exists( 'PS_MarketPress_Community_Bridge' ) ) {
             }
 
             $label = $this->event_label( $event );
-            $msg   = sprintf( __( 'Bestellung #%d: %s', 'mpcpc' ), $order_id, $label );
+            $msg   = sprintf( __( 'Bestellung #%d: %s', 'cp-community' ), $order_id, $label );
 
             if ( empty( $settings['privacy_hide_amounts'] ) ) {
                 $total = method_exists( $order, 'get_meta' ) ? $order->get_meta( 'mp_order_total', '' ) : '';
                 if ( '' !== $total && null !== $total ) {
-                    $msg .= ' (' . sprintf( __( 'Gesamt: %s', 'mpcpc' ), $total ) . ')';
+                    $msg .= ' (' . sprintf( __( 'Gesamt: %s', 'cp-community' ), $total ) . ')';
                 }
             }
 
@@ -236,7 +246,7 @@ if ( ! class_exists( 'PS_MarketPress_Community_Bridge' ) ) {
                 'order_id' => $order_id,
                 'url' => $url,
                 'message' => $msg,
-                'subject' => sprintf( __( 'Shop-Update zu Bestellung #%d', 'mpcpc' ), $order_id ),
+                'subject' => sprintf( __( 'Shop-Update zu Bestellung #%d', 'cp-community' ), $order_id ),
                 'actor_id' => $this->resolve_actor_id( $order ),
                 'group_id' => $this->resolve_group_id_from_order( $order ),
                 'order' => $order,
@@ -410,7 +420,7 @@ if ( ! class_exists( 'PS_MarketPress_Community_Bridge' ) ) {
         private function insert_profile_activity( $target_user_id, $actor_user_id, $message, $url ) {
             $activity_text = $message;
             if ( ! empty( $url ) ) {
-                $activity_text .= ' [a] href="' . esc_url( $url ) . '"[a2]' . esc_html__( 'Details ansehen', 'mpcpc' ) . '[/a]';
+                $activity_text .= ' [a] href="' . esc_url( $url ) . '"[a2]' . esc_html__( 'Details ansehen', 'cp-community' ) . '[/a]';
             }
 
             $post = array(
@@ -435,7 +445,7 @@ if ( ! class_exists( 'PS_MarketPress_Community_Bridge' ) ) {
         private function insert_group_activity( $group_id, $actor_user_id, $message, $url ) {
             $activity_text = $message;
             if ( ! empty( $url ) ) {
-                $activity_text .= ' [a] href="' . esc_url( $url ) . '"[a2]' . esc_html__( 'Bestellung', 'mpcpc' ) . '[/a]';
+                $activity_text .= ' [a] href="' . esc_url( $url ) . '"[a2]' . esc_html__( 'Bestellung', 'cp-community' ) . '[/a]';
             }
 
             $post = array(
@@ -464,15 +474,15 @@ if ( ! class_exists( 'PS_MarketPress_Community_Bridge' ) ) {
         private function event_label( $event ) {
             switch ( $event ) {
                 case 'new_order':
-                    return __( 'neu eingegangen', 'mpcpc' );
+                    return __( 'neu eingegangen', 'cp-community' );
                 case 'paid':
-                    return __( 'bezahlt', 'mpcpc' );
+                    return __( 'bezahlt', 'cp-community' );
                 case 'shipped':
-                    return __( 'versendet', 'mpcpc' );
+                    return __( 'versendet', 'cp-community' );
                 case 'closed':
-                    return __( 'abgeschlossen', 'mpcpc' );
+                    return __( 'abgeschlossen', 'cp-community' );
                 case 'trashed':
-                    return __( 'storniert/entfernt', 'mpcpc' );
+                    return __( 'storniert/entfernt', 'cp-community' );
                 default:
                     return sanitize_text_field( $event );
             }
@@ -484,7 +494,7 @@ if ( ! class_exists( 'PS_MarketPress_Community_Bridge' ) ) {
                 if ( post_type_exists( $post_type ) ) {
                     add_meta_box(
                         'mpcpc_group_context',
-                        __( 'PS Community Gruppenkontext', 'mpcpc' ),
+                        __( 'PS Community Gruppenkontext', 'cp-community' ),
                         array( $this, 'render_product_group_meta_box' ),
                         $post_type,
                         'side',
@@ -505,7 +515,7 @@ if ( ! class_exists( 'PS_MarketPress_Community_Bridge' ) ) {
 
             wp_nonce_field( 'mpcpc_group_meta_save', 'mpcpc_group_meta_nonce' );
 
-            echo '<p>' . esc_html__( 'Ordnet dieses Produkt einer PS Community Gruppe zu. Diese Zuordnung wird fuer Gruppen-Activity-Kontext verwendet.', 'mpcpc' ) . '</p>';
+            echo '<p>' . esc_html__( 'Ordnet dieses Produkt einer PS Community Gruppe zu. Diese Zuordnung wird fuer Gruppen-Activity-Kontext verwendet.', 'cp-community' ) . '</p>';
 
             $groups = array();
             if ( post_type_exists( 'cpc_group' ) ) {
@@ -518,9 +528,9 @@ if ( ! class_exists( 'PS_MarketPress_Community_Bridge' ) ) {
                 ) );
             }
 
-            echo '<p><label for="mpcpc_group_id"><strong>' . esc_html__( 'Gruppe', 'mpcpc' ) . '</strong></label></p>';
+            echo '<p><label for="mpcpc_group_id"><strong>' . esc_html__( 'Gruppe', 'cp-community' ) . '</strong></label></p>';
             echo '<select name="mpcpc_group_id" id="mpcpc_group_id" style="width:100%">';
-            echo '<option value="0">' . esc_html__( 'Keine Gruppenzuordnung', 'mpcpc' ) . '</option>';
+            echo '<option value="0">' . esc_html__( 'Keine Gruppenzuordnung', 'cp-community' ) . '</option>';
 
             if ( ! empty( $groups ) ) {
                 foreach ( $groups as $group ) {
@@ -531,11 +541,11 @@ if ( ! class_exists( 'PS_MarketPress_Community_Bridge' ) ) {
             echo '</select>';
 
             echo '<p style="margin-top:10px">';
-            echo '<label for="mpcpc_group_id_manual"><strong>' . esc_html__( 'Oder manuelle Gruppen-ID', 'mpcpc' ) . '</strong></label>';
+            echo '<label for="mpcpc_group_id_manual"><strong>' . esc_html__( 'Oder manuelle Gruppen-ID', 'cp-community' ) . '</strong></label>';
             echo '<input type="number" min="0" name="mpcpc_group_id_manual" id="mpcpc_group_id_manual" value="' . esc_attr( $current_group_id ) . '" style="width:100%" />';
             echo '</p>';
 
-            echo '<p class="description">' . esc_html__( 'Gespeichert wird im Produkt-Meta-Key:', 'mpcpc' ) . ' <code>' . esc_html( $meta_key ) . '</code></p>';
+            echo '<p class="description">' . esc_html__( 'Gespeichert wird im Produkt-Meta-Key:', 'cp-community' ) . ' <code>' . esc_html( $meta_key ) . '</code></p>';
         }
 
         public function save_product_group_meta( $post_id, $post ) {
@@ -570,20 +580,6 @@ if ( ! class_exists( 'PS_MarketPress_Community_Bridge' ) ) {
             } else {
                 delete_post_meta( $post_id, $meta_key );
             }
-        }
-
-        public function register_admin_menu() {
-            add_options_page(
-                __( 'MP x Community Bridge', 'mpcpc' ),
-                __( 'MP x Community Bridge', 'mpcpc' ),
-                'manage_options',
-                'mpcpc-bridge',
-                array( $this, 'render_settings_page' )
-            );
-        }
-
-        public function register_settings() {
-            register_setting( 'mpcpc_settings_group', self::OPTION_KEY, array( $this, 'sanitize_settings' ) );
         }
 
         public function sanitize_settings( $input ) {
@@ -639,94 +635,157 @@ if ( ! class_exists( 'PS_MarketPress_Community_Bridge' ) ) {
                 return;
             }
 
+            $status = $this->get_marketpress_status();
+
+            if ( $status['active'] && isset( $_POST['mpcpc_integration_save'] ) ) {
+                check_admin_referer( 'mpcpc_integration_settings' );
+                $input = isset( $_POST[ self::OPTION_KEY ] ) ? wp_unslash( $_POST[ self::OPTION_KEY ] ) : array();
+                update_option( self::OPTION_KEY, $this->sanitize_settings( $input ) );
+                echo '<div class="notice notice-success inline"><p>' . esc_html__( 'MarketPress-Integrations-Einstellungen gespeichert.', 'cp-community' ) . '</p></div>';
+            }
+
             $s = $this->get_settings();
             ?>
-            <div class="wrap">
-                <h1><?php echo esc_html__( 'PS MarketPress x PS Community Bridge', 'mpcpc' ); ?></h1>
-                <p><?php echo esc_html__( 'Verknuepft Bestell-Ereignisse mit Profil-Tab, Benachrichtigungen und Aktivitaet in PS Community.', 'mpcpc' ); ?></p>
+            <div class="cpc-integration-box" style="border: 1px solid #ddd; padding: 20px; margin-top: 20px; background-color: #f9f9f9; border-radius: 5px;">
+                <h2><?php echo esc_html__( 'PS MarketPress Integration', 'cp-community' ); ?></h2>
+                <p><?php echo esc_html__( 'Verknuepft Bestell-Ereignisse mit Profil-Tab, Benachrichtigungen und Aktivitaet in PS Community.', 'cp-community' ); ?></p>
 
-                <form method="post" action="options.php">
-                    <?php settings_fields( 'mpcpc_settings_group' ); ?>
+                <?php if ( $status['active'] ) : ?>
+                    <div class="notice <?php echo ! empty( $s['enabled'] ) ? 'notice-success' : 'notice-warning'; ?> inline" style="margin: 0 0 20px 0;">
+                        <p>
+                            <strong><?php echo esc_html__( 'MarketPress:', 'cp-community' ); ?></strong>
+                            <span style="color: #155724;">✓ <?php echo esc_html__( 'Plugin aktiv', 'cp-community' ); ?></span>
+                        </p>
+                        <p style="margin: 5px 0 0 0;">
+                            <strong><?php echo esc_html__( 'PS-Community-Integration:', 'cp-community' ); ?></strong>
+                            <?php if ( ! empty( $s['enabled'] ) ) : ?>
+                                <span style="color: #155724;">✓ <?php echo esc_html__( 'Aktiviert', 'cp-community' ); ?></span>
+                            <?php else : ?>
+                                <span style="color: #856404;">⚠ <?php echo esc_html__( 'Deaktiviert', 'cp-community' ); ?></span>
+                            <?php endif; ?>
+                        </p>
+                        <p style="margin: 5px 0 0 0;">
+                            <strong><?php echo esc_html__( 'Version:', 'cp-community' ); ?></strong>
+                            <?php echo esc_html( $status['name'] ); ?> <?php echo esc_html( $status['version'] ); ?>
+                        </p>
+                    </div>
 
-                    <h2><?php echo esc_html__( 'Allgemein', 'mpcpc' ); ?></h2>
+                <details class="mpcpc-integration-settings">
+                    <summary style="cursor:pointer; font-weight:600; padding:8px 0;"><?php echo esc_html__( 'MarketPress-Integration konfigurieren', 'cp-community' ); ?></summary>
+                    <div style="padding-top: 8px;">
+                <form method="post" action="">
+                    <?php wp_nonce_field( 'mpcpc_integration_settings' ); ?>
+
+                    <h2><?php echo esc_html__( 'Allgemein', 'cp-community' ); ?></h2>
                     <table class="form-table" role="presentation">
                         <tr>
-                            <th scope="row"><?php echo esc_html__( 'Bridge aktivieren', 'mpcpc' ); ?></th>
-                            <td><label><input type="checkbox" name="<?php echo esc_attr( self::OPTION_KEY ); ?>[enabled]" value="1" <?php checked( ! empty( $s['enabled'] ) ); ?>> <?php echo esc_html__( 'Aktiv', 'mpcpc' ); ?></label></td>
+                            <th scope="row"><?php echo esc_html__( 'Integration aktivieren', 'cp-community' ); ?></th>
+                            <td>
+                                <input type="hidden" name="<?php echo esc_attr( self::OPTION_KEY ); ?>[enabled]" value="0">
+                                <label><input type="checkbox" name="<?php echo esc_attr( self::OPTION_KEY ); ?>[enabled]" value="1" <?php checked( ! empty( $s['enabled'] ) ); ?>> <?php echo esc_html__( 'MarketPress mit PS Community verbinden', 'cp-community' ); ?></label>
+                            </td>
                         </tr>
                         <tr>
-                            <th scope="row"><?php echo esc_html__( 'Debug-Logging', 'mpcpc' ); ?></th>
-                            <td><label><input type="checkbox" name="<?php echo esc_attr( self::OPTION_KEY ); ?>[debug_log]" value="1" <?php checked( ! empty( $s['debug_log'] ) ); ?>> <?php echo esc_html__( 'Schreibt Events ins PHP-Errorlog', 'mpcpc' ); ?></label></td>
+                            <th scope="row"><?php echo esc_html__( 'Debug-Logging', 'cp-community' ); ?></th>
+                            <td><label><input type="checkbox" name="<?php echo esc_attr( self::OPTION_KEY ); ?>[debug_log]" value="1" <?php checked( ! empty( $s['debug_log'] ) ); ?>> <?php echo esc_html__( 'Schreibt Events ins PHP-Errorlog', 'cp-community' ); ?></label></td>
                         </tr>
                         <tr>
-                            <th scope="row"><?php echo esc_html__( 'Actor User-ID', 'mpcpc' ); ?></th>
-                            <td><input type="number" min="0" name="<?php echo esc_attr( self::OPTION_KEY ); ?>[actor_user_id]" value="<?php echo esc_attr( (int) $s['actor_user_id'] ); ?>" class="small-text"> <p class="description"><?php echo esc_html__( '0 = Besteller/aktueller Benutzer als Autor fuer Alerts/Aktivitaet.', 'mpcpc' ); ?></p></td>
+                            <th scope="row"><?php echo esc_html__( 'Actor User-ID', 'cp-community' ); ?></th>
+                            <td><input type="number" min="0" name="<?php echo esc_attr( self::OPTION_KEY ); ?>[actor_user_id]" value="<?php echo esc_attr( (int) $s['actor_user_id'] ); ?>" class="small-text"> <p class="description"><?php echo esc_html__( '0 = Besteller/aktueller Benutzer als Autor fuer Alerts/Aktivitaet.', 'cp-community' ); ?></p></td>
                         </tr>
                     </table>
 
-                    <h2><?php echo esc_html__( 'Profil-Tab', 'mpcpc' ); ?></h2>
+                    <h2><?php echo esc_html__( 'Profil-Tab', 'cp-community' ); ?></h2>
                     <table class="form-table" role="presentation">
                         <tr>
-                            <th scope="row"><?php echo esc_html__( 'Tab aktivieren', 'mpcpc' ); ?></th>
-                            <td><label><input type="checkbox" name="<?php echo esc_attr( self::OPTION_KEY ); ?>[profile_tab_enabled]" value="1" <?php checked( ! empty( $s['profile_tab_enabled'] ) ); ?>> <?php echo esc_html__( 'Mein-Bestellungen-Tab anzeigen', 'mpcpc' ); ?></label></td>
+                            <th scope="row"><?php echo esc_html__( 'Tab aktivieren', 'cp-community' ); ?></th>
+                            <td><label><input type="checkbox" name="<?php echo esc_attr( self::OPTION_KEY ); ?>[profile_tab_enabled]" value="1" <?php checked( ! empty( $s['profile_tab_enabled'] ) ); ?>> <?php echo esc_html__( 'Mein-Bestellungen-Tab anzeigen', 'cp-community' ); ?></label></td>
                         </tr>
                         <tr>
-                            <th scope="row"><?php echo esc_html__( 'Tab-Label', 'mpcpc' ); ?></th>
+                            <th scope="row"><?php echo esc_html__( 'Tab-Label', 'cp-community' ); ?></th>
                             <td><input type="text" name="<?php echo esc_attr( self::OPTION_KEY ); ?>[profile_tab_label]" value="<?php echo esc_attr( $s['profile_tab_label'] ); ?>" class="regular-text"></td>
                         </tr>
                         <tr>
-                            <th scope="row"><?php echo esc_html__( 'Tab-Prioritaet', 'mpcpc' ); ?></th>
+                            <th scope="row"><?php echo esc_html__( 'Tab-Prioritaet', 'cp-community' ); ?></th>
                             <td><input type="number" min="1" name="<?php echo esc_attr( self::OPTION_KEY ); ?>[profile_tab_priority]" value="<?php echo esc_attr( (int) $s['profile_tab_priority'] ); ?>" class="small-text"></td>
                         </tr>
                     </table>
 
-                    <h2><?php echo esc_html__( 'Alerts', 'mpcpc' ); ?></h2>
+                    <h2><?php echo esc_html__( 'Alerts', 'cp-community' ); ?></h2>
                     <table class="form-table" role="presentation">
-                        <tr><th scope="row"><?php echo esc_html__( 'Alerts aktivieren', 'mpcpc' ); ?></th><td><label><input type="checkbox" name="<?php echo esc_attr( self::OPTION_KEY ); ?>[alerts_enabled]" value="1" <?php checked( ! empty( $s['alerts_enabled'] ) ); ?>> <?php echo esc_html__( 'PS Community Alerts schreiben', 'mpcpc' ); ?></label></td></tr>
-                        <tr><th scope="row"><?php echo esc_html__( 'Empfaenger', 'mpcpc' ); ?></th><td>
-                            <label><input type="checkbox" name="<?php echo esc_attr( self::OPTION_KEY ); ?>[alert_to_buyer]" value="1" <?php checked( ! empty( $s['alert_to_buyer'] ) ); ?>> <?php echo esc_html__( 'Kaeufer', 'mpcpc' ); ?></label><br>
-                            <label><input type="checkbox" name="<?php echo esc_attr( self::OPTION_KEY ); ?>[alert_to_admin]" value="1" <?php checked( ! empty( $s['alert_to_admin'] ) ); ?>> <?php echo esc_html__( 'Admins', 'mpcpc' ); ?></label>
+                        <tr><th scope="row"><?php echo esc_html__( 'Alerts aktivieren', 'cp-community' ); ?></th><td><label><input type="checkbox" name="<?php echo esc_attr( self::OPTION_KEY ); ?>[alerts_enabled]" value="1" <?php checked( ! empty( $s['alerts_enabled'] ) ); ?>> <?php echo esc_html__( 'PS Community Alerts schreiben', 'cp-community' ); ?></label></td></tr>
+                        <tr><th scope="row"><?php echo esc_html__( 'Empfaenger', 'cp-community' ); ?></th><td>
+                            <label><input type="checkbox" name="<?php echo esc_attr( self::OPTION_KEY ); ?>[alert_to_buyer]" value="1" <?php checked( ! empty( $s['alert_to_buyer'] ) ); ?>> <?php echo esc_html__( 'Kaeufer', 'cp-community' ); ?></label><br>
+                            <label><input type="checkbox" name="<?php echo esc_attr( self::OPTION_KEY ); ?>[alert_to_admin]" value="1" <?php checked( ! empty( $s['alert_to_admin'] ) ); ?>> <?php echo esc_html__( 'Admins', 'cp-community' ); ?></label>
                         </td></tr>
-                        <tr><th scope="row"><?php echo esc_html__( 'Events', 'mpcpc' ); ?></th><td>
-                            <label><input type="checkbox" name="<?php echo esc_attr( self::OPTION_KEY ); ?>[alert_new_order]" value="1" <?php checked( ! empty( $s['alert_new_order'] ) ); ?>> <?php echo esc_html__( 'Neue Bestellung', 'mpcpc' ); ?></label><br>
-                            <label><input type="checkbox" name="<?php echo esc_attr( self::OPTION_KEY ); ?>[alert_paid]" value="1" <?php checked( ! empty( $s['alert_paid'] ) ); ?>> <?php echo esc_html__( 'Bezahlt', 'mpcpc' ); ?></label><br>
-                            <label><input type="checkbox" name="<?php echo esc_attr( self::OPTION_KEY ); ?>[alert_shipped]" value="1" <?php checked( ! empty( $s['alert_shipped'] ) ); ?>> <?php echo esc_html__( 'Versendet', 'mpcpc' ); ?></label><br>
-                            <label><input type="checkbox" name="<?php echo esc_attr( self::OPTION_KEY ); ?>[alert_closed]" value="1" <?php checked( ! empty( $s['alert_closed'] ) ); ?>> <?php echo esc_html__( 'Abgeschlossen', 'mpcpc' ); ?></label><br>
-                            <label><input type="checkbox" name="<?php echo esc_attr( self::OPTION_KEY ); ?>[alert_trashed]" value="1" <?php checked( ! empty( $s['alert_trashed'] ) ); ?>> <?php echo esc_html__( 'Storniert/Entfernt', 'mpcpc' ); ?></label>
+                        <tr><th scope="row"><?php echo esc_html__( 'Events', 'cp-community' ); ?></th><td>
+                            <label><input type="checkbox" name="<?php echo esc_attr( self::OPTION_KEY ); ?>[alert_new_order]" value="1" <?php checked( ! empty( $s['alert_new_order'] ) ); ?>> <?php echo esc_html__( 'Neue Bestellung', 'cp-community' ); ?></label><br>
+                            <label><input type="checkbox" name="<?php echo esc_attr( self::OPTION_KEY ); ?>[alert_paid]" value="1" <?php checked( ! empty( $s['alert_paid'] ) ); ?>> <?php echo esc_html__( 'Bezahlt', 'cp-community' ); ?></label><br>
+                            <label><input type="checkbox" name="<?php echo esc_attr( self::OPTION_KEY ); ?>[alert_shipped]" value="1" <?php checked( ! empty( $s['alert_shipped'] ) ); ?>> <?php echo esc_html__( 'Versendet', 'cp-community' ); ?></label><br>
+                            <label><input type="checkbox" name="<?php echo esc_attr( self::OPTION_KEY ); ?>[alert_closed]" value="1" <?php checked( ! empty( $s['alert_closed'] ) ); ?>> <?php echo esc_html__( 'Abgeschlossen', 'cp-community' ); ?></label><br>
+                            <label><input type="checkbox" name="<?php echo esc_attr( self::OPTION_KEY ); ?>[alert_trashed]" value="1" <?php checked( ! empty( $s['alert_trashed'] ) ); ?>> <?php echo esc_html__( 'Storniert/Entfernt', 'cp-community' ); ?></label>
                         </td></tr>
                     </table>
 
-                    <h2><?php echo esc_html__( 'Aktivitaet', 'mpcpc' ); ?></h2>
+                    <h2><?php echo esc_html__( 'Aktivitaet', 'cp-community' ); ?></h2>
                     <table class="form-table" role="presentation">
-                        <tr><th scope="row"><?php echo esc_html__( 'Aktivitaet aktivieren', 'mpcpc' ); ?></th><td><label><input type="checkbox" name="<?php echo esc_attr( self::OPTION_KEY ); ?>[activity_enabled]" value="1" <?php checked( ! empty( $s['activity_enabled'] ) ); ?>> <?php echo esc_html__( 'Aktivitaetsbeitraege schreiben', 'mpcpc' ); ?></label></td></tr>
-                        <tr><th scope="row"><?php echo esc_html__( 'Kanaele', 'mpcpc' ); ?></th><td>
-                            <label><input type="checkbox" name="<?php echo esc_attr( self::OPTION_KEY ); ?>[activity_to_profile]" value="1" <?php checked( ! empty( $s['activity_to_profile'] ) ); ?>> <?php echo esc_html__( 'Profil-Kontext', 'mpcpc' ); ?></label><br>
-                            <label><input type="checkbox" name="<?php echo esc_attr( self::OPTION_KEY ); ?>[activity_to_group]" value="1" <?php checked( ! empty( $s['activity_to_group'] ) ); ?>> <?php echo esc_html__( 'Gruppen-Kontext', 'mpcpc' ); ?></label>
+                        <tr><th scope="row"><?php echo esc_html__( 'Aktivitaet aktivieren', 'cp-community' ); ?></th><td><label><input type="checkbox" name="<?php echo esc_attr( self::OPTION_KEY ); ?>[activity_enabled]" value="1" <?php checked( ! empty( $s['activity_enabled'] ) ); ?>> <?php echo esc_html__( 'Aktivitaetsbeitraege schreiben', 'cp-community' ); ?></label></td></tr>
+                        <tr><th scope="row"><?php echo esc_html__( 'Kanaele', 'cp-community' ); ?></th><td>
+                            <label><input type="checkbox" name="<?php echo esc_attr( self::OPTION_KEY ); ?>[activity_to_profile]" value="1" <?php checked( ! empty( $s['activity_to_profile'] ) ); ?>> <?php echo esc_html__( 'Profil-Kontext', 'cp-community' ); ?></label><br>
+                            <label><input type="checkbox" name="<?php echo esc_attr( self::OPTION_KEY ); ?>[activity_to_group]" value="1" <?php checked( ! empty( $s['activity_to_group'] ) ); ?>> <?php echo esc_html__( 'Gruppen-Kontext', 'cp-community' ); ?></label>
                         </td></tr>
-                        <tr><th scope="row"><?php echo esc_html__( 'Events', 'mpcpc' ); ?></th><td>
-                            <label><input type="checkbox" name="<?php echo esc_attr( self::OPTION_KEY ); ?>[activity_new_order]" value="1" <?php checked( ! empty( $s['activity_new_order'] ) ); ?>> <?php echo esc_html__( 'Neue Bestellung', 'mpcpc' ); ?></label><br>
-                            <label><input type="checkbox" name="<?php echo esc_attr( self::OPTION_KEY ); ?>[activity_paid]" value="1" <?php checked( ! empty( $s['activity_paid'] ) ); ?>> <?php echo esc_html__( 'Bezahlt', 'mpcpc' ); ?></label><br>
-                            <label><input type="checkbox" name="<?php echo esc_attr( self::OPTION_KEY ); ?>[activity_shipped]" value="1" <?php checked( ! empty( $s['activity_shipped'] ) ); ?>> <?php echo esc_html__( 'Versendet', 'mpcpc' ); ?></label><br>
-                            <label><input type="checkbox" name="<?php echo esc_attr( self::OPTION_KEY ); ?>[activity_closed]" value="1" <?php checked( ! empty( $s['activity_closed'] ) ); ?>> <?php echo esc_html__( 'Abgeschlossen', 'mpcpc' ); ?></label><br>
-                            <label><input type="checkbox" name="<?php echo esc_attr( self::OPTION_KEY ); ?>[activity_trashed]" value="1" <?php checked( ! empty( $s['activity_trashed'] ) ); ?>> <?php echo esc_html__( 'Storniert/Entfernt', 'mpcpc' ); ?></label>
+                        <tr><th scope="row"><?php echo esc_html__( 'Events', 'cp-community' ); ?></th><td>
+                            <label><input type="checkbox" name="<?php echo esc_attr( self::OPTION_KEY ); ?>[activity_new_order]" value="1" <?php checked( ! empty( $s['activity_new_order'] ) ); ?>> <?php echo esc_html__( 'Neue Bestellung', 'cp-community' ); ?></label><br>
+                            <label><input type="checkbox" name="<?php echo esc_attr( self::OPTION_KEY ); ?>[activity_paid]" value="1" <?php checked( ! empty( $s['activity_paid'] ) ); ?>> <?php echo esc_html__( 'Bezahlt', 'cp-community' ); ?></label><br>
+                            <label><input type="checkbox" name="<?php echo esc_attr( self::OPTION_KEY ); ?>[activity_shipped]" value="1" <?php checked( ! empty( $s['activity_shipped'] ) ); ?>> <?php echo esc_html__( 'Versendet', 'cp-community' ); ?></label><br>
+                            <label><input type="checkbox" name="<?php echo esc_attr( self::OPTION_KEY ); ?>[activity_closed]" value="1" <?php checked( ! empty( $s['activity_closed'] ) ); ?>> <?php echo esc_html__( 'Abgeschlossen', 'cp-community' ); ?></label><br>
+                            <label><input type="checkbox" name="<?php echo esc_attr( self::OPTION_KEY ); ?>[activity_trashed]" value="1" <?php checked( ! empty( $s['activity_trashed'] ) ); ?>> <?php echo esc_html__( 'Storniert/Entfernt', 'cp-community' ); ?></label>
                         </td></tr>
-                        <tr><th scope="row"><?php echo esc_html__( 'Privacy', 'mpcpc' ); ?></th><td><label><input type="checkbox" name="<?php echo esc_attr( self::OPTION_KEY ); ?>[privacy_hide_amounts]" value="1" <?php checked( ! empty( $s['privacy_hide_amounts'] ) ); ?>> <?php echo esc_html__( 'Betrag in Meldungen ausblenden', 'mpcpc' ); ?></label></td></tr>
+                        <tr><th scope="row"><?php echo esc_html__( 'Privacy', 'cp-community' ); ?></th><td><label><input type="checkbox" name="<?php echo esc_attr( self::OPTION_KEY ); ?>[privacy_hide_amounts]" value="1" <?php checked( ! empty( $s['privacy_hide_amounts'] ) ); ?>> <?php echo esc_html__( 'Betrag in Meldungen ausblenden', 'cp-community' ); ?></label></td></tr>
                     </table>
 
-                    <h2><?php echo esc_html__( 'Gruppenkontext', 'mpcpc' ); ?></h2>
+                    <h2><?php echo esc_html__( 'Gruppenkontext', 'cp-community' ); ?></h2>
                     <table class="form-table" role="presentation">
-                        <tr><th scope="row"><?php echo esc_html__( 'Gruppenmapping aktivieren', 'mpcpc' ); ?></th><td><label><input type="checkbox" name="<?php echo esc_attr( self::OPTION_KEY ); ?>[group_context_enabled]" value="1" <?php checked( ! empty( $s['group_context_enabled'] ) ); ?>> <?php echo esc_html__( 'Group-Kontext aus Produkt-Meta lesen', 'mpcpc' ); ?></label></td></tr>
-                        <tr><th scope="row"><?php echo esc_html__( 'Produkt-Meta-Key fuer Gruppe', 'mpcpc' ); ?></th><td><input type="text" name="<?php echo esc_attr( self::OPTION_KEY ); ?>[group_meta_key]" value="<?php echo esc_attr( $s['group_meta_key'] ); ?>" class="regular-text"> <p class="description"><?php echo esc_html__( 'Beispiel: cpc_group_id (enthaelt die ID einer cpc_group am Produkt).', 'mpcpc' ); ?></p></td></tr>
-                        <tr><th scope="row"><?php echo esc_html__( 'Fallback ohne Gruppe', 'mpcpc' ); ?></th><td>
+                        <tr><th scope="row"><?php echo esc_html__( 'Gruppenmapping aktivieren', 'cp-community' ); ?></th><td><label><input type="checkbox" name="<?php echo esc_attr( self::OPTION_KEY ); ?>[group_context_enabled]" value="1" <?php checked( ! empty( $s['group_context_enabled'] ) ); ?>> <?php echo esc_html__( 'Group-Kontext aus Produkt-Meta lesen', 'cp-community' ); ?></label></td></tr>
+                        <tr><th scope="row"><?php echo esc_html__( 'Produkt-Meta-Key fuer Gruppe', 'cp-community' ); ?></th><td><input type="text" name="<?php echo esc_attr( self::OPTION_KEY ); ?>[group_meta_key]" value="<?php echo esc_attr( $s['group_meta_key'] ); ?>" class="regular-text"> <p class="description"><?php echo esc_html__( 'Beispiel: cpc_group_id (enthaelt die ID einer cpc_group am Produkt).', 'cp-community' ); ?></p></td></tr>
+                        <tr><th scope="row"><?php echo esc_html__( 'Fallback ohne Gruppe', 'cp-community' ); ?></th><td>
                             <select name="<?php echo esc_attr( self::OPTION_KEY ); ?>[group_fallback]">
-                                <option value="profile" <?php selected( $s['group_fallback'], 'profile' ); ?>><?php echo esc_html__( 'Ins Profil schreiben', 'mpcpc' ); ?></option>
-                                <option value="none" <?php selected( $s['group_fallback'], 'none' ); ?>><?php echo esc_html__( 'Nicht schreiben', 'mpcpc' ); ?></option>
+                                <option value="profile" <?php selected( $s['group_fallback'], 'profile' ); ?>><?php echo esc_html__( 'Ins Profil schreiben', 'cp-community' ); ?></option>
+                                <option value="none" <?php selected( $s['group_fallback'], 'none' ); ?>><?php echo esc_html__( 'Nicht schreiben', 'cp-community' ); ?></option>
                             </select>
                         </td></tr>
                     </table>
 
-                    <?php submit_button(); ?>
+                    <?php submit_button( __( 'Einstellungen speichern', 'cp-community' ), 'primary', 'mpcpc_integration_save' ); ?>
                 </form>
+                    </div>
+                </details>
+
+                <?php elseif ( $status['installed'] ) : ?>
+                    <div class="notice notice-warning inline" style="margin: 0 0 20px 0;">
+                        <p>
+                            <strong><?php echo esc_html__( 'Status:', 'cp-community' ); ?></strong>
+                            <span style="color: #856404;">⚠ <?php echo esc_html__( 'Installiert aber deaktiviert', 'cp-community' ); ?></span>
+                        </p>
+                    </div>
+                    <p><?php echo esc_html__( 'PS MarketPress ist installiert, aber nicht aktiviert. Um die Integration nutzen zu können, musst du das Plugin aktivieren.', 'cp-community' ); ?></p>
+                    <p>
+                        <a href="<?php echo esc_url( wp_nonce_url(
+                            admin_url( 'plugins.php?action=activate&plugin=' . $status['file'] ),
+                            'activate-plugin_' . $status['file']
+                        ) ); ?>" class="button button-primary">
+                            <?php echo esc_html__( 'PS MarketPress aktivieren', 'cp-community' ); ?>
+                        </a>
+                    </p>
+                <?php else : ?>
+                    <div class="notice notice-info inline" style="margin: 0 0 20px 0;">
+                        <p>
+                            <strong><?php echo esc_html__( 'Status:', 'cp-community' ); ?></strong>
+                            <span style="color: #0c5460;">ℹ <?php echo esc_html__( 'Nicht installiert', 'cp-community' ); ?></span>
+                        </p>
+                    </div>
+                    <p><?php echo esc_html__( 'PS MarketPress ist nicht installiert. Installiere zuerst das MarketPress-Plugin, um diese Integration nutzen zu können.', 'cp-community' ); ?></p>
+                <?php endif; ?>
             </div>
             <?php
         }

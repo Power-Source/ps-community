@@ -770,7 +770,9 @@ function cpc_activity_plus_render_tags($item_html, $atts, $item_id, $post_title,
         $plus_html .= '<a class="cpc_activity_plus_link_preview_anchor" href="'.$link_url.'" target="_blank" rel="noopener noreferrer">';
         if ($link_image) {
             $plus_html .= '<div class="cpc_activity_plus_link_preview_image_wrap">';
+            $plus_html .= '<div class="cpc_activity_plus_link_preview_image_container">';
             $plus_html .= '<img src="'.$link_image.'" alt="" class="cpc_activity_plus_link_preview_image active" loading="lazy" />';
+            $plus_html .= '</div>';
             $plus_html .= '</div>';
         }
         $plus_html .= '<div class="cpc_activity_plus_link_preview_content">';

@@ -312,6 +312,7 @@ function cpc_media_ajax_fetch_media() {
         'title' => $media->post_title,
         'description' => $media->post_content,
         'content' => $lightbox_html,
+        'stage_content' => cpc_media_render_gallery_stage_media($media, $gallery_id),
         'author' => get_the_author_meta('display_name', $media->post_author),
         'date' => get_the_date('', $media),
         'file_url' => cpc_media_get_item_url($media_id),

@@ -296,6 +296,7 @@ require_once('cpc_core.php');
 
 // Load integration helpers (needed everywhere, not just admin)
 require_once('lib/psource_chat_integration.php');
+require_once('lib/marketpress_integration.php');
 
 // Profile (User meta)
 if (strpos(CPC_CORE_PLUGINS, 'core-profile') !== false):

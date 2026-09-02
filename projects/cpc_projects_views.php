@@ -675,13 +675,16 @@ function cpc_projects_render_project_owner_line($project) {
     $author_id = (int)$project->post_author;
     $author = $author_id > 0 ? get_user_by('id', $author_id) : false;
     $author_name = $author ? $author->display_name : __('Mitglied', 'cp-community');
-    $author_url = $author_id > 0 ? get_author_posts_url($author_id) : '';
+    $author_url = $author_id > 0 && function_exists('cpc_members_get_profile_url') ? cpc_members_get_profile_url($author_id) : '';
+    if ($author_url === '' && $author_id > 0) {
+        $author_url = get_author_posts_url($author_id);
+    }
 
     $line = '';
-    $line .= '<div class="cpc_projects_item_owner">';
-    $line .= '<span>'.esc_html__('Started by', 'cp-community').' </span>';
+    $line .= '<div class="cpc_projects_card_owner">';
+    $line .= '<span class="cpc_projects_card_owner_label">'.esc_html__('Erstellt von', 'cp-community').'</span>';
     if ($author_url !== '') {
-        $line .= '<a href="'.esc_url($author_url).'">'.get_avatar($author_id, 24).'<span>'.esc_html($author_name).'</span></a>';
+        $line .= '<a class="cpc_projects_card_owner_link" href="'.esc_url($author_url).'">'.get_avatar($author_id, 24).'<span>'.esc_html($author_name).'</span></a>';
     } else {
         $line .= '<span>'.esc_html($author_name).'</span>';
     }
@@ -691,10 +694,10 @@ function cpc_projects_render_project_owner_line($project) {
     if ($component === 'groups' && $component_id > 0) {
         $group = get_post($component_id);
         if ($group && $group->post_type === 'cpc_group') {
-            $line .= '<span class="cpc_projects_item_owner_sep">'.esc_html__('under', 'cp-community').' </span>';
+            $line .= '<span class="cpc_projects_card_context_label">'.esc_html__('in', 'cp-community').'</span>';
             $group_link = function_exists('cpc_get_group_link') ? cpc_get_group_link($group->ID) : '';
             if ($group_link !== '') {
-                $line .= '<a href="'.esc_url($group_link).'"><span>'.esc_html($group->post_title).'</span></a>';
+                $line .= '<a class="cpc_projects_card_group_link" href="'.esc_url($group_link).'">'.esc_html($group->post_title).'</a>';
             } else {
                 $line .= '<span>'.esc_html($group->post_title).'</span>';
             }
@@ -706,30 +709,68 @@ function cpc_projects_render_project_owner_line($project) {
     return $line;
 }
 
+function cpc_projects_render_project_card($project, $args = array()) {
+    $project = get_post($project);
+    if (!$project || $project->post_type !== 'cpc_project') {
+        return '';
+    }
+
+    $args = wp_parse_args($args, array(
+        'context' => 'profile',
+        'show_progress' => true,
+        'show_status' => false,
+        'show_tasks' => false,
+    ));
+
+    $project_id = (int)$project->ID;
+    $project_url = cpc_projects_get_project_url($project_id);
+    $excerpt = wp_trim_words(wp_strip_all_tags((string)$project->post_content), 24);
+    $status = cpc_projects_get_status($project_id);
+    $status_labels = array(
+        'public' => __('Oeffentlich', 'cp-community'),
+        'members' => __('Nur Mitglieder', 'cp-community'),
+        'private' => __('Privat', 'cp-community'),
+    );
+    $context_class = sanitize_html_class((string)$args['context']);
+
+    $html = '<article class="cpc_projects_card cpc_projects_card_'.$context_class.'">';
+    $html .= '<header class="cpc_projects_card_header">';
+    $html .= '<h4 class="cpc_projects_card_title"><a href="'.esc_url($project_url).'">'.esc_html($project->post_title).'</a></h4>';
+    if (!empty($args['show_status']) && isset($status_labels[$status])) {
+        $html .= '<span class="cpc_projects_card_status cpc_projects_card_status_'.esc_attr($status).'">'.esc_html($status_labels[$status]).'</span>';
+    }
+    $html .= '</header>';
+
+    if (!empty($args['show_progress'])) {
+        $progress = cpc_projects_render_project_progress($project_id);
+        if ($progress !== '') {
+            $html .= '<div class="cpc_projects_card_progress">'.$progress.'</div>';
+        }
+    }
+    if ($excerpt !== '') {
+        $html .= '<p class="cpc_projects_card_excerpt">'.esc_html($excerpt).'</p>';
+    }
+    $html .= '<div class="cpc_projects_card_date">'.esc_html(get_the_date('', $project)).'</div>';
+    $html .= '<footer class="cpc_projects_card_footer">';
+    $html .= cpc_projects_render_project_owner_line($project);
+    $html .= '<a class="cpc_projects_card_action" href="'.esc_url($project_url).'">'.esc_html__('Projekt oeffnen', 'cp-community').'</a>';
+    $html .= '</footer>';
+    if (!empty($args['show_tasks'])) {
+        $html .= cpc_projects_render_task_panel($project_id);
+    }
+    $html .= '</article>';
+
+    return $html;
+}
+
 function cpc_projects_render_profile_summary($projects, $user_id) {
     $user = get_user_by('id', (int)$user_id);
     $name = $user ? $user->display_name : __('Mitglied', 'cp-community');
 
     $total = is_array($projects) ? count($projects) : 0;
-    $group_ids = array();
-    if (!empty($projects)) {
-        foreach ($projects as $project) {
-            $component = cpc_projects_get_component($project->ID);
-            if ($component === 'groups') {
-                $group_id = cpc_projects_get_component_id($project->ID);
-                if ($group_id > 0) {
-                    $group_ids[] = (int)$group_id;
-                }
-            }
-        }
-    }
-
-    $group_count = count(array_unique($group_ids));
-
-    return '<p id="group-projects-explainer" class="cpc_projects_profile_summary mg-top-15 no-mg-bottom">'.sprintf(
-        esc_html__('Es wurden %1$s Projekte in %2$s Gruppen fuer %3$s gefunden.', 'cp-community'),
+    return '<p class="cpc_projects_profile_summary">'.sprintf(
+        esc_html__('Es wurden %1$s Projekte fuer %2$s gefunden.', 'cp-community'),
         '<strong>'.(int)$total.'</strong>',
-        '<strong>'.(int)$group_count.'</strong>',
         '<strong>'.esc_html($name).'</strong>'
     ).'</p>';
 }
@@ -740,6 +781,8 @@ function cpc_projects_render_projects_list($projects, $args = array()) {
         'page'           => 1,
         'per_page'       => 10,
         'pagination_url' => '',
+        'page_query_arg' => 'cpc_paged',
+        'context'        => 'profile',
     ));
 
     if (empty($projects)) {
@@ -753,34 +796,24 @@ function cpc_projects_render_projects_list($projects, $args = array()) {
     $offset      = ($page - 1) * $per_page;
     $page_projs  = array_slice($projects, $offset, $per_page);
 
-    $html = '<ul id="task_breaker-projects-lists" class="cpc_projects_list">';
+    $context = sanitize_html_class((string)$args['context']);
+    $html = '<div class="cpc_projects_cards cpc_projects_cards_'.$context.'">';
 
     foreach ($page_projs as $project) {
-        $excerpt = wp_trim_words(wp_strip_all_tags((string)$project->post_content), 24);
-        $html .= '<li class="cpc_projects_item taskbreaker-project-item">';
-        $html .= '<div class="cpc_projects_item_wrap taskbreaker-project-item-wrap">';
-        $html .= '<div class="task_breaker-project-title"><h4 class="cpc_projects_item_title"><a href="'.esc_url(cpc_projects_get_project_url($project->ID)).'">'.esc_html($project->post_title).'</a></h4></div>';
-        $html .= '<div class="task_breaker-project-meta">'.cpc_projects_render_project_progress($project->ID).'</div>';
-        if ($excerpt !== '') {
-            $html .= '<p class="cpc_projects_item_excerpt task_breaker-project-excerpt">'.esc_html($excerpt).'</p>';
-        }
-        $html .= '<div class="cpc_projects_item_meta">'.esc_html(get_the_date('', $project)).'</div>';
-        $html .= '<div class="task_breaker-project-author">'.cpc_projects_render_project_owner_line($project).'</div>';
-        $html .= '<div class="cpc_projects_item_actions"><a class="cpc_button" href="'.esc_url(cpc_projects_get_project_url($project->ID)).'">'.esc_html__('Projekt oeffnen', 'cp-community').'</a></div>';
-        if (!empty($args['show_tasks'])) {
-            $html .= cpc_projects_render_task_panel($project->ID);
-        }
-        $html .= '</div>';
-        $html .= '</li>';
+        $html .= cpc_projects_render_project_card($project, array(
+            'context' => $context,
+            'show_progress' => true,
+            'show_tasks' => !empty($args['show_tasks']),
+        ));
     }
 
-    $html .= '</ul>';
+    $html .= '</div>';
 
     if ($total_pages > 1) {
         $base_url = $args['pagination_url'] ? $args['pagination_url'] : cpc_curPageURL();
         $html .= '<nav class="cpc_projects_pagination">';
         for ($i = 1; $i <= $total_pages; $i++) {
-            $page_url   = add_query_arg('cpc_paged', $i, $base_url);
+            $page_url   = add_query_arg(sanitize_key($args['page_query_arg']), $i, $base_url);
             $active_cls = ($i === $page) ? ' is-active' : '';
             $html .= '<a class="cpc_projects_page_link'.esc_attr($active_cls).'" href="'.esc_url($page_url).'">'.(int)$i.'</a>';
         }
@@ -800,10 +833,11 @@ function cpc_projects_render_profile_tab_content($html, $active_tab, $user_id, $
         return '<p>'.esc_html__('Benutzer nicht gefunden.', 'cp-community').'</p>';
     }
 
-    $projects = cpc_projects_get_profile_projects($user_id, array(
+    $sections = cpc_projects_get_profile_project_sections($user_id, array(
         'posts_per_page' => 120,
         'viewer_id' => get_current_user_id(),
     ));
+    $projects = array_merge($sections['personal'], $sections['groups'], $sections['participating']);
 
     $html = '';
     $html .= cpc_projects_render_notice_html();
@@ -812,14 +846,37 @@ function cpc_projects_render_profile_tab_content($html, $active_tab, $user_id, $
     if (cpc_projects_show_profile_create_form()) {
         $html .= cpc_projects_render_create_form('members', $user_id);
     }
-    $paged   = isset($_GET['cpc_paged']) ? max(1, (int)$_GET['cpc_paged']) : 1;
-    $tab_url = add_query_arg('cpc_projects_tab', 'projects', cpc_curPageURL());
-    $html .= cpc_projects_render_projects_list($projects, array(
-        'show_tasks'     => false,
-        'page'           => $paged,
-        'per_page'       => 10,
-        'pagination_url' => $tab_url,
-    ));
+    $tab_url = add_query_arg('tab', 'projects', remove_query_arg(array(
+        'cpc_projects_personal_page',
+        'cpc_projects_groups_page',
+        'cpc_projects_participating_page',
+    ), cpc_curPageURL()));
+    $section_config = array(
+        'personal' => array(__('Persoenliche Projekte', 'cp-community'), 'cpc_projects_personal_page'),
+        'groups' => array(__('Erstellte Gruppenprojekte', 'cp-community'), 'cpc_projects_groups_page'),
+        'participating' => array(__('Projektbeteiligungen', 'cp-community'), 'cpc_projects_participating_page'),
+    );
+    foreach ($section_config as $section_key => $config) {
+        if (empty($sections[$section_key])) {
+            continue;
+        }
+        $page_arg = $config[1];
+        $page = isset($_GET[$page_arg]) ? max(1, (int)$_GET[$page_arg]) : 1;
+        $html .= '<section class="cpc_projects_profile_section cpc_projects_profile_section_'.$section_key.'">';
+        $html .= '<h3 class="cpc_projects_profile_section_title">'.esc_html($config[0]).'</h3>';
+        $html .= cpc_projects_render_projects_list($sections[$section_key], array(
+            'show_tasks' => false,
+            'page' => $page,
+            'per_page' => 10,
+            'pagination_url' => $tab_url,
+            'page_query_arg' => $page_arg,
+            'context' => 'profile',
+        ));
+        $html .= '</section>';
+    }
+    if (empty($projects)) {
+        $html .= '<p class="cpc_projects_empty">'.esc_html__('Derzeit wurden keine Projekte gefunden.', 'cp-community').'</p>';
+    }
 
     if (get_current_user_id() === $user_id) {
         $notify_task    = get_user_meta($user_id, 'cpc_projects_notify_task',    true);
@@ -897,6 +954,7 @@ function cpc_projects_render_group_tab_content($html, $group_id, $shortcode_atts
         'page'           => $paged_g,
         'per_page'       => 10,
         'pagination_url' => $tab_url_g,
+        'context'        => 'group',
     ));
     $html .= '</div>';
 
@@ -938,12 +996,9 @@ add_shortcode('cpc-project-directory', 'cpc_projects_directory_shortcode');
 
 function cpc_projects_directory_get_results($search = '', $page = 1, $per_page = 12) {
     $offset = max(0, ($page - 1) * $per_page);
-    $visible = array();
-    $current_user_id = get_current_user_id();
 
     $args = array(
-        'posts_per_page' => $per_page * 3,
-        'offset' => $offset,
+        'posts_per_page' => -1,
         'orderby' => 'date',
         'order' => 'DESC',
     );
@@ -952,24 +1007,14 @@ function cpc_projects_directory_get_results($search = '', $page = 1, $per_page =
         $args['s'] = $search;
     }
 
-    $all_projects = cpc_projects_get_projects($args);
-    if (empty($all_projects)) {
+    $visible_projects = cpc_projects_get_projects($args);
+    if (empty($visible_projects)) {
         return array('items' => array(), 'has_more' => false);
     }
 
-    foreach ($all_projects as $project) {
-        if (!cpc_projects_user_can_view_project($project->ID, $current_user_id)) {
-            continue;
-        }
-        $visible[] = $project;
-        if (count($visible) >= $per_page) {
-            break;
-        }
-    }
-
     return array(
-        'items' => $visible,
-        'has_more' => count($all_projects) >= $per_page * 3,
+        'items' => array_slice($visible_projects, $offset, $per_page),
+        'has_more' => count($visible_projects) > $offset + $per_page,
     );
 }
 
@@ -987,37 +1032,15 @@ function cpc_projects_render_directory_list($projects) {
         return '';
     }
 
-    $html = '<ul id="cpc_projects_directory_list" class="cpc_projects_list cpc_projects_directory_list">';
+    $html = '<div id="cpc_projects_directory_list" class="cpc_projects_cards cpc_projects_cards_directory">';
     foreach ($projects as $project) {
-        $excerpt = wp_trim_words(wp_strip_all_tags((string)$project->post_content), 24);
-        $status = cpc_projects_get_status($project->ID);
-        $status_label = '';
-        
-        if ($status === 'members') {
-            $status_label = __('Nur Mitglieder', 'cp-community');
-        } elseif ($status === 'private') {
-            $status_label = __('Privat', 'cp-community');
-        }
-
-        $html .= '<li class="cpc_projects_item cpc_projects_directory_item">';
-        $html .= '<div class="cpc_projects_item_wrap">';
-        $html .= '<div class="task_breaker-project-title"><h4 class="cpc_projects_item_title"><a href="'.esc_url(cpc_projects_get_project_url($project->ID)).'">'.esc_html($project->post_title).'</a></h4></div>';
-        
-        if ($excerpt !== '') {
-            $html .= '<p class="cpc_projects_item_excerpt">'.esc_html($excerpt).'</p>';
-        }
-        
-        if ($status_label !== '') {
-            $html .= '<span class="cpc_projects_directory_status">'.esc_html($status_label).'</span>';
-        }
-        
-        $html .= '<div class="cpc_projects_item_meta">'.esc_html(get_the_date('', $project)).'</div>';
-        $html .= '<div class="task_breaker-project-author">'.cpc_projects_render_project_owner_line($project).'</div>';
-        $html .= '<div class="cpc_projects_item_actions"><a class="cpc_button" href="'.esc_url(cpc_projects_get_project_url($project->ID)).'">'.esc_html__('Projekt oeffnen', 'cp-community').'</a></div>';
-        $html .= '</div>';
-        $html .= '</li>';
+        $html .= cpc_projects_render_project_card($project, array(
+            'context' => 'directory',
+            'show_progress' => true,
+            'show_status' => true,
+        ));
     }
-    $html .= '</ul>';
+    $html .= '</div>';
 
     return $html;
 }

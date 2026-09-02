@@ -306,6 +306,53 @@
 
     var cpcLightboxTouchStamp = 0;
 
+    function activateGalleryStage($gallery, $button, content) {
+        var $stage = $gallery.find('.cpc_media_gallery_stage_view').first();
+        if (!$stage.length || !content) {
+            return;
+        }
+
+        $stage.find('video, audio').each(function() {
+            this.pause();
+        });
+        $stage.empty().append(content).attr('aria-busy', 'false');
+        $gallery.find('.cpc_media_gallery_preview_thumb').removeClass('is-active').attr('aria-pressed', 'false');
+        $button.addClass('is-active').attr('aria-pressed', 'true');
+        runPdfFallback($stage[0]);
+    }
+
+    $(document).on('click', '.cpc_media_gallery_preview_thumb', function() {
+        var $button = $(this);
+        var $gallery = $button.closest('.cpc_media_gallery_block');
+        var mediaId = String($button.data('media-id') || '');
+        var $template = $gallery.find('.cpc_media_gallery_stage_template[data-media-id="' + mediaId + '"]').first();
+        var $stage = $gallery.find('.cpc_media_gallery_stage_view').first();
+
+        if (!mediaId || !$stage.length) {
+            return;
+        }
+
+        if ($template.length && $template[0].content) {
+            activateGalleryStage($gallery, $button, $template[0].content.cloneNode(true));
+            return;
+        }
+
+        $stage.attr('aria-busy', 'true');
+        $.post(cpc_media_ajax.ajaxurl, {
+            action: 'cpc_media_fetch_media',
+            media_id: mediaId
+        }).done(function(resp) {
+            resp = normalizeAjaxResponse(resp);
+            if (!resp || !resp.success || !resp.data || !resp.data.stage_content) {
+                $stage.attr('aria-busy', 'false');
+                return;
+            }
+            activateGalleryStage($gallery, $button, resp.data.stage_content);
+        }).fail(function() {
+            $stage.attr('aria-busy', 'false');
+        });
+    });
+
     function setProgress($form, percent) {
         var $wrap = $form.find('.cpc_media_upload_progress');
         var $bar = $form.find('.cpc_media_upload_progress_bar');
@@ -335,7 +382,7 @@
         }
         var $itemsWrap = $galleryBlock.find(selector).first();
         if (!$itemsWrap.length) {
-            $itemsWrap = $('<div class="cpc_gallery_items" data-gallery-id="' + galleryId + '"></div>').appendTo($galleryBlock.find('.cpc_media_gallery_body').first());
+            $itemsWrap = $('<div class="cpc_gallery_items" data-gallery-id="' + galleryId + '"></div>').appendTo($galleryBlock.find('.cpc_media_gallery_content').first());
         }
         $.each(itemsHtml, function(_, html) {
             $itemsWrap.append(html);
@@ -1058,6 +1105,8 @@
         if (!mediaId || !confirm(cpc_media_ajax.confirmDeleteMedia)) {
             return;
         }
+        var $item = $('.cpc_gallery_item[data-media-id="' + mediaId + '"]').first();
+        var $gallery = $item.closest('.cpc_media_gallery_block');
 
         $.post(cpc_media_ajax.ajaxurl, {
             action: 'cpc_media_ajax_delete_media',
@@ -1069,18 +1118,34 @@
                 alert(cpc_media_ajax.deleteError);
                 return;
             }
-            // Close lightbox and refresh gallery
             closeVanillaLightbox();
+            if ($item.length) {
+                $item.fadeOut(120, function() {
+                    $(this).remove();
+                });
+            }
+            if (resp.data && typeof resp.data.gallery_count !== 'undefined') {
+                updateGalleryCount($gallery, resp.data.gallery_count);
+            }
         }).fail(function(xhr) {
             console.error('Delete failed:', xhr);
             alert(cpc_media_ajax.deleteError);
         });
     });
 
-    // Placeholder for edit form handler
     function openMediaEditForm(mediaId) {
-        // TODO: Implement inline edit or modal form
-        console.log('Edit media:', mediaId);
+        var $item = $('.cpc_gallery_item[data-media-id="' + mediaId + '"]').first();
+        var $form = $item.find('.cpc_media_edit_media_form').first();
+        if (!$item.length || !$form.length) {
+            return;
+        }
+
+        closeVanillaLightbox();
+        $form.stop(true, true).slideDown(120);
+        $item[0].scrollIntoView({ behavior: 'smooth', block: 'center' });
+        window.setTimeout(function() {
+            $form.find('[name="title"]').trigger('focus');
+        }, 180);
     }
 
     // Cover selector functionality
@@ -1116,13 +1181,10 @@
             $selectorHost.find('label').removeClass('cpc_media_cover_selected');
             $selectedLabel.addClass('cpc_media_cover_selected');
 
-            // Update gallery cover preview
-            if (resp.data && resp.data.cover_url) {
-                var $gallery = $selectorHost.closest('.cpc_media_gallery_block');
-                var $coverImage = $gallery.find('.cpc_media_gallery_cover > img').first();
-                if ($coverImage.length) {
-                    $coverImage.attr('src', resp.data.cover_url);
-                }
+            var $gallery = $selectorHost.closest('.cpc_media_gallery_block');
+            var $previewButton = $gallery.find('.cpc_media_gallery_preview_thumb[data-media-id="' + mediaId + '"]').first();
+            if ($previewButton.length) {
+                $previewButton.trigger('click');
             }
         }).fail(function(xhr) {
             console.error('Set cover failed:', xhr);

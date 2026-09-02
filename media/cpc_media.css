@@ -83,30 +83,116 @@
 .cpc_media_gallery_block {
     border: 1px solid #d9e2ea;
     margin: 12px 0;
-    border-radius: 16px;
+    border-radius: 8px;
     background: #fff;
     box-shadow: 0 12px 28px rgba(18, 33, 46, 0.06);
     overflow: hidden;
 }
 
-.cpc_media_gallery_shell {
+.cpc_media_gallery_stage {
+    background: #15202a;
+    border-bottom: 1px solid #d9e2ea;
+}
+
+.cpc_media_gallery_stage_view {
     display: grid;
-    grid-template-columns: minmax(240px, 320px) minmax(0, 1fr);
+    min-height: 320px;
+    background: #0f171e;
 }
 
-.cpc_media_gallery_cover_wrap {
-    background: linear-gradient(160deg, #e8eef4 0%, #cfdbe6 100%);
+.cpc_media_gallery_stage_media,
+.cpc_media_gallery_stage_image {
+    display: flex;
+    width: 100%;
+    min-width: 0;
+    min-height: 320px;
+    align-items: center;
+    justify-content: center;
+}
+
+.cpc_media_gallery_stage_image {
+    padding: 0;
+    border: 0;
+    border-radius: 0;
+    background: transparent;
+    cursor: zoom-in;
+}
+
+.cpc_media_gallery_stage_image img {
+    display: block;
+    width: 100%;
+    height: min(62vh, 560px);
+    min-height: 320px;
+    object-fit: contain;
+}
+
+.cpc_media_gallery_stage_player {
+    display: block;
+    width: 100%;
+    max-height: 560px;
+    background: #000;
+}
+
+.cpc_media_gallery_stage_audio {
+    display: grid;
+    width: min(620px, calc(100% - 36px));
+    gap: 18px;
+    color: #fff;
+    text-align: center;
+}
+
+.cpc_media_gallery_stage_audio audio {
+    width: 100%;
+}
+
+.cpc_media_gallery_stage_pdf {
+    width: 100%;
+    min-height: 420px;
     padding: 14px;
+    box-sizing: border-box;
 }
 
-.cpc_media_gallery_cover {
-    aspect-ratio: 1 / 1;
-    border-radius: 12px;
-    overflow: hidden;
-    background: rgba(255, 255, 255, 0.5);
+.cpc_media_gallery_stage_pdf .cpc_media_lightbox_pdf_frame {
+    min-height: 420px;
+    height: min(68vh, 620px);
 }
 
-.cpc_media_gallery_cover img,
+.cpc_media_gallery_stage_pdf .cpc_media_pdfjs_viewer {
+    max-height: 620px;
+    overflow: auto;
+}
+
+.cpc_media_gallery_stage_open {
+    align-self: flex-start;
+    color: #fff;
+}
+
+.cpc_media_gallery_stage_file {
+    display: grid;
+    justify-items: center;
+    gap: 10px;
+    color: #fff;
+    text-decoration: none;
+}
+
+.cpc_media_gallery_stage_file .dashicons {
+    width: 48px;
+    height: 48px;
+    font-size: 48px;
+}
+
+.cpc_media_gallery_stage_empty {
+    display: flex;
+    min-height: 320px;
+    align-items: center;
+    justify-content: center;
+    color: #dce6ed;
+}
+
+.cpc_media_gallery_shell {
+    display: block;
+}
+
 .cpc_media_gallery_preview_thumb img,
 .cpc_gallery_list_cover img,
 .cpc_gallery_item_preview img {
@@ -116,31 +202,49 @@
     object-fit: cover;
 }
 
-.cpc_media_gallery_cover_empty {
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    color: #536578;
-    font-weight: 600;
-}
-
 .cpc_media_gallery_preview_strip {
-    display: grid;
-    grid-template-columns: repeat(4, 1fr);
+    display: flex;
     gap: 8px;
-    margin-top: 10px;
+    padding: 10px 12px;
+    overflow-x: auto;
 }
 
 .cpc_media_gallery_preview_thumb {
     display: block;
-    aspect-ratio: 1 / 1;
+    flex: 0 0 68px;
+    width: 68px;
+    height: 54px;
+    padding: 0;
     overflow: hidden;
-    border-radius: 10px;
+    border: 2px solid transparent;
+    border-radius: 5px;
     background: #dfe8ef;
+    opacity: 0.72;
+    cursor: pointer;
+}
+
+.cpc_media_gallery_preview_thumb:hover,
+.cpc_media_gallery_preview_thumb:focus-visible {
+    opacity: 1;
+    border-color: #93b6c8;
+    outline: none;
+}
+
+.cpc_media_gallery_preview_thumb.is-active {
+    opacity: 1;
+    border-color: #fff;
+    box-shadow: 0 0 0 2px #1a6c8f;
 }
 
 .cpc_media_gallery_body {
     padding: 18px;
+    min-width: 0;
+}
+
+.cpc_media_gallery_content {
+    min-width: 0;
+    padding: 0 18px 18px;
+    border-top: 1px solid #e4eaef;
 }
 
 .cpc_media_gallery_meta_top,
@@ -509,7 +613,7 @@
     inset: 4vh 4vw;
     max-width: 1400px;
     margin: 0 auto;
-    overflow: visible;
+    overflow: hidden;
 }
 
 .cpc_media_vlightbox_content {
@@ -554,17 +658,17 @@
     align-items: center;
     justify-content: center;
     cursor: pointer;
-    z-index: 8;
+    z-index: 12;
     /* Prevent the nav buttons from intercepting swipe gestures. */
     touch-action: manipulation;
 }
 
 .cpc_media_vlightbox_prev {
-    left: -56px;
+    left: 10px;
 }
 
 .cpc_media_vlightbox_next {
-    right: -56px;
+    right: 10px;
 }
 
 body.cpc_media_vlightbox_open {
@@ -577,25 +681,30 @@ body.cpc_media_vlightbox_open {
     display: grid;
     grid-template-columns: 1fr 350px;
     gap: 0;
+    height: 100%;
     min-height: 400px;
-    max-height: 80vh;
+    min-width: 0;
     overflow: hidden;
 }
 
 /* Media Display Area */
 .cpc_media_lightbox_media {
     display: flex;
-    align-items: center;
+    align-items: flex-start;
     justify-content: center;
     background: #f5f5f5;
     padding: 30px;
     overflow: auto;
     position: relative;
+    min-width: 0;
+    min-height: 0;
 }
 
 .cpc_media_lightbox_image {
     max-width: 100%;
-    max-height: 100%;
+    max-height: none;
+    height: auto;
+    margin: auto;
     object-fit: contain;
     box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
 }
@@ -717,13 +826,21 @@ body.cpc_media_vlightbox_open {
 
 .cpc_media_lightbox_meta {
     display: flex;
-    flex-direction: column;
+    align-items: flex-start;
+    justify-content: space-between;
     gap: 8px;
     font-size: 12px;
     color: #999;
     margin-bottom: 16px;
     padding-bottom: 12px;
     border-bottom: 1px solid #eee;
+}
+
+.cpc_media_lightbox_meta_details {
+    display: flex;
+    min-width: 0;
+    flex-direction: column;
+    gap: 8px;
 }
 
 .cpc_media_lightbox_author {
@@ -747,25 +864,32 @@ body.cpc_media_vlightbox_open {
 
 .cpc_media_lightbox_actions {
     display: flex;
-    gap: 8px;
-    flex-wrap: wrap;
-    margin-top: auto;
-    padding-top: 12px;
-    border-top: 1px solid #eee;
+    flex: 0 0 auto;
+    gap: 6px;
 }
 
 .cpc_media_lightbox_edit,
 .cpc_media_lightbox_delete {
-    padding: 6px 12px;
-    font-size: 12px;
+    display: inline-flex;
+    width: 34px;
+    height: 34px;
+    padding: 0;
+    align-items: center;
+    justify-content: center;
     background: #f5f5f5;
     border: 1px solid #ddd;
-    border-radius: 3px;
+    border-radius: 4px;
     cursor: pointer;
-    text-decoration: none;
     color: #333;
     transition: all 0.2s;
-    display: inline-block;
+}
+
+.cpc_media_lightbox_edit .dashicons,
+.cpc_media_lightbox_delete .dashicons {
+    width: 18px;
+    height: 18px;
+    font-size: 18px;
+    line-height: 18px;
 }
 
 .cpc_media_lightbox_edit:hover {
@@ -783,11 +907,12 @@ body.cpc_media_vlightbox_open {
 /* Close Button */
 .cpc_media_lightbox_close {
     position: absolute;
-    top: -48px;
-    right: 0;
-    background: none;
-    border: none;
-    color: rgba(255, 255, 255, 0.8);
+    top: 10px;
+    right: 10px;
+    background: rgba(20, 28, 38, 0.78);
+    border: 1px solid rgba(255, 255, 255, 0.3);
+    border-radius: 50%;
+    color: #fff;
     font-size: 40px;
     cursor: pointer;
     padding: 0;
@@ -796,7 +921,7 @@ body.cpc_media_vlightbox_open {
     display: flex;
     align-items: center;
     justify-content: center;
-    z-index: 10;
+    z-index: 14;
 }
 
 .cpc_media_lightbox_close:hover {
@@ -992,21 +1117,31 @@ body.cpc_media_vlightbox_open {
 
 /* Responsive Lightbox */
 @media (max-width: 900px) {
+    .cpc_media_vlightbox_dialog {
+        overflow-y: auto;
+    }
+
+    .cpc_media_vlightbox_content {
+        height: auto;
+    }
+
     .cpc_media_lightbox_entry {
         grid-template-columns: 1fr;
+        height: auto;
         min-height: 0;
-        max-height: auto;
+        overflow: visible;
     }
 
     .cpc_media_lightbox_info {
         border-left: none;
         border-top: 1px solid #eee;
-        max-height: 200px;
-        overflow-y: auto;
+        max-height: none;
+        overflow: visible;
     }
 
     .cpc_media_lightbox_media {
         min-height: 300px;
+        max-height: 65vh;
     }
 
     .cpc_media_lightbox_pdf_frame {
@@ -1020,10 +1155,6 @@ body.cpc_media_vlightbox_open {
 }
 
 @media (max-width: 600px) {
-    .cpc_media_lightbox_entry {
-        max-height: 100vh;
-    }
-
     .cpc_media_lightbox_media {
         padding: 20px;
         min-height: 250px;
@@ -1032,10 +1163,6 @@ body.cpc_media_vlightbox_open {
     .cpc_media_lightbox_pdf_frame {
         min-height: 42vh;
         height: 42vh;
-    }
-
-    .cpc_media_lightbox_info {
-        max-height: 30vh;
     }
 
     .cpc_media_cover_options {

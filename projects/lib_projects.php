@@ -316,6 +316,9 @@ function cpc_projects_get_projects($args = array()) {
         'posts_per_page' => 100,
         'orderby' => 'date',
         'order' => 'DESC',
+        'offset' => 0,
+        's' => '',
+        'author' => 0,
     );
     $args = wp_parse_args($args, $defaults);
 
@@ -325,10 +328,18 @@ function cpc_projects_get_projects($args = array()) {
         'posts_per_page' => (int)$args['posts_per_page'],
         'orderby' => $args['orderby'],
         'order' => $args['order'],
+        'offset' => max(0, (int)$args['offset']),
         'no_found_rows' => true,
         'update_post_meta_cache' => false,
         'update_post_term_cache' => false,
     );
+
+    if ($args['s'] !== '') {
+        $query_args['s'] = sanitize_text_field((string)$args['s']);
+    }
+    if (!empty($args['author'])) {
+        $query_args['author'] = (int)$args['author'];
+    }
 
     $meta_query = array();
     if ($args['component'] !== '') {
@@ -422,10 +433,37 @@ function cpc_projects_get_user_participating_project_ids($user_id) {
     return array_values(array_unique(array_filter(array_map('intval', $project_ids))));
 }
 
-function cpc_projects_get_profile_projects($profile_user_id, $args = array()) {
+function cpc_projects_get_visible_projects_by_ids($project_ids, $viewer_id, $limit = 120) {
+    $project_ids = array_values(array_unique(array_filter(array_map('intval', (array)$project_ids))));
+    if (empty($project_ids)) {
+        return array();
+    }
+
+    $projects = get_posts(array(
+        'post_type' => 'cpc_project',
+        'post_status' => 'publish',
+        'posts_per_page' => -1,
+        'post__in' => $project_ids,
+        'orderby' => 'date',
+        'order' => 'DESC',
+        'no_found_rows' => true,
+    ));
+
+    $visible = array_values(array_filter($projects, function($project) use ($viewer_id) {
+        return cpc_projects_user_can_view_project($project->ID, $viewer_id);
+    }));
+
+    return array_slice($visible, 0, max(1, (int)$limit));
+}
+
+function cpc_projects_get_profile_project_sections($profile_user_id, $args = array()) {
     $profile_user_id = (int)$profile_user_id;
     if ($profile_user_id <= 0) {
-        return array();
+        return array(
+            'personal' => array(),
+            'groups' => array(),
+            'participating' => array(),
+        );
     }
 
     $defaults = array(
@@ -434,9 +472,6 @@ function cpc_projects_get_profile_projects($profile_user_id, $args = array()) {
     );
     $args = wp_parse_args($args, $defaults);
 
-    $candidate_ids = array();
-
-    // Projects authored by this profile user (member and group projects).
     $authored = get_posts(array(
         'post_type' => 'cpc_project',
         'post_status' => 'publish',
@@ -445,11 +480,6 @@ function cpc_projects_get_profile_projects($profile_user_id, $args = array()) {
         'fields' => 'ids',
         'no_found_rows' => true,
     ));
-    if (!empty($authored)) {
-        $candidate_ids = array_merge($candidate_ids, array_map('intval', $authored));
-    }
-
-    // Personal projects bound to this profile user context.
     $member_projects = get_posts(array(
         'post_type' => 'cpc_project',
         'post_status' => 'publish',
@@ -461,58 +491,36 @@ function cpc_projects_get_profile_projects($profile_user_id, $args = array()) {
         ),
         'no_found_rows' => true,
     ));
-    if (!empty($member_projects)) {
-        $candidate_ids = array_merge($candidate_ids, array_map('intval', $member_projects));
-    }
-
-    // Group projects where this profile user is a group member.
-    $group_ids = cpc_projects_get_user_group_ids($profile_user_id);
-    if (!empty($group_ids)) {
-        $group_projects = get_posts(array(
-            'post_type' => 'cpc_project',
-            'post_status' => 'publish',
-            'posts_per_page' => 400,
-            'fields' => 'ids',
-            'meta_query' => array(
-                array('key' => 'cpc_project_component', 'value' => 'groups'),
-                array('key' => 'cpc_project_component_id', 'value' => $group_ids, 'compare' => 'IN', 'type' => 'NUMERIC'),
-            ),
-            'no_found_rows' => true,
-        ));
-        if (!empty($group_projects)) {
-            $candidate_ids = array_merge($candidate_ids, array_map('intval', $group_projects));
+    $personal_ids = array_map('intval', $member_projects);
+    $group_ids = array();
+    foreach ((array)$authored as $project_id) {
+        if (cpc_projects_get_component($project_id) === 'groups') {
+            $group_ids[] = (int)$project_id;
+        } else {
+            $personal_ids[] = (int)$project_id;
         }
     }
 
-    // Projects where this profile user participated through tasks/comments.
-    $participant_projects = cpc_projects_get_user_participating_project_ids($profile_user_id);
-    if (!empty($participant_projects)) {
-        $candidate_ids = array_merge($candidate_ids, array_map('intval', $participant_projects));
-    }
-
-    $candidate_ids = array_values(array_unique(array_filter(array_map('intval', $candidate_ids))));
-    if (empty($candidate_ids)) {
-        return array();
-    }
-
-    $posts = get_posts(array(
-        'post_type' => 'cpc_project',
-        'post_status' => 'publish',
-        'posts_per_page' => max(1, (int)$args['posts_per_page']),
-        'post__in' => $candidate_ids,
-        'orderby' => 'date',
-        'order' => 'DESC',
-        'no_found_rows' => true,
+    $personal_ids = array_values(array_unique(array_filter($personal_ids)));
+    $group_ids = array_values(array_unique(array_filter($group_ids)));
+    $owned_ids = array_merge($personal_ids, $group_ids);
+    $participating_ids = array_values(array_diff(
+        cpc_projects_get_user_participating_project_ids($profile_user_id),
+        $owned_ids
     ));
-
-    if (empty($posts)) {
-        return array();
-    }
-
     $viewer_id = (int)$args['viewer_id'];
-    return array_values(array_filter($posts, function($project) use ($viewer_id) {
-        return cpc_projects_user_can_view_project($project->ID, $viewer_id);
-    }));
+    $limit = max(1, (int)$args['posts_per_page']);
+
+    return array(
+        'personal' => cpc_projects_get_visible_projects_by_ids($personal_ids, $viewer_id, $limit),
+        'groups' => cpc_projects_get_visible_projects_by_ids($group_ids, $viewer_id, $limit),
+        'participating' => cpc_projects_get_visible_projects_by_ids($participating_ids, $viewer_id, $limit),
+    );
+}
+
+function cpc_projects_get_profile_projects($profile_user_id, $args = array()) {
+    $sections = cpc_projects_get_profile_project_sections($profile_user_id, $args);
+    return array_merge($sections['personal'], $sections['groups'], $sections['participating']);
 }
 
 function cpc_projects_get_notification_pref($user_id, $pref_key) {

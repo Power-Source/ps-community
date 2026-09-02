@@ -3211,9 +3211,15 @@ function cpc_admin_getting_started_styles() {
                                     echo cpc_styles_show_values(__('Aktivitäts-Container', 'cp-community'), 'cpc_activity_items', '#333333', '', '', 'off', 'off', $function, $values);
                                     echo cpc_styles_show_values(__('Aktivitäts-Eintrag', 'cp-community'), 'cpc_activity_item', '#333333', '#ffffff', '', 'off', 'off', $function, $values);
                                     echo cpc_styles_show_values(__('Aktivitäts-Inhalt', 'cp-community'), 'cpc_activity_content', '#333333', '', '', 'off', 'off', $function, $values);
+                                    echo cpc_styles_show_values(__('Metadaten', 'cp-community'), 'cpc_activity_item_meta', '#333333', '', '', 'off', 'off', $function, $values);
+                                    echo cpc_styles_show_values(__('Beitragstext', 'cp-community'), 'cpc_activity_item_post', '#333333', '', '', 'off', 'off', $function, $values);
+                                    echo cpc_styles_show_values(__('Zeitangabe', 'cp-community'), 'cpc_ago', '#66707a', '', '0.85em', 'off', 'off', $function, $values);
                                     echo cpc_styles_show_values(__('Kommentare-Container', 'cp-community'), 'cpc_activity_comments', '#333333', '', '', 'off', 'off', $function, $values);
                                     echo cpc_styles_show_values(__('Kommentar', 'cp-community'), 'cpc_activity_comment', '#333333', '#f5f5f5', '', 'off', 'off', $function, $values);
                                     echo cpc_styles_show_values(__('Antwort-Textarea', 'cp-community'), 'cpc_activity_post_comment', '#333333', '#ffffff', '', 'off', 'off', $function, $values);
+                                    echo cpc_styles_show_values(__('Kommentar-Schaltfläche', 'cp-community'), 'cpc_activity_post_comment_button', '#ffffff', '#2f7d5c', '', 'on', 'off', $function, $values);
+                                    echo cpc_styles_show_values(__('Kommentar-Schaltfläche (Mouseover)', 'cp-community'), 'cpc_activity_post_comment_button:hover', '#ffffff', '#25674c', '', 'on', 'off', $function, $values);
+                                    echo cpc_styles_show_values(__('Mehr laden', 'cp-community'), 'cpc_activity_load_more', '#ffffff', '#2f7d5c', '', 'on', 'off', $function, $values);
 
                                 echo '</table>';
                             echo '</div>';

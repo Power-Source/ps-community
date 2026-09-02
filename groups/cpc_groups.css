@@ -468,6 +468,7 @@
 
 .cpc-group-tabs-nav .cpc-group-tabs-list {
     list-style: none !important;
+    list-style-type: none !important;
     margin:     0;
     padding:    0;
     display:    flex;
@@ -478,6 +479,17 @@
 .cpc-group-tab-item {
     margin:     0 4px -2px 0;
     list-style: none !important;
+    list-style-type: none !important;
+}
+
+.cpc-group-tabs-list > .cpc-group-tab-item::marker {
+    content: "";
+}
+
+.cpc-group-tabs-list > .cpc-group-tab-item::before,
+.cpc-group-tabs-list > .cpc-group-tab-item::after {
+    display: none !important;
+    content: none !important;
 }
 
 .cpc-group-tab-link {

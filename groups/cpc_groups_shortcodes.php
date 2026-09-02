@@ -61,7 +61,7 @@ function cpc_groups_init() {
 			'sendInvitationsError' => __('Fehler beim Senden der Einladungen', 'cp-community'),
 		),
     ) );		
-    wp_enqueue_style('cpc-groups-css', plugins_url('cpc_groups.css', __FILE__), array(), '1.0');
+	wp_enqueue_style('cpc-groups-css', plugins_url('cpc_groups.css', __FILE__), array(), '1.0.1');
 
     // Settings JS (for admin settings form in groups page)
 	wp_enqueue_script('cpc-groups-settings-js', plugins_url('cpc_groups_settings.js', __FILE__), array('jquery'), '1.0');
@@ -84,8 +84,8 @@ function cpc_groups_init() {
     if (function_exists('cpc_activity_plus_is_enabled') && cpc_activity_plus_is_enabled()) {
         $activity_plus = cpc_activity_plus_get_settings();
         
-        // Enqueue Activity CSS & JS
-        wp_enqueue_style('cpc-activity-css', plugins_url('../activity/cpc_activity.css', __FILE__), array(), '1.0.1');
+		// Enqueue Activity CSS & JS
+		wp_enqueue_style('cpc-activity-css', plugins_url('../activity/cpc_activity.css', __FILE__), array(), '1.1.0');
         wp_enqueue_script('cpc-activity-js', plugins_url('../activity/cpc_activity.js', __FILE__), array('jquery'));
         
         // Localize activity plus settings for JavaScript
@@ -122,7 +122,7 @@ function cpc_groups_register_assets() {
 		wp_register_script('cpc-groups-settings-js', plugins_url('cpc_groups_settings.js', __FILE__), array('jquery'), '1.0');
 	}
     if ( ! wp_style_is('cpc-groups-css', 'registered') ) {
-        wp_register_style('cpc-groups-css', plugins_url('cpc_groups.css', __FILE__), array(), '1.0');
+		wp_register_style('cpc-groups-css', plugins_url('cpc_groups.css', __FILE__), array(), '1.0.1');
     }
 }
 add_action('wp_enqueue_scripts', 'cpc_groups_register_assets', 0);

@@ -9,7 +9,7 @@ msgstr ""
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"POT-Creation-Date: 2026-09-02T05:38:36+00:00\n"
+"POT-Creation-Date: 2026-09-02T06:40:07+00:00\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "X-Generator: WP-CLI 2.12.0\n"
 "X-Domain: cp-community\n"
@@ -68,8 +68,8 @@ msgstr ""
 #: groups/cpc_group_tabs.php:806
 #: groups/cpc_group_tabs.php:844
 #: media/cpc_media_shortcodes.php:478
-#: media/cpc_media_views.php:208
-#: media/lib_media.php:2022
+#: media/cpc_media_views.php:256
+#: media/lib_media.php:2012
 msgid "Löschen"
 msgstr ""
 
@@ -79,7 +79,7 @@ msgstr ""
 
 #: activity/ajax_activity.php:93
 #: cpc_setup_admin.php:508
-#: cpc_setup_admin.php:3215
+#: cpc_setup_admin.php:3218
 msgid "Kommentar"
 msgstr ""
 
@@ -167,14 +167,14 @@ msgstr ""
 
 #: activity/cpc_activity_plus.php:138
 #: activity/cpc_activity_plus_admin.php:36
-#: activity/cpc_activity_shortcodes.php:794
+#: activity/cpc_activity_shortcodes.php:800
 msgid "Aktivitätswall"
 msgstr ""
 
 #: activity/cpc_activity_plus.php:428
 #: activity/cpc_activity_plus.php:430
-#: activity/cpc_activity_plus.php:1107
 #: activity/cpc_activity_plus.php:1109
+#: activity/cpc_activity_plus.php:1111
 #: media/lib_media.php:366
 #: media/lib_media.php:368
 msgid "Unbegrenzt"
@@ -426,60 +426,61 @@ msgstr ""
 
 #: activity/cpc_activity_shortcodes.php:35
 #: groups/cpc_groups_shortcodes.php:99
-#: ps_community.php:541
+#: ps_community.php:542
 msgid "Gespeichert"
 msgstr ""
 
 #: activity/cpc_activity_shortcodes.php:36
 #: groups/cpc_groups_shortcodes.php:100
-#: ps_community.php:542
+#: ps_community.php:543
 msgid "Speichern fehlgeschlagen"
 msgstr ""
 
 #: activity/cpc_activity_shortcodes.php:37
 #: groups/cpc_groups_shortcodes.php:101
-#: ps_community.php:543
+#: ps_community.php:544
 msgid "Netzwerkfehler"
 msgstr ""
 
 #: activity/cpc_activity_shortcodes.php:38
 #: groups/cpc_groups_shortcodes.php:102
-#: ps_community.php:544
+#: ps_community.php:545
 msgid "&lsaquo; zurück"
 msgstr ""
 
 #: activity/cpc_activity_shortcodes.php:39
 #: groups/cpc_groups_shortcodes.php:103
-#: ps_community.php:545
+#: ps_community.php:546
 msgid "weiter &rsaquo;"
 msgstr ""
 
 #: activity/cpc_activity_shortcodes.php:40
 #: groups/cpc_groups_shortcodes.php:104
-#: media/cpc_media_views.php:166
-#: ps_community.php:546
+#: media/cpc_media_views.php:142
+#: media/cpc_media_views.php:169
+#: ps_community.php:547
 msgid "Keine Vorschau"
 msgstr ""
 
 #: activity/cpc_activity_shortcodes.php:41
 #: groups/cpc_groups_shortcodes.php:105
-#: ps_community.php:547
+#: ps_community.php:548
 msgid "Video-Format wird nicht unterstützt"
 msgstr ""
 
 #: activity/cpc_activity_shortcodes.php:42
 #: groups/cpc_groups_shortcodes.php:106
-#: ps_community.php:548
+#: ps_community.php:549
 msgid "Tab-Inhalt konnte nicht geladen werden."
 msgstr ""
 
 #: activity/cpc_activity_shortcodes.php:43
 #: groups/cpc_groups_shortcodes.php:107
-#: ps_community.php:549
+#: ps_community.php:550
 msgid "Schließen"
 msgstr ""
 
-#: activity/cpc_activity_shortcodes.php:168
+#: activity/cpc_activity_shortcodes.php:174
 #: cpc_setup_admin.php:651
 #: cpc_setup_admin.php:2287
 #: cpc_setup_admin.php:2373
@@ -490,7 +491,7 @@ msgstr ""
 msgid "Stadt/Gemeinde"
 msgstr ""
 
-#: activity/cpc_activity_shortcodes.php:169
+#: activity/cpc_activity_shortcodes.php:175
 #: cpc_setup_admin.php:657
 #: cpc_setup_admin.php:2288
 #: cpc_setup_admin.php:2385
@@ -501,51 +502,51 @@ msgstr ""
 msgid "Land"
 msgstr ""
 
-#: activity/cpc_activity_shortcodes.php:170
+#: activity/cpc_activity_shortcodes.php:176
 #: cpc_setup_admin.php:663
 #: usermeta/cpc_usermeta_shortcodes.php:974
 msgid "Freundschaftsanfragen"
 msgstr ""
 
-#: activity/cpc_activity_shortcodes.php:269
+#: activity/cpc_activity_shortcodes.php:275
 #: cpc_setup_admin.php:689
 msgid "Beitrag hinzufügen"
 msgstr ""
 
-#: activity/cpc_activity_shortcodes.php:270
+#: activity/cpc_activity_shortcodes.php:276
 #: cpc_setup_admin.php:695
 msgid "Du hast keine Berechtigung, hier etwas zu posten"
 msgstr ""
 
-#: activity/cpc_activity_shortcodes.php:271
+#: activity/cpc_activity_shortcodes.php:277
 #: cpc_setup_admin.php:701
 msgid "Konto geschlossen."
 msgstr ""
 
-#: activity/cpc_activity_shortcodes.php:365
+#: activity/cpc_activity_shortcodes.php:371
 #: cpc_setup_admin.php:526
 msgid "Die Aktivität ist privat"
 msgstr ""
 
-#: activity/cpc_activity_shortcodes.php:366
+#: activity/cpc_activity_shortcodes.php:372
 #: cpc_setup_admin.php:532
 msgid "Leider ist dieser Aktivitätsbeitrag nicht mehr verfügbar."
 msgstr ""
 
-#: activity/cpc_activity_shortcodes.php:368
+#: activity/cpc_activity_shortcodes.php:374
 #: cpc_setup_admin.php:598
 msgid "Du musst angemeldet sein, um die Profilseite anzuzeigen."
 msgstr ""
 
-#: activity/cpc_activity_shortcodes.php:398
+#: activity/cpc_activity_shortcodes.php:404
 msgid "Füge login_url=\"/example\" zum Shortcode [cpc-activity] hinzu, damit sich Benutzer anmelden und hierher zurückleiten können, wenn sie nicht angemeldet sind."
 msgstr ""
 
-#: activity/cpc_activity_shortcodes.php:652
+#: activity/cpc_activity_shortcodes.php:658
 msgid "Keine Aktivität zum Anzeigen..."
 msgstr ""
 
-#: activity/cpc_activity_shortcodes.php:776
+#: activity/cpc_activity_shortcodes.php:782
 msgid "Keine öffentliche Aktivität zum Anzeigen..."
 msgstr ""
 
@@ -691,7 +692,7 @@ msgstr ""
 
 #: alerts/cpc_alerts_admin.php:18
 #: groups/cpc_groups_shortcodes.php:239
-#: projects/cpc_projects_views.php:980
+#: projects/cpc_projects_views.php:1025
 msgid "Suchen"
 msgstr ""
 
@@ -1667,7 +1668,7 @@ msgstr ""
 #: groups/cpc_groups_admin.php:430
 #: groups/cpc_groups_admin.php:566
 #: groups/cpc_groups_hooks_and_filters.php:324
-#: media/cpc_media_views.php:305
+#: media/cpc_media_views.php:356
 #: multisite/cpc_multisite_admin.php:12
 msgid "Gruppen"
 msgstr ""
@@ -1876,7 +1877,7 @@ msgstr ""
 #: events/cpc_events_views.php:299
 #: groups/cpc_groups_shortcodes.php:29
 #: media/cpc_media_shortcodes.php:492
-#: media/cpc_media_views.php:232
+#: media/cpc_media_views.php:280
 #: projects/cpc_projects_views.php:504
 msgid "Speichern"
 msgstr ""
@@ -2043,7 +2044,7 @@ msgstr ""
 #: media/cpc_custom_post_gallery.php:96
 #: media/cpc_media_shortcodes.php:254
 #: media/cpc_media_views.php:108
-#: media/cpc_media_views.php:228
+#: media/cpc_media_views.php:276
 #: media/lib_media.php:185
 #: multisite/cpc_multisite_admin.php:15
 msgid "Dokumente"
@@ -2157,6 +2158,7 @@ msgstr ""
 
 #: cpc_docs/cpc_docs_setup.php:60
 #: lib/jobboard_integration.php:283
+#: lib/marketpress_integration.php:662
 #: lib/pm_integration.php:346
 #: lib/psource_chat_integration.php:408
 msgid "Aktiviert"
@@ -2165,6 +2167,7 @@ msgstr ""
 #: cpc_docs/cpc_docs_setup.php:61
 #: cpc_setup_admin.php:1580
 #: cpc_setup_admin.php:1669
+#: lib/marketpress_integration.php:664
 msgid "Deaktiviert"
 msgstr ""
 
@@ -2196,7 +2199,7 @@ msgstr ""
 #: events/cpc_events_views.php:490
 #: events/cpc_events_views.php:551
 #: media/cpc_media_shortcodes.php:484
-#: media/cpc_media_views.php:214
+#: media/cpc_media_views.php:262
 #: projects/cpc_projects_views.php:194
 #: projects/cpc_projects_views.php:253
 #: projects/cpc_projects_views.php:367
@@ -2254,8 +2257,8 @@ msgstr ""
 #: groups/cpc_group_tabs.php:802
 #: groups/cpc_group_tabs.php:841
 #: media/cpc_media_shortcodes.php:477
-#: media/cpc_media_views.php:204
-#: media/lib_media.php:2019
+#: media/cpc_media_views.php:252
+#: media/lib_media.php:2009
 #: projects/cpc_projects_views.php:473
 msgid "Bearbeiten"
 msgstr ""
@@ -2406,8 +2409,8 @@ msgstr ""
 
 #: cpc_docs/cpc_docs_views.php:636
 #: events/cpc_events_views.php:621
-#: media/cpc_media_views.php:267
-#: projects/cpc_projects_views.php:800
+#: media/cpc_media_views.php:318
+#: projects/cpc_projects_views.php:833
 msgid "Benutzer nicht gefunden."
 msgstr ""
 
@@ -2442,8 +2445,8 @@ msgstr ""
 #: groups/cpc_groups_shortcodes.php:16
 #: groups/cpc_groups_shortcodes.php:384
 #: groups/cpc_groups_shortcodes.php:392
-#: media/cpc_media_views.php:328
-#: projects/cpc_projects_views.php:854
+#: media/cpc_media_views.php:379
+#: projects/cpc_projects_views.php:911
 msgid "Gruppe nicht gefunden."
 msgstr ""
 
@@ -2462,11 +2465,11 @@ msgstr ""
 #: media/cpc_media_ajax.php:204
 #: media/cpc_media_ajax.php:238
 #: media/cpc_media_ajax.php:305
-#: media/cpc_media_ajax.php:332
-#: media/cpc_media_ajax.php:362
-#: media/cpc_media_ajax.php:402
-#: media/cpc_media_views.php:332
-#: media/cpc_media_views.php:386
+#: media/cpc_media_ajax.php:333
+#: media/cpc_media_ajax.php:363
+#: media/cpc_media_ajax.php:403
+#: media/cpc_media_views.php:383
+#: media/cpc_media_views.php:437
 #: media/lib_media.php:1465
 #: projects/ajax_projects.php:33
 #: projects/ajax_projects.php:52
@@ -2482,8 +2485,8 @@ msgstr ""
 #: projects/ajax_projects.php:353
 #: projects/cpc_projects.php:63
 #: projects/cpc_projects_views.php:139
-#: projects/cpc_projects_views.php:858
-#: projects/lib_projects.php:536
+#: projects/cpc_projects_views.php:915
+#: projects/lib_projects.php:544
 msgid "Keine Berechtigung."
 msgstr ""
 
@@ -2592,7 +2595,7 @@ msgstr ""
 #: forums/cpc_forum_edit.php:349
 #: groups/cpc_groups_shortcodes.php:21
 #: media/cpc_media_shortcodes.php:493
-#: media/cpc_media_views.php:233
+#: media/cpc_media_views.php:281
 msgid "Abbrechen"
 msgstr ""
 
@@ -2709,6 +2712,7 @@ msgstr ""
 #: cpc_docs/lib_docs.php:134
 #: projects/cpc_projects_views.php:200
 #: projects/cpc_projects_views.php:259
+#: projects/cpc_projects_views.php:730
 msgid "Oeffentlich"
 msgstr ""
 
@@ -2727,6 +2731,7 @@ msgid "Mitglieder"
 msgstr ""
 
 #: cpc_docs/cpc_docs_views.php:1414
+#: lib/marketpress_integration.php:719
 msgid "Admins"
 msgstr ""
 
@@ -2744,7 +2749,7 @@ msgstr ""
 #: media/lib_media.php:169
 #: projects/cpc_projects_views.php:202
 #: projects/cpc_projects_views.php:261
-#: projects/cpc_projects_views.php:999
+#: projects/cpc_projects_views.php:732
 msgid "Privat"
 msgstr ""
 
@@ -2763,13 +2768,13 @@ msgstr ""
 #: forums/cpc_forum_shortcodes.php:1101
 #: forums/cpc_forum_shortcodes.php:1145
 #: media/cpc_media_shortcodes.php:274
-#: projects/cpc_projects_views.php:1033
+#: projects/cpc_projects_views.php:1056
 msgid "Vorherige"
 msgstr ""
 
 #: cpc_docs/cpc_docs_views.php:1439
 #: media/cpc_media_shortcodes.php:276
-#: projects/cpc_projects_views.php:1035
+#: projects/cpc_projects_views.php:1058
 #, php-format
 msgid "Seite %d"
 msgstr ""
@@ -2795,7 +2800,7 @@ msgstr ""
 #: groups/cpc_custom_post_group_members.php:212
 #: media/cpc_custom_post_gallery.php:84
 #: media/cpc_media_views.php:104
-#: media/cpc_media_views.php:223
+#: media/cpc_media_views.php:271
 #: projects/cpc_projects_views.php:339
 msgid "Status"
 msgstr ""
@@ -2901,13 +2906,13 @@ msgstr ""
 #: cpc_docs/lib_docs.php:1572
 #: media/cpc_media_ajax.php:29
 #: projects/ajax_projects.php:24
-#: projects/lib_projects.php:537
+#: projects/lib_projects.php:545
 msgid "Ungueltige Anfrage."
 msgstr ""
 
 #: cpc_docs/lib_docs.php:1573
 #: media/lib_media.php:1467
-#: projects/lib_projects.php:538
+#: projects/lib_projects.php:546
 msgid "Aktion fehlgeschlagen."
 msgstr ""
 
@@ -2989,7 +2994,7 @@ msgstr ""
 #: cpc_setup_admin.php:77
 #: cpc_setup_admin.php:2973
 #: cpc_setup_admin.php:3089
-#: media/cpc_media_views.php:294
+#: media/cpc_media_views.php:345
 #: media/lib_media.php:194
 #: members/cpc_members.php:173
 #: multisite/cpc_multisite_admin.php:6
@@ -3313,9 +3318,9 @@ msgstr ""
 #: projects/cpc_projects_views.php:566
 #: projects/cpc_projects_views.php:580
 #: projects/cpc_projects_views.php:677
-#: projects/cpc_projects_views.php:711
-#: projects/lib_projects.php:1805
-#: projects/lib_projects.php:1833
+#: projects/cpc_projects_views.php:768
+#: projects/lib_projects.php:1813
+#: projects/lib_projects.php:1841
 msgid "Mitglied"
 msgid_plural "Mitglieder"
 msgstr[0] ""
@@ -4757,7 +4762,7 @@ msgstr ""
 #: forums/cpc_forum_shortcodes.php:1102
 #: forums/cpc_forum_shortcodes.php:1146
 #: media/cpc_media_shortcodes.php:278
-#: projects/cpc_projects_views.php:1037
+#: projects/cpc_projects_views.php:1060
 msgid "Nächste"
 msgstr ""
 
@@ -6163,7 +6168,7 @@ msgstr ""
 #: groups/cpc_groups_shortcodes.php:687
 #: media/cpc_media_shortcodes.php:488
 #: media/cpc_media_views.php:100
-#: media/cpc_media_views.php:218
+#: media/cpc_media_views.php:266
 #: projects/cpc_projects_views.php:196
 #: projects/cpc_projects_views.php:255
 #: projects/cpc_projects_views.php:395
@@ -6535,7 +6540,7 @@ msgid "Leere vorhergehenden Float"
 msgstr ""
 
 #: cpc_setup_admin.php:2640
-#: cpc_setup_admin.php:3482
+#: cpc_setup_admin.php:3488
 msgid "Hintergrundfarbe"
 msgstr ""
 
@@ -6825,17 +6830,17 @@ msgid "Tab-Navigation"
 msgstr ""
 
 #: cpc_setup_admin.php:3196
-#: cpc_setup_admin.php:3435
+#: cpc_setup_admin.php:3441
 msgid "Tab-Link"
 msgstr ""
 
 #: cpc_setup_admin.php:3197
-#: cpc_setup_admin.php:3436
+#: cpc_setup_admin.php:3442
 msgid "Tab-Link (aktiv)"
 msgstr ""
 
 #: cpc_setup_admin.php:3198
-#: cpc_setup_admin.php:3437
+#: cpc_setup_admin.php:3443
 msgid "Tab-Inhalt"
 msgstr ""
 
@@ -6852,354 +6857,380 @@ msgid "Aktivitäts-Inhalt"
 msgstr ""
 
 #: cpc_setup_admin.php:3214
-msgid "Kommentare-Container"
+msgid "Metadaten"
+msgstr ""
+
+#: cpc_setup_admin.php:3215
+msgid "Beitragstext"
 msgstr ""
 
 #: cpc_setup_admin.php:3216
+msgid "Zeitangabe"
+msgstr ""
+
+#: cpc_setup_admin.php:3217
+msgid "Kommentare-Container"
+msgstr ""
+
+#: cpc_setup_admin.php:3219
 msgid "Antwort-Textarea"
 msgstr ""
 
-#: cpc_setup_admin.php:3232
-msgid "Freund-Eintrag"
+#: cpc_setup_admin.php:3220
+msgid "Kommentar-Schaltfläche"
 msgstr ""
 
-#: cpc_setup_admin.php:3233
-msgid "Name"
+#: cpc_setup_admin.php:3221
+msgid "Kommentar-Schaltfläche (Mouseover)"
 msgstr ""
 
-#: cpc_setup_admin.php:3234
-msgid "Zuletzt aktiv"
-msgstr ""
-
-#: cpc_setup_admin.php:3235
-msgid "Favorit-Toggle"
-msgstr ""
-
-#: cpc_setup_admin.php:3236
-msgid "Counter"
-msgstr ""
-
-#: cpc_setup_admin.php:3237
-msgid "Keine Freunde Meldung"
+#: cpc_setup_admin.php:3222
+msgid "Mehr laden"
 msgstr ""
 
 #: cpc_setup_admin.php:3238
-msgid "Private Meldung"
+msgid "Freund-Eintrag"
 msgstr ""
 
 #: cpc_setup_admin.php:3239
+msgid "Name"
+msgstr ""
+
+#: cpc_setup_admin.php:3240
+msgid "Zuletzt aktiv"
+msgstr ""
+
+#: cpc_setup_admin.php:3241
+msgid "Favorit-Toggle"
+msgstr ""
+
+#: cpc_setup_admin.php:3242
+msgid "Counter"
+msgstr ""
+
+#: cpc_setup_admin.php:3243
+msgid "Keine Freunde Meldung"
+msgstr ""
+
+#: cpc_setup_admin.php:3244
+msgid "Private Meldung"
+msgstr ""
+
+#: cpc_setup_admin.php:3245
 msgid "Alle entfernen Link"
 msgstr ""
 
-#: cpc_setup_admin.php:3252
+#: cpc_setup_admin.php:3258
 msgid "Pending Container"
 msgstr ""
 
-#: cpc_setup_admin.php:3253
+#: cpc_setup_admin.php:3259
 msgid "Pending Eintrag"
 msgstr ""
 
-#: cpc_setup_admin.php:3254
+#: cpc_setup_admin.php:3260
 msgid "Pending Name"
 msgstr ""
 
-#: cpc_setup_admin.php:3255
+#: cpc_setup_admin.php:3261
 msgid "Pending Buttons Wrap"
 msgstr ""
 
-#: cpc_setup_admin.php:3256
+#: cpc_setup_admin.php:3262
 msgid "Button Akzeptieren"
 msgstr ""
 
-#: cpc_setup_admin.php:3257
+#: cpc_setup_admin.php:3263
 msgid "Button Ablehnen"
 msgstr ""
 
-#: cpc_setup_admin.php:3270
+#: cpc_setup_admin.php:3276
 msgid "Action Container"
 msgstr ""
 
-#: cpc_setup_admin.php:3271
+#: cpc_setup_admin.php:3277
 msgid "Button Freund hinzufügen"
 msgstr ""
 
-#: cpc_setup_admin.php:3272
+#: cpc_setup_admin.php:3278
 msgid "Button Freund kündigen"
 msgstr ""
 
-#: cpc_setup_admin.php:3273
+#: cpc_setup_admin.php:3279
 msgid "Button Pending ablehnen"
 msgstr ""
 
-#: cpc_setup_admin.php:3274
+#: cpc_setup_admin.php:3280
 msgid "Favorit Link/Button"
 msgstr ""
 
-#: cpc_setup_admin.php:3290
+#: cpc_setup_admin.php:3296
 msgid "Dropdown Wrap"
 msgstr ""
 
-#: cpc_setup_admin.php:3291
+#: cpc_setup_admin.php:3297
 msgid "Dropdown Select"
 msgstr ""
 
-#: cpc_setup_admin.php:3292
+#: cpc_setup_admin.php:3298
 msgid "List Item"
 msgstr ""
 
-#: cpc_setup_admin.php:3293
+#: cpc_setup_admin.php:3299
 msgid "List Link"
 msgstr ""
 
-#: cpc_setup_admin.php:3294
+#: cpc_setup_admin.php:3300
 msgid "Delete Icon"
 msgstr ""
 
-#: cpc_setup_admin.php:3295
+#: cpc_setup_admin.php:3301
 msgid "Flag Wrap"
 msgstr ""
 
-#: cpc_setup_admin.php:3296
+#: cpc_setup_admin.php:3302
 msgid "Flag Unread Badge"
 msgstr ""
 
-#: cpc_setup_admin.php:3297
+#: cpc_setup_admin.php:3303
 msgid "Alle gelesen Link"
 msgstr ""
 
-#: cpc_setup_admin.php:3298
+#: cpc_setup_admin.php:3304
 msgid "Alle löschen Link"
 msgstr ""
 
-#: cpc_setup_admin.php:3311
+#: cpc_setup_admin.php:3317
 msgid "Friends Flag Wrap"
 msgstr ""
 
-#: cpc_setup_admin.php:3312
+#: cpc_setup_admin.php:3318
 msgid "Friends Unread Badge"
 msgstr ""
 
-#: cpc_setup_admin.php:3328
+#: cpc_setup_admin.php:3334
 msgid "Avatar Container"
 msgstr ""
 
-#: cpc_setup_admin.php:3329
+#: cpc_setup_admin.php:3335
 msgid "Avatar Change Link"
 msgstr ""
 
-#: cpc_setup_admin.php:3330
+#: cpc_setup_admin.php:3336
 msgid "Upload Effekt-Link"
 msgstr ""
 
-#: cpc_setup_admin.php:3343
+#: cpc_setup_admin.php:3349
 msgid "Change Step 1"
 msgstr ""
 
-#: cpc_setup_admin.php:3344
+#: cpc_setup_admin.php:3350
 msgid "Change Step 2"
 msgstr ""
 
-#: cpc_setup_admin.php:3345
+#: cpc_setup_admin.php:3351
 msgid "Upload Button"
 msgstr ""
 
-#: cpc_setup_admin.php:3346
+#: cpc_setup_admin.php:3352
 msgid "Crop Button"
 msgstr ""
 
-#: cpc_setup_admin.php:3347
+#: cpc_setup_admin.php:3353
 msgid "Crop Wrap"
 msgstr ""
 
-#: cpc_setup_admin.php:3363
+#: cpc_setup_admin.php:3369
 msgid "Themen-Header"
 msgstr ""
 
-#: cpc_setup_admin.php:3364
+#: cpc_setup_admin.php:3370
 msgid "Antworten-Header"
 msgstr ""
 
-#: cpc_setup_admin.php:3365
+#: cpc_setup_admin.php:3371
 msgid "Letzter Poster-Header"
 msgstr ""
 
-#: cpc_setup_admin.php:3366
+#: cpc_setup_admin.php:3372
 msgid "Neueste-Header"
 msgstr ""
 
-#: cpc_setup_admin.php:3367
+#: cpc_setup_admin.php:3373
 msgid "Posts Header Wrap"
 msgstr ""
 
-#: cpc_setup_admin.php:3368
+#: cpc_setup_admin.php:3374
 msgid "Posts Container"
 msgstr ""
 
-#: cpc_setup_admin.php:3369
+#: cpc_setup_admin.php:3375
 msgid "Post Row"
 msgstr ""
 
-#: cpc_setup_admin.php:3370
+#: cpc_setup_admin.php:3376
 msgid "Post ungelesen"
 msgstr ""
 
-#: cpc_setup_admin.php:3371
+#: cpc_setup_admin.php:3377
 msgid "Titel-Spalte"
 msgstr ""
 
-#: cpc_setup_admin.php:3372
+#: cpc_setup_admin.php:3378
 msgid "Antworten-Spalte"
 msgstr ""
 
-#: cpc_setup_admin.php:3373
+#: cpc_setup_admin.php:3379
 msgid "Letzter Poster-Spalte"
 msgstr ""
 
-#: cpc_setup_admin.php:3374
+#: cpc_setup_admin.php:3380
 msgid "Neueste-Spalte"
 msgstr ""
 
-#: cpc_setup_admin.php:3387
+#: cpc_setup_admin.php:3393
 msgid "Forumtitel"
 msgstr ""
 
-#: cpc_setup_admin.php:3388
+#: cpc_setup_admin.php:3394
 msgid "Forumtitel (Mouseover)"
 msgstr ""
 
-#: cpc_setup_admin.php:3389
+#: cpc_setup_admin.php:3395
 msgid "Forumtitel (Klick)"
 msgstr ""
 
-#: cpc_setup_admin.php:3389
+#: cpc_setup_admin.php:3395
 #, php-format
 msgid "If Forum Title is styled, it would be best to <a href=\"%s\">turn off \"Top level as links\"</a> via the [cpc-forums] shortcode."
 msgstr ""
 
-#: cpc_setup_admin.php:3390
+#: cpc_setup_admin.php:3396
 msgid "Kategorien Header"
 msgstr ""
 
-#: cpc_setup_admin.php:3391
+#: cpc_setup_admin.php:3397
 msgid "Kategorien Item"
 msgstr ""
 
-#: cpc_setup_admin.php:3392
+#: cpc_setup_admin.php:3398
 msgid "Kategorien Beschreibung"
 msgstr ""
 
-#: cpc_setup_admin.php:3393
+#: cpc_setup_admin.php:3399
 msgid "Kategorien Count"
 msgstr ""
 
-#: cpc_setup_admin.php:3394
+#: cpc_setup_admin.php:3400
 msgid "Kategorien Letzter Poster"
 msgstr ""
 
-#: cpc_setup_admin.php:3395
+#: cpc_setup_admin.php:3401
 msgid "Kategorien Neueste"
 msgstr ""
 
-#: cpc_setup_admin.php:3410
+#: cpc_setup_admin.php:3416
 msgid "Gruppen-Grid"
 msgstr ""
 
-#: cpc_setup_admin.php:3411
-#: cpc_setup_admin.php:3455
+#: cpc_setup_admin.php:3417
+#: cpc_setup_admin.php:3461
 msgid "Gruppen-Karte"
 msgstr ""
 
-#: cpc_setup_admin.php:3412
-#: cpc_setup_admin.php:3433
+#: cpc_setup_admin.php:3418
+#: cpc_setup_admin.php:3439
 msgid "Gruppen-Titel"
 msgstr ""
 
-#: cpc_setup_admin.php:3413
+#: cpc_setup_admin.php:3419
 msgid "Gruppen-Titel (Mouseover)"
 msgstr ""
 
-#: cpc_setup_admin.php:3414
+#: cpc_setup_admin.php:3420
 msgid "Gruppen-Meta"
 msgstr ""
 
-#: cpc_setup_admin.php:3415
+#: cpc_setup_admin.php:3421
 msgid "Gruppen-Beschreibung"
 msgstr ""
 
-#: cpc_setup_admin.php:3416
+#: cpc_setup_admin.php:3422
 msgid "Toolbar"
 msgstr ""
 
-#: cpc_setup_admin.php:3417
+#: cpc_setup_admin.php:3423
 msgid "Suche (Input)"
 msgstr ""
 
-#: cpc_setup_admin.php:3418
+#: cpc_setup_admin.php:3424
 msgid "Suche (Button)"
 msgstr ""
 
-#: cpc_setup_admin.php:3419
+#: cpc_setup_admin.php:3425
 msgid "Button \"Neue Gruppe\""
 msgstr ""
 
-#: cpc_setup_admin.php:3432
+#: cpc_setup_admin.php:3438
 msgid "Gruppen-Header"
 msgstr ""
 
-#: cpc_setup_admin.php:3434
+#: cpc_setup_admin.php:3440
 msgid "Tabs-Navigation"
 msgstr ""
 
-#: cpc_setup_admin.php:3438
+#: cpc_setup_admin.php:3444
 msgid "Gruppen-Aktionen"
 msgstr ""
 
-#: cpc_setup_admin.php:3439
+#: cpc_setup_admin.php:3445
 msgid "Button \"Beitreten\""
 msgstr ""
 
-#: cpc_setup_admin.php:3440
+#: cpc_setup_admin.php:3446
 msgid "Button \"Verlassen\""
 msgstr ""
 
-#: cpc_setup_admin.php:3441
+#: cpc_setup_admin.php:3447
 msgid "Button \"Freunde einladen\""
 msgstr ""
 
-#: cpc_setup_admin.php:3454
+#: cpc_setup_admin.php:3460
 msgid "Meine Gruppen Grid"
 msgstr ""
 
-#: cpc_setup_admin.php:3456
+#: cpc_setup_admin.php:3462
 msgid "Rollen-Hinweis"
 msgstr ""
 
-#: cpc_setup_admin.php:3480
+#: cpc_setup_admin.php:3486
 msgid "Element"
 msgstr ""
 
-#: cpc_setup_admin.php:3481
+#: cpc_setup_admin.php:3487
 msgid "Vordergrundfarbe"
 msgstr ""
 
-#: cpc_setup_admin.php:3483
+#: cpc_setup_admin.php:3489
 msgid "Fett"
 msgstr ""
 
-#: cpc_setup_admin.php:3484
+#: cpc_setup_admin.php:3490
 msgid "Kursiv"
 msgstr ""
 
-#: cpc_setup_admin.php:3485
+#: cpc_setup_admin.php:3491
 msgid "Schriftgröße"
 msgstr ""
 
-#: cpc_setup_admin.php:3518
+#: cpc_setup_admin.php:3524
 msgid "Inherit"
 msgstr ""
 
 #: events/cpc_events.php:96
 #: events/cpc_events_views.php:628
+#: lib/marketpress_integration.php:721
+#: lib/marketpress_integration.php:737
 msgid "Events"
 msgstr ""
 
@@ -7261,7 +7292,7 @@ msgstr ""
 
 #: events/cpc_events.php:391
 #: lib/invite_flow.php:61
-#: projects/lib_projects.php:1262
+#: projects/lib_projects.php:1270
 msgid "Ein Mitglied"
 msgstr ""
 
@@ -8707,6 +8738,7 @@ msgstr ""
 #: groups/cpc_groups_admin.php:441
 #: groups/cpc_groups_admin.php:579
 #: groups/cpc_groups_hooks_and_filters.php:21
+#: lib/marketpress_integration.php:531
 #: media/lib_media.php:195
 msgid "Gruppe"
 msgstr ""
@@ -8803,7 +8835,7 @@ msgstr ""
 #: media/cpc_custom_post_gallery.php:91
 #: media/cpc_media_shortcodes.php:248
 #: media/cpc_media_views.php:107
-#: media/cpc_media_views.php:227
+#: media/cpc_media_views.php:275
 msgid "Typ"
 msgstr ""
 
@@ -9907,6 +9939,8 @@ msgstr ""
 #: lib/jobboard_integration.php:282
 #: lib/jobboard_integration.php:337
 #: lib/jobboard_integration.php:358
+#: lib/marketpress_integration.php:767
+#: lib/marketpress_integration.php:783
 #: lib/pm_integration.php:345
 #: lib/pm_integration.php:458
 #: lib/pm_integration.php:479
@@ -9924,6 +9958,7 @@ msgid "Plugin:"
 msgstr ""
 
 #: lib/jobboard_integration.php:298
+#: lib/marketpress_integration.php:682
 #: lib/pm_integration.php:361
 msgid "Integration aktivieren"
 msgstr ""
@@ -9937,9 +9972,10 @@ msgid "Fügt einen \"Jobboard\"-Tab zu Profilseiten hinzu mit Inline-Navigation 
 msgstr ""
 
 #: lib/jobboard_integration.php:319
+#: lib/marketpress_integration.php:759
 #: lib/pm_integration.php:434
 #: multisite/cpc_multisite_admin.php:772
-#: projects/cpc_projects_views.php:836
+#: projects/cpc_projects_views.php:893
 msgid "Einstellungen speichern"
 msgstr ""
 
@@ -9957,6 +9993,7 @@ msgid "Smooth AJAX-Navigation innerhalb des Tabs"
 msgstr ""
 
 #: lib/jobboard_integration.php:338
+#: lib/marketpress_integration.php:768
 #: lib/pm_integration.php:459
 #: lib/psource_chat_integration.php:427
 msgid "Installiert aber deaktiviert"
@@ -9971,6 +10008,7 @@ msgid "PS Jobboard aktivieren"
 msgstr ""
 
 #: lib/jobboard_integration.php:359
+#: lib/marketpress_integration.php:784
 #: lib/pm_integration.php:480
 #: lib/psource_chat_integration.php:448
 msgid "Nicht installiert"
@@ -9978,6 +10016,284 @@ msgstr ""
 
 #: lib/jobboard_integration.php:364
 msgid "PS Jobboard ist nicht installiert. Installiere zuerst das Jobboard-Plugin, um diese Integration nutzen zu können."
+msgstr ""
+
+#: lib/marketpress_integration.php:138
+msgid "Bitte melde Dich an, um Deine Bestellungen zu sehen."
+msgstr ""
+
+#: lib/marketpress_integration.php:142
+msgid "Du darfst diesen Bereich nicht ansehen."
+msgstr ""
+
+#: lib/marketpress_integration.php:150
+msgid "MarketPress ist nicht verfuegbar."
+msgstr ""
+
+#: lib/marketpress_integration.php:154
+msgid "Meine Bestellungen"
+msgstr ""
+
+#: lib/marketpress_integration.php:235
+#, php-format
+msgid "Bestellung #%d: %s"
+msgstr ""
+
+#: lib/marketpress_integration.php:240
+#, php-format
+msgid "Gesamt: %s"
+msgstr ""
+
+#: lib/marketpress_integration.php:249
+#, php-format
+msgid "Shop-Update zu Bestellung #%d"
+msgstr ""
+
+#: lib/marketpress_integration.php:423
+msgid "Details ansehen"
+msgstr ""
+
+#: lib/marketpress_integration.php:448
+msgid "Bestellung"
+msgstr ""
+
+#: lib/marketpress_integration.php:477
+msgid "neu eingegangen"
+msgstr ""
+
+#: lib/marketpress_integration.php:479
+msgid "bezahlt"
+msgstr ""
+
+#: lib/marketpress_integration.php:481
+msgid "versendet"
+msgstr ""
+
+#: lib/marketpress_integration.php:483
+msgid "abgeschlossen"
+msgstr ""
+
+#: lib/marketpress_integration.php:485
+msgid "storniert/entfernt"
+msgstr ""
+
+#: lib/marketpress_integration.php:497
+msgid "PS Community Gruppenkontext"
+msgstr ""
+
+#: lib/marketpress_integration.php:518
+msgid "Ordnet dieses Produkt einer PS Community Gruppe zu. Diese Zuordnung wird fuer Gruppen-Activity-Kontext verwendet."
+msgstr ""
+
+#: lib/marketpress_integration.php:533
+msgid "Keine Gruppenzuordnung"
+msgstr ""
+
+#: lib/marketpress_integration.php:544
+msgid "Oder manuelle Gruppen-ID"
+msgstr ""
+
+#: lib/marketpress_integration.php:548
+msgid "Gespeichert wird im Produkt-Meta-Key:"
+msgstr ""
+
+#: lib/marketpress_integration.php:644
+msgid "MarketPress-Integrations-Einstellungen gespeichert."
+msgstr ""
+
+#: lib/marketpress_integration.php:650
+msgid "PS MarketPress Integration"
+msgstr ""
+
+#: lib/marketpress_integration.php:651
+msgid "Verknuepft Bestell-Ereignisse mit Profil-Tab, Benachrichtigungen und Aktivitaet in PS Community."
+msgstr ""
+
+#: lib/marketpress_integration.php:656
+msgid "MarketPress:"
+msgstr ""
+
+#: lib/marketpress_integration.php:657
+msgid "Plugin aktiv"
+msgstr ""
+
+#: lib/marketpress_integration.php:660
+msgid "PS-Community-Integration:"
+msgstr ""
+
+#: lib/marketpress_integration.php:668
+msgid "Version:"
+msgstr ""
+
+#: lib/marketpress_integration.php:674
+msgid "MarketPress-Integration konfigurieren"
+msgstr ""
+
+#: lib/marketpress_integration.php:679
+#: media/cpc_media_setup.php:13
+msgid "Allgemein"
+msgstr ""
+
+#: lib/marketpress_integration.php:685
+msgid "MarketPress mit PS Community verbinden"
+msgstr ""
+
+#: lib/marketpress_integration.php:689
+msgid "Debug-Logging"
+msgstr ""
+
+#: lib/marketpress_integration.php:690
+msgid "Schreibt Events ins PHP-Errorlog"
+msgstr ""
+
+#: lib/marketpress_integration.php:693
+msgid "Actor User-ID"
+msgstr ""
+
+#: lib/marketpress_integration.php:694
+msgid "0 = Besteller/aktueller Benutzer als Autor fuer Alerts/Aktivitaet."
+msgstr ""
+
+#: lib/marketpress_integration.php:698
+msgid "Profil-Tab"
+msgstr ""
+
+#: lib/marketpress_integration.php:701
+msgid "Tab aktivieren"
+msgstr ""
+
+#: lib/marketpress_integration.php:702
+msgid "Mein-Bestellungen-Tab anzeigen"
+msgstr ""
+
+#: lib/marketpress_integration.php:705
+msgid "Tab-Label"
+msgstr ""
+
+#: lib/marketpress_integration.php:709
+msgid "Tab-Prioritaet"
+msgstr ""
+
+#: lib/marketpress_integration.php:714
+msgid "Alerts"
+msgstr ""
+
+#: lib/marketpress_integration.php:716
+msgid "Alerts aktivieren"
+msgstr ""
+
+#: lib/marketpress_integration.php:716
+msgid "PS Community Alerts schreiben"
+msgstr ""
+
+#: lib/marketpress_integration.php:717
+msgid "Empfaenger"
+msgstr ""
+
+#: lib/marketpress_integration.php:718
+msgid "Kaeufer"
+msgstr ""
+
+#: lib/marketpress_integration.php:722
+#: lib/marketpress_integration.php:738
+msgid "Neue Bestellung"
+msgstr ""
+
+#: lib/marketpress_integration.php:723
+#: lib/marketpress_integration.php:739
+msgid "Bezahlt"
+msgstr ""
+
+#: lib/marketpress_integration.php:724
+#: lib/marketpress_integration.php:740
+msgid "Versendet"
+msgstr ""
+
+#: lib/marketpress_integration.php:725
+#: lib/marketpress_integration.php:741
+msgid "Abgeschlossen"
+msgstr ""
+
+#: lib/marketpress_integration.php:726
+#: lib/marketpress_integration.php:742
+msgid "Storniert/Entfernt"
+msgstr ""
+
+#: lib/marketpress_integration.php:730
+#: projects/cpc_projects_views.php:161
+msgid "Aktivitaet"
+msgstr ""
+
+#: lib/marketpress_integration.php:732
+msgid "Aktivitaet aktivieren"
+msgstr ""
+
+#: lib/marketpress_integration.php:732
+msgid "Aktivitaetsbeitraege schreiben"
+msgstr ""
+
+#: lib/marketpress_integration.php:733
+msgid "Kanaele"
+msgstr ""
+
+#: lib/marketpress_integration.php:734
+msgid "Profil-Kontext"
+msgstr ""
+
+#: lib/marketpress_integration.php:735
+msgid "Gruppen-Kontext"
+msgstr ""
+
+#: lib/marketpress_integration.php:744
+msgid "Privacy"
+msgstr ""
+
+#: lib/marketpress_integration.php:744
+msgid "Betrag in Meldungen ausblenden"
+msgstr ""
+
+#: lib/marketpress_integration.php:747
+msgid "Gruppenkontext"
+msgstr ""
+
+#: lib/marketpress_integration.php:749
+msgid "Gruppenmapping aktivieren"
+msgstr ""
+
+#: lib/marketpress_integration.php:749
+msgid "Group-Kontext aus Produkt-Meta lesen"
+msgstr ""
+
+#: lib/marketpress_integration.php:750
+msgid "Produkt-Meta-Key fuer Gruppe"
+msgstr ""
+
+#: lib/marketpress_integration.php:750
+msgid "Beispiel: cpc_group_id (enthaelt die ID einer cpc_group am Produkt)."
+msgstr ""
+
+#: lib/marketpress_integration.php:751
+msgid "Fallback ohne Gruppe"
+msgstr ""
+
+#: lib/marketpress_integration.php:753
+msgid "Ins Profil schreiben"
+msgstr ""
+
+#: lib/marketpress_integration.php:754
+msgid "Nicht schreiben"
+msgstr ""
+
+#: lib/marketpress_integration.php:771
+msgid "PS MarketPress ist installiert, aber nicht aktiviert. Um die Integration nutzen zu können, musst du das Plugin aktivieren."
+msgstr ""
+
+#: lib/marketpress_integration.php:777
+msgid "PS MarketPress aktivieren"
+msgstr ""
+
+#: lib/marketpress_integration.php:787
+msgid "PS MarketPress ist nicht installiert. Installiere zuerst das MarketPress-Plugin, um diese Integration nutzen zu können."
 msgstr ""
 
 #: lib/pm_integration.php:121
@@ -10146,7 +10462,7 @@ msgid "Neue Galerie hinzufügen"
 msgstr ""
 
 #: media/cpc_custom_post_gallery.php:9
-#: media/cpc_media_views.php:212
+#: media/cpc_media_views.php:260
 msgid "Galerie bearbeiten"
 msgstr ""
 
@@ -10221,7 +10537,7 @@ msgstr ""
 #: media/cpc_custom_post_gallery.php:93
 #: media/cpc_media_shortcodes.php:251
 #: media/cpc_media_views.php:108
-#: media/cpc_media_views.php:228
+#: media/cpc_media_views.php:276
 #: media/lib_media.php:182
 msgid "Bilder"
 msgstr ""
@@ -10229,7 +10545,7 @@ msgstr ""
 #: media/cpc_custom_post_gallery.php:94
 #: media/cpc_media_shortcodes.php:252
 #: media/cpc_media_views.php:108
-#: media/cpc_media_views.php:228
+#: media/cpc_media_views.php:276
 #: media/lib_media.php:183
 msgid "Videos"
 msgstr ""
@@ -10237,7 +10553,7 @@ msgstr ""
 #: media/cpc_custom_post_gallery.php:95
 #: media/cpc_media_shortcodes.php:253
 #: media/cpc_media_views.php:108
-#: media/cpc_media_views.php:228
+#: media/cpc_media_views.php:276
 #: media/lib_media.php:184
 msgid "Audio"
 msgstr ""
@@ -10317,7 +10633,7 @@ msgid "Medienansicht"
 msgstr ""
 
 #: media/cpc_media.php:49
-#: media/cpc_media_views.php:242
+#: media/cpc_media_views.php:290
 msgid "Schliessen"
 msgstr ""
 
@@ -10404,24 +10720,20 @@ msgstr ""
 msgid "Medium nicht gefunden."
 msgstr ""
 
-#: media/cpc_media_ajax.php:338
+#: media/cpc_media_ajax.php:339
 msgid "Medium nicht in dieser Galerie."
 msgstr ""
 
-#: media/cpc_media_ajax.php:346
+#: media/cpc_media_ajax.php:347
 msgid "Cover georessourcet."
 msgstr ""
 
-#: media/cpc_media_ajax.php:406
+#: media/cpc_media_ajax.php:407
 msgid "Keine Reihenfolge angegeben."
 msgstr ""
 
-#: media/cpc_media_ajax.php:419
+#: media/cpc_media_ajax.php:420
 msgid "Reihenfolge gespeichert."
-msgstr ""
-
-#: media/cpc_media_setup.php:13
-msgid "Allgemein"
 msgstr ""
 
 #: media/cpc_media_setup.php:14
@@ -10663,7 +10975,7 @@ msgstr ""
 
 #: media/cpc_media_shortcodes.php:73
 #: media/cpc_media_shortcodes.php:348
-#: media/cpc_media_views.php:199
+#: media/cpc_media_views.php:247
 #, php-format
 msgid "%d Medien"
 msgstr ""
@@ -10713,34 +11025,54 @@ msgstr ""
 msgid "Dateien hochladen"
 msgstr ""
 
-#: media/cpc_media_views.php:197
+#: media/cpc_media_views.php:157
+#: media/lib_media.php:1943
+msgid "Ihr Browser unterstützt dieses Video nicht."
+msgstr ""
+
+#: media/cpc_media_views.php:159
+#: media/lib_media.php:1950
+msgid "Ihr Browser unterstützt dieses Audio nicht."
+msgstr ""
+
+#: media/cpc_media_views.php:163
+#: media/lib_media.php:1963
+msgid "Im neuen Tab oeffnen"
+msgstr ""
+
+#: media/cpc_media_views.php:223
+#, php-format
+msgid "Vorschau wechseln: %s"
+msgstr ""
+
+#: media/cpc_media_views.php:245
 #, php-format
 msgid "von %s"
 msgstr ""
 
-#: media/cpc_media_views.php:206
+#: media/cpc_media_views.php:254
 msgid "Cover"
 msgstr ""
 
-#: media/cpc_media_views.php:239
+#: media/cpc_media_views.php:287
 msgid "Cover waehlen"
 msgstr ""
 
-#: media/cpc_media_views.php:273
+#: media/cpc_media_views.php:324
 msgid "Profil-Galerien"
 msgstr ""
 
-#: media/cpc_media_views.php:274
+#: media/cpc_media_views.php:325
 msgid "Zeigt eigene Profil-Galerien sowie Gruppen-Galerien, die Du erstellt hast."
 msgstr ""
 
-#: media/cpc_media_views.php:316
-#: media/cpc_media_views.php:349
-#: media/cpc_media_views.php:361
+#: media/cpc_media_views.php:367
+#: media/cpc_media_views.php:400
+#: media/cpc_media_views.php:412
 msgid "Noch keine Galerien vorhanden."
 msgstr ""
 
-#: media/cpc_media_views.php:338
+#: media/cpc_media_views.php:389
 msgid "Gruppen-Galerien"
 msgstr ""
 
@@ -10779,18 +11111,6 @@ msgstr ""
 
 #: media/lib_media.php:1468
 msgid "Mindestens eine Datei konnte nicht hochgeladen werden."
-msgstr ""
-
-#: media/lib_media.php:1943
-msgid "Ihr Browser unterstützt dieses Video nicht."
-msgstr ""
-
-#: media/lib_media.php:1950
-msgid "Ihr Browser unterstützt dieses Audio nicht."
-msgstr ""
-
-#: media/lib_media.php:1963
-msgid "Im neuen Tab oeffnen"
 msgstr ""
 
 #: media/lib_media.php:1966
@@ -11325,10 +11645,6 @@ msgstr ""
 msgid "Tasks"
 msgstr ""
 
-#: projects/cpc_projects_views.php:161
-msgid "Aktivitaet"
-msgstr ""
-
 #: projects/cpc_projects_views.php:170
 msgid "Gesamt"
 msgstr ""
@@ -11341,7 +11657,7 @@ msgstr ""
 
 #: projects/cpc_projects_views.php:201
 #: projects/cpc_projects_views.php:260
-#: projects/cpc_projects_views.php:997
+#: projects/cpc_projects_views.php:731
 msgid "Nur Mitglieder"
 msgstr ""
 
@@ -11529,49 +11845,61 @@ msgstr ""
 msgid "%1$s Tasks, %2$s%% erledigt (%3$s offen)"
 msgstr ""
 
-#: projects/cpc_projects_views.php:682
-msgid "Started by"
+#: projects/cpc_projects_views.php:685
+msgid "Erstellt von"
 msgstr ""
 
-#: projects/cpc_projects_views.php:694
-msgid "under"
+#: projects/cpc_projects_views.php:697
+msgid "in"
 msgstr ""
 
-#: projects/cpc_projects_views.php:730
-#, php-format
-msgid "Es wurden %1$s Projekte in %2$s Gruppen fuer %3$s gefunden."
-msgstr ""
-
-#: projects/cpc_projects_views.php:746
-msgid "Derzeit wurden keine Projekte gefunden."
-msgstr ""
-
-#: projects/cpc_projects_views.php:769
-#: projects/cpc_projects_views.php:1016
+#: projects/cpc_projects_views.php:756
 msgid "Projekt oeffnen"
 msgstr ""
 
-#: projects/cpc_projects_views.php:831
+#: projects/cpc_projects_views.php:772
+#, php-format
+msgid "Es wurden %1$s Projekte fuer %2$s gefunden."
+msgstr ""
+
+#: projects/cpc_projects_views.php:789
+#: projects/cpc_projects_views.php:878
+msgid "Derzeit wurden keine Projekte gefunden."
+msgstr ""
+
+#: projects/cpc_projects_views.php:855
+msgid "Persoenliche Projekte"
+msgstr ""
+
+#: projects/cpc_projects_views.php:856
+msgid "Erstellte Gruppenprojekte"
+msgstr ""
+
+#: projects/cpc_projects_views.php:857
+msgid "Projektbeteiligungen"
+msgstr ""
+
+#: projects/cpc_projects_views.php:888
 msgid "E-Mail-Benachrichtigungen"
 msgstr ""
 
-#: projects/cpc_projects_views.php:834
+#: projects/cpc_projects_views.php:891
 msgid "Bei neuer Aufgabe benachrichtigen"
 msgstr ""
 
-#: projects/cpc_projects_views.php:835
+#: projects/cpc_projects_views.php:892
 msgid "Bei neuem Kommentar benachrichtigen"
 msgstr ""
 
-#: projects/cpc_projects_views.php:891
+#: projects/cpc_projects_views.php:948
 msgid "Gruppen-Projekte"
 msgstr ""
 
-#: projects/cpc_projects_views.php:924
+#: projects/cpc_projects_views.php:982
 msgid "Keine Projekte gefunden."
 msgstr ""
 
-#: projects/cpc_projects_views.php:979
+#: projects/cpc_projects_views.php:1024
 msgid "Titel suchen..."
 msgstr ""
 
@@ -11616,103 +11944,103 @@ msgstr ""
 msgid "Projekte-Verzeichnis"
 msgstr ""
 
-#: projects/lib_projects.php:532
+#: projects/lib_projects.php:540
 msgid "Projekt wurde erstellt."
 msgstr ""
 
-#: projects/lib_projects.php:533
+#: projects/lib_projects.php:541
 msgid "Task wurde erstellt."
 msgstr ""
 
-#: projects/lib_projects.php:534
+#: projects/lib_projects.php:542
 msgid "Task wurde aktualisiert."
 msgstr ""
 
-#: projects/lib_projects.php:535
+#: projects/lib_projects.php:543
 msgid "Task wurde geloescht."
 msgstr ""
 
-#: projects/lib_projects.php:1258
+#: projects/lib_projects.php:1266
 msgid "Task"
 msgstr ""
 
-#: projects/lib_projects.php:1272
+#: projects/lib_projects.php:1280
 msgid "Projekt-Task Update"
 msgstr ""
 
-#: projects/lib_projects.php:1277
+#: projects/lib_projects.php:1285
 #, php-format
 msgid "\"%s\" hat die Task \"%s\" erstellt."
 msgstr ""
 
-#: projects/lib_projects.php:1278
+#: projects/lib_projects.php:1286
 #, php-format
 msgid "hat die Task <a href=\"%1$s\">%2$s</a> im Projekt <a href=\"%3$s\">%4$s</a> erstellt"
 msgstr ""
 
-#: projects/lib_projects.php:1280
+#: projects/lib_projects.php:1288
 #, php-format
 msgid "\"%s\" hat die Task \"%s\" aktualisiert."
 msgstr ""
 
-#: projects/lib_projects.php:1281
+#: projects/lib_projects.php:1289
 #, php-format
 msgid "hat die Task <a href=\"%1$s\">%2$s</a> aktualisiert"
 msgstr ""
 
-#: projects/lib_projects.php:1283
+#: projects/lib_projects.php:1291
 #, php-format
 msgid "\"%s\" hat die Task \"%s\" abgeschlossen."
 msgstr ""
 
-#: projects/lib_projects.php:1284
+#: projects/lib_projects.php:1292
 #, php-format
 msgid "hat die Task <a href=\"%1$s\">%2$s</a> als erledigt markiert"
 msgstr ""
 
-#: projects/lib_projects.php:1286
+#: projects/lib_projects.php:1294
 #, php-format
 msgid "\"%s\" hat die Task \"%s\" wieder geoeffnet."
 msgstr ""
 
-#: projects/lib_projects.php:1287
+#: projects/lib_projects.php:1295
 #, php-format
 msgid "hat die Task <a href=\"%1$s\">%2$s</a> wieder geoeffnet"
 msgstr ""
 
-#: projects/lib_projects.php:1289
+#: projects/lib_projects.php:1297
 #, php-format
 msgid "\"%s\" hat die Task \"%s\" kommentiert: %s"
 msgstr ""
 
-#: projects/lib_projects.php:1290
+#: projects/lib_projects.php:1298
 #, php-format
 msgid "hat die Task <a href=\"%1$s\">%2$s</a> kommentiert"
 msgstr ""
 
-#: projects/lib_projects.php:1292
+#: projects/lib_projects.php:1300
 #, php-format
 msgid "\"%s\" hat die Task \"%s\" geloescht."
 msgstr ""
 
-#: projects/lib_projects.php:1293
+#: projects/lib_projects.php:1301
 #, php-format
 msgid "hat die Task \"%s\" im Projekt %s geloescht"
 msgstr ""
 
-#: ps_community.php:483
+#: ps_community.php:484
 msgid "Durchsuchen"
 msgstr ""
 
-#: ps_community.php:574
+#: ps_community.php:575
 msgid "Bitte wähle einen Shortcode aus und versuche es erneut."
 msgstr ""
 
-#: ps_community.php:596
+#: ps_community.php:597
 msgid "PS Community alerts schedule"
 msgstr ""
 
-#: ps_community.php:718
+#: ps_community.php:719
 msgid "You do not have permission to view this post."
 msgstr ""
 

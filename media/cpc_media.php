@@ -28,9 +28,9 @@ function cpc_media_enqueue_assets() {
     wp_enqueue_script('psource-sortable-js', plugins_url('../assets/psource-ui/sortable/psource-sortable.js', __FILE__), array(), '1.0.0', true);
 
     // CPC Media Assets
-    wp_enqueue_style('cpc-media-css', plugins_url('cpc_media.css', __FILE__), array(), '1.0.0');
+    wp_enqueue_style('cpc-media-css', plugins_url('cpc_media.css', __FILE__), array(), '1.1.2');
     $media_script_deps = array('jquery', 'psource-sortable-js');
-    wp_enqueue_script('cpc-media-js', plugins_url('cpc_media.js', __FILE__), $media_script_deps, '1.0.0', true);
+    wp_enqueue_script('cpc-media-js', plugins_url('cpc_media.js', __FILE__), $media_script_deps, '1.1.1', true);
 
     wp_localize_script('cpc-media-js', 'cpc_media_ajax', array(
         'ajaxurl' => admin_url('admin-ajax.php'),

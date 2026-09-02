@@ -45,7 +45,7 @@ function cpc_activity_init() {
     ));
     
     // CSS-Datei einbinden (mit Versionsnummer für Cache-Busting)
-    wp_enqueue_style('cpc-activity-css', plugins_url('cpc_activity.css', __FILE__), array(), '1.0.1');
+    wp_enqueue_style('cpc-activity-css', plugins_url('cpc_activity.css', __FILE__), array(), '1.1.1');
     
     // Select2-Bibliothek einbinden
     wp_enqueue_script('cpc-select2-js', plugins_url('../js/select2.js', __FILE__), array('jquery'), '4.0.13', true);
@@ -137,10 +137,16 @@ function cpc_activity_get_dynamic_styles() {
         '.cpc_activity_items',
         '.cpc_activity_item',
         '.cpc_activity_content',
+        '.cpc_activity_item_meta',
+        '.cpc_activity_item_post',
+        '.cpc_ago',
         '.cpc_activity_comments',
         '.cpc_activity_comment',
         '.cpc_activity_post_comment',
         '.cpc_activity_post_comment_div',
+        '.cpc_activity_post_comment_button',
+        '.cpc_activity_post_comment_button:hover',
+        '#cpc_activity_load_more',
     ));
 
     $html .= '<!-- end of cpc_activity/profile styles -->';

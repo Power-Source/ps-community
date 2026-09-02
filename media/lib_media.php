@@ -1985,44 +1985,42 @@ function cpc_media_render_lightbox_content($media) {
         <!-- Media Info -->
         <div class="cpc_media_lightbox_info mpp-item-meta mpp-media-meta">
             <h2 class="cpc_media_lightbox_title"><?php echo esc_html($media->post_title); ?></h2>
-            
+
+            <!-- Meta Info Row -->
+            <div class="cpc_media_lightbox_meta">
+                <div class="cpc_media_lightbox_meta_details">
+                    <span class="cpc_media_lightbox_author">
+                        <?php echo esc_html(get_the_author_meta('display_name', $media->post_author)); ?>
+                    </span>
+                    <span class="cpc_media_lightbox_date">
+                        <?php echo esc_html(get_the_date('j. M Y', $media)); ?>
+                    </span>
+                    <?php if ($gallery): ?>
+                        <span class="cpc_media_lightbox_gallery">
+                            <a href="<?php echo esc_url(get_permalink($gallery_id)); ?>">
+                                <?php echo esc_html($gallery->post_title); ?>
+                            </a>
+                        </span>
+                    <?php endif; ?>
+                </div>
+
+                <?php if (is_user_logged_in() && cpc_media_user_can_manage_media($media->ID, get_current_user_id())): ?>
+                    <div class="cpc_media_lightbox_actions">
+                        <button type="button" class="cpc_media_lightbox_edit" data-media-id="<?php echo esc_attr($media->ID); ?>" title="<?php esc_attr_e('Bearbeiten', 'cp-community'); ?>" aria-label="<?php esc_attr_e('Bearbeiten', 'cp-community'); ?>">
+                            <span class="dashicons dashicons-edit" aria-hidden="true"></span>
+                        </button>
+                        <button type="button" class="cpc_media_lightbox_delete" data-media-id="<?php echo esc_attr($media->ID); ?>" title="<?php esc_attr_e('Löschen', 'cp-community'); ?>" aria-label="<?php esc_attr_e('Löschen', 'cp-community'); ?>">
+                            <span class="dashicons dashicons-trash" aria-hidden="true"></span>
+                        </button>
+                    </div>
+                <?php endif; ?>
+            </div>
+
             <?php if ($media->post_content): ?>
                 <div class="cpc_media_lightbox_description">
                     <?php echo wp_kses_post($media->post_content); ?>
                 </div>
             <?php endif; ?>
-
-            <!-- Meta Info Row -->
-            <div class="cpc_media_lightbox_meta">
-                <span class="cpc_media_lightbox_author">
-                    <?php echo esc_html(get_the_author_meta('display_name', $media->post_author)); ?>
-                </span>
-                <span class="cpc_media_lightbox_date">
-                    <?php echo esc_html(get_the_date('j. M Y', $media)); ?>
-                </span>
-                <?php if ($gallery): ?>
-                    <span class="cpc_media_lightbox_gallery">
-                        <a href="<?php echo esc_url(get_permalink($gallery_id)); ?>">
-                            <?php echo esc_html($gallery->post_title); ?>
-                        </a>
-                    </span>
-                <?php endif; ?>
-            </div>
-
-            <!-- Actions for logged-in users -->
-            <?php if (is_user_logged_in()):
-                $current_user = get_current_user_id();
-                if (cpc_media_user_can_manage_media($media->ID, $current_user)):
-            ?>
-                <div class="cpc_media_lightbox_actions">
-                    <a href="#" class="cpc_media_lightbox_edit" data-media-id="<?php echo esc_attr($media->ID); ?>">
-                        <?php esc_html_e('Bearbeiten', 'cp-community'); ?>
-                    </a>
-                    <a href="#" class="cpc_media_lightbox_delete" data-media-id="<?php echo esc_attr($media->ID); ?>">
-                        <?php esc_html_e('Löschen', 'cp-community'); ?>
-                    </a>
-                </div>
-            <?php endif; endif; ?>
         </div>
 
     </div>

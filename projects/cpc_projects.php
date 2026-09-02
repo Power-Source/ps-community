@@ -18,7 +18,7 @@ function cpc_projects_enqueue_assets() {
     wp_enqueue_script('cpc-select2-js', plugins_url('../js/select2.js', __FILE__), array('jquery'), '4.0.13', true);
     wp_enqueue_style('cpc-select2-css', plugins_url('../js/select2.css', __FILE__), array(), '4.0.13');
 
-    wp_enqueue_style('cpc-projects-css', plugins_url('cpc_projects.css', __FILE__), array(), '1.0.0');
+    wp_enqueue_style('cpc-projects-css', plugins_url('cpc_projects.css', __FILE__), array(), '1.1.0');
     wp_enqueue_script('cpc-projects-js', plugins_url('cpc_projects.js', __FILE__), array('jquery', 'cpc-select2-js'), '1.0.0', true);
     wp_localize_script('cpc-projects-js', 'cpc_projects_ajax', array(
         'ajaxurl' => admin_url('admin-ajax.php'),

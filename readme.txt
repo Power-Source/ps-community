@@ -122,6 +122,22 @@ Hinweis zum Rangsystem:
 
 == ChangeLog ==
 
+= 1.2.1 =
+
+* Internationalisierung: Plugin-Texte verwenden einheitlich die Textdomain `cp-community` und werden über den Standard-Pluginloader geladen
+* Internationalisierung: Sichtbare JavaScript-Texte werden über lokalisierte PHP-Objekte bereitgestellt
+* Übersetzungen: Frische Basisdatei `languages/cp-community.pot` hinzugefügt
+* UX-Fix: Ein installiertes, aber deaktiviertes PS Jobboard kann wie PS-Chat und PS PM-System direkt auf der Integrationsseite aktiviert werden
+* UX-Fix: Statusmeldungen der PS-Jobboard-Integration werden konsistent innerhalb der Integrationskarte dargestellt
+* Integration: Die MarketPress-Community-Bridge ist direkt in PS Community integriert und wird zentral unter **PS Community > Integrationen** konfiguriert
+* Fix: Die MarketPress-Integration lässt sich zuverlässig deaktivieren und zeigt Plugin- sowie Integrationsstatus getrennt an
+* UX: MarketPress-Einstellungen können auf der Integrationsseite ein- und ausgeklappt werden
+* UX: Der Aktivitätsstream erhält schlichte Standardstile für Beiträge, Kommentare, Eingabefelder und Aktionsschaltflächen
+* Styling: Der vorhandene Activity-Stileditor unterstützt zusätzlich Metadaten, Beitragstext, Zeitangabe, Kommentar-Schaltfläche und „Mehr laden“
+* Migration: Projekte verwenden einen gemeinsamen, theme-resistenten Kartenrenderer; Profilprojekte sind nach persönlichen Projekten, erstellten Gruppenprojekten und Beteiligungen getrennt
+* UX: Galerien zeigen Bilder, Videos, Audio und PDFs in einer bedienbaren Vorschau oberhalb von Optionen und Einzelmedien
+* Fix: Galerie-Vorschauschalter reagieren zuverlässig und die Lightbox hält Metadaten sowie Verwaltungsaktionen bei hohen Medien erreichbar
+
 = 1.2.0 =
 
 * Fix: PS-Community-Logo im ClassicPress-Adminmenü wird auf allen Adminseiten einheitlich in der vorgesehenen Größe dargestellt
@@ -131,10 +147,6 @@ Hinweis zum Rangsystem:
 * Fix: Gruppenersteller aus `post_author` und `cpc_group_creator` bleiben dauerhaft aktive Gruppenadmins und können nicht versehentlich entfernt, herabgestuft oder aus der Gruppe ausgetragen werden
 * Verbesserung: Einmalige Bestandsbereinigung normalisiert bestehende Gruppenmitgliedschaften, entfernt Duplikate und aktualisiert die Mitgliederzahlen
 * Security-Fix: Genehmigen und Ablehnen von Gruppenanfragen validiert jetzt zuverlässig die Zuordnung von Anfrage, Benutzer und Gruppe
-* Internationalisierung: Plugin-Texte verwenden einheitlich die Textdomain `cp-community` und werden über den Standard-Pluginloader geladen
-* Internationalisierung: Sichtbare JavaScript-Texte werden über lokalisierte PHP-Objekte bereitgestellt
-* Übersetzungen: Frische Basisdatei `languages/cp-community.pot` hinzugefügt
-* UX-Fix: Ein installiertes, aber deaktiviertes PS Jobboard kann wie PS-Chat und PS PM-System direkt auf der Integrationsseite aktiviert werden
 
 = 1.1.9 =
 

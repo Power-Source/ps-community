@@ -137,6 +137,42 @@ function cpc_media_render_upload_form($gallery_id) {
     return $html;
 }
 
+function cpc_media_render_gallery_stage_media($item, $gallery_id) {
+    if (!$item || $item->post_type !== 'cpc_media') {
+        return '<div class="cpc_media_gallery_stage_empty">'.esc_html__('Keine Vorschau', 'cp-community').'</div>';
+    }
+
+    $media_id = (int)$item->ID;
+    $file_url = cpc_media_get_item_url($media_id);
+    $media_type = cpc_media_get_item_type($media_id);
+    $mime_type = cpc_media_get_media_mime_type($media_id);
+    $is_pdf = strpos((string)$mime_type, 'application/pdf') === 0 || strtolower(pathinfo((string)$file_url, PATHINFO_EXTENSION)) === 'pdf';
+
+    $html = '<div class="cpc_media_gallery_stage_media" data-media-id="'.esc_attr($media_id).'">';
+    if ($file_url && in_array($media_type, array('photo', 'image'), true)) {
+        $html .= '<button type="button" class="cpc_media_gallery_stage_image cpc_media_lightbox_trigger" data-gallery-id="'.esc_attr($gallery_id).'" data-media-id="'.esc_attr($media_id).'">';
+        $html .= '<img src="'.cpc_media_esc_image_src($file_url).'" alt="'.esc_attr($item->post_title).'" />';
+        $html .= '</button>';
+    } elseif ($file_url && $media_type === 'video') {
+        $html .= '<video class="cpc_media_gallery_stage_player" controls preload="metadata" src="'.esc_url($file_url).'">'.esc_html__('Ihr Browser unterstützt dieses Video nicht.', 'cp-community').'</video>';
+    } elseif ($file_url && $media_type === 'audio') {
+        $html .= '<div class="cpc_media_gallery_stage_audio"><strong>'.esc_html($item->post_title).'</strong><audio controls preload="metadata" src="'.esc_url($file_url).'">'.esc_html__('Ihr Browser unterstützt dieses Audio nicht.', 'cp-community').'</audio></div>';
+    } elseif ($file_url && $is_pdf) {
+        $html .= '<div class="cpc_media_pdf_container cpc_media_gallery_stage_pdf">';
+        $html .= '<iframe class="cpc_media_lightbox_pdf_frame" src="'.esc_url($file_url.'#toolbar=1&navpanes=0&view=FitH').'" loading="eager" title="'.esc_attr($item->post_title ? $item->post_title : 'PDF').'"></iframe>';
+        $html .= '<a class="cpc_media_gallery_stage_open" href="'.esc_url($file_url).'" target="_blank" rel="noopener noreferrer">'.esc_html__('Im neuen Tab oeffnen', 'cp-community').'</a>';
+        $html .= '</div>';
+    } elseif ($file_url) {
+        $extension = strtoupper(pathinfo((string)$file_url, PATHINFO_EXTENSION));
+        $html .= '<a class="cpc_media_gallery_stage_file" href="'.esc_url($file_url).'" target="_blank" rel="noopener noreferrer"><span class="dashicons dashicons-media-default"></span><strong>'.esc_html($item->post_title).'</strong><span>'.esc_html($extension ? $extension : 'FILE').'</span></a>';
+    } else {
+        $html .= '<div class="cpc_media_gallery_stage_empty">'.esc_html__('Keine Vorschau', 'cp-community').'</div>';
+    }
+    $html .= '</div>';
+
+    return $html;
+}
+
 function cpc_media_render_gallery_block($gallery) {
     if (!$gallery || $gallery->post_type !== 'cpc_gallery') {
         return '';
@@ -152,36 +188,48 @@ function cpc_media_render_gallery_block($gallery) {
     $component = cpc_media_get_gallery_component($gallery_id);
     $status = cpc_media_get_gallery_status($gallery_id);
     $type = cpc_media_get_gallery_type($gallery_id);
-    $cover_url = cpc_media_get_gallery_cover_url($gallery_id);
     $layout = cpc_media_get_gallery_layout();
-    $preview_items = cpc_media_get_gallery_preview_items($gallery_id, 4);
+    $preview_items = cpc_media_get_gallery_items($gallery_id, array(
+        'posts_per_page' => cpc_media_get_gallery_items_limit(),
+        'orderby' => 'menu_order date',
+        'order' => 'ASC',
+    ));
+    $cover_id = (int)get_post_meta($gallery_id, 'cpc_media_gallery_cover_id', true);
+    if (!$cover_id) {
+        $cover_id = (int)get_post_meta($gallery_id, 'cpc_gallery_cover_id', true);
+    }
+    $stage_item = $cover_id ? get_post($cover_id) : null;
+    if (!$stage_item || $stage_item->post_type !== 'cpc_media' || (int)get_post_meta($stage_item->ID, 'cpc_media_gallery_id', true) !== $gallery_id) {
+        $stage_item = $preview_items ? $preview_items[0] : null;
+    }
+    $stage_media_id = $stage_item ? (int)$stage_item->ID : 0;
     $author_name = get_the_author_meta('display_name', $gallery->post_author);
 
     $html .= '<div class="cpc_media_gallery_block mpp-gallery-card cpc_media_layout_'.esc_attr($layout).'" data-gallery-id="'.$gallery_id.'">';
-    $html .= '<div class="cpc_media_gallery_shell">';
-    $html .= '<div class="cpc_media_gallery_cover_wrap">';
-    if ($cover_url) {
-        $html .= '<div class="cpc_media_gallery_cover cpc_media_lightbox_trigger" data-gallery-id="'.esc_attr($gallery_id).'" role="button" tabindex="0"><img src="'.cpc_media_esc_image_src($cover_url).'" alt="'.esc_attr($gallery->post_title).'" /></div>';
-    } else {
-        $html .= '<div class="cpc_media_gallery_cover cpc_media_gallery_cover_empty cpc_media_lightbox_trigger" data-gallery-id="'.esc_attr($gallery_id).'" role="button" tabindex="0"><span>'.esc_html__('Keine Vorschau', 'cp-community').'</span></div>';
-    }
+    $html .= '<div class="cpc_media_gallery_stage" aria-live="polite">';
+    $html .= '<div class="cpc_media_gallery_stage_view">'.cpc_media_render_gallery_stage_media($stage_item, $gallery_id).'</div>';
 
     if ($preview_items) {
-        $html .= '<div class="cpc_media_gallery_preview_strip">';
+        $html .= '<div class="cpc_media_gallery_preview_strip" role="group">';
         foreach ($preview_items as $preview_item) {
-            $preview_url = cpc_media_get_item_thumbnail_url($preview_item->ID, 'thumbnail');
-            if (!$preview_url) {
-                $preview_url = cpc_media_get_media_file_url($preview_item->ID);
+            $thumb_url = cpc_media_get_item_thumbnail_url($preview_item->ID, 'thumbnail');
+            if (!$thumb_url) {
+                $thumb_url = cpc_media_get_media_file_url($preview_item->ID);
             }
-            if (!$preview_url) {
+            if (!$thumb_url) {
                 continue;
             }
-            $html .= '<span class="cpc_media_gallery_preview_thumb"><img src="'.cpc_media_esc_image_src($preview_url).'" alt="'.esc_attr($preview_item->post_title).'" /></span>';
+            $is_active = $stage_media_id === (int)$preview_item->ID;
+            $html .= '<button type="button" class="cpc_media_gallery_preview_thumb'.($is_active ? ' is-active' : '').'" data-media-id="'.esc_attr($preview_item->ID).'" aria-label="'.esc_attr(sprintf(__('Vorschau wechseln: %s', 'cp-community'), $preview_item->post_title)).'" aria-pressed="'.($is_active ? 'true' : 'false').'">';
+            $html .= '<img src="'.cpc_media_esc_image_src($thumb_url).'" alt="" loading="lazy" />';
+            $html .= '</button>';
+            $html .= '<template class="cpc_media_gallery_stage_template" data-media-id="'.esc_attr($preview_item->ID).'">'.cpc_media_render_gallery_stage_media($preview_item, $gallery_id).'</template>';
         }
         $html .= '</div>';
     }
     $html .= '</div>';
 
+    $html .= '<div class="cpc_media_gallery_shell">';
     $html .= '<div class="cpc_media_gallery_body">';
     $html .= '<div class="cpc_media_gallery_meta_top">';
     $html .= '<span class="cpc_media_gallery_badge cpc_media_gallery_badge_type">'.esc_html(cpc_media_get_gallery_type_label($type)).'</span>';
@@ -244,9 +292,12 @@ function cpc_media_render_gallery_block($gallery) {
         $html .= '</div>';
     }
 
+    $html .= '</div>';
+    $html .= '</div>';
+
+    $html .= '<div class="cpc_media_gallery_content">';
     $html .= cpc_media_render_upload_form($gallery_id);
     $html .= do_shortcode('[cpc-gallery-items gallery_id="'.$gallery_id.'" limit="'.cpc_media_get_gallery_items_limit().'"]');
-    $html .= '</div>';
     $html .= '</div>';
     $html .= '</div>';
 
