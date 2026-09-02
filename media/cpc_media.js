@@ -305,6 +305,134 @@
     }
 
     var cpcLightboxTouchStamp = 0;
+    var cpcGalleryVisibilityObserver = null;
+
+    function stopGalleryAutoslide($gallery) {
+        var gallery = $gallery && $gallery[0];
+        if (!gallery || !gallery._cpcAutoslideTimer) {
+            return;
+        }
+        window.clearTimeout(gallery._cpcAutoslideTimer);
+        gallery._cpcAutoslideTimer = null;
+    }
+
+    function syncGalleryAutoslideControl($gallery) {
+        var enabled = String($gallery.attr('data-autoslide')) === '1';
+        var hasSlides = $gallery.find('.cpc_media_gallery_preview_thumb').length > 1;
+        var paused = String($gallery.attr('data-autoslide-paused')) === '1';
+        var $stage = $gallery.find('.cpc_media_gallery_stage').first();
+        var $strip = $gallery.find('.cpc_media_gallery_preview_strip').first();
+        var $toggle = $gallery.find('.cpc_media_autoslide_toggle').first();
+
+        if (!enabled || !hasSlides || !$strip.length) {
+            stopGalleryAutoslide($gallery);
+            $toggle.remove();
+            $stage.attr('aria-live', 'polite');
+            return;
+        }
+
+        if (!$toggle.length) {
+            $toggle = $('<button>', {
+                type: 'button',
+                'class': 'cpc_media_autoslide_toggle'
+            }).insertBefore($strip);
+        }
+
+        var label = paused ? cpc_media_ajax.i18n.playSlideshow : cpc_media_ajax.i18n.pauseSlideshow;
+        $toggle.attr({
+            'aria-label': label,
+            'aria-pressed': paused ? 'true' : 'false',
+            title: label
+        }).html('<span class="dashicons ' + (paused ? 'dashicons-controls-play' : 'dashicons-controls-pause') + '" aria-hidden="true"></span>');
+        $stage.attr('aria-live', paused ? 'polite' : 'off');
+    }
+
+    function scheduleGalleryAutoslide($gallery) {
+        stopGalleryAutoslide($gallery);
+        syncGalleryAutoslideControl($gallery);
+
+        var gallery = $gallery && $gallery[0];
+        var enabled = String($gallery.attr('data-autoslide')) === '1';
+        var paused = String($gallery.attr('data-autoslide-paused')) === '1';
+        var inView = String($gallery.attr('data-autoslide-in-view')) !== '0';
+        var $thumbs = $gallery.find('.cpc_media_gallery_preview_thumb');
+        if (!gallery || !document.documentElement.contains(gallery) || !enabled || paused || !inView || $thumbs.length < 2 || document.hidden) {
+            return;
+        }
+
+        var interval = parseInt($gallery.attr('data-autoslide-interval'), 10);
+        if ([3, 5, 8, 10, 15].indexOf(interval) === -1) {
+            interval = 5;
+        }
+
+        gallery._cpcAutoslideTimer = window.setTimeout(function() {
+            gallery._cpcAutoslideTimer = null;
+            if (!document.documentElement.contains(gallery)) {
+                return;
+            }
+            if ($gallery.is(':hover') || $gallery.find(':focus').length) {
+                scheduleGalleryAutoslide($gallery);
+                return;
+            }
+
+            var $currentThumbs = $gallery.find('.cpc_media_gallery_preview_thumb');
+            var currentIndex = $currentThumbs.index($currentThumbs.filter('.is-active').first());
+            $currentThumbs.eq((currentIndex + 1) % $currentThumbs.length).trigger('click');
+        }, interval * 1000);
+    }
+
+    function initializeGalleryAutoslides($scope) {
+        var $galleries = $scope && $scope.is && $scope.is('.cpc_media_gallery_block')
+            ? $scope
+            : ($scope || $(document)).find('.cpc_media_gallery_block');
+        $galleries.each(function() {
+            scheduleGalleryAutoslide($(this));
+        });
+    }
+
+    function initializeGalleryVisibility($scope) {
+        if (typeof window.IntersectionObserver !== 'function') {
+            return;
+        }
+
+        if (!cpcGalleryVisibilityObserver) {
+            cpcGalleryVisibilityObserver = new window.IntersectionObserver(function(entries) {
+                entries.forEach(function(entry) {
+                    var $gallery = $(entry.target).closest('.cpc_media_gallery_block');
+                    if (!$gallery.length || !document.documentElement.contains($gallery[0])) {
+                        cpcGalleryVisibilityObserver.unobserve(entry.target);
+                        return;
+                    }
+
+                    var wasInView = String($gallery.attr('data-autoslide-in-view')) !== '0';
+                    var isInView = wasInView ? entry.intersectionRatio >= 0.35 : entry.intersectionRatio >= 0.55;
+                    if (isInView === wasInView) {
+                        return;
+                    }
+
+                    $gallery.attr('data-autoslide-in-view', isInView ? '1' : '0');
+                    if (isInView) {
+                        scheduleGalleryAutoslide($gallery);
+                    } else {
+                        stopGalleryAutoslide($gallery);
+                    }
+                });
+            }, {
+                threshold: [0, 0.35, 0.55, 1]
+            });
+        }
+
+        var $galleries = $scope && $scope.is && $scope.is('.cpc_media_gallery_block')
+            ? $scope
+            : ($scope || $(document)).find('.cpc_media_gallery_block');
+        $galleries.each(function() {
+            var stage = $(this).find('.cpc_media_gallery_stage_view').first()[0];
+            if (stage && !stage._cpcVisibilityObserved) {
+                stage._cpcVisibilityObserved = true;
+                cpcGalleryVisibilityObserver.observe(stage);
+            }
+        });
+    }
 
     function activateGalleryStage($gallery, $button, content) {
         var $stage = $gallery.find('.cpc_media_gallery_stage_view').first();
@@ -318,8 +446,36 @@
         $stage.empty().append(content).attr('aria-busy', 'false');
         $gallery.find('.cpc_media_gallery_preview_thumb').removeClass('is-active').attr('aria-pressed', 'false');
         $button.addClass('is-active').attr('aria-pressed', 'true');
+        var strip = $button.closest('.cpc_media_gallery_preview_strip')[0];
+        if (strip && $button[0]) {
+            var thumbLeft = $button[0].offsetLeft;
+            var thumbRight = thumbLeft + $button[0].offsetWidth;
+            if (thumbLeft < strip.scrollLeft) {
+                strip.scrollTo({ left: thumbLeft - 8, behavior: 'smooth' });
+            } else if (thumbRight > strip.scrollLeft + strip.clientWidth) {
+                strip.scrollTo({ left: thumbRight - strip.clientWidth + 8, behavior: 'smooth' });
+            }
+        }
         runPdfFallback($stage[0]);
+        scheduleGalleryAutoslide($gallery);
     }
+
+    $(document).on('click', '.cpc_media_autoslide_toggle', function() {
+        var $gallery = $(this).closest('.cpc_media_gallery_block');
+        var paused = String($gallery.attr('data-autoslide-paused')) === '1';
+        $gallery.attr('data-autoslide-paused', paused ? '0' : '1');
+        scheduleGalleryAutoslide($gallery);
+    });
+
+    $(document).on('visibilitychange', function() {
+        if (document.hidden) {
+            $('.cpc_media_gallery_block').each(function() {
+                stopGalleryAutoslide($(this));
+            });
+        } else {
+            initializeGalleryAutoslides($(document));
+        }
+    });
 
     $(document).on('click', '.cpc_media_gallery_preview_thumb', function() {
         var $button = $(this);
@@ -501,6 +657,66 @@
         syncRedirectField($(this));
     });
 
+    function updateAutoslideFields($form) {
+        var isPhoto = String($form.find('[name$="gallery_type"], [name="type"]').first().val()) === 'photo';
+        var $fields = $form.find('.cpc_media_autoslide_fields');
+        $fields.prop('hidden', !isPhoto);
+        $fields.find(':input').prop('disabled', !isPhoto);
+    }
+
+    $(document).on('change', '.cpc_media_create_gallery_form [name="cpc_media_gallery_type"], .cpc_media_edit_gallery_form [name="type"]', function() {
+        updateAutoslideFields($(this).closest('form'));
+    });
+
+    $(document).on('change', '.cpc_media_autoslide_quick_enabled, .cpc_media_autoslide_quick_seconds', function() {
+        var $controls = $(this).closest('.cpc_media_autoslide_quick');
+        var $gallery = $controls.closest('.cpc_media_gallery_block');
+        var galleryId = parseInt($gallery.data('gallery-id'), 10);
+        var enabled = $controls.find('.cpc_media_autoslide_quick_enabled').is(':checked');
+        var interval = parseInt($controls.find('.cpc_media_autoslide_quick_seconds').val(), 10) || 5;
+        var $inputs = $controls.find(':input');
+        var $status = $controls.find('.cpc_media_autoslide_quick_status');
+
+        if (!galleryId) {
+            return;
+        }
+
+        $inputs.prop('disabled', true);
+        $status.removeClass('is-error').text(cpc_media_ajax.autoslideSaving);
+
+        $.post(cpc_media_ajax.ajaxurl, {
+            action: 'cpc_media_ajax_update_gallery',
+            nonce: cpc_media_ajax.nonce,
+            gallery_id: galleryId,
+            autoslide: enabled ? 1 : 0,
+            autoslide_interval: interval
+        }).done(function(resp) {
+            resp = normalizeAjaxResponse(resp);
+            if (!resp || !resp.success) {
+                $status.addClass('is-error').text(cpc_media_ajax.autoslideError);
+                return;
+            }
+
+            enabled = !!resp.data.autoslide;
+            interval = parseInt(resp.data.autoslide_interval, 10) || 5;
+            $controls.find('.cpc_media_autoslide_quick_enabled').prop('checked', enabled);
+            $controls.find('.cpc_media_autoslide_quick_seconds').val(String(interval));
+            $gallery.find('.cpc_media_edit_gallery_form [name="autoslide"]').prop('checked', enabled);
+            $gallery.find('.cpc_media_edit_gallery_form [name="autoslide_interval"]').val(String(interval));
+            $gallery.attr({
+                'data-autoslide': enabled ? '1' : '0',
+                'data-autoslide-interval': interval,
+                'data-autoslide-paused': '0'
+            });
+            scheduleGalleryAutoslide($gallery);
+            $status.removeClass('is-error').text(cpc_media_ajax.autoslideSaved);
+        }).fail(function() {
+            $status.addClass('is-error').text(cpc_media_ajax.autoslideError);
+        }).always(function() {
+            $inputs.prop('disabled', false);
+        });
+    });
+
     $(document).on('click', '.cpc_media_edit_gallery_btn', function(e) {
         e.preventDefault();
         $(this).closest('.cpc_media_gallery_block').find('.cpc_media_edit_gallery_form').slideDown(120);
@@ -528,7 +744,9 @@
             title: $form.find('[name="title"]').val(),
             description: $form.find('[name="description"]').val(),
             status: $form.find('[name="status"]').val(),
-            type: $form.find('[name="type"]').val()
+            type: $form.find('[name="type"]').val(),
+            autoslide: $form.find('[name="autoslide"]:checked').length ? 1 : 0,
+            autoslide_interval: $form.find('[name="autoslide_interval"]').val()
         }).done(function(resp) {
             resp = normalizeAjaxResponse(resp);
             if (!resp || !resp.success) {
@@ -537,6 +755,14 @@
 
             $gallery.find('.cpc_media_gallery_title').text(resp.data.title || '');
             $gallery.find('.cpc_media_gallery_desc').text(resp.data.description || '');
+            $gallery.attr({
+                'data-autoslide': resp.data.autoslide ? '1' : '0',
+                'data-autoslide-interval': resp.data.autoslide_interval || 5,
+                'data-autoslide-paused': '0'
+            });
+            $gallery.find('.cpc_media_autoslide_quick_enabled').prop('checked', !!resp.data.autoslide);
+            $gallery.find('.cpc_media_autoslide_quick_seconds').val(String(resp.data.autoslide_interval || 5));
+            scheduleGalleryAutoslide($gallery);
             $form.slideUp(120);
         });
     });
@@ -562,6 +788,7 @@
             if (!resp || !resp.success) {
                 return;
             }
+            stopGalleryAutoslide($gallery);
             $gallery.slideUp(120, function() {
                 $(this).remove();
             });
@@ -1392,11 +1619,21 @@
     $(function() {
         syncRedirectField($(document));
         initializeSortable();
+        $('.cpc_media_create_gallery_form, .cpc_media_edit_gallery_form').each(function() {
+            updateAutoslideFields($(this));
+        });
+        initializeGalleryVisibility($(document));
+        initializeGalleryAutoslides($(document));
     });
 
     $(document).on('cpc_profile_tab_loaded', function() {
         syncRedirectField($(document));
         initializeSortable();
+        $('.cpc_media_create_gallery_form, .cpc_media_edit_gallery_form').each(function() {
+            updateAutoslideFields($(this));
+        });
+        initializeGalleryVisibility($(document));
+        initializeGalleryAutoslides($(document));
         runPdfFallback(document);
     });
 

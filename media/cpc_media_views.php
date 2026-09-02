@@ -74,6 +74,24 @@ function cpc_media_render_status_select_html($field_name, $selected, $component 
     return $html;
 }
 
+function cpc_media_render_autoslide_fields($enabled, $interval, $field_prefix, $visible = true) {
+    $interval = cpc_media_normalize_autoslide_interval($interval);
+    $html = '<div class="cpc_media_autoslide_fields"'.($visible ? '' : ' hidden').'>';
+    $html .= '<label class="cpc_media_toggle_label">';
+    $html .= '<input type="checkbox" name="'.esc_attr($field_prefix).'autoslide" value="1"'.checked($enabled, true, false).' />';
+    $html .= '<span>'.esc_html__('Slideshow automatisch abspielen', 'cp-community').'</span>';
+    $html .= '</label>';
+    $html .= '<label class="cpc_media_interval_label"><span>'.esc_html__('Bildwechsel', 'cp-community').'</span>';
+    $html .= '<select name="'.esc_attr($field_prefix).'autoslide_interval">';
+    foreach (array(3, 5, 8, 10, 15) as $seconds) {
+        $html .= '<option value="'.$seconds.'"'.selected($interval, $seconds, false).'>'.sprintf(esc_html__('%d Sekunden', 'cp-community'), $seconds).'</option>';
+    }
+    $html .= '</select></label>';
+    $html .= '</div>';
+
+    return $html;
+}
+
 function cpc_media_render_create_gallery_form($component, $component_id, $default_type = 'photo') {
     if (!is_user_logged_in() || !cpc_media_user_can_create_gallery_for_context($component, $component_id)) {
         return '';
@@ -106,6 +124,7 @@ function cpc_media_render_create_gallery_form($component, $component_id, $defaul
     $html .= '<div class="cpc_media_form_spacer"></div>';
     $html .= '<label>'.esc_html__('Typ', 'cp-community').'</label>';
     $html .= '<select name="cpc_media_gallery_type"><option value="photo"'.selected($default_type, 'photo', false).'>'.esc_html__('Bilder', 'cp-community').'</option><option value="video"'.selected($default_type, 'video', false).'>'.esc_html__('Videos', 'cp-community').'</option><option value="audio"'.selected($default_type, 'audio', false).'>'.esc_html__('Audio', 'cp-community').'</option><option value="doc"'.selected($default_type, 'doc', false).'>'.esc_html__('Dokumente', 'cp-community').'</option></select>';
+    $html .= cpc_media_render_autoslide_fields(false, 5, 'cpc_media_gallery_', $default_type === 'photo');
     $html .= '</div>';
     $html .= '</div>';
     $html .= '<div class="cpc_media_form_submit"><button type="submit" class="cpc_button cpc_media_primary_button">'.esc_html__('Galerie erstellen', 'cp-community').'</button></div>';
@@ -204,12 +223,17 @@ function cpc_media_render_gallery_block($gallery) {
     }
     $stage_media_id = $stage_item ? (int)$stage_item->ID : 0;
     $author_name = get_the_author_meta('display_name', $gallery->post_author);
+    $autoslide_enabled = cpc_media_gallery_autoslide_enabled($gallery_id);
+    $autoslide_interval = cpc_media_get_gallery_autoslide_interval($gallery_id);
 
-    $html .= '<div class="cpc_media_gallery_block mpp-gallery-card cpc_media_layout_'.esc_attr($layout).'" data-gallery-id="'.$gallery_id.'">';
+    $html .= '<div class="cpc_media_gallery_block mpp-gallery-card cpc_media_layout_'.esc_attr($layout).' cpc_media_type_'.esc_attr($type).'" data-gallery-id="'.$gallery_id.'" data-autoslide="'.($autoslide_enabled ? '1' : '0').'" data-autoslide-interval="'.(int)$autoslide_interval.'">';
     $html .= '<div class="cpc_media_gallery_stage" aria-live="polite">';
     $html .= '<div class="cpc_media_gallery_stage_view">'.cpc_media_render_gallery_stage_media($stage_item, $gallery_id).'</div>';
 
     if ($preview_items) {
+        if ($autoslide_enabled && count($preview_items) > 1) {
+            $html .= '<button type="button" class="cpc_media_autoslide_toggle" aria-pressed="false" aria-label="'.esc_attr__('Slideshow pausieren', 'cp-community').'" title="'.esc_attr__('Slideshow pausieren', 'cp-community').'"><span class="dashicons dashicons-controls-pause" aria-hidden="true"></span></button>';
+        }
         $html .= '<div class="cpc_media_gallery_preview_strip" role="group">';
         foreach ($preview_items as $preview_item) {
             $thumb_url = cpc_media_get_item_thumbnail_url($preview_item->ID, 'thumbnail');
@@ -256,6 +280,22 @@ function cpc_media_render_gallery_block($gallery) {
         $html .= '<button type="button" class="cpc_button cpc_media_btn_secondary cpc_media_btn_danger cpc_media_delete_gallery_btn"><span class="dashicons dashicons-trash"></span> '.esc_html__('Löschen', 'cp-community').'</button>';
         $html .= '</div>';
 
+        if ($type === 'photo') {
+            $html .= '<div class="cpc_media_autoslide_quick" role="group" aria-label="'.esc_attr__('Slideshow-Einstellungen', 'cp-community').'">';
+            $html .= '<label class="cpc_media_autoslide_quick_toggle">';
+            $html .= '<input type="checkbox" class="cpc_media_autoslide_quick_enabled"'.checked($autoslide_enabled, true, false).' />';
+            $html .= '<span>'.esc_html__('Slideshow', 'cp-community').'</span>';
+            $html .= '</label>';
+            $html .= '<label class="cpc_media_autoslide_quick_interval"><span>'.esc_html__('Takt', 'cp-community').'</span>';
+            $html .= '<select class="cpc_media_autoslide_quick_seconds">';
+            foreach (array(3, 5, 8, 10, 15) as $seconds) {
+                $html .= '<option value="'.$seconds.'"'.selected($autoslide_interval, $seconds, false).'>'.$seconds.' s</option>';
+            }
+            $html .= '</select></label>';
+            $html .= '<span class="cpc_media_autoslide_quick_status" aria-live="polite"></span>';
+            $html .= '</div>';
+        }
+
         $html .= '<form class="cpc_media_edit_gallery_form" style="display:none; margin-top:12px; padding:14px; background:#f9f9f9; border-radius:4px; border:1px solid #ddd;">';
         $html .= '<h5 style="margin:0 0 12px 0; font-size:14px;">'.esc_html__('Galerie bearbeiten', 'cp-community').'</h5>';
         $html .= '<div>';
@@ -276,6 +316,7 @@ function cpc_media_render_gallery_block($gallery) {
         $html .= '<select name="type" style="width:100%; padding:8px; border:1px solid #ddd; border-radius:3px;"><option value="photo"'.selected(cpc_media_get_gallery_type($gallery_id), 'photo', false).'>'.esc_html__('Bilder', 'cp-community').'</option><option value="video"'.selected(cpc_media_get_gallery_type($gallery_id), 'video', false).'>'.esc_html__('Videos', 'cp-community').'</option><option value="audio"'.selected(cpc_media_get_gallery_type($gallery_id), 'audio', false).'>'.esc_html__('Audio', 'cp-community').'</option><option value="doc"'.selected(cpc_media_get_gallery_type($gallery_id), 'doc', false).'>'.esc_html__('Dokumente', 'cp-community').'</option></select>';
         $html .= '</div>';
         $html .= '</div>';
+        $html .= cpc_media_render_autoslide_fields($autoslide_enabled, $autoslide_interval, '', $type === 'photo');
         $html .= '<div style="margin-top:12px; display:flex; gap:6px;">';
         $html .= '<button type="submit" class="cpc_button cpc_media_btn_primary"><span class="dashicons dashicons-yes"></span> '.esc_html__('Speichern', 'cp-community').'</button>';
         $html .= '<button type="button" class="cpc_button cpc_media_btn_secondary cpc_media_cancel_edit_gallery_btn"><span class="dashicons dashicons-no"></span> '.esc_html__('Abbrechen', 'cp-community').'</button>';

@@ -47,6 +47,9 @@ function cpc_media_enqueue_assets() {
         'reorderSaving' => __('Reihenfolge wird gespeichert...', 'cp-community'),
         'reorderDone' => __('Reihenfolge gespeichert.', 'cp-community'),
         'reorderError' => __('Reihenfolge konnte nicht gespeichert werden.', 'cp-community'),
+        'autoslideSaving' => __('Slideshow wird gespeichert...', 'cp-community'),
+        'autoslideSaved' => __('Slideshow gespeichert.', 'cp-community'),
+        'autoslideError' => __('Slideshow konnte nicht gespeichert werden.', 'cp-community'),
         'deleteError' => __('Medium konnte nicht gelöscht werden.', 'cp-community'),
         'lightbox_enabled' => cpc_media_lightbox_enabled() ? 1 : 0,
         'reorder_enabled' => cpc_media_reorder_enabled() ? 1 : 0,
@@ -60,6 +63,8 @@ function cpc_media_enqueue_assets() {
             'itemOfWithTitle' => __('%1$s - Element %2$d von %3$d', 'cp-community'),
             'loading' => __('Lade Medium...', 'cp-community'),
             'loadError' => __('Medium konnte nicht geladen werden.', 'cp-community'),
+            'pauseSlideshow' => __('Slideshow pausieren', 'cp-community'),
+            'playSlideshow' => __('Slideshow fortsetzen', 'cp-community'),
         ),
         'pdf' => array(
             'mode' => cpc_media_get_pdf_viewer_mode(),

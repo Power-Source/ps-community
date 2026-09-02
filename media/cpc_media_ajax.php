@@ -134,6 +134,8 @@ function cpc_media_ajax_update_gallery() {
         'description' => isset($_POST['description']) ? wp_unslash($_POST['description']) : null,
         'status' => isset($_POST['status']) ? wp_unslash($_POST['status']) : null,
         'type' => isset($_POST['type']) ? wp_unslash($_POST['type']) : null,
+        'autoslide' => !empty($_POST['autoslide']) ? 1 : 0,
+        'autoslide_interval' => isset($_POST['autoslide_interval']) ? wp_unslash($_POST['autoslide_interval']) : 5,
     ));
 
     if (!$ok) {
@@ -147,6 +149,8 @@ function cpc_media_ajax_update_gallery() {
         'description' => $gallery ? $gallery->post_content : '',
         'status' => cpc_media_get_gallery_status($gallery_id),
         'type' => cpc_media_get_gallery_type($gallery_id),
+        'autoslide' => cpc_media_gallery_autoslide_enabled($gallery_id) ? 1 : 0,
+        'autoslide_interval' => cpc_media_get_gallery_autoslide_interval($gallery_id),
     ));
 }
 

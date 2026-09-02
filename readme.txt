@@ -126,6 +126,7 @@ Hinweis zum Rangsystem:
 
 * UX: Alle Lightboxen zeigen Medien größer auf einer dunklen Bühne und ordnen kompakte Metadaten einheitlich darunter an
 * UX: Galerie-Medien lassen sich mit lokalem SortableJS präzise umordnen; Karten, Slider und gespeicherte Reihenfolge werden live per AJAX synchronisiert
+* Funktion: Bildgalerien können pro Galerie als automatische Slideshow mit wählbarem Intervall, stabiler Bühnenhöhe, mittig eingepassten Bildern, Offscreen-Ressourcenpause und eigenem Pause-/Fortsetzen-Schalter betrieben werden
 * Fix: PM-Postfachbereiche einschließlich Einstellungen wechseln und speichern im Profil ohne vollständigen Seitenreload oder Weiterleitung auf die leere `admin-ajax.php`-Nullseite; das vollständig erneuerte Inbox- und Conversation-Template sowie die optionale Community-Lightbox-/Galerieanbindung werden direkt vom PM-System bereitgestellt
 * Fix: Aktuelle Galerie-Skripte und -Styles werden cache-sicher ausgeliefert, damit Vorschauschalter zuverlässig reagieren
 * UX: PM-Nachrichtenbutton folgt dem PS-Community-Buttonstil und die kompakte Speicheranzeige steht direkt neben dem Postfachtitel

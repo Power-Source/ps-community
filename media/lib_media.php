@@ -216,6 +216,20 @@ function cpc_media_get_gallery_items_limit() {
     return max(1, min(60, (int)get_option('cpc_media_gallery_items_limit', 24)));
 }
 
+function cpc_media_normalize_autoslide_interval($interval) {
+    $interval = (int)$interval;
+    return in_array($interval, array(3, 5, 8, 10, 15), true) ? $interval : 5;
+}
+
+function cpc_media_gallery_autoslide_enabled($gallery_id) {
+    return cpc_media_get_gallery_type($gallery_id) === 'photo'
+        && (bool)get_post_meta((int)$gallery_id, 'cpc_gallery_autoslide', true);
+}
+
+function cpc_media_get_gallery_autoslide_interval($gallery_id) {
+    return cpc_media_normalize_autoslide_interval(get_post_meta((int)$gallery_id, 'cpc_gallery_autoslide_interval', true));
+}
+
 function cpc_media_get_directory_page_id() {
     return max(0, (int)get_option('cpc_media_directory_page', 0));
 }
@@ -1022,10 +1036,13 @@ function cpc_media_create_gallery($args = array()) {
         'source' => '',
         'source_id' => 0,
         'media_count' => 0,
+        'autoslide' => 0,
+        'autoslide_interval' => 5,
     );
 
     $args = wp_parse_args($args, $defaults);
     $user_id = (int)$args['user_id'];
+    $gallery_type = cpc_media_normalize_type($args['type']);
 
     if (!$user_id || $args['title'] === '') {
         return 0;
@@ -1051,8 +1068,10 @@ function cpc_media_create_gallery($args = array()) {
     update_post_meta($gallery_id, 'cpc_gallery_component', sanitize_text_field($args['component']));
     update_post_meta($gallery_id, 'cpc_gallery_component_id', (int)$args['component_id']);
     update_post_meta($gallery_id, 'cpc_gallery_status', sanitize_text_field($args['status']));
-    update_post_meta($gallery_id, 'cpc_gallery_type', sanitize_text_field($args['type']));
+    update_post_meta($gallery_id, 'cpc_gallery_type', $gallery_type);
     update_post_meta($gallery_id, 'cpc_gallery_media_count', max(0, (int)$args['media_count']));
+    update_post_meta($gallery_id, 'cpc_gallery_autoslide', $gallery_type === 'photo' && !empty($args['autoslide']) ? 1 : 0);
+    update_post_meta($gallery_id, 'cpc_gallery_autoslide_interval', cpc_media_normalize_autoslide_interval($args['autoslide_interval']));
 
     if (!empty($args['source'])) {
         update_post_meta($gallery_id, 'cpc_gallery_source', sanitize_text_field($args['source']));
@@ -1154,8 +1173,17 @@ function cpc_media_update_gallery($gallery_id, $args = array()) {
     if (isset($args['status'])) {
         update_post_meta($gallery_id, 'cpc_gallery_status', cpc_media_normalize_status($args['status']));
     }
+    $gallery_type = isset($args['type']) ? cpc_media_normalize_type($args['type']) : cpc_media_get_gallery_type($gallery_id);
     if (isset($args['type'])) {
-        update_post_meta($gallery_id, 'cpc_gallery_type', cpc_media_normalize_type($args['type']));
+        update_post_meta($gallery_id, 'cpc_gallery_type', $gallery_type);
+    }
+    if ($gallery_type !== 'photo') {
+        update_post_meta($gallery_id, 'cpc_gallery_autoslide', 0);
+    } elseif (isset($args['autoslide'])) {
+        update_post_meta($gallery_id, 'cpc_gallery_autoslide', !empty($args['autoslide']) ? 1 : 0);
+    }
+    if (isset($args['autoslide_interval'])) {
+        update_post_meta($gallery_id, 'cpc_gallery_autoslide_interval', cpc_media_normalize_autoslide_interval($args['autoslide_interval']));
     }
 
     return true;
@@ -1555,6 +1583,8 @@ function cpc_media_handle_create_gallery_request() {
     $description = isset($_POST['cpc_media_gallery_description']) ? wp_kses_post(wp_unslash($_POST['cpc_media_gallery_description'])) : '';
     $status = isset($_POST['cpc_media_gallery_status']) ? cpc_media_normalize_status(wp_unslash($_POST['cpc_media_gallery_status'])) : 'public';
     $type = isset($_POST['cpc_media_gallery_type']) ? cpc_media_normalize_type(wp_unslash($_POST['cpc_media_gallery_type'])) : 'photo';
+    $autoslide = !empty($_POST['cpc_media_gallery_autoslide']) ? 1 : 0;
+    $autoslide_interval = isset($_POST['cpc_media_gallery_autoslide_interval']) ? cpc_media_normalize_autoslide_interval(wp_unslash($_POST['cpc_media_gallery_autoslide_interval'])) : 5;
     $user_id = get_current_user_id();
 
     if (!$title || !cpc_media_user_can_create_gallery_for_context($component, $component_id, $user_id)) {
@@ -1570,6 +1600,8 @@ function cpc_media_handle_create_gallery_request() {
         'component_id' => $component_id,
         'status' => $status,
         'type' => $type,
+        'autoslide' => $autoslide,
+        'autoslide_interval' => $autoslide_interval,
     ));
 
     if (!$gallery_id) {
