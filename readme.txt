@@ -124,7 +124,8 @@ Hinweis zum Rangsystem:
 
 = 1.2.1 =
 
-* Fix: PM-Postfachbereiche einschließlich Einstellungen wechseln und speichern im Profil ohne vollständigen Seitenreload
+* UX: Alle Lightboxen zeigen Medien größer auf einer dunklen Bühne und ordnen kompakte Metadaten einheitlich darunter an
+* Fix: PM-Postfachbereiche einschließlich Einstellungen wechseln und speichern im Profil ohne vollständigen Seitenreload oder Weiterleitung auf die leere `admin-ajax.php`-Nullseite; das vollständig erneuerte Inbox- und Conversation-Template sowie die optionale Community-Lightbox-/Galerieanbindung werden direkt vom PM-System bereitgestellt
 * Fix: Aktuelle Galerie-Skripte und -Styles werden cache-sicher ausgeliefert, damit Vorschauschalter zuverlässig reagieren
 * UX: PM-Nachrichtenbutton folgt dem PS-Community-Buttonstil und die kompakte Speicheranzeige steht direkt neben dem Postfachtitel
 * Fix: Die Jobboard-Integration lädt Menü-, Landing- und Profil-Assets rechtzeitig auf der Community-Profilseite

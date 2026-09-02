@@ -283,8 +283,23 @@ $contentWrapper.text(xhr && xhr.responseText ? xhr.responseText : cpc_activity_a
 return false;
 });
 
-$('body').on('click', '.cpc-profile-tab-content-wrapper a[href*="box=setting"]', function(e) {
+$('body').on('click', '.cpc-profile-tab-content-wrapper a[data-box], .cpc-profile-tab-content-wrapper a[href*="box=setting"]', function(e) {
+var $link = $(this);
+var box = String($link.data('box') || '');
+var allowedBoxes = ['inbox', 'unread', 'read', 'sent', 'archive', 'setting'];
+
+if (!box) {
+try {
+box = new URL($link.attr('href'), window.location.href).searchParams.get('box') || '';
+} catch (error) {
+box = '';
+}
+}
+
+if (allowedBoxes.indexOf(box) === -1) { return; }
+
 e.preventDefault();
+e.stopImmediatePropagation();
 
 var $tabList = $('.cpc-profile-tabs-list');
 var $contentWrapper = $('.cpc-profile-tab-content-wrapper');
@@ -295,8 +310,8 @@ $contentWrapper.addClass('loading').css('opacity', '0.5');
 if (history.pushState) {
 var settingsUrl = new URL(window.location.href);
 settingsUrl.searchParams.set('tab', 'messages');
-settingsUrl.searchParams.set('box', 'setting');
-history.pushState({tab: 'messages', box: 'setting'}, '', settingsUrl.toString());
+settingsUrl.searchParams.set('box', box);
+history.pushState({tab: 'messages', box: box}, '', settingsUrl.toString());
 }
 
 $.ajax({
@@ -305,7 +320,7 @@ type: 'POST',
 data: {
 action: 'cpc_load_profile_tab',
 tab: 'messages',
-box: 'setting',
+box: box,
 user_id: $tabList.data('user-id'),
 nonce: $tabList.data('nonce'),
 atts: {}

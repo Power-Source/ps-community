@@ -992,6 +992,59 @@
         cpcVanillaLightbox.lastFocused = null;
     }
 
+    function createExternalLightboxItem(element) {
+        var $trigger = $(element);
+        var fileUrl = $trigger.attr('href') || $trigger.data('file-url') || '';
+        var mediaType = String($trigger.data('media-type') || 'doc').toLowerCase();
+        var title = String($trigger.data('title') || $trigger.attr('title') || '');
+        var $entry = $('<div>', { 'class': 'cpc_media_lightbox_entry cpc_media_external_lightbox_entry' });
+        var $stage = $('<div>', { 'class': 'cpc_media_lightbox_stage' });
+
+        if (mediaType === 'photo') {
+            $stage.append($('<img>', { src: fileUrl, alt: title }));
+        } else if (mediaType === 'video') {
+            $stage.append($('<video>', { src: fileUrl, controls: true, preload: 'metadata' }));
+        } else if (mediaType === 'audio') {
+            $stage.append($('<audio>', { src: fileUrl, controls: true, preload: 'metadata' }));
+        } else if (mediaType === 'pdf') {
+            $stage.append($('<iframe>', { src: fileUrl, title: title }));
+        } else {
+            $stage.append($('<a>', {
+                href: fileUrl,
+                text: title || fileUrl,
+                target: '_blank',
+                rel: 'noopener'
+            }));
+        }
+
+        $entry.append($stage);
+        if (title) {
+            $entry.append($('<div>', { 'class': 'cpc_media_lightbox_info' }).append($('<h2>', { text: title })));
+        }
+
+        return {
+            src: $('<div>').append($entry).html(),
+            data: { title: title }
+        };
+    }
+
+    function openExternalLightbox(trigger) {
+        var $trigger = $(trigger);
+        var $group = $trigger.closest('.mm-attachments-modern');
+        var $triggers = $group.length ? $group.find('.cpc_media_external_lightbox_trigger') : $trigger;
+        var items = [];
+        var position = 0;
+
+        $triggers.each(function(index) {
+            if (this === trigger) {
+                position = index;
+            }
+            items.push(createExternalLightboxItem(this));
+        });
+
+        openLightboxPopup(items, position);
+    }
+
     // Initialize lightbox on click.
     // Include fallback selectors for preview anchors with href="#" to prevent hash scroll-to-top.
     var cpcLightboxTriggerSelector = [
@@ -1016,6 +1069,18 @@
         cpcLightboxTouchStamp = Date.now();
         e.preventDefault();
         openLightboxFromTrigger($(this));
+    });
+
+    $(document).on('click', '.cpc_media_external_lightbox_trigger', function(e) {
+        e.preventDefault();
+        openExternalLightbox(this);
+    });
+
+    $(document).on('keydown', '.cpc_media_external_lightbox_trigger[role="button"]', function(e) {
+        if (e.key === 'Enter' || e.key === ' ') {
+            e.preventDefault();
+            openExternalLightbox(this);
+        }
     });
 
     // Keyboard activation for non-anchor trigger elements
