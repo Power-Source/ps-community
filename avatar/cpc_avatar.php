@@ -547,9 +547,10 @@ function user_avatar_delete_files($uid)
  * @param int $size Size of the avatar image (thumb/full)
  * @param string $default URL to a default image to use if no avatar is available
  * @param string $alt Alternate text to use in image tag. Defaults to blank
+ * @param array  $args Processed avatar arguments from ClassicPress.
  * @return <type>
  */
-function user_avatar_fetch_avatar_filter( $avatar, $user, $size, $default, $alt ) {
+function user_avatar_fetch_avatar_filter( $avatar, $user, $size, $default, $alt, $args = array() ) {
 	global $pagenow;
 	$id = 0;
 	
@@ -582,23 +583,37 @@ function user_avatar_fetch_avatar_filter( $avatar, $user, $size, $default, $alt 
 	if ( empty( $id ) )
 		return !empty( $avatar ) ? $avatar : $default;
 		
-	// check to see if there is a file that was uploaded by the user
-	if( user_avatar_avatar_exists($id) ):
-	
-		$user_avatar = user_avatar_fetch_avatar( array( 'item_id' => $id, 'width' => $size, 'height' => $size, 'alt' => $alt ) );
-		if($user_avatar)
-			return $user_avatar;
-		else
-			return !empty( $avatar ) ? $avatar : $default;
-	else:
-		return !empty( $avatar ) ? $avatar : $default;
-	endif;
-	// for good measure 
+	// Prefer the full image, which is the canonical file tracked by the avatar module.
+	// Older uploads and migrated avatars may not have a matching thumbnail.
+	$user_avatar = user_avatar_fetch_avatar( array(
+		'item_id' => $id,
+		'width' => $size,
+		'height' => $size,
+		'type' => 'full',
+		'alt' => $alt,
+	) );
+
+	if ( $user_avatar ) {
+		return $user_avatar;
+	}
+
+	$user_avatar = user_avatar_fetch_avatar( array(
+		'item_id' => $id,
+		'width' => $size,
+		'height' => $size,
+		'type' => 'thumb',
+		'alt' => $alt,
+	) );
+
+	if ( $user_avatar ) {
+		return $user_avatar;
+	}
+
 	return !empty( $avatar ) ? $avatar : $default;
 
 }
 
-add_filter( 'get_avatar', 'user_avatar_fetch_avatar_filter', 10, 5 );
+add_filter( 'get_avatar', 'user_avatar_fetch_avatar_filter', 10, 6 );
 
 /**
  * user_avatar_core_fetch_avatar()

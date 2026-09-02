@@ -2,9 +2,9 @@
 Contributors: DerN3rd
 Tags: wp community, social network, social networking, social media, cp-community, wp community, community
 Requires at least: 4.9
-Tested up to: 6.8.1
-ClassicPress: 2.7.0
-Stable tag: 1.2.0
+Tested up to: 7.1.0
+ClassicPress: 2.7.1
+Stable tag: 1.2.1
 License URI: https://www.gnu.org/licenses/gpl-2.0.html
 
 == Description ==
@@ -123,7 +123,6 @@ Hinweis zum Rangsystem:
 == ChangeLog ==
 
 = 1.2.1 =
-
 * UX: Alle Lightboxen zeigen Medien größer auf einer dunklen Bühne und ordnen kompakte Metadaten einheitlich darunter an
 * UX: Galerie-Medien lassen sich mit lokalem SortableJS präzise umordnen; Karten, Slider und gespeicherte Reihenfolge werden live per AJAX synchronisiert
 * Funktion: Bildgalerien können pro Galerie als automatische Slideshow mit wählbarem Intervall, stabiler Bühnenhöhe, mittig eingepassten Bildern, Offscreen-Ressourcenpause und eigenem Pause-/Fortsetzen-Schalter betrieben werden
@@ -147,7 +146,6 @@ Hinweis zum Rangsystem:
 * Fix: Galerie-Vorschauschalter reagieren zuverlässig und die Lightbox hält Metadaten sowie Verwaltungsaktionen bei hohen Medien erreichbar
 
 = 1.2.0 =
-
 * Fix: PS-Community-Logo im ClassicPress-Adminmenü wird auf allen Adminseiten einheitlich in der vorgesehenen Größe dargestellt
 * Fix: Gruppenadmins werden zuverlässig erkannt und erhalten alle verfügbaren Gruppenoptionen und Einstellungen
 * Fix: Gruppenrollen werden nur noch aus aktiven Mitgliedschaften ermittelt; bei doppelten Datensätzen werden Status und Rollenstärke deterministisch priorisiert
@@ -157,7 +155,6 @@ Hinweis zum Rangsystem:
 * Security-Fix: Genehmigen und Ablehnen von Gruppenanfragen validiert jetzt zuverlässig die Zuordnung von Anfrage, Benutzer und Gruppe
 
 = 1.1.9 =
-
 * Fix: verbessere Hover-Ereignisse für Aktivitäts- und Kommentar-Einstellungen; ersetze 'hover' durch 'mouseenter' und 'mouseleave'
 * Neu: Multisite-Netzwerkmenü **PS Community** im Netzwerk-Admin mit zentralen Richtlinien für Subsites
 * Neu: Netzwerkweite Modulfreigaben für Subsites; Mainblog bleibt bewusst ausgenommen und kann weiterhin alle Module nutzen
@@ -172,7 +169,6 @@ Hinweis zum Rangsystem:
 * Verbesserung: Activity+ und Media nutzen in Multisite jetzt konsistent scope-abhängige Cloud-Pfade und Netzwerk-Limits
 
 = 1.1.8 =
-
 * Fix: JavaScript-Fehler `jQuery(...).select2 is not a function` im Alerts-Modul behoben (fehlerhaften Legacy-Pfad von `cp-community` auf lokalen Plugin-Pfad korrigiert)
 * Fix: Select2-Ladereihenfolge im Alerts-Modul korrigiert (`cpc-alerts.js` lädt jetzt mit `cpc-select2-js` als Abhängigkeit)
 * Stabilitäts-Fix: Select2-Aufrufe in Alerts/Aktivität/Forum/Freundschaften/Profil robust abgesichert, damit ohne geladenes Select2 kein Frontend-Crash entsteht
@@ -180,11 +176,9 @@ Hinweis zum Rangsystem:
 * Compliance: Keine CDN-Einbindung für Select2 - Assets bleiben lokal im Plugin (`js/select2.js`, `js/select2.css`)
 
 = 1.1.7 =
-
 * Fix: PHP Warning "Attempt to read property post_name on null" in ps_community.php behoben – `get_post()` für die Profil-Seiten-ID wird jetzt auf null geprüft, bevor auf `->post_name` zugegriffen wird (tritt auf Multisite-Sub-Sites auf, wenn die unter `cpccom_profile_page` gespeicherte Seite nicht existiert)
 
 = 1.1.6 =
-
 * UX-Fix: Activity Plus Link-Vorschau wird im Aktivitätsstream jetzt direkt in der Hauptnachricht unter dem Text gerendert (nicht mehr optisch getrennt unterhalb des Beitrags)
 * Fix: Einfügeposition der Activity-Plus-Medienkarten angepasst - Ausgabe erfolgt vor Kommentarbereich/Antwortformular für konsistentes Post-Layout
 * UX-Fix: Composer-Linkvorschau verwendet jetzt dieselbe Card-Struktur wie die finale Feed-Ausgabe (Titel/Beschreibung/URL/Bild konsistent)
@@ -203,7 +197,6 @@ Hinweis zum Rangsystem:
 * UX: Lightbox Content-Bereich erlaubt vertikales Scrollen auf Touch-Geräten (touch-action: pan-y), horizontaler Swipe löst Navigation aus
 
 = 1.1.5 =
-
 * Breaking: Events ist nicht mehr als "Core Plugin Feature" aktivierbar - wird automatisch durch PS Events Plugin gesteuert
 * Redesign: Events-Integration vollständig überarbeitet: PS Events Plugin übernimmt alle Core-Funktionen
 * Entfernt: Redundante und verwirrende Events-Settings aus PS Community Admin (alle Settings in PS Events)
@@ -219,11 +212,9 @@ Hinweis zum Rangsystem:
 * Verbesserung: Dokumente zeigen jetzt Dateityp-Fallback-Icons (z.B. PDF/ZIP/RAR/7Z), auch in Cover- und Vorschau-Ansichten
 
 = 1.1.4 =
-
 * Eventsystem überarbeitet
 
 = 1.1.3 =
-
 * Hinzugefügt: Neues Core-Modul **Mitgliederverzeichnis** inkl. Shortcodes `[cpc-members]` und `[cpc-members-directory]`
 * Hinzugefügt: Neues Core-Modul **Events** als Integration zu PS Events über `[cpc-events]`
 * Hinzugefügt: E-Mail-Benachrichtigungen bei neuen Gruppen-Events (sofern aktiviert)
@@ -232,7 +223,6 @@ Hinweis zum Rangsystem:
 * Verbesserung: Expertenliste im Forum optional mit Ranglabels (Rookie/Helper/Pro/Master)
 
 = 1.1.2 =
-
 * Fix: Beim Erstellen von Gruppen im Backend (Dashboard/CPT) wird der Ersteller jetzt zuverlässig als Gruppen-Admin-Mitglied angelegt
 * Fix: Bestehende Gruppen werden beim Speichern automatisch repariert, falls dem Ersteller die Admin-Mitgliedschaft fehlt oder falschen Status/Rolle hat
 * Fix: Wenn der Gruppenersteller seiner eigenen Gruppe beitritt, wird er korrekt als Admin statt als normales Mitglied geführt
@@ -249,7 +239,6 @@ Hinweis zum Rangsystem:
 * Hinzugefügt: Optionales Experten-Ranglabel (Rookie/Helper/Pro/Master) in `[cpc-forum-experts]`
 
 = 1.1.1 =
-
 * Fix: Speichern in Dokumente/Projekte/Medien Tabs leitet nicht mehr auf `/wp-admin/admin-ajax.php` ("0"-Seite) um
 * Redirect-Handling fuer Frontend-Formulare zentralisiert und gegen AJAX-Redirect-Ziele abgesichert
 * Profil- und Gruppen-Tabs: Speichern bleibt im erwarteten Seitenkontext mit korrekter Notice
@@ -291,7 +280,6 @@ Hinweis zum Rangsystem:
 * Neue Wall-Optionen: öffentliche Gruppenposts einbeziehen, Systemmeldungen ausblenden und Push-Hook für neue globale Posts
 
 = 1.1.0 =
-
 * Neue globale Mediathek (Galerie- und Medienverzeichnis) mit eigener Seite im Frontend
 * Neue Einstellungen fuer Mediathek-Seite und Anzahl Elemente pro Seite im Medien-Admin
 * Neue Shortcodes `cpc-media-directory` und `cpc-gallery-directory`
@@ -306,7 +294,6 @@ Hinweis zum Rangsystem:
 * Projekte: "Projekt oeffnen" bleibt im Gruppen-Kontext und rendert die Projekt-Detailansicht im Gruppen-Tab statt ausserhalb auf der CPT-URL
 
 = 1.0.9 =
-
 * Gruppen-Einstellung „Gruppenerstellung erlauben“ korrigiert (Checkbox bleibt nach Speichern/Neuladen zuverlässig aktiv oder deaktiviert)
 * Gruppen-Tabschaltung stabilisiert (Fallback auf reguläre Navigation bei fehlgeschlagenem AJAX)
 * Fatal Error im Gruppen-Mitglieder-Tab behoben (`membership_id`-Zuweisung auf Array in `lib_groups.php`)
@@ -321,7 +308,6 @@ Hinweis zum Rangsystem:
 * Theme-Classes korrigiert für konsistentes Design (cpcap-theme-*, cpcap-alignment-*)
 
 = 1.0.8 =
-
 * Activity Plus Integration für Aktivitäten ergänzt (Bilder, Link-Vorschau, Video-Embed)
 * Einstellungen für Activity Plus im Admin ergänzt (Aktivierung, Features, Theme, Ausrichtung)
 * Upload- und Bereinigungslogik für Activity Plus in PS-Community-Struktur integriert
@@ -331,39 +317,32 @@ Hinweis zum Rangsystem:
 * Unterstützung für Jobboardguthaben-Menüpunkt im Profil-Tab ergänzt (über bestehende Jobboard-Hooks)
 
 = 1.0.7 =
-
 * PS Chat Integration
 * Einige Bugfixes
 
 = 1.0.6 =
-
 * Gruppenfunktion BETA
 * Kleinere Bugfixes
 * Weiteres Jquery UI ersetzt
 
 = 1.0.5 =
-
 * Fehlerbehebung WYSIWYG/BBCODE Editor
 
 = 1.0.4 =
-
 * Wir haben einige Permalink-Bugs behoben im Forum
 * Im Forum steht jetzt ein WYSIWYG Editor und ein BBCODE Editor zur Verfügung, wähle in den Forum-Einstellungen.
 * Thickbox entfernt und ersetzt für bessere ClassicPress Kompatibilität und mehr Sicherheit.
 
 = 1.0.3 =
-
 * Fix: Bug im User-wp_redirect
 * Better Responsive
 
 = 1.0.2 =
-
 * Fix: Implicit conversion
 * Update: Updater
 * Fix some old PhP
 
 = 1.0.1 =
-
 * CSS Anpassung Einstellungs-Screen
 * Updater 1.3
 * Links aktualisiert
