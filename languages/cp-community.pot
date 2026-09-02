@@ -9,7 +9,7 @@ msgstr ""
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"POT-Creation-Date: 2026-09-02T06:40:07+00:00\n"
+"POT-Creation-Date: 2026-09-02T06:51:12+00:00\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "X-Generator: WP-CLI 2.12.0\n"
 "X-Domain: cp-community\n"
@@ -2158,7 +2158,7 @@ msgstr ""
 
 #: cpc_docs/cpc_docs_setup.php:60
 #: lib/jobboard_integration.php:283
-#: lib/marketpress_integration.php:662
+#: lib/marketpress_integration.php:157
 #: lib/pm_integration.php:346
 #: lib/psource_chat_integration.php:408
 msgid "Aktiviert"
@@ -2167,7 +2167,7 @@ msgstr ""
 #: cpc_docs/cpc_docs_setup.php:61
 #: cpc_setup_admin.php:1580
 #: cpc_setup_admin.php:1669
-#: lib/marketpress_integration.php:664
+#: lib/marketpress_integration.php:157
 msgid "Deaktiviert"
 msgstr ""
 
@@ -2731,7 +2731,6 @@ msgid "Mitglieder"
 msgstr ""
 
 #: cpc_docs/cpc_docs_views.php:1414
-#: lib/marketpress_integration.php:719
 msgid "Admins"
 msgstr ""
 
@@ -7229,8 +7228,6 @@ msgstr ""
 
 #: events/cpc_events.php:96
 #: events/cpc_events_views.php:628
-#: lib/marketpress_integration.php:721
-#: lib/marketpress_integration.php:737
 msgid "Events"
 msgstr ""
 
@@ -8738,7 +8735,6 @@ msgstr ""
 #: groups/cpc_groups_admin.php:441
 #: groups/cpc_groups_admin.php:579
 #: groups/cpc_groups_hooks_and_filters.php:21
-#: lib/marketpress_integration.php:531
 #: media/lib_media.php:195
 msgid "Gruppe"
 msgstr ""
@@ -9939,8 +9935,6 @@ msgstr ""
 #: lib/jobboard_integration.php:282
 #: lib/jobboard_integration.php:337
 #: lib/jobboard_integration.php:358
-#: lib/marketpress_integration.php:767
-#: lib/marketpress_integration.php:783
 #: lib/pm_integration.php:345
 #: lib/pm_integration.php:458
 #: lib/pm_integration.php:479
@@ -9958,7 +9952,6 @@ msgid "Plugin:"
 msgstr ""
 
 #: lib/jobboard_integration.php:298
-#: lib/marketpress_integration.php:682
 #: lib/pm_integration.php:361
 msgid "Integration aktivieren"
 msgstr ""
@@ -9972,7 +9965,7 @@ msgid "Fügt einen \"Jobboard\"-Tab zu Profilseiten hinzu mit Inline-Navigation 
 msgstr ""
 
 #: lib/jobboard_integration.php:319
-#: lib/marketpress_integration.php:759
+#: lib/marketpress_integration.php:177
 #: lib/pm_integration.php:434
 #: multisite/cpc_multisite_admin.php:772
 #: projects/cpc_projects_views.php:893
@@ -9993,7 +9986,6 @@ msgid "Smooth AJAX-Navigation innerhalb des Tabs"
 msgstr ""
 
 #: lib/jobboard_integration.php:338
-#: lib/marketpress_integration.php:768
 #: lib/pm_integration.php:459
 #: lib/psource_chat_integration.php:427
 msgid "Installiert aber deaktiviert"
@@ -10008,7 +10000,6 @@ msgid "PS Jobboard aktivieren"
 msgstr ""
 
 #: lib/jobboard_integration.php:359
-#: lib/marketpress_integration.php:784
 #: lib/pm_integration.php:480
 #: lib/psource_chat_integration.php:448
 msgid "Nicht installiert"
@@ -10018,282 +10009,80 @@ msgstr ""
 msgid "PS Jobboard ist nicht installiert. Installiere zuerst das Jobboard-Plugin, um diese Integration nutzen zu können."
 msgstr ""
 
-#: lib/marketpress_integration.php:138
-msgid "Bitte melde Dich an, um Deine Bestellungen zu sehen."
-msgstr ""
-
-#: lib/marketpress_integration.php:142
-msgid "Du darfst diesen Bereich nicht ansehen."
-msgstr ""
-
-#: lib/marketpress_integration.php:150
-msgid "MarketPress ist nicht verfuegbar."
-msgstr ""
-
-#: lib/marketpress_integration.php:154
+#: lib/marketpress_integration.php:54
 msgid "Meine Bestellungen"
 msgstr ""
 
-#: lib/marketpress_integration.php:235
-#, php-format
-msgid "Bestellung #%d: %s"
+#: lib/marketpress_integration.php:113
+msgid "Dieser Bereich ist nur im eigenen Profil verfuegbar."
 msgstr ""
 
-#: lib/marketpress_integration.php:240
-#, php-format
-msgid "Gesamt: %s"
+#: lib/marketpress_integration.php:145
+msgid "MarketPress-Profilintegration gespeichert."
 msgstr ""
 
-#: lib/marketpress_integration.php:249
-#, php-format
-msgid "Shop-Update zu Bestellung #%d"
-msgstr ""
-
-#: lib/marketpress_integration.php:423
-msgid "Details ansehen"
-msgstr ""
-
-#: lib/marketpress_integration.php:448
-msgid "Bestellung"
-msgstr ""
-
-#: lib/marketpress_integration.php:477
-msgid "neu eingegangen"
-msgstr ""
-
-#: lib/marketpress_integration.php:479
-msgid "bezahlt"
-msgstr ""
-
-#: lib/marketpress_integration.php:481
-msgid "versendet"
-msgstr ""
-
-#: lib/marketpress_integration.php:483
-msgid "abgeschlossen"
-msgstr ""
-
-#: lib/marketpress_integration.php:485
-msgid "storniert/entfernt"
-msgstr ""
-
-#: lib/marketpress_integration.php:497
-msgid "PS Community Gruppenkontext"
-msgstr ""
-
-#: lib/marketpress_integration.php:518
-msgid "Ordnet dieses Produkt einer PS Community Gruppe zu. Diese Zuordnung wird fuer Gruppen-Activity-Kontext verwendet."
-msgstr ""
-
-#: lib/marketpress_integration.php:533
-msgid "Keine Gruppenzuordnung"
-msgstr ""
-
-#: lib/marketpress_integration.php:544
-msgid "Oder manuelle Gruppen-ID"
-msgstr ""
-
-#: lib/marketpress_integration.php:548
-msgid "Gespeichert wird im Produkt-Meta-Key:"
-msgstr ""
-
-#: lib/marketpress_integration.php:644
-msgid "MarketPress-Integrations-Einstellungen gespeichert."
-msgstr ""
-
-#: lib/marketpress_integration.php:650
+#: lib/marketpress_integration.php:151
 msgid "PS MarketPress Integration"
 msgstr ""
 
-#: lib/marketpress_integration.php:651
-msgid "Verknuepft Bestell-Ereignisse mit Profil-Tab, Benachrichtigungen und Aktivitaet in PS Community."
+#: lib/marketpress_integration.php:152
+msgid "Zeigt die MarketPress-Bestellungen des aktuellen Blogs im eigenen PS-Community-Profil an."
 msgstr ""
 
-#: lib/marketpress_integration.php:656
+#: lib/marketpress_integration.php:156
 msgid "MarketPress:"
 msgstr ""
 
-#: lib/marketpress_integration.php:657
+#: lib/marketpress_integration.php:156
 msgid "Plugin aktiv"
 msgstr ""
 
-#: lib/marketpress_integration.php:660
-msgid "PS-Community-Integration:"
+#: lib/marketpress_integration.php:157
+msgid "Profilintegration:"
 msgstr ""
 
-#: lib/marketpress_integration.php:668
+#: lib/marketpress_integration.php:158
 msgid "Version:"
 msgstr ""
 
-#: lib/marketpress_integration.php:674
-msgid "MarketPress-Integration konfigurieren"
+#: lib/marketpress_integration.php:162
+msgid "Profilintegration konfigurieren"
 msgstr ""
 
-#: lib/marketpress_integration.php:679
-#: media/cpc_media_setup.php:13
-msgid "Allgemein"
+#: lib/marketpress_integration.php:166
+msgid "Integration"
 msgstr ""
 
-#: lib/marketpress_integration.php:685
-msgid "MarketPress mit PS Community verbinden"
+#: lib/marketpress_integration.php:168
+msgid "Lokale MarketPress-Kundenzone bereitstellen"
 msgstr ""
 
-#: lib/marketpress_integration.php:689
-msgid "Debug-Logging"
-msgstr ""
-
-#: lib/marketpress_integration.php:690
-msgid "Schreibt Events ins PHP-Errorlog"
-msgstr ""
-
-#: lib/marketpress_integration.php:693
-msgid "Actor User-ID"
-msgstr ""
-
-#: lib/marketpress_integration.php:694
-msgid "0 = Besteller/aktueller Benutzer als Autor fuer Alerts/Aktivitaet."
-msgstr ""
-
-#: lib/marketpress_integration.php:698
+#: lib/marketpress_integration.php:170
 msgid "Profil-Tab"
 msgstr ""
 
-#: lib/marketpress_integration.php:701
-msgid "Tab aktivieren"
+#: lib/marketpress_integration.php:172
+msgid "Im eigenen Profil anzeigen"
 msgstr ""
 
-#: lib/marketpress_integration.php:702
-msgid "Mein-Bestellungen-Tab anzeigen"
+#: lib/marketpress_integration.php:174
+msgid "Name des Profil-Tabs"
 msgstr ""
 
-#: lib/marketpress_integration.php:705
-msgid "Tab-Label"
-msgstr ""
-
-#: lib/marketpress_integration.php:709
+#: lib/marketpress_integration.php:175
 msgid "Tab-Prioritaet"
 msgstr ""
 
-#: lib/marketpress_integration.php:714
-msgid "Alerts"
+#: lib/marketpress_integration.php:181
+msgid "PS MarketPress ist installiert, aber deaktiviert."
 msgstr ""
 
-#: lib/marketpress_integration.php:716
-msgid "Alerts aktivieren"
-msgstr ""
-
-#: lib/marketpress_integration.php:716
-msgid "PS Community Alerts schreiben"
-msgstr ""
-
-#: lib/marketpress_integration.php:717
-msgid "Empfaenger"
-msgstr ""
-
-#: lib/marketpress_integration.php:718
-msgid "Kaeufer"
-msgstr ""
-
-#: lib/marketpress_integration.php:722
-#: lib/marketpress_integration.php:738
-msgid "Neue Bestellung"
-msgstr ""
-
-#: lib/marketpress_integration.php:723
-#: lib/marketpress_integration.php:739
-msgid "Bezahlt"
-msgstr ""
-
-#: lib/marketpress_integration.php:724
-#: lib/marketpress_integration.php:740
-msgid "Versendet"
-msgstr ""
-
-#: lib/marketpress_integration.php:725
-#: lib/marketpress_integration.php:741
-msgid "Abgeschlossen"
-msgstr ""
-
-#: lib/marketpress_integration.php:726
-#: lib/marketpress_integration.php:742
-msgid "Storniert/Entfernt"
-msgstr ""
-
-#: lib/marketpress_integration.php:730
-#: projects/cpc_projects_views.php:161
-msgid "Aktivitaet"
-msgstr ""
-
-#: lib/marketpress_integration.php:732
-msgid "Aktivitaet aktivieren"
-msgstr ""
-
-#: lib/marketpress_integration.php:732
-msgid "Aktivitaetsbeitraege schreiben"
-msgstr ""
-
-#: lib/marketpress_integration.php:733
-msgid "Kanaele"
-msgstr ""
-
-#: lib/marketpress_integration.php:734
-msgid "Profil-Kontext"
-msgstr ""
-
-#: lib/marketpress_integration.php:735
-msgid "Gruppen-Kontext"
-msgstr ""
-
-#: lib/marketpress_integration.php:744
-msgid "Privacy"
-msgstr ""
-
-#: lib/marketpress_integration.php:744
-msgid "Betrag in Meldungen ausblenden"
-msgstr ""
-
-#: lib/marketpress_integration.php:747
-msgid "Gruppenkontext"
-msgstr ""
-
-#: lib/marketpress_integration.php:749
-msgid "Gruppenmapping aktivieren"
-msgstr ""
-
-#: lib/marketpress_integration.php:749
-msgid "Group-Kontext aus Produkt-Meta lesen"
-msgstr ""
-
-#: lib/marketpress_integration.php:750
-msgid "Produkt-Meta-Key fuer Gruppe"
-msgstr ""
-
-#: lib/marketpress_integration.php:750
-msgid "Beispiel: cpc_group_id (enthaelt die ID einer cpc_group am Produkt)."
-msgstr ""
-
-#: lib/marketpress_integration.php:751
-msgid "Fallback ohne Gruppe"
-msgstr ""
-
-#: lib/marketpress_integration.php:753
-msgid "Ins Profil schreiben"
-msgstr ""
-
-#: lib/marketpress_integration.php:754
-msgid "Nicht schreiben"
-msgstr ""
-
-#: lib/marketpress_integration.php:771
-msgid "PS MarketPress ist installiert, aber nicht aktiviert. Um die Integration nutzen zu können, musst du das Plugin aktivieren."
-msgstr ""
-
-#: lib/marketpress_integration.php:777
+#: lib/marketpress_integration.php:182
 msgid "PS MarketPress aktivieren"
 msgstr ""
 
-#: lib/marketpress_integration.php:787
-msgid "PS MarketPress ist nicht installiert. Installiere zuerst das MarketPress-Plugin, um diese Integration nutzen zu können."
+#: lib/marketpress_integration.php:184
+msgid "PS MarketPress ist nicht installiert."
 msgstr ""
 
 #: lib/pm_integration.php:121
@@ -10734,6 +10523,10 @@ msgstr ""
 
 #: media/cpc_media_ajax.php:420
 msgid "Reihenfolge gespeichert."
+msgstr ""
+
+#: media/cpc_media_setup.php:13
+msgid "Allgemein"
 msgstr ""
 
 #: media/cpc_media_setup.php:14
@@ -11643,6 +11436,10 @@ msgstr ""
 #: projects/cpc_projects_views.php:160
 #: projects/cpc_projects_views.php:333
 msgid "Tasks"
+msgstr ""
+
+#: projects/cpc_projects_views.php:161
+msgid "Aktivitaet"
 msgstr ""
 
 #: projects/cpc_projects_views.php:170

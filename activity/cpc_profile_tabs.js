@@ -202,6 +202,50 @@ setTimeout(cpcFixJobboardExpertLayout, 250);
 $(document).trigger('cpc_profile_tab_loaded', [tab]);
 }
 
+function cpcApplyProfileTabResponse(response, tab, $contentWrapper) {
+var tabHtml = '', stylesHtml = '', scriptsHtml = '';
+var parsed  = response;
+
+if (typeof response === 'string') {
+try { parsed = JSON.parse(response); } catch(e) { parsed = null; }
+}
+
+if (parsed && parsed.success && parsed.data && typeof parsed.data.content !== 'undefined') {
+tabHtml     = parsed.data.content  || '';
+stylesHtml  = parsed.data.styles   || '';
+scriptsHtml = parsed.data.scripts  || '';
+} else if (typeof response === 'string' && response.length) {
+tabHtml = response;
+}
+
+if (!tabHtml) {
+$contentWrapper.removeClass('loading').css('opacity', '1');
+$contentWrapper.text(cpc_activity_ajax.i18n.tabLoadFailed);
+return;
+}
+
+var extracted = cpcExtractAssetsFromHtml(tabHtml);
+
+$.when(cpcInjectStyles(stylesHtml + '\n' + extracted.styles)).always(function() {
+$contentWrapper.fadeOut(200, function() {
+var $wrapper = $(this);
+cpcRenderHtmlInto($wrapper, extracted.html);
+if (tab === 'jobboard') {
+cpcFixJobboardExpertLayout();
+}
+
+$wrapper.removeClass('loading').css('opacity', '1').fadeIn(300, function() {
+$.when(cpcInjectScripts(scriptsHtml + '\n' + extracted.scripts)).always(function() {
+cpcInitLoadedTab(tab);
+if (tab === 'jobboard') {
+cpcFixJobboardExpertLayout();
+}
+});
+});
+});
+});
+}
+
 $('body').on('click', '.cpc-profile-tab-link', function(e) {
 e.preventDefault();
 
@@ -228,57 +272,77 @@ url:  cpc_activity_ajax.ajaxurl,
 type: 'POST',
 data: { action: 'cpc_load_profile_tab', tab: tab, user_id: userId, nonce: nonce, atts: {} },
 success: function(response) {
-var tabHtml = '', stylesHtml = '', scriptsHtml = '';
-var parsed  = response;
-
-if (typeof response === 'string') {
-try { parsed = JSON.parse(response); } catch(e) { parsed = null; }
-}
-
-if (parsed && parsed.success && parsed.data && typeof parsed.data.content !== 'undefined') {
-tabHtml     = parsed.data.content  || '';
-stylesHtml  = parsed.data.styles   || '';
-scriptsHtml = parsed.data.scripts  || '';
-} else if (typeof response === 'string' && response.length) {
-tabHtml = response;
-}
-
-if (!tabHtml) {
-$contentWrapper.removeClass('loading').css('opacity', '1');
-$contentWrapper.text(cpc_activity_ajax.i18n.tabLoadFailed);
-return;
-}
-
-var extracted = cpcExtractAssetsFromHtml(tabHtml);
-
-// 1. Inject styles into <head> before content swap (await stylesheet load)
-$.when(cpcInjectStyles(stylesHtml + '\n' + extracted.styles)).always(function() {
-
-// 2. Swap content, then load scripts
-$contentWrapper.fadeOut(200, function() {
-var $w = $(this);
-cpcRenderHtmlInto($w, extracted.html);
-if (tab === 'jobboard') {
-cpcFixJobboardExpertLayout();
-}
-
-$w.removeClass('loading').css('opacity', '1').fadeIn(300, function() {
-$.when(
-cpcInjectScripts(scriptsHtml + '\n' + extracted.scripts)
-).always(function() {
-cpcInitLoadedTab(tab);
-if (tab === 'jobboard') {
-cpcFixJobboardExpertLayout();
-}
-});
-});
-});
-});
+cpcApplyProfileTabResponse(response, tab, $contentWrapper);
 },
 error: function(xhr) {
 $contentWrapper.removeClass('loading').css('opacity', '1');
 $contentWrapper.text(xhr && xhr.responseText ? xhr.responseText : cpc_activity_ajax.i18n.tabLoadFailed);
 }
+});
+
+return false;
+});
+
+$('body').on('click', '.cpc-profile-tab-content-wrapper a[href*="box=setting"]', function(e) {
+e.preventDefault();
+
+var $tabList = $('.cpc-profile-tabs-list');
+var $contentWrapper = $('.cpc-profile-tab-content-wrapper');
+if (!$tabList.length || !$contentWrapper.length) { return false; }
+
+$contentWrapper.addClass('loading').css('opacity', '0.5');
+
+if (history.pushState) {
+var settingsUrl = new URL(window.location.href);
+settingsUrl.searchParams.set('tab', 'messages');
+settingsUrl.searchParams.set('box', 'setting');
+history.pushState({tab: 'messages', box: 'setting'}, '', settingsUrl.toString());
+}
+
+$.ajax({
+url: cpc_activity_ajax.ajaxurl,
+type: 'POST',
+data: {
+action: 'cpc_load_profile_tab',
+tab: 'messages',
+box: 'setting',
+user_id: $tabList.data('user-id'),
+nonce: $tabList.data('nonce'),
+atts: {}
+},
+success: function(response) {
+cpcApplyProfileTabResponse(response, 'messages', $contentWrapper);
+},
+error: function(xhr) {
+$contentWrapper.removeClass('loading').css('opacity', '1');
+$contentWrapper.text(xhr && xhr.responseText ? xhr.responseText : cpc_activity_ajax.i18n.tabLoadFailed);
+}
+});
+
+return false;
+});
+
+$('body').on('submit', '.cpc-profile-tab-content-wrapper #message_setting', function(e) {
+e.preventDefault();
+
+var $form = $(this);
+var $button = $form.find('button[type="submit"]');
+var data = $form.serializeArray();
+data.push({name: 'action', value: 'cpc_pm_save_settings'});
+
+$button.prop('disabled', true);
+$.post(cpc_activity_ajax.ajaxurl, data).done(function(response) {
+var message = response && response.data && response.data.message ? response.data.message : cpc_activity_ajax.i18n.saved;
+var type = response && response.success ? 'success' : 'error';
+$form.find('.cpc-pm-settings-feedback').remove();
+$form.prepend('<div class="cpc-pm-settings-feedback cpc-' + type + '"></div>');
+$form.find('.cpc-pm-settings-feedback').text(message);
+}).fail(function() {
+$form.find('.cpc-pm-settings-feedback').remove();
+$form.prepend('<div class="cpc-pm-settings-feedback cpc-error"></div>');
+$form.find('.cpc-pm-settings-feedback').text(cpc_activity_ajax.i18n.saveFailed);
+}).always(function() {
+$button.prop('disabled', false);
 });
 
 return false;

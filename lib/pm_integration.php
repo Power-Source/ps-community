@@ -116,7 +116,7 @@ function cpc_pm_profile_slot_badge($content, $slot, $user_id, $viewer_id, $atts)
 	
 	// Build badge HTML
 	$badge_html = '<div class="cpc-pm-profile-badge">';
-		$badge_html .= '<a href="'.esc_url($profile_url).'" class="cpc-pm-badge-link">';
+		$badge_html .= '<a href="'.esc_url($profile_url).'" class="cpc-button cpc-pm-badge-link">';
 			$badge_html .= '<span class="cpc-pm-icon">✉</span>';
 			$badge_html .= '<span class="cpc-pm-label">'.__('Nachrichten', 'cp-community').'</span>';
 			if ($unread_count > 0) {
@@ -205,6 +205,31 @@ function cpc_pm_render_tab_content($html, $active_tab, $user_id, $shortcode_atts
 	}
 
 	return '<div class="cpc-error">'.__('Inbox konnte nicht gerendert werden (leere Ausgabe).', 'cp-community').'</div>';
+}
+
+add_action('wp_ajax_cpc_pm_save_settings', 'cpc_pm_save_settings_ajax');
+function cpc_pm_save_settings_ajax() {
+	$user_id = get_current_user_id();
+	if (!$user_id || !cpc_pm_integration_enabled()) {
+		wp_send_json_error(array('message' => __('Nicht berechtigt.', 'cp-community')), 403);
+	}
+
+	$nonce = isset($_POST['_wpnonce']) ? sanitize_text_field(wp_unslash($_POST['_wpnonce'])) : '';
+	if (!wp_verify_nonce($nonce, 'mm_user_setting_' . $user_id)) {
+		wp_send_json_error(array('message' => __('Ungültige Anfrage.', 'cp-community')), 403);
+	}
+
+	$setting = get_user_meta($user_id, '_messages_setting', true);
+	if (!is_array($setting)) {
+		$setting = array();
+	}
+
+	$setting['enable_receipt'] = isset($_POST['receipt']) ? absint($_POST['receipt']) : 0;
+	$setting['prevent_receipt'] = isset($_POST['prevent']) ? absint($_POST['prevent']) : 0;
+	update_user_meta($user_id, '_messages_setting', $setting);
+	do_action('mm_user_setting_saved', $setting, $user_id);
+
+	wp_send_json_success(array('message' => __('Einstellungen gespeichert.', 'cp-community')));
 }
 
 /* Redirect standalone inbox page to profile tab */

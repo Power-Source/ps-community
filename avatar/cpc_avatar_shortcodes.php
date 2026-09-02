@@ -4,9 +4,9 @@
 
 function cpc_avatar_init() {
 
-	wp_enqueue_script('cpc-avatar-js', plugins_url('cpc_avatar.js', __FILE__), array('jquery'));	
-	wp_enqueue_style('user-avatar', plugins_url('user-avatar.css', __FILE__), 'css');
-	wp_enqueue_style('imgareaselect');
+    wp_enqueue_script('cpc-avatar-js', plugins_url('cpc_avatar.js', __FILE__), array('jquery'));	
+    wp_enqueue_style('user-avatar', plugins_url('user-avatar.css', __FILE__), array(), filemtime(__DIR__ . '/user-avatar.css'));
+    wp_enqueue_style('imgareaselect');
 	wp_enqueue_script('imgareaselect');
 	wp_enqueue_style('psource-modal', plugins_url('../assets/psource-ui/modal/psource-modal.css', __FILE__));
     wp_enqueue_script('psource-modal', plugins_url('../assets/psource-ui/modal/psource-modal.js', __FILE__), array(), false, true);
@@ -25,6 +25,15 @@ function cpc_avatar_init() {
     }
     do_action('cpc_avatar_init_hook');
 }
+
+function cpc_avatar_enqueue_profile_styles() {
+    $profile_page_id = (int) get_option('cpccom_profile_page');
+
+    if ($profile_page_id && is_page($profile_page_id)) {
+        wp_enqueue_style('user-avatar', plugins_url('user-avatar.css', __FILE__), array(), filemtime(__DIR__ . '/user-avatar.css'));
+    }
+}
+add_action('wp_enqueue_scripts', 'cpc_avatar_enqueue_profile_styles', 20);
 
 function cpc_avatar_get_dynamic_styles() {
     if (!get_option('cpccom_use_styles')) {

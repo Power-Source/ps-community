@@ -433,6 +433,15 @@ function cpc_load_profile_tab_ajax() {
     }
 	
     $tab = isset($_POST['tab']) ? sanitize_key($_POST['tab']) : 'activity';
+
+    if ($tab === 'messages') {
+        $_GET['tab'] = 'messages';
+        $allowed_boxes = array('inbox', 'unread', 'read', 'sent', 'archive', 'setting');
+        $box = isset($_POST['box']) ? sanitize_key(wp_unslash($_POST['box'])) : '';
+        if (in_array($box, $allowed_boxes, true)) {
+            $_GET['box'] = $box;
+        }
+    }
 	
     if (!$user_id) {
         wp_send_json_error(array('message' => 'Invalid user ID'));
@@ -468,30 +477,21 @@ function cpc_load_profile_tab_ajax() {
         $styles_html = '';
         $scripts_html = '';
 
-        // Check if the tab renderer stored assets separately (e.g. Jobboard bypasses WP queue)
-        global $cpc_jobboard_tab_assets;
-        if (!empty($cpc_jobboard_tab_assets)) {
-            $styles_html  = isset($cpc_jobboard_tab_assets['styles'])  ? $cpc_jobboard_tab_assets['styles']  : '';
-            $scripts_html = isset($cpc_jobboard_tab_assets['scripts']) ? $cpc_jobboard_tab_assets['scripts'] : '';
-            $cpc_jobboard_tab_assets = null; // reset
-        } else {
-            // Fallback: collect newly enqueued WP assets
-            $final_style_queue  = isset($styles->queue)  && is_array($styles->queue)  ? $styles->queue  : array();
-            $final_script_queue = isset($scripts->queue) && is_array($scripts->queue) ? $scripts->queue : array();
+        $final_style_queue  = isset($styles->queue)  && is_array($styles->queue)  ? $styles->queue  : array();
+        $final_script_queue = isset($scripts->queue) && is_array($scripts->queue) ? $scripts->queue : array();
 
-            $new_style_handles  = array_values(array_diff($final_style_queue,  $initial_style_queue));
-            $new_script_handles = array_values(array_diff($final_script_queue, $initial_script_queue));
+        $new_style_handles  = array_values(array_diff($final_style_queue,  $initial_style_queue));
+        $new_script_handles = array_values(array_diff($final_script_queue, $initial_script_queue));
 
-            if (!empty($new_style_handles)) {
-                ob_start();
-                $styles->do_items($new_style_handles);
-                $styles_html = ob_get_clean();
-            }
-            if (!empty($new_script_handles)) {
-                ob_start();
-                $scripts->do_items($new_script_handles);
-                $scripts_html = ob_get_clean();
-            }
+        if (!empty($new_style_handles)) {
+            ob_start();
+            $styles->do_items($new_style_handles);
+            $styles_html = ob_get_clean();
+        }
+        if (!empty($new_script_handles)) {
+            ob_start();
+            $scripts->do_items($new_script_handles);
+            $scripts_html = ob_get_clean();
         }
 
         wp_send_json_success(array(

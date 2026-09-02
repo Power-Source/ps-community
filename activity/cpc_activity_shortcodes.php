@@ -20,7 +20,7 @@ function cpc_activity_init() {
     wp_enqueue_script('cpc-activity-js', plugins_url('cpc_activity.js', __FILE__), array('jquery'));
         // Profile Tabs AJAX JavaScript
         if (function_exists('cpc_get_profile_tabs')) {
-            wp_enqueue_script('cpc-profile-tabs-js', plugins_url('cpc_profile_tabs.js', __FILE__), array('jquery', 'cpc-activity-js'));
+            wp_enqueue_script('cpc-profile-tabs-js', plugins_url('cpc_profile_tabs.js', __FILE__), array('jquery', 'cpc-activity-js'), filemtime(__DIR__ . '/cpc_profile_tabs.js'), true);
         }
     
     
@@ -44,8 +44,8 @@ function cpc_activity_init() {
         ),
     ));
     
-    // CSS-Datei einbinden (mit Versionsnummer für Cache-Busting)
-    wp_enqueue_style('cpc-activity-css', plugins_url('cpc_activity.css', __FILE__), array(), '1.1.1');
+    // CSS-Datei einbinden (mit dateibasiertem Cache-Busting)
+    wp_enqueue_style('cpc-activity-css', plugins_url('cpc_activity.css', __FILE__), array(), filemtime(__DIR__ . '/cpc_activity.css'));
     
     // Select2-Bibliothek einbinden
     wp_enqueue_script('cpc-select2-js', plugins_url('../js/select2.js', __FILE__), array('jquery'), '4.0.13', true);
@@ -54,6 +54,15 @@ function cpc_activity_init() {
     // Zusätzliche Hooks für andere Plugins oder Themes
     do_action('cpc_activity_init_hook');
 }
+
+function cpc_activity_enqueue_profile_assets() {
+    $profile_page_id = (int) get_option('cpccom_profile_page');
+
+    if ($profile_page_id && is_page($profile_page_id)) {
+        cpc_activity_init();
+    }
+}
+add_action('wp_enqueue_scripts', 'cpc_activity_enqueue_profile_assets', 20);
 
 
 /* ********** */ /* SHORTCODES */ /* ********** */

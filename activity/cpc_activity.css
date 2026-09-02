@@ -816,7 +816,10 @@
     margin:     0;
     padding:    0;
     display:    flex;
-    flex-wrap:  wrap;
+    flex-wrap:  nowrap;
+    overflow-x: auto;
+    overflow-y: hidden;
+    scrollbar-width: thin;
 }
 
 .cpc-profile-tab-item {
@@ -826,7 +829,8 @@
 }
 
 .cpc-profile-tabs-list > .cpc-profile-tab-item::marker {
-    content: "";
+    content: none !important;
+    display: none !important;
 }
 
 .cpc-profile-tabs-list > .cpc-profile-tab-item::before,
@@ -873,10 +877,7 @@
 }
 
 @media screen and (max-width: 768px) {
-    .cpc-profile-tabs-list  { flex-direction: column; }
-    .cpc-profile-tab-item   { margin: 0; border-bottom: 1px solid var(--cpc-border, #ddd); }
-    .cpc-profile-tab-link   { display: block; padding: 15px; border-bottom: none; border-left: 3px solid transparent; }
-    .cpc-profile-tab-item.active .cpc-profile-tab-link { border-left-color: var(--cpc-primary, #0073aa); border-bottom-color: transparent; background: #f7f7f7; }
+    .cpc-profile-tab-link { padding: 12px 14px; }
 }
 
 /* ========================================
@@ -893,20 +894,17 @@
     align-items: center;
     gap: 8px;
     padding: 10px 15px;
-    background: #0073aa;
+    background: var(--cpc-primary, #0073aa);
     color: #fff;
     text-decoration: none;
-    border-radius: 4px;
-    transition: all 0.2s ease;
-    font-weight: 500;
+    border-radius: var(--cpc-btn-radius, 4px);
+    font-weight: 600;
 }
 
 .cpc-pm-badge-link:hover {
-    background: #005a87;
+    background: var(--cpc-primary-dark, #005177);
     color: #fff;
     text-decoration: none;
-    transform: translateY(-1px);
-    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
 }
 
 .cpc-pm-icon {
@@ -951,6 +949,75 @@
 
 .cpc_profile_slot .cpc-pm-icon {
     font-size: 16px;
+}
+
+/* Keep the embedded PM header compact inside the Community messages tab. */
+.cpc-profile-tab-content-wrapper .mm-nav-shell {
+    display: grid;
+    grid-template-columns: auto auto minmax(0, 1fr) auto;
+    grid-template-areas:
+        "title storage . actions"
+        "tabs tabs tabs tabs"
+        "mobile mobile mobile mobile";
+    align-items: center;
+    column-gap: 12px;
+}
+
+.cpc-profile-tab-content-wrapper .mm-nav-top {
+    display: contents;
+}
+
+.cpc-profile-tab-content-wrapper .mm-nav-title {
+    grid-area: title;
+}
+
+.cpc-profile-tab-content-wrapper .mm-nav-actions {
+    grid-area: actions;
+}
+
+.cpc-profile-tab-content-wrapper .mm-nav-tabs {
+    grid-area: tabs;
+}
+
+.cpc-profile-tab-content-wrapper .mm-mobile-actions {
+    grid-area: mobile;
+}
+
+.cpc-profile-tab-content-wrapper .mm-storage-widget-inline {
+    grid-area: storage;
+    position: static !important;
+    inset: auto !important;
+    justify-self: start;
+    gap: 6px !important;
+    margin-left: 0 !important;
+    padding: 4px 8px !important;
+    border-radius: var(--cpc-radius-sm, 4px) !important;
+}
+
+.cpc-profile-tab-content-wrapper .mm-storage-widget-inline > div > span:first-child,
+.cpc-profile-tab-content-wrapper .mm-storage-widget-inline > span {
+    display: none;
+}
+
+@media screen and (max-width: 768px) {
+    .cpc-profile-tab-content-wrapper .mm-nav-shell {
+        grid-template-columns: minmax(0, 1fr) auto;
+        grid-template-areas:
+            "title storage"
+            "actions actions"
+            "tabs tabs"
+            "mobile mobile";
+        column-gap: 8px;
+    }
+
+    .cpc-profile-tab-content-wrapper .mm-nav-actions {
+        justify-self: start;
+        margin-top: 10px;
+    }
+
+    .cpc-profile-tab-content-wrapper .mm-storage-widget-inline {
+        justify-self: end;
+    }
 }
 
 .cpc-pschat-profile-status {

@@ -124,14 +124,18 @@ Hinweis zum Rangsystem:
 
 = 1.2.1 =
 
+* Fix: PM-Postfachbereiche einschließlich Einstellungen wechseln und speichern im Profil ohne vollständigen Seitenreload
+* Fix: Aktuelle Galerie-Skripte und -Styles werden cache-sicher ausgeliefert, damit Vorschauschalter zuverlässig reagieren
+* UX: PM-Nachrichtenbutton folgt dem PS-Community-Buttonstil und die kompakte Speicheranzeige steht direkt neben dem Postfachtitel
+* Fix: Die Jobboard-Integration lädt Menü-, Landing- und Profil-Assets rechtzeitig auf der Community-Profilseite
 * Internationalisierung: Plugin-Texte verwenden einheitlich die Textdomain `cp-community` und werden über den Standard-Pluginloader geladen
 * Internationalisierung: Sichtbare JavaScript-Texte werden über lokalisierte PHP-Objekte bereitgestellt
 * Übersetzungen: Frische Basisdatei `languages/cp-community.pot` hinzugefügt
 * UX-Fix: Ein installiertes, aber deaktiviertes PS Jobboard kann wie PS-Chat und PS PM-System direkt auf der Integrationsseite aktiviert werden
 * UX-Fix: Statusmeldungen der PS-Jobboard-Integration werden konsistent innerhalb der Integrationskarte dargestellt
-* Integration: Die MarketPress-Community-Bridge ist direkt in PS Community integriert und wird zentral unter **PS Community > Integrationen** konfiguriert
-* Fix: Die MarketPress-Integration lässt sich zuverlässig deaktivieren und zeigt Plugin- sowie Integrationsstatus getrennt an
-* UX: MarketPress-Einstellungen können auf der Integrationsseite ein- und ausgeklappt werden
+* Integration: Die bestehende MarketPress-Bestellübersicht wird über `mp_order_status()` im eigenen Community-Profil angezeigt und bleibt immer im Kontext des aktuellen Blogs
+* UX: Die schlanke MarketPress-Profilintegration bietet nur Aktivierung, Tab-Anzeige, Tab-Label und Tab-Priorität als Optionen
+* Fix: Der MarketPress-Profil-Tab wird trotz installierter Legacy-Bridge zuverlässig registriert und kann frei benannt werden
 * UX: Der Aktivitätsstream erhält schlichte Standardstile für Beiträge, Kommentare, Eingabefelder und Aktionsschaltflächen
 * Styling: Der vorhandene Activity-Stileditor unterstützt zusätzlich Metadaten, Beitragstext, Zeitangabe, Kommentar-Schaltfläche und „Mehr laden“
 * Migration: Projekte verwenden einen gemeinsamen, theme-resistenten Kartenrenderer; Profilprojekte sind nach persönlichen Projekten, erstellten Gruppenprojekten und Beteiligungen getrennt

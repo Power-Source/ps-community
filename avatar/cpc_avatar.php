@@ -29,7 +29,7 @@ function user_avatar_admin_enqueue_modal_assets() {
 add_action('admin_enqueue_scripts', 'user_avatar_admin_enqueue_modal_assets');
 
 function user_avatar_admin_print_styles() {
-	wp_enqueue_style('user-avatar', plugins_url('user-avatar.css', __FILE__), 'css');
+	wp_enqueue_style('user-avatar', plugins_url('user-avatar.css', __FILE__), array(), filemtime(__DIR__ . '/user-avatar.css'));
 }
 
 /**

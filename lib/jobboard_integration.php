@@ -52,55 +52,23 @@ function cpc_jobboard_integration_enabled() {
 	return (bool) get_option('cpc_enable_jobboard_integration', false);
 }
 
-function cpc_jobboard_ensure_ajax_asset_dependencies() {
-	if (!defined('DOING_AJAX') || !DOING_AJAX) {
+function cpc_jobboard_enqueue_profile_assets() {
+	$profile_page_id = (int) get_option('cpccom_profile_page');
+
+	if (!$profile_page_id || !is_page($profile_page_id) || !cpc_jobboard_integration_enabled() || !function_exists('je')) {
 		return;
 	}
 
-	if (!wp_style_is('ig-packed', 'registered')) {
-		wp_register_style('ig-packed', false, array(), null);
+	$jobboard = je();
+	if (!is_object($jobboard) || !method_exists($jobboard, 'scripts') || !method_exists($jobboard, 'load_script')) {
+		return;
 	}
 
-	if (!wp_script_is('ig-packed', 'registered')) {
-		wp_register_script('ig-packed', '', array('jquery'), null, true);
-	}
+	$jobboard->scripts();
+	$jobboard->load_script('buttons');
+	$jobboard->load_script('landing');
 }
-
-function cpc_jobboard_get_ajax_asset_markup() {
-	$markup = array(
-		'styles' => '',
-		'scripts' => '',
-	);
-
-	if (!defined('DOING_AJAX') || !DOING_AJAX) {
-		return $markup;
-	}
-
-	$styles = wp_styles();
-	$scripts = wp_scripts();
-
-	$queued_style_handles = isset($styles->queue) && is_array($styles->queue) ? $styles->queue : array();
-	$queued_script_handles = isset($scripts->queue) && is_array($scripts->queue) ? $scripts->queue : array();
-	$to_do_style_handles = isset($styles->to_do) && is_array($styles->to_do) ? $styles->to_do : array();
-	$to_do_script_handles = isset($scripts->to_do) && is_array($scripts->to_do) ? $scripts->to_do : array();
-
-	$printable_style_handles = array_unique(array_merge($queued_style_handles, $to_do_style_handles));
-	$printable_script_handles = array_unique(array_merge($queued_script_handles, $to_do_script_handles));
-
-	if (!empty($printable_style_handles)) {
-		ob_start();
-		$styles->do_items($printable_style_handles);
-		$markup['styles'] = ob_get_clean();
-	}
-
-	if (!empty($printable_script_handles)) {
-		ob_start();
-		$scripts->do_items($printable_script_handles);
-		$markup['scripts'] = ob_get_clean();
-	}
-
-	return $markup;
-}
+add_action('wp_enqueue_scripts', 'cpc_jobboard_enqueue_profile_assets', 100);
 
 /* Profile Tab Integration */
 
@@ -213,36 +181,7 @@ function cpc_jobboard_render_tab_content($html, $active_tab, $user_id, $shortcod
 	// Render shortcode content
 	$content = do_shortcode('[jbp-profile-panel]');
 
-	// In AJAX context: is_admin()=true so WP never registers frontend assets.
-	// Build asset tags DIRECTLY from plugin URL, bypassing WP queue entirely.
-	if (defined('DOING_AJAX') && DOING_AJAX && function_exists('je')) {
-		$plugin_url = trailingslashit(je()->plugin_url);
-		$je_url = $plugin_url . 'assets/';
-		$ig_url = $plugin_url . 'framework/assets/';
-		$je_ver = je()->version;
-		$min = (!empty(je()->dev)) ? '' : '.min';
-
-		$styles_html =
-			'<link rel="stylesheet" id="ig-packed-css" href="' . esc_url($ig_url . 'ig-packed' . $min . '.css') . '?ver=' . $je_ver . '" media="all">' . "\n" .
-			'<link rel="stylesheet" id="jobs-main-css" href="' . esc_url($je_url . 'main' . $min . '.css') . '?ver=' . $je_ver . '" media="all">' . "\n" .
-			'<link rel="stylesheet" id="jobs-buttons-shortcode-css" href="' . esc_url($je_url . 'buttons' . $min . '.css') . '?ver=' . $je_ver . '" media="all">' . "\n" .
-			'<link rel="stylesheet" id="jobs-list-shortcode-css" href="' . esc_url($je_url . 'jobs-list' . $min . '.css') . '?ver=' . $je_ver . '" media="all">' . "\n" .
-			'<link rel="stylesheet" id="expert-list-shortcode-css" href="' . esc_url($je_url . 'expert-list' . $min . '.css') . '?ver=' . $je_ver . '" media="all">' . "\n" .
-			'<link rel="stylesheet" id="jobs-landing-shortcode-css" href="' . esc_url($je_url . 'landing' . $min . '.css') . '?ver=' . $je_ver . '" media="all">' . "\n";
-
-		$scripts_html =
-			'<script src="' . esc_url($ig_url . 'main.js') . '?ver=' . $je_ver . '" id="ig-packed-js"></script>' . "\n" .
-			'<script src="' . esc_url($je_url . 'main.js') . '?ver=' . $je_ver . '" id="jobs-main-js"></script>' . "\n";
-
-		// Store assets as global for the AJAX handler to pick up separately
-		global $cpc_jobboard_tab_assets;
-		$cpc_jobboard_tab_assets = array(
-			'styles'  => $styles_html,
-			'scripts' => $scripts_html,
-		);
-	}
-
-	return $content;
+	return '<div class="cpc-jobboard-profile-panel">' . $content . '</div>';
 }
 
 /* Admin Settings Integration */
