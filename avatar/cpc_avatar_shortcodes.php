@@ -77,8 +77,8 @@ function cpc_avatar($atts) {
 		'size' => cpc_get_shortcode_value($values, 'cpc_avatar-size', 256),
 		'change_link' => cpc_get_shortcode_value($values, 'cpc_avatar-change_link', false),
         	'profile_link' => cpc_get_shortcode_value($values, 'cpc_avatar-profile_link', false), // only if avatar is NOT current user
-	        'change_avatar_text' => cpc_get_shortcode_value($values, 'cpc_avatar-change_avatar_text', __('Bild ändern', CPC2_TEXT_DOMAIN)),
-        	'change_avatar_title' => cpc_get_shortcode_value($values, 'cpc_avatar-change_avatar_title', __('Bild hochladen und zuschneiden, um es anzuzeigen', CPC2_TEXT_DOMAIN)),
+	        'change_avatar_text' => cpc_get_shortcode_value($values, 'cpc_avatar-change_avatar_text', __('Bild ändern', 'cp-community')),
+        	'change_avatar_title' => cpc_get_shortcode_value($values, 'cpc_avatar-change_avatar_title', __('Bild hochladen und zuschneiden, um es anzuzeigen', 'cp-community')),
 	        'avatar_style' => cpc_get_shortcode_value($values, 'cpc_avatar-avatar_style', 'popup'),
         	'popup_width' => cpc_get_shortcode_value($values, 'cpc_avatar-popup_width', 750),            
 	        'popup_height' => cpc_get_shortcode_value($values, 'cpc_avatar-popup_height', 450),            
@@ -164,9 +164,9 @@ function cpc_avatar_change_link($atts) {
         // Shortcode parameters
         $values = cpc_get_shortcode_options('cpc_avatar_change_link');
         extract( shortcode_atts( array(
-            'text' => cpc_get_shortcode_value($values, 'cpc_avatar_change_link-text', __('Bild ändern', CPC2_TEXT_DOMAIN)),
+            'text' => cpc_get_shortcode_value($values, 'cpc_avatar_change_link-text', __('Bild ändern', 'cp-community')),
             'change_style' => cpc_get_shortcode_value($values, 'cpc_avatar_change_link-change_style', 'page'),            
-            'change_avatar_title' => cpc_get_shortcode_value($values, 'cpc_avatar_change_link-change_avatar_title', __('Bild hochladen und zuschneiden, um es anzuzeigen', CPC2_TEXT_DOMAIN)),
+            'change_avatar_title' => cpc_get_shortcode_value($values, 'cpc_avatar_change_link-change_avatar_title', __('Bild hochladen und zuschneiden, um es anzuzeigen', 'cp-community')),
             'styles' => true,
             'after' => '',
             'before' => '',
@@ -208,26 +208,26 @@ function cpc_avatar_change($atts) {
     // Shortcode parameters
     $values = cpc_get_shortcode_options('cpc_avatar_change');
     extract( shortcode_atts( array(
-        'label' => cpc_get_shortcode_value($values, 'cpc_avatar_change-label', __('Hochladen', CPC2_TEXT_DOMAIN)),
-        'step1' => cpc_get_shortcode_value($values, 'cpc_avatar_change-step1', __('Schritt 1: Klicke auf diesen Link, um ein Bild auszuwählen, und klicke anschließend auf die Schaltfläche unten.', CPC2_TEXT_DOMAIN)),
-        'step2' => cpc_get_shortcode_value($values, 'cpc_avatar_change-step2', __('Schritt 2: Wähle zunächst einen Bereich auf Deinem hochgeladenen Bild aus und klicke dann auf die Schaltfläche Zuschneiden.', CPC2_TEXT_DOMAIN)),
-        'choose' => cpc_get_shortcode_value($values, 'cpc_avatar_change-choose', __('Klicke hier, um ein Bild auszuwählen... (maximal %dKB)', CPC2_TEXT_DOMAIN)),
-        'try_again_msg' => cpc_get_shortcode_value($values, 'cpc_avatar_change-try_again_msg', __('Versuche es erneut...', CPC2_TEXT_DOMAIN)),
-        'file_types_msg' => cpc_get_shortcode_value($values, 'cpc_avatar_change-file_types_msg', __("Bitte lade eine Bilddatei hoch (.jpeg, .gif, .png).", CPC2_TEXT_DOMAIN)),
-        'not_permitted' => cpc_get_shortcode_value($values, 'cpc_avatar_change-not_permitted', __('Es ist Dir nicht gestattet, diesen Avatar zu ändern.', CPC2_TEXT_DOMAIN)),
-        'file_too_big_msg' => cpc_get_shortcode_value($values, 'cpc_avatar_change-file_too_big_msg', __('Bitte lade eine Bilddatei hoch, die nicht größer als %dKB ist. Deine Datei war %dKB groß.', CPC2_TEXT_DOMAIN)),
+        'label' => cpc_get_shortcode_value($values, 'cpc_avatar_change-label', __('Hochladen', 'cp-community')),
+        'step1' => cpc_get_shortcode_value($values, 'cpc_avatar_change-step1', __('Schritt 1: Klicke auf diesen Link, um ein Bild auszuwählen, und klicke anschließend auf die Schaltfläche unten.', 'cp-community')),
+        'step2' => cpc_get_shortcode_value($values, 'cpc_avatar_change-step2', __('Schritt 2: Wähle zunächst einen Bereich auf Deinem hochgeladenen Bild aus und klicke dann auf die Schaltfläche Zuschneiden.', 'cp-community')),
+        'choose' => cpc_get_shortcode_value($values, 'cpc_avatar_change-choose', __('Klicke hier, um ein Bild auszuwählen... (maximal %dKB)', 'cp-community')),
+        'try_again_msg' => cpc_get_shortcode_value($values, 'cpc_avatar_change-try_again_msg', __('Versuche es erneut...', 'cp-community')),
+        'file_types_msg' => cpc_get_shortcode_value($values, 'cpc_avatar_change-file_types_msg', __("Bitte lade eine Bilddatei hoch (.jpeg, .gif, .png).", 'cp-community')),
+        'not_permitted' => cpc_get_shortcode_value($values, 'cpc_avatar_change-not_permitted', __('Es ist Dir nicht gestattet, diesen Avatar zu ändern.', 'cp-community')),
+        'file_too_big_msg' => cpc_get_shortcode_value($values, 'cpc_avatar_change-file_too_big_msg', __('Bitte lade eine Bilddatei hoch, die nicht größer als %dKB ist. Deine Datei war %dKB groß.', 'cp-community')),
         'max_file_size' => cpc_get_shortcode_value($values, 'cpc_avatar_change-max_file_size', 500),
         'crop' => cpc_get_shortcode_value($values, 'cpc_avatar_change-crop', true),
         'effects' => cpc_get_shortcode_value($values, 'cpc_avatar_change-effects', false),
-        'logged_out_msg' => cpc_get_shortcode_value($values, 'cpc_avatar_change-logged_out_msg', __('Du musst angemeldet sein, um diese Seite anzuzeigen.', CPC2_TEXT_DOMAIN)),
+        'logged_out_msg' => cpc_get_shortcode_value($values, 'cpc_avatar_change-logged_out_msg', __('Du musst angemeldet sein, um diese Seite anzuzeigen.', 'cp-community')),
         'login_url' => cpc_get_shortcode_value($values, 'cpc_avatar_change-login_url', ''),
-        'flip' => cpc_get_shortcode_value($values, 'cpc_avatar_change-flip', __('Umdrehen', CPC2_TEXT_DOMAIN)),
-        'rotate' => cpc_get_shortcode_value($values, 'cpc_avatar_change-rotate', __('Drehen', CPC2_TEXT_DOMAIN)),
-        'invert' => cpc_get_shortcode_value($values, 'cpc_avatar_change-invert', __('Umkehren', CPC2_TEXT_DOMAIN)),
-        'sketch' => cpc_get_shortcode_value($values, 'cpc_avatar_change-sketch', __('Skizzieren', CPC2_TEXT_DOMAIN)),
-        'pixelate' => cpc_get_shortcode_value($values, 'cpc_avatar_change-pixelate', __('Pixelieren', CPC2_TEXT_DOMAIN)),
-        'sepia' => cpc_get_shortcode_value($values, 'cpc_avatar_change-sepia', __('Sepia', CPC2_TEXT_DOMAIN)),
-        'emboss' => cpc_get_shortcode_value($values, 'cpc_avatar_change-emboss', __('Prägen', CPC2_TEXT_DOMAIN)),
+        'flip' => cpc_get_shortcode_value($values, 'cpc_avatar_change-flip', __('Umdrehen', 'cp-community')),
+        'rotate' => cpc_get_shortcode_value($values, 'cpc_avatar_change-rotate', __('Drehen', 'cp-community')),
+        'invert' => cpc_get_shortcode_value($values, 'cpc_avatar_change-invert', __('Umkehren', 'cp-community')),
+        'sketch' => cpc_get_shortcode_value($values, 'cpc_avatar_change-sketch', __('Skizzieren', 'cp-community')),
+        'pixelate' => cpc_get_shortcode_value($values, 'cpc_avatar_change-pixelate', __('Pixelieren', 'cp-community')),
+        'sepia' => cpc_get_shortcode_value($values, 'cpc_avatar_change-sepia', __('Sepia', 'cp-community')),
+        'emboss' => cpc_get_shortcode_value($values, 'cpc_avatar_change-emboss', __('Prägen', 'cp-community')),
         'styles' => true,
     ), $atts, 'cpc_avatar_change' ) );
     
@@ -236,7 +236,7 @@ function cpc_avatar_change($atts) {
         $user_id = cpc_get_user_id();
 
         if (current_user_can('manage_options') && !$login_url && function_exists('cpc_login_init')):
-            $html = cpc_admin_tip($html, 'cpc_avatar_change', __('Füge login_url="/example" zum Shortcode [cpc-avatar-change] hinzu, damit sich Benutzer anmelden und hierher zurückleiten können, wenn sie nicht angemeldet sind.', CPC2_TEXT_DOMAIN));
+            $html = cpc_admin_tip($html, 'cpc_avatar_change', __('Füge login_url="/example" zum Shortcode [cpc-avatar-change] hinzu, damit sich Benutzer anmelden und hierher zurückleiten können, wenn sie nicht angemeldet sind.', 'cp-community'));
         endif;        
     
         $useragent=$_SERVER['HTTP_USER_AGENT'];
@@ -455,7 +455,7 @@ function cpc_avatar_change($atts) {
 
                             $html .= '<input type="hidden" name="oitar" id="oitar" value="'.esc_attr($oitar).'" />';
                             wp_nonce_field('user-avatar');
-                            $html .= '<button class="cpc_button cpc_avatar_crop_button" style="clear:both; margin-top:20px !important; margin-left:20px !important;" id="user-avatar-crop-button">'.__('Zuschneiden', CPC2_TEXT_DOMAIN).'</button>';
+                            $html .= '<button class="cpc_button cpc_avatar_crop_button" style="clear:both; margin-top:20px !important; margin-left:20px !important;" id="user-avatar-crop-button">'.__('Zuschneiden', 'cp-community').'</button>';
 
                             $html .= '</form>';
 
@@ -484,7 +484,7 @@ function cpc_avatar_change($atts) {
 
                     if( !file_exists($original_file) ):
 
-                        $html .= "<div class='error'><p>". __('Leider ist keine Datei verfügbar', CPC2_TEXT_DOMAIN)."</p></div>";
+                        $html .= "<div class='error'><p>". __('Leider ist keine Datei verfügbar', 'cp-community')."</p></div>";
 
                     else:
 
@@ -534,7 +534,7 @@ function cpc_avatar_change($atts) {
                             update_user_meta( $user_id, 'cpc_com_avatar', user_avatar_core_avatar_meta_path($user_id, $time_now."-cpcfull.jpg") );	 
     
                             if ( is_wp_error( $cropped_full ) ):
-                                $html .= __( 'Bild konnte nicht verarbeitet werden. Bitte versuche es erneut.', CPC2_TEXT_DOMAIN);	
+                                $html .= __( 'Bild konnte nicht verarbeitet werden. Bitte versuche es erneut.', 'cp-community');	
                                 //var_dump($cropped_full);	
                             else:
                                 /* Remove the original */
@@ -566,7 +566,7 @@ function cpc_avatar_change($atts) {
 
                     if( !file_exists($original_file) ):
 
-                        $html .= "<div class='error'><p>". __('Leider ist keine Datei verfügbar', CPC2_TEXT_DOMAIN)."</p></div>";
+                        $html .= "<div class='error'><p>". __('Leider ist keine Datei verfügbar', 'cp-community')."</p></div>";
 
                     else:
 
@@ -603,7 +603,7 @@ function cpc_avatar_change($atts) {
                             update_user_meta( $user_id, 'cpc_com_avatar', user_avatar_core_avatar_meta_path($user_id, $time_now."-cpcfull.jpg") );	 
 
                             if ( is_wp_error( $cropped_full ) ):
-                                $html .= __( 'Bild konnte nicht verarbeitet werden. Bitte versuche es erneut.', CPC2_TEXT_DOMAIN);	
+                                $html .= __( 'Bild konnte nicht verarbeitet werden. Bitte versuche es erneut.', 'cp-community');	
                                 //var_dump($cropped_full);	
                             else:
                                 /* Remove the original */

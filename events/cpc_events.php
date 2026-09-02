@@ -93,15 +93,15 @@ function cpc_events_filter_external_event_visibility($query) {
 
 function cpc_events_register_post_type() {
     $labels = array(
-        'name' => __('Events', CPC2_TEXT_DOMAIN),
-        'singular_name' => __('Event', CPC2_TEXT_DOMAIN),
-        'add_new' => __('Event hinzufuegen', CPC2_TEXT_DOMAIN),
-        'add_new_item' => __('Neues Event', CPC2_TEXT_DOMAIN),
-        'edit_item' => __('Event bearbeiten', CPC2_TEXT_DOMAIN),
-        'new_item' => __('Neues Event', CPC2_TEXT_DOMAIN),
-        'view_item' => __('Event ansehen', CPC2_TEXT_DOMAIN),
-        'search_items' => __('Events suchen', CPC2_TEXT_DOMAIN),
-        'not_found' => __('Keine Events gefunden', CPC2_TEXT_DOMAIN),
+        'name' => __('Events', 'cp-community'),
+        'singular_name' => __('Event', 'cp-community'),
+        'add_new' => __('Event hinzufuegen', 'cp-community'),
+        'add_new_item' => __('Neues Event', 'cp-community'),
+        'edit_item' => __('Event bearbeiten', 'cp-community'),
+        'new_item' => __('Neues Event', 'cp-community'),
+        'view_item' => __('Event ansehen', 'cp-community'),
+        'search_items' => __('Events suchen', 'cp-community'),
+        'not_found' => __('Keine Events gefunden', 'cp-community'),
     );
 
     register_post_type('cpc_event', array(
@@ -120,7 +120,7 @@ if (!function_exists('cpc_events_external_plugin_active') || !cpc_events_externa
 }
 
 function cpc_events_add_meta_boxes() {
-    add_meta_box('cpc_event_details', __('Event-Details', CPC2_TEXT_DOMAIN), 'cpc_events_meta_box_html', 'cpc_event', 'normal', 'high');
+    add_meta_box('cpc_event_details', __('Event-Details', 'cp-community'), 'cpc_events_meta_box_html', 'cpc_event', 'normal', 'high');
 }
 if (!function_exists('cpc_events_external_plugin_active') || !cpc_events_external_plugin_active()) {
     add_action('add_meta_boxes', 'cpc_events_add_meta_boxes');
@@ -133,13 +133,13 @@ function cpc_events_meta_box_html($post) {
     $end = get_post_meta($post->ID, 'cpc_event_end', true);
     $location = get_post_meta($post->ID, 'cpc_event_location', true);
 
-    echo '<p><label for="cpc_event_start"><strong>' . esc_html__('Start', CPC2_TEXT_DOMAIN) . '</strong></label><br>';
+    echo '<p><label for="cpc_event_start"><strong>' . esc_html__('Start', 'cp-community') . '</strong></label><br>';
     echo '<input type="datetime-local" id="cpc_event_start" name="cpc_event_start" value="' . esc_attr($start) . '" style="width:260px"></p>';
 
-    echo '<p><label for="cpc_event_end"><strong>' . esc_html__('Ende', CPC2_TEXT_DOMAIN) . '</strong></label><br>';
+    echo '<p><label for="cpc_event_end"><strong>' . esc_html__('Ende', 'cp-community') . '</strong></label><br>';
     echo '<input type="datetime-local" id="cpc_event_end" name="cpc_event_end" value="' . esc_attr($end) . '" style="width:260px"></p>';
 
-    echo '<p><label for="cpc_event_location"><strong>' . esc_html__('Ort', CPC2_TEXT_DOMAIN) . '</strong></label><br>';
+    echo '<p><label for="cpc_event_location"><strong>' . esc_html__('Ort', 'cp-community') . '</strong></label><br>';
     echo '<input type="text" id="cpc_event_location" name="cpc_event_location" value="' . esc_attr($location) . '" class="widefat"></p>';
 }
 
@@ -221,7 +221,7 @@ function cpc_events_render_internal($atts) {
     ));
 
     if (empty($query->posts)) {
-        return '<div class="cpc-events-empty">' . esc_html__('Keine Events gefunden.', CPC2_TEXT_DOMAIN) . '</div>';
+        return '<div class="cpc-events-empty">' . esc_html__('Keine Events gefunden.', 'cp-community') . '</div>';
     }
 
     $html = '<div class="cpc-events-list">';
@@ -388,7 +388,7 @@ function cpc_events_send_group_event_notifications($event_id, $group_id, $actor_
     $location = (string)get_post_meta($event_id, 'cpc_event_location', true);
     $group_name = get_the_title($group_id);
 
-    $actor_name = __('Ein Mitglied', CPC2_TEXT_DOMAIN);
+    $actor_name = __('Ein Mitglied', 'cp-community');
     if ($actor_id > 0) {
         $actor = get_user_by('id', $actor_id);
         if ($actor && !empty($actor->display_name)) {
@@ -397,7 +397,7 @@ function cpc_events_send_group_event_notifications($event_id, $group_id, $actor_
     }
 
     $subject = sprintf(
-        __('%1$s: Neues Gruppen-Event in %2$s', CPC2_TEXT_DOMAIN),
+        __('%1$s: Neues Gruppen-Event in %2$s', 'cp-community'),
         wp_specialchars_decode(get_bloginfo('name'), ENT_QUOTES),
         $group_name
     );
@@ -411,18 +411,18 @@ function cpc_events_send_group_event_notifications($event_id, $group_id, $actor_
     }
 
     $message = sprintf(
-        __('%1$s hat ein neues Event in der Gruppe "%2$s" erstellt.', CPC2_TEXT_DOMAIN),
+        __('%1$s hat ein neues Event in der Gruppe "%2$s" erstellt.', 'cp-community'),
         $actor_name,
         $group_name
     ) . "\n\n";
-    $message .= sprintf(__('Titel: %s', CPC2_TEXT_DOMAIN), $event_title) . "\n";
+    $message .= sprintf(__('Titel: %s', 'cp-community'), $event_title) . "\n";
     if ($time_line !== '') {
-        $message .= sprintf(__('Zeit: %s', CPC2_TEXT_DOMAIN), $time_line) . "\n";
+        $message .= sprintf(__('Zeit: %s', 'cp-community'), $time_line) . "\n";
     }
     if ($location !== '') {
-        $message .= sprintf(__('Ort: %s', CPC2_TEXT_DOMAIN), $location) . "\n";
+        $message .= sprintf(__('Ort: %s', 'cp-community'), $location) . "\n";
     }
-    $message .= "\n" . sprintf(__('Event ansehen: %s', CPC2_TEXT_DOMAIN), $event_url) . "\n";
+    $message .= "\n" . sprintf(__('Event ansehen: %s', 'cp-community'), $event_url) . "\n";
 
     foreach ($recipients as $recipient_id) {
         $user = get_userdata((int)$recipient_id);

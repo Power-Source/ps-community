@@ -245,7 +245,7 @@ tabHtml = response;
 
 if (!tabHtml) {
 $contentWrapper.removeClass('loading').css('opacity', '1');
-$contentWrapper.text('Tab-Inhalt konnte nicht geladen werden.');
+$contentWrapper.text(cpc_activity_ajax.i18n.tabLoadFailed);
 return;
 }
 
@@ -277,7 +277,7 @@ cpcFixJobboardExpertLayout();
 },
 error: function(xhr) {
 $contentWrapper.removeClass('loading').css('opacity', '1');
-$contentWrapper.text(xhr && xhr.responseText ? xhr.responseText : 'Tab-Inhalt konnte nicht geladen werden.');
+$contentWrapper.text(xhr && xhr.responseText ? xhr.responseText : cpc_activity_ajax.i18n.tabLoadFailed);
 }
 });
 

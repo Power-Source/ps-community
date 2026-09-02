@@ -18,7 +18,7 @@ function cpc_multisite_ensure_group_pages() {
                 // Create the page if it doesn't exist
                 $page_id = wp_insert_post(array(
                     'post_type' => 'page',
-                    'post_title' => __('Gruppe', 'ps-community'),
+					'post_title' => __('Gruppe', 'cp-community'),
                     'post_name' => 'gruppe',
                     'post_content' => '[cpc-group-single]',
                     'post_status' => 'publish',
@@ -38,7 +38,7 @@ function cpc_multisite_ensure_group_pages() {
                 // Create the page if it doesn't exist
                 $page_id = wp_insert_post(array(
                     'post_type' => 'page',
-                    'post_title' => __('Neue Gruppe', 'ps-community'),
+					'post_title' => __('Neue Gruppe', 'cp-community'),
                     'post_name' => 'neue-gruppe',
                     'post_content' => '[cpc-group-create]',
                     'post_status' => 'publish',
@@ -64,7 +64,7 @@ if (strpos(CPC_CORE_PLUGINS, 'core-activity') !== false):
 			cpc_add_activity(
 				$user_id,
 				'group_created',
-				sprintf(__('hat die Gruppe <a href="%s">%s</a> erstellt', CPC2_TEXT_DOMAIN), get_permalink($group_id), $group->post_title),
+				sprintf(__('hat die Gruppe <a href="%s">%s</a> erstellt', 'cp-community'), get_permalink($group_id), $group->post_title),
 				$group_id
 			);
 		}
@@ -78,7 +78,7 @@ if (strpos(CPC_CORE_PLUGINS, 'core-activity') !== false):
 			cpc_add_activity(
 				$user_id,
 				'group_joined',
-				sprintf(__('ist der Gruppe <a href="%s">%s</a> beigetreten', CPC2_TEXT_DOMAIN), get_permalink($group_id), $group->post_title),
+				sprintf(__('ist der Gruppe <a href="%s">%s</a> beigetreten', 'cp-community'), get_permalink($group_id), $group->post_title),
 				$group_id
 			);
 		}
@@ -92,7 +92,7 @@ if (strpos(CPC_CORE_PLUGINS, 'core-activity') !== false):
 			cpc_add_activity(
 				$user_id,
 				'group_left',
-				sprintf(__('hat die Gruppe <a href="%s">%s</a> verlassen', CPC2_TEXT_DOMAIN), get_permalink($group_id), $group->post_title),
+				sprintf(__('hat die Gruppe <a href="%s">%s</a> verlassen', 'cp-community'), get_permalink($group_id), $group->post_title),
 				$group_id
 			);
 		}
@@ -112,7 +112,7 @@ if (strpos(CPC_CORE_PLUGINS, 'core-alerts') !== false):
 			$group = get_post($group_id);
 			cpc_add_alert(
 				$user_id,
-				sprintf(__('Deine Beitrittsanfrage für die Gruppe <a href="%s">%s</a> wurde genehmigt!', CPC2_TEXT_DOMAIN), get_permalink($group_id), $group->post_title),
+				sprintf(__('Deine Beitrittsanfrage für die Gruppe <a href="%s">%s</a> wurde genehmigt!', 'cp-community'), get_permalink($group_id), $group->post_title),
 				'group_approved',
 				$group_id
 			);
@@ -131,7 +131,7 @@ if (strpos(CPC_CORE_PLUGINS, 'core-alerts') !== false):
 			foreach ($admins as $admin) {
 				cpc_add_alert(
 					$admin->ID,
-					sprintf(__('%s möchte der Gruppe <a href="%s">%s</a> beitreten', CPC2_TEXT_DOMAIN), $user->display_name, get_permalink($group_id), $group->post_title),
+					sprintf(__('%s möchte der Gruppe <a href="%s">%s</a> beitreten', 'cp-community'), $user->display_name, get_permalink($group_id), $group->post_title),
 					'group_join_request',
 					$group_id
 				);
@@ -321,7 +321,7 @@ add_filter('cpc_profile_tabs', 'cpc_groups_add_profile_tab', 10, 3);
 function cpc_groups_add_profile_tab($tabs, $user_id, $viewer_id) {
 	// Add groups tab with proper array format
 	$tabs['groups'] = array(
-		'label' => __('Gruppen', CPC2_TEXT_DOMAIN),
+		'label' => __('Gruppen', 'cp-community'),
 		'icon' => 'groups',
 		'priority' => 20, // After activity (10) and messages (15)
 	);
@@ -351,10 +351,10 @@ function cpc_groups_profile_tab_content($html, $active_tab, $user_id, $shortcode
 		$html .= '<div class="cpc-profile-groups-tab">';
 		
 		if ($is_own_profile):
-			$html .= '<h3>'.__('Meine Gruppen', CPC2_TEXT_DOMAIN).'</h3>';
+			$html .= '<h3>'.__('Meine Gruppen', 'cp-community').'</h3>';
 		else:
 			$user = get_user_by('id', $user_id);
-			$html .= '<h3>'.sprintf(__('Gruppen von %s', CPC2_TEXT_DOMAIN), $user->display_name).'</h3>';
+			$html .= '<h3>'.sprintf(__('Gruppen von %s', 'cp-community'), $user->display_name).'</h3>';
 		endif;
 		
 		// Render groups using the shortcode with user_id parameter
@@ -365,17 +365,17 @@ function cpc_groups_profile_tab_content($html, $active_tab, $user_id, $shortcode
 		$html .= '<div class="cpc-profile-groups-empty">';
 		
 		if ($is_own_profile):
-			$html .= '<p>'.__('Du bist noch in keiner Gruppe Mitglied.', CPC2_TEXT_DOMAIN).'</p>';
+			$html .= '<p>'.__('Du bist noch in keiner Gruppe Mitglied.', 'cp-community').'</p>';
 			
 			// Show link to groups directory if available
 			$groups_page = get_option('cpccom_groups_page');
 			if ($groups_page):
 				$groups_url = get_permalink($groups_page);
-				$html .= '<p><a href="'.esc_url($groups_url).'" class="cpc-button">'.__('Gruppen entdecken', CPC2_TEXT_DOMAIN).'</a></p>';
+				$html .= '<p><a href="'.esc_url($groups_url).'" class="cpc-button">'.__('Gruppen entdecken', 'cp-community').'</a></p>';
 			endif;
 		else:
 			$user = get_user_by('id', $user_id);
-			$html .= '<p>'.sprintf(__('%s ist noch in keiner Gruppe Mitglied.', CPC2_TEXT_DOMAIN), $user->display_name).'</p>';
+			$html .= '<p>'.sprintf(__('%s ist noch in keiner Gruppe Mitglied.', 'cp-community'), $user->display_name).'</p>';
 		endif;
 		
 		$html .= '</div>';

@@ -6,19 +6,19 @@
 
 function cpc_custom_post_group_members() {
 	$labels = array(
-		'name'               => __( 'Gruppenmitglieder', CPC2_TEXT_DOMAIN ),
-		'singular_name'      => __( 'Gruppenmitglied', CPC2_TEXT_DOMAIN ),
-		'add_new'            => __( 'Neues hinzufügen', CPC2_TEXT_DOMAIN ),
-		'add_new_item'       => __( 'Neues Mitglied hinzufügen', CPC2_TEXT_DOMAIN ),
-		'edit_item'          => __( 'Mitglied bearbeiten', CPC2_TEXT_DOMAIN ),
-		'new_item'           => __( 'Neues Mitglied', CPC2_TEXT_DOMAIN ),
-		'all_items'          => __( 'Alle Mitglieder', CPC2_TEXT_DOMAIN ),
-		'view_item'          => __( 'Mitglied anzeigen', CPC2_TEXT_DOMAIN ),
-		'search_items'       => __( 'Mitglieder durchsuchen', CPC2_TEXT_DOMAIN ),
-		'not_found'          => __( 'Kein Mitglied gefunden', CPC2_TEXT_DOMAIN ),
-		'not_found_in_trash' => __( 'Kein Mitglied im Papierkorb gefunden', CPC2_TEXT_DOMAIN ), 
+		'name'               => __( 'Gruppenmitglieder', 'cp-community' ),
+		'singular_name'      => __( 'Gruppenmitglied', 'cp-community' ),
+		'add_new'            => __( 'Neues hinzufügen', 'cp-community' ),
+		'add_new_item'       => __( 'Neues Mitglied hinzufügen', 'cp-community' ),
+		'edit_item'          => __( 'Mitglied bearbeiten', 'cp-community' ),
+		'new_item'           => __( 'Neues Mitglied', 'cp-community' ),
+		'all_items'          => __( 'Alle Mitglieder', 'cp-community' ),
+		'view_item'          => __( 'Mitglied anzeigen', 'cp-community' ),
+		'search_items'       => __( 'Mitglieder durchsuchen', 'cp-community' ),
+		'not_found'          => __( 'Kein Mitglied gefunden', 'cp-community' ),
+		'not_found_in_trash' => __( 'Kein Mitglied im Papierkorb gefunden', 'cp-community' ), 
 		'parent_item_colon'  => '',
-		'menu_name'          => __( 'Gruppenmitglieder', CPC2_TEXT_DOMAIN ),
+		'menu_name'          => __( 'Gruppenmitglieder', 'cp-community' ),
 	);
 	$args = array(
 		'labels'        		=> $labels,
@@ -52,16 +52,16 @@ function cpc_updated_group_member_messages( $messages ) {
 	global $post, $post_ID;
 	$messages['cpc_group_members'] = array(
 		0 => '', 
-		1 => __('Mitgliedschaft aktualisiert.', CPC2_TEXT_DOMAIN),
-		2 => __('Benutzerdefiniertes Feld aktualisiert.', CPC2_TEXT_DOMAIN),
-		3 => __('Benutzerdefiniertes Feld gelöscht.', CPC2_TEXT_DOMAIN),
-		4 => __('Mitgliedschaft aktualisiert.', CPC2_TEXT_DOMAIN),
-		5 => isset($_GET['revision']) ? sprintf( __('Mitgliedschaft wiederhergestellt von Revision vom %s'), wp_post_revision_title( (int) $_GET['revision'], false ) ) : false,
-		6 => __('Mitgliedschaft veröffentlicht.', CPC2_TEXT_DOMAIN),
-		7 => __('Mitgliedschaft gespeichert.', CPC2_TEXT_DOMAIN),
-		8 => __('Mitgliedschaft eingereicht.', CPC2_TEXT_DOMAIN),
-		9 => sprintf( __('Mitgliedschaft geplant für: <strong>%1$s</strong>.'), date_i18n( __( 'M j, Y @ G:i' ), strtotime( $post->post_date ) ) ),
-		10 => __('Mitgliedschaftsentwurf aktualisiert.', CPC2_TEXT_DOMAIN),
+		1 => __('Mitgliedschaft aktualisiert.', 'cp-community'),
+		2 => __('Benutzerdefiniertes Feld aktualisiert.', 'cp-community'),
+		3 => __('Benutzerdefiniertes Feld gelöscht.', 'cp-community'),
+		4 => __('Mitgliedschaft aktualisiert.', 'cp-community'),
+		5 => isset($_GET['revision']) ? sprintf( __('Mitgliedschaft wiederhergestellt von Revision vom %s', 'cp-community'), wp_post_revision_title( (int) $_GET['revision'], false ) ) : false,
+		6 => __('Mitgliedschaft veröffentlicht.', 'cp-community'),
+		7 => __('Mitgliedschaft gespeichert.', 'cp-community'),
+		8 => __('Mitgliedschaft eingereicht.', 'cp-community'),
+		9 => sprintf( __('Mitgliedschaft geplant für: <strong>%1$s</strong>.', 'cp-community'), date_i18n( __( 'M j, Y @ G:i' ), strtotime( $post->post_date ) ) ),
+		10 => __('Mitgliedschaftsentwurf aktualisiert.', 'cp-community'),
 	);
 	return $messages;
 }
@@ -73,7 +73,7 @@ add_action( 'add_meta_boxes', 'group_member_info_box' );
 function group_member_info_box() {
     add_meta_box( 
         'group_member_info_box',
-        __( 'Mitgliedschaftsdetails', CPC2_TEXT_DOMAIN ),
+        __( 'Mitgliedschaftsdetails', 'cp-community' ),
         'group_member_info_box_content',
         'cpc_group_members',
         'normal',
@@ -97,12 +97,12 @@ function group_member_info_box_content( $post ) {
 	echo '<table class="form-table">';
 	
 	echo '<tr>';
-	echo '<th><label for="cpc_member_user_id">'.__('Benutzer', CPC2_TEXT_DOMAIN).'</label></th>';
+	echo '<th><label for="cpc_member_user_id">'.__('Benutzer', 'cp-community').'</label></th>';
 	echo '<td>';
 	wp_dropdown_users(array(
 		'name' => 'cpc_member_user_id',
 		'selected' => $user_id,
-		'show_option_none' => __('Benutzer wählen...', CPC2_TEXT_DOMAIN)
+		'show_option_none' => __('Benutzer wählen...', 'cp-community')
 	));
 	if ($user_id) {
 		$user = get_user_by('id', $user_id);
@@ -112,46 +112,46 @@ function group_member_info_box_content( $post ) {
 	echo '</tr>';
 
 	echo '<tr>';
-	echo '<th><label for="cpc_member_group_id">'.__('Gruppe', CPC2_TEXT_DOMAIN).'</label></th>';
+	echo '<th><label for="cpc_member_group_id">'.__('Gruppe', 'cp-community').'</label></th>';
 	echo '<td>';
 	wp_dropdown_pages(array(
 		'post_type' => 'cpc_group',
 		'name' => 'cpc_member_group_id',
 		'selected' => $group_id,
-		'show_option_none' => __('Gruppe wählen...', CPC2_TEXT_DOMAIN)
+		'show_option_none' => __('Gruppe wählen...', 'cp-community')
 	));
 	echo '</td>';
 	echo '</tr>';
 
 	echo '<tr>';
-	echo '<th><label for="cpc_member_role">'.__('Rolle', CPC2_TEXT_DOMAIN).'</label></th>';
+	echo '<th><label for="cpc_member_role">'.__('Rolle', 'cp-community').'</label></th>';
 	echo '<td>';
 	echo '<select name="cpc_member_role" id="cpc_member_role" style="width:200px">';
-		echo '<option value="member"'.selected($role, 'member', false).'>'.__('Mitglied', CPC2_TEXT_DOMAIN).'</option>';
-		echo '<option value="moderator"'.selected($role, 'moderator', false).'>'.__('Moderator', CPC2_TEXT_DOMAIN).'</option>';
-		echo '<option value="admin"'.selected($role, 'admin', false).'>'.__('Admin', CPC2_TEXT_DOMAIN).'</option>';
+		echo '<option value="member"'.selected($role, 'member', false).'>'.__('Mitglied', 'cp-community').'</option>';
+		echo '<option value="moderator"'.selected($role, 'moderator', false).'>'.__('Moderator', 'cp-community').'</option>';
+		echo '<option value="admin"'.selected($role, 'admin', false).'>'.__('Admin', 'cp-community').'</option>';
 	echo '</select>';
 	echo '</td>';
 	echo '</tr>';
 
 	echo '<tr>';
-	echo '<th><label for="cpc_member_status">'.__('Status', CPC2_TEXT_DOMAIN).'</label></th>';
+	echo '<th><label for="cpc_member_status">'.__('Status', 'cp-community').'</label></th>';
 	echo '<td>';
 	echo '<select name="cpc_member_status" id="cpc_member_status" style="width:200px">';
-		echo '<option value="active"'.selected($status, 'active', false).'>'.__('Aktiv', CPC2_TEXT_DOMAIN).'</option>';
-		echo '<option value="pending"'.selected($status, 'pending', false).'>'.__('Ausstehend', CPC2_TEXT_DOMAIN).'</option>';
-		echo '<option value="banned"'.selected($status, 'banned', false).'>'.__('Gesperrt', CPC2_TEXT_DOMAIN).'</option>';
+		echo '<option value="active"'.selected($status, 'active', false).'>'.__('Aktiv', 'cp-community').'</option>';
+		echo '<option value="pending"'.selected($status, 'pending', false).'>'.__('Ausstehend', 'cp-community').'</option>';
+		echo '<option value="banned"'.selected($status, 'banned', false).'>'.__('Gesperrt', 'cp-community').'</option>';
 	echo '</select>';
 	echo '</td>';
 	echo '</tr>';
 
 	echo '<tr>';
-	echo '<th><label>'.__('Beigetreten am', CPC2_TEXT_DOMAIN).'</label></th>';
+	echo '<th><label>'.__('Beigetreten am', 'cp-community').'</label></th>';
 	echo '<td>';
 	if ($joined) {
 		echo date_i18n(get_option('date_format').' '.get_option('time_format'), $joined);
 	} else {
-		echo __('Noch nicht gesetzt', CPC2_TEXT_DOMAIN);
+		echo __('Noch nicht gesetzt', 'cp-community');
 	}
 	echo '</td>';
 	echo '</tr>';
@@ -206,11 +206,11 @@ add_action('manage_cpc_group_members_posts_custom_column', 'group_member_columns
 
 // ADD NEW COLUMN
 function group_member_columns_head($defaults) {
-	$defaults['member_user'] = __('Benutzer', CPC2_TEXT_DOMAIN);
-    $defaults['member_group'] = __('Gruppe', CPC2_TEXT_DOMAIN);
-    $defaults['member_role'] = __('Rolle', CPC2_TEXT_DOMAIN);
-    $defaults['member_status'] = __('Status', CPC2_TEXT_DOMAIN);
-    $defaults['member_joined'] = __('Beigetreten', CPC2_TEXT_DOMAIN);
+	$defaults['member_user'] = __('Benutzer', 'cp-community');
+    $defaults['member_group'] = __('Gruppe', 'cp-community');
+    $defaults['member_role'] = __('Rolle', 'cp-community');
+    $defaults['member_status'] = __('Status', 'cp-community');
+    $defaults['member_joined'] = __('Beigetreten', 'cp-community');
     return $defaults;
 }
  
@@ -234,13 +234,13 @@ function group_member_columns_content($column_name, $post_ID) {
 		if ($role) {
 			switch($role) {
 				case 'member':
-					echo __('Mitglied', CPC2_TEXT_DOMAIN);
+					echo __('Mitglied', 'cp-community');
 					break;
 				case 'moderator':
-					echo __('Moderator', CPC2_TEXT_DOMAIN);
+					echo __('Moderator', 'cp-community');
 					break;
 				case 'admin':
-					echo __('Admin', CPC2_TEXT_DOMAIN);
+					echo __('Admin', 'cp-community');
 					break;
 			}
 		}
@@ -250,13 +250,13 @@ function group_member_columns_content($column_name, $post_ID) {
 		if ($status) {
 			switch($status) {
 				case 'active':
-					echo '<span style="color:green">●</span> '.__('Aktiv', CPC2_TEXT_DOMAIN);
+					echo '<span style="color:green">●</span> '.__('Aktiv', 'cp-community');
 					break;
 				case 'pending':
-					echo '<span style="color:orange">●</span> '.__('Ausstehend', CPC2_TEXT_DOMAIN);
+					echo '<span style="color:orange">●</span> '.__('Ausstehend', 'cp-community');
 					break;
 				case 'banned':
-					echo '<span style="color:red">●</span> '.__('Gesperrt', CPC2_TEXT_DOMAIN);
+					echo '<span style="color:red">●</span> '.__('Gesperrt', 'cp-community');
 					break;
 			}
 		}

@@ -7,7 +7,7 @@ function cpc_ajax_save_group_forum_settings() {
 	check_ajax_referer('cpc_groups_nonce', 'nonce');
 
 	if (!is_user_logged_in()) {
-		wp_send_json_error(array('message' => __('Du musst angemeldet sein.', CPC2_TEXT_DOMAIN)));
+		wp_send_json_error(array('message' => __('Du musst angemeldet sein.', 'cp-community')));
 	}
 
 	$group_id = isset($_POST['group_id']) ? intval($_POST['group_id']) : 0;
@@ -15,12 +15,12 @@ function cpc_ajax_save_group_forum_settings() {
 	$forum_visibility = isset($_POST['forum_visibility']) ? sanitize_text_field($_POST['forum_visibility']) : 'group_only';
 
 	if (!$group_id) {
-		wp_send_json_error(array('message' => __('Ungültige Gruppe.', CPC2_TEXT_DOMAIN)));
+		wp_send_json_error(array('message' => __('Ungültige Gruppe.', 'cp-community')));
 	}
 
 	// Check if user is group admin
 	if (!cpc_is_group_admin(get_current_user_id(), $group_id)) {
-		wp_send_json_error(array('message' => __('Keine Berechtigung.', CPC2_TEXT_DOMAIN)));
+		wp_send_json_error(array('message' => __('Keine Berechtigung.', 'cp-community')));
 	}
 
 	// Save settings
@@ -29,7 +29,7 @@ function cpc_ajax_save_group_forum_settings() {
 		update_post_meta($group_id, 'cpc_group_forum_visibility', $forum_visibility);
 	}
 
-	wp_send_json_success(array('message' => __('Forum-Einstellungen gespeichert!', CPC2_TEXT_DOMAIN)));
+	wp_send_json_success(array('message' => __('Forum-Einstellungen gespeichert!', 'cp-community')));
 }
 
 /**
@@ -40,24 +40,24 @@ function cpc_ajax_save_group_chat_settings() {
 	check_ajax_referer('cpc_groups_nonce', 'nonce');
 
 	if (!is_user_logged_in()) {
-		wp_send_json_error(array('message' => __('Du musst angemeldet sein.', CPC2_TEXT_DOMAIN)));
+		wp_send_json_error(array('message' => __('Du musst angemeldet sein.', 'cp-community')));
 	}
 
 	$group_id = isset($_POST['group_id']) ? intval($_POST['group_id']) : 0;
 	$enable_chat = isset($_POST['enable_chat']) ? (bool) $_POST['enable_chat'] : false;
 
 	if (!$group_id) {
-		wp_send_json_error(array('message' => __('Ungültige Gruppe.', CPC2_TEXT_DOMAIN)));
+		wp_send_json_error(array('message' => __('Ungültige Gruppe.', 'cp-community')));
 	}
 
 	// Check if user is group admin
 	if (!cpc_is_group_admin(get_current_user_id(), $group_id)) {
-		wp_send_json_error(array('message' => __('Keine Berechtigung.', CPC2_TEXT_DOMAIN)));
+		wp_send_json_error(array('message' => __('Keine Berechtigung.', 'cp-community')));
 	}
 
 	// Check if chats are enabled globally
 	if (!cpc_group_chats_enabled()) {
-		wp_send_json_error(array('message' => __('Gruppen-Chats sind nicht aktiviert.', CPC2_TEXT_DOMAIN)));
+		wp_send_json_error(array('message' => __('Gruppen-Chats sind nicht aktiviert.', 'cp-community')));
 	}
 
 	// Save enable/disable setting
@@ -80,7 +80,7 @@ function cpc_ajax_save_group_chat_settings() {
 		}
 	}
 
-	wp_send_json_success(array('message' => __('Chat-Einstellungen gespeichert!', CPC2_TEXT_DOMAIN)));
+	wp_send_json_success(array('message' => __('Chat-Einstellungen gespeichert!', 'cp-community')));
 }
 
 /**
@@ -91,18 +91,18 @@ function cpc_ajax_save_group_permissions() {
 	check_ajax_referer('cpc_groups_nonce', 'nonce');
 
 	if (!is_user_logged_in()) {
-		wp_send_json_error(array('message' => __('Du musst angemeldet sein.', CPC2_TEXT_DOMAIN)));
+		wp_send_json_error(array('message' => __('Du musst angemeldet sein.', 'cp-community')));
 	}
 
 	$group_id = isset($_POST['group_id']) ? intval($_POST['group_id']) : 0;
 	
 	if (!$group_id) {
-		wp_send_json_error(array('message' => __('Ungültige Gruppe.', CPC2_TEXT_DOMAIN)));
+		wp_send_json_error(array('message' => __('Ungültige Gruppe.', 'cp-community')));
 	}
 
 	// Check if user is group admin
 	if (!cpc_is_group_admin(get_current_user_id(), $group_id)) {
-		wp_send_json_error(array('message' => __('Keine Berechtigung.', CPC2_TEXT_DOMAIN)));
+		wp_send_json_error(array('message' => __('Keine Berechtigung.', 'cp-community')));
 	}
 
 	// Build permissions array from POST data
@@ -116,7 +116,7 @@ function cpc_ajax_save_group_permissions() {
 	// Save settings
 	update_post_meta($group_id, 'cpc_group_permissions', $permissions);
 
-	wp_send_json_success(array('message' => __('Berechtigungen gespeichert!', CPC2_TEXT_DOMAIN)));
+	wp_send_json_success(array('message' => __('Berechtigungen gespeichert!', 'cp-community')));
 }
 
 /**
@@ -127,7 +127,7 @@ function cpc_ajax_change_member_role() {
 	check_ajax_referer('cpc_groups_nonce', 'nonce');
 
 	if (!is_user_logged_in()) {
-		wp_send_json_error(array('message' => __('Du musst angemeldet sein.', CPC2_TEXT_DOMAIN)));
+		wp_send_json_error(array('message' => __('Du musst angemeldet sein.', 'cp-community')));
 	}
 
 	$group_id = isset($_POST['group_id']) ? intval($_POST['group_id']) : 0;
@@ -135,34 +135,34 @@ function cpc_ajax_change_member_role() {
 	$new_role = isset($_POST['new_role']) ? sanitize_text_field($_POST['new_role']) : 'member';
 
 	if (!$group_id || !$user_id) {
-		wp_send_json_error(array('message' => __('Ungültige Parameter.', CPC2_TEXT_DOMAIN)));
+		wp_send_json_error(array('message' => __('Ungültige Parameter.', 'cp-community')));
 	}
 
 	// Check if requester is group admin
 	if (!cpc_is_group_admin(get_current_user_id(), $group_id)) {
-		wp_send_json_error(array('message' => __('Keine Berechtigung.', CPC2_TEXT_DOMAIN)));
+		wp_send_json_error(array('message' => __('Keine Berechtigung.', 'cp-community')));
 	}
 
 	// Don't allow changing own role
 	if ($user_id == get_current_user_id()) {
-		wp_send_json_error(array('message' => __('Du kannst deine eigene Rolle nicht ändern.', CPC2_TEXT_DOMAIN)));
+		wp_send_json_error(array('message' => __('Du kannst deine eigene Rolle nicht ändern.', 'cp-community')));
 	}
 
 	// Validate role
 	$valid_roles = array('member', 'moderator', 'admin');
 	if (!in_array($new_role, $valid_roles)) {
-		wp_send_json_error(array('message' => __('Ungültige Rolle.', CPC2_TEXT_DOMAIN)));
+		wp_send_json_error(array('message' => __('Ungültige Rolle.', 'cp-community')));
 	}
 
 	// Find and update membership
 	$membership = cpc_get_group_membership($user_id, $group_id);
 	if (!$membership) {
-		wp_send_json_error(array('message' => __('Mitgliedschaft nicht gefunden.', CPC2_TEXT_DOMAIN)));
+		wp_send_json_error(array('message' => __('Mitgliedschaft nicht gefunden.', 'cp-community')));
 	}
 
 	update_post_meta($membership->ID, 'cpc_member_role', $new_role);
 
-	wp_send_json_success(array('message' => __('Rolle aktualisiert!', CPC2_TEXT_DOMAIN)));
+	wp_send_json_success(array('message' => __('Rolle aktualisiert!', 'cp-community')));
 }
 
 /**
@@ -173,24 +173,24 @@ function cpc_ajax_delete_group() {
 	check_ajax_referer('cpc_groups_nonce', 'nonce');
 
 	if (!is_user_logged_in()) {
-		wp_send_json_error(array('message' => __('Du musst angemeldet sein.', CPC2_TEXT_DOMAIN)));
+		wp_send_json_error(array('message' => __('Du musst angemeldet sein.', 'cp-community')));
 	}
 
 	$group_id = isset($_POST['group_id']) ? intval($_POST['group_id']) : 0;
 
 	if (!$group_id) {
-		wp_send_json_error(array('message' => __('Ungültige Gruppe.', CPC2_TEXT_DOMAIN)));
+		wp_send_json_error(array('message' => __('Ungültige Gruppe.', 'cp-community')));
 	}
 
 	// Check if user is group admin
 	if (!cpc_is_group_admin(get_current_user_id(), $group_id)) {
-		wp_send_json_error(array('message' => __('Keine Berechtigung.', CPC2_TEXT_DOMAIN)));
+		wp_send_json_error(array('message' => __('Keine Berechtigung.', 'cp-community')));
 	}
 
 	// Delete the group
 	wp_delete_post($group_id, true);
 
-	wp_send_json_success(array('message' => __('Gruppe gelöscht!', CPC2_TEXT_DOMAIN), 'redirect' => home_url()));
+	wp_send_json_success(array('message' => __('Gruppe gelöscht!', 'cp-community'), 'redirect' => home_url()));
 }
 
 /**
@@ -201,7 +201,7 @@ function cpc_ajax_approve_membership() {
 	check_ajax_referer('cpc_groups_nonce', 'nonce');
 
 	if (!is_user_logged_in()) {
-		wp_send_json_error(array('message' => __('Du musst angemeldet sein.', CPC2_TEXT_DOMAIN)));
+		wp_send_json_error(array('message' => __('Du musst angemeldet sein.', 'cp-community')));
 	}
 
 	$group_id = isset($_POST['group_id']) ? intval($_POST['group_id']) : 0;
@@ -209,12 +209,12 @@ function cpc_ajax_approve_membership() {
 	$user_id = isset($_POST['user_id']) ? intval($_POST['user_id']) : 0;
 
 	if (!$group_id || !$request_id || !$user_id) {
-		wp_send_json_error(array('message' => __('Ungültige Parameter.', CPC2_TEXT_DOMAIN)));
+		wp_send_json_error(array('message' => __('Ungültige Parameter.', 'cp-community')));
 	}
 
 	// Check if user is group admin
 	if (!cpc_is_group_admin(get_current_user_id(), $group_id)) {
-		wp_send_json_error(array('message' => __('Keine Berechtigung.', CPC2_TEXT_DOMAIN)));
+		wp_send_json_error(array('message' => __('Keine Berechtigung.', 'cp-community')));
 	}
 
 	// Update membership status
@@ -225,13 +225,13 @@ function cpc_ajax_approve_membership() {
 		$group = get_post($group_id);
 		cpc_add_alert(
 			$user_id,
-			sprintf(__('Deine Beitrittsanfrage für die Gruppe <a href="%s">%s</a> wurde genehmigt!', CPC2_TEXT_DOMAIN), get_permalink($group_id), $group->post_title),
+			sprintf(__('Deine Beitrittsanfrage für die Gruppe <a href="%s">%s</a> wurde genehmigt!', 'cp-community'), get_permalink($group_id), $group->post_title),
 			'group_approved',
 			$group_id
 		);
 	}
 
-	wp_send_json_success(array('message' => __('Anfrage genehmigt!', CPC2_TEXT_DOMAIN)));
+	wp_send_json_success(array('message' => __('Anfrage genehmigt!', 'cp-community')));
 }
 
 /**
@@ -242,23 +242,23 @@ function cpc_ajax_reject_membership() {
 	check_ajax_referer('cpc_groups_nonce', 'nonce');
 
 	if (!is_user_logged_in()) {
-		wp_send_json_error(array('message' => __('Du musst angemeldet sein.', CPC2_TEXT_DOMAIN)));
+		wp_send_json_error(array('message' => __('Du musst angemeldet sein.', 'cp-community')));
 	}
 
 	$group_id = isset($_POST['group_id']) ? intval($_POST['group_id']) : 0;
 	$request_id = isset($_POST['request_id']) ? intval($_POST['request_id']) : 0;
 
 	if (!$group_id || !$request_id) {
-		wp_send_json_error(array('message' => __('Ungültige Parameter.', CPC2_TEXT_DOMAIN)));
+		wp_send_json_error(array('message' => __('Ungültige Parameter.', 'cp-community')));
 	}
 
 	// Check if user is group admin
 	if (!cpc_is_group_admin(get_current_user_id(), $group_id)) {
-		wp_send_json_error(array('message' => __('Keine Berechtigung.', CPC2_TEXT_DOMAIN)));
+		wp_send_json_error(array('message' => __('Keine Berechtigung.', 'cp-community')));
 	}
 
 	// Delete the membership request
 	wp_delete_post($request_id, true);
 
-	wp_send_json_success(array('message' => __('Anfrage abgelehnt!', CPC2_TEXT_DOMAIN)));
+	wp_send_json_success(array('message' => __('Anfrage abgelehnt!', 'cp-community')));
 }

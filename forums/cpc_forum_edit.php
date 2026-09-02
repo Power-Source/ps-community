@@ -29,9 +29,9 @@ function cpc_post_delete($post_id, $atts) {
 		// Shortcode parameters
 		extract( shortcode_atts( array(
 			'class' => '',
-			'delete_msg' => __('Bist Du sicher, dass Du diesen Beitrag und alle Antworten löschen möchtest?', CPC2_TEXT_DOMAIN),
-			'delete_label' => __('Ja, lösche den Beitrag', CPC2_TEXT_DOMAIN),
-			'delete_cancel_label' => __('Nein', CPC2_TEXT_DOMAIN),
+			'delete_msg' => __('Bist Du sicher, dass Du diesen Beitrag und alle Antworten löschen möchtest?', 'cp-community'),
+			'delete_label' => __('Ja, lösche den Beitrag', 'cp-community'),
+			'delete_cancel_label' => __('Nein', 'cp-community'),
 		), $atts, 'cpc_forum_post' ) );
 
 		$html .= '<h2>'.$delete_msg.'</h2>';
@@ -89,9 +89,9 @@ function cpc_comment_delete($the_post, $atts) {
 		// Shortcode parameters
 		extract( shortcode_atts( array(
 			'class' => '',
-			'delete_comment_msg' => __('Bist Du sicher, dass Du dies löschen möchtest?', CPC2_TEXT_DOMAIN),
-			'delete_comment_label' => __('Ja, löschen', CPC2_TEXT_DOMAIN),
-			'delete_comment_cancel_label' => __('Nein', CPC2_TEXT_DOMAIN),
+			'delete_comment_msg' => __('Bist Du sicher, dass Du dies löschen möchtest?', 'cp-community'),
+			'delete_comment_label' => __('Ja, löschen', 'cp-community'),
+			'delete_comment_cancel_label' => __('Nein', 'cp-community'),
 		), $atts, 'cpc_forum_post' ) );
 
 		$html .= '<h2>'.$delete_comment_msg.'</h2>';
@@ -192,9 +192,9 @@ function cpc_post_edit($post_id, $atts) {
 			'class' => '',
 			'title_label' => 'Post title',
 			'content_label' => 'Post',
-			'update_label' => cpc_get_shortcode_value($values, 'cpc_forum-update_label', __('Aktualisieren', CPC2_TEXT_DOMAIN)),
-			'cancel_label' => cpc_get_shortcode_value($values, 'cpc_forum-cancel_label', __('Abbrechen', CPC2_TEXT_DOMAIN)),
-			'moderate_msg' => cpc_get_shortcode_value($values, 'cpc_forum-moderate_msg', __('Dein Beitrag erscheint, sobald er moderiert wurde.', CPC2_TEXT_DOMAIN)),
+			'update_label' => cpc_get_shortcode_value($values, 'cpc_forum-update_label', __('Aktualisieren', 'cp-community')),
+			'cancel_label' => cpc_get_shortcode_value($values, 'cpc_forum-cancel_label', __('Abbrechen', 'cp-community')),
+			'moderate_msg' => cpc_get_shortcode_value($values, 'cpc_forum-moderate_msg', __('Dein Beitrag erscheint, sobald er moderiert wurde.', 'cp-community')),
 			'moderate' => false,
 			'can_move_forum' => true,
 			'slug' => '',
@@ -270,7 +270,7 @@ function cpc_post_edit($post_id, $atts) {
 			if (!get_option('cpc_forum_sticky_admin_only') || $is_forum_admin):
 				$form_html .= '<input type="checkbox" name="cpc_sticky"';
 				if (get_post_meta($post_id, 'cpc_sticky', true)) $form_html .= ' CHECKED';
-				$form_html .= '> '.__('Am Anfang der Beiträge anheften?', CPC2_TEXT_DOMAIN);
+				$form_html .= '> '.__('Am Anfang der Beiträge anheften?', 'cp-community');
 			endif;
 
 		else:
@@ -308,7 +308,7 @@ function cpc_post_edit($post_id, $atts) {
 
 	else:
 
-		$html .= __('Keine Berechtigung zum Bearbeiten.', CPC2_TEXT_DOMAIN);
+		$html .= __('Keine Berechtigung zum Bearbeiten.', 'cp-community');
 
 	endif;
 
@@ -345,9 +345,9 @@ function cpc_comment_edit($comment_id, $atts) {
     	extract( shortcode_atts( array(
 			'class' => '',
 			'content_label' => '',
-			'update_label' => cpc_get_shortcode_value($values, 'cpc_forum-update_label', __('Aktualisieren', CPC2_TEXT_DOMAIN)),
-			'cancel_label' => cpc_get_shortcode_value($values, 'cpc_forum-cancel_label', __('Abbrechen', CPC2_TEXT_DOMAIN)),
-			'moderate_msg' => cpc_get_shortcode_value($values, 'cpc_forum-moderate_msg', __('Dein Beitrag erscheint, sobald er moderiert wurde.', CPC2_TEXT_DOMAIN)),
+			'update_label' => cpc_get_shortcode_value($values, 'cpc_forum-update_label', __('Aktualisieren', 'cp-community')),
+			'cancel_label' => cpc_get_shortcode_value($values, 'cpc_forum-cancel_label', __('Abbrechen', 'cp-community')),
+			'moderate_msg' => cpc_get_shortcode_value($values, 'cpc_forum-moderate_msg', __('Dein Beitrag erscheint, sobald er moderiert wurde.', 'cp-community')),
 			'moderate' => false,
 			'slug' => '',
 			'before' => '',
@@ -406,7 +406,7 @@ function cpc_comment_edit($comment_id, $atts) {
 
 	else:
 
-		$html .= __('Nicht der Kommentarbesitzer', CPC2_TEXT_DOMAIN);
+		$html .= __('Nicht der Kommentarbesitzer', 'cp-community');
 
 	endif;
 

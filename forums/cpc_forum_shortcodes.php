@@ -45,16 +45,16 @@ function cpc_forum_page($atts) {
 		'slug' => '',
         'style' => cpc_get_shortcode_value($values, 'cpc_forum_page-style', 'table'), // layout look and feel, table|classic
 		'show' => cpc_get_shortcode_value($values, 'cpc_forum_page-show', false),
-		'header_title' => cpc_get_shortcode_value($values, 'cpc_forum_page-header_title', __('Thema', CPC2_TEXT_DOMAIN)),
-		'header_count' => cpc_get_shortcode_value($values, 'cpc_forum_page-header_count', __('Antworten', CPC2_TEXT_DOMAIN)),
-		'header_last_activity' => cpc_get_shortcode_value($values, 'cpc_forum_page-header_last_activity', __('Letzte Aktivität', CPC2_TEXT_DOMAIN)),
+		'header_title' => cpc_get_shortcode_value($values, 'cpc_forum_page-header_title', __('Thema', 'cp-community')),
+		'header_count' => cpc_get_shortcode_value($values, 'cpc_forum_page-header_count', __('Antworten', 'cp-community')),
+		'header_last_activity' => cpc_get_shortcode_value($values, 'cpc_forum_page-header_last_activity', __('Letzte Aktivität', 'cp-community')),
 		'base_date' => cpc_get_shortcode_value($values, 'cpc_forum_page-base_date', 'post_date_gmt'),
         'styles' => true,
 	), $atts, 'cpc_forum_page' ) );
 
 	if ($slug == ''):
 
-		$html .= sprintf(__('Bitte füge slug="xxx" zum Shortcode hinzu, wobei xxx der <a href="%s">Slug des Forums</a> ist. Beispiel: [cpc-forum-page slug="my-general-forum"].', CPC2_TEXT_DOMAIN), admin_url('edit-tags.php?taxonomy=cpc_forum&post_type=cpc_forum_post'));
+		$html .= sprintf(__('Bitte füge slug="xxx" zum Shortcode hinzu, wobei xxx der <a href="%s">Slug des Forums</a> ist. Beispiel: [cpc-forum-page slug="my-general-forum"].', 'cp-community'), admin_url('edit-tags.php?taxonomy=cpc_forum&post_type=cpc_forum_post'));
 
 	else:
 
@@ -92,23 +92,23 @@ function cpc_forum_show_posts($atts) {
 		'include_comments' => cpc_get_shortcode_value($values, 'cpc_forum_show_posts-include_comments', false),
 		'include_closed' => cpc_get_shortcode_value($values, 'cpc_forum_show_posts-include_closed', true),
         'summary' => cpc_get_shortcode_value($values, 'cpc_forum_show_posts-summary', false),
-        'summary_format' => cpc_get_shortcode_value($values, 'cpc_forum_show_posts-summary_format', __('%s %s %s %s vor %s', CPC2_TEXT_DOMAIN)), // eg: [robert] [replied to] [This topic] [5 mins] ago [the snippet]
-        'summary_started' => cpc_get_shortcode_value($values, 'cpc_forum_show_posts-summary_started', __('gestartet', CPC2_TEXT_DOMAIN)),
-        'summary_replied' => cpc_get_shortcode_value($values, 'cpc_forum_show_posts-summary_replied', __('geantwortet auf', CPC2_TEXT_DOMAIN)),
-        'summary_commented' => cpc_get_shortcode_value($values, 'cpc_forum_show_posts-summary_commented', __('kommentiert zu', CPC2_TEXT_DOMAIN)),
+        'summary_format' => cpc_get_shortcode_value($values, 'cpc_forum_show_posts-summary_format', __('%s %s %s %s vor %s', 'cp-community')), // eg: [robert] [replied to] [This topic] [5 mins] ago [the snippet]
+        'summary_started' => cpc_get_shortcode_value($values, 'cpc_forum_show_posts-summary_started', __('gestartet', 'cp-community')),
+        'summary_replied' => cpc_get_shortcode_value($values, 'cpc_forum_show_posts-summary_replied', __('geantwortet auf', 'cp-community')),
+        'summary_commented' => cpc_get_shortcode_value($values, 'cpc_forum_show_posts-summary_commented', __('kommentiert zu', 'cp-community')),
         'summary_title_length' => cpc_get_shortcode_value($values, 'cpc_forum_show_posts-summary_title_length', 150),
         'summary_snippet_length' => cpc_get_shortcode_value($values, 'cpc_forum_show_posts-summary_snippet_length', 50),
         'summary_avatar_size' => cpc_get_shortcode_value($values, 'cpc_forum_show_posts-summary_avatar_size', 32),
         'summary_show_unread' => cpc_get_shortcode_value($values, 'cpc_forum_show_posts-summary_show_unread', true),
-		'closed_prefix' => cpc_get_shortcode_value($values, 'cpc_forum_show_posts-closed_prefix', __('geschlossen', CPC2_TEXT_DOMAIN)),
+		'closed_prefix' => cpc_get_shortcode_value($values, 'cpc_forum_show_posts-closed_prefix', __('geschlossen', 'cp-community')),
 		'show_author' => cpc_get_shortcode_value($values, 'cpc_forum_show_posts-show_author', true),
-		'author_format' => cpc_get_shortcode_value($values, 'cpc_forum_show_posts-author_format', __('Von %s', CPC2_TEXT_DOMAIN)),
+		'author_format' => cpc_get_shortcode_value($values, 'cpc_forum_show_posts-author_format', __('Von %s', 'cp-community')),
 		'author_link' => cpc_get_shortcode_value($values, 'cpc_forum_show_posts-author_link', true),
 		'show_date' => cpc_get_shortcode_value($values, 'cpc_forum_show_posts-show_date', true),
-		'date_format' => cpc_get_shortcode_value($values, 'cpc_forum_show_posts-date_format', __('vor %s', CPC2_TEXT_DOMAIN)),
+		'date_format' => cpc_get_shortcode_value($values, 'cpc_forum_show_posts-date_format', __('vor %s', 'cp-community')),
 		'show_snippet' => cpc_get_shortcode_value($values, 'cpc_forum_show_posts-show_snippet', true),
-		'more_link' => cpc_get_shortcode_value($values, 'cpc_forum_show_posts-more_link', __('lesen', CPC2_TEXT_DOMAIN)),
-		'no_posts' => cpc_get_shortcode_value($values, 'cpc_forum_show_posts-no_posts', __('Keine Beiträge', CPC2_TEXT_DOMAIN)),
+		'more_link' => cpc_get_shortcode_value($values, 'cpc_forum_show_posts-more_link', __('lesen', 'cp-community')),
+		'no_posts' => cpc_get_shortcode_value($values, 'cpc_forum_show_posts-no_posts', __('Keine Beiträge', 'cp-community')),
 		'title_length' => cpc_get_shortcode_value($values, 'cpc_forum_show_posts-title_length', 50),
 		'snippet_length' => cpc_get_shortcode_value($values, 'cpc_forum_show_posts-snippet_length', 30),
 		'base_date' => cpc_get_shortcode_value($values, 'cpc_forum_show_posts-base_date', 'post_date_gmt'),
@@ -124,7 +124,7 @@ function cpc_forum_show_posts($atts) {
         'new_item' => cpc_get_shortcode_value($values, 'cpc_forum-new_item', true),
         'new_seconds' => cpc_get_shortcode_value($values, 'cpc_forum-new_seconds', 259200),
         'new_item_read' => cpc_get_shortcode_value($values, 'cpc_forum-new_item_read', true),
-        'new_item_label' => cpc_get_shortcode_value($values, 'cpc_forum-new_item_label', __('NEU!', CPC2_TEXT_DOMAIN)),
+        'new_item_label' => cpc_get_shortcode_value($values, 'cpc_forum-new_item_label', __('NEU!', 'cp-community')),
 	), $atts, 'cpc_forum' ) );
     
 	$forum_posts = array();
@@ -553,7 +553,7 @@ function cpc_forum_backto($atts) {
         $values = cpc_get_shortcode_options('cpc_forum_backto');    
 		extract( shortcode_atts( array(
 			'slug' => '',
-			'label' => cpc_get_shortcode_value($values, 'cpc_forum_backto-label', __('Zurück zu %s...', CPC2_TEXT_DOMAIN)),
+			'label' => cpc_get_shortcode_value($values, 'cpc_forum_backto-label', __('Zurück zu %s...', 'cp-community')),
 			'before' => '',
 			'styles' => true,
             'after' => '',
@@ -561,7 +561,7 @@ function cpc_forum_backto($atts) {
 
 		if ($slug == ''):
 
-			$html .= __('Bitte füge slug="xxx" zum Shortcode hinzu, wobei xxx der Slug des Forums ist.', CPC2_TEXT_DOMAIN);
+			$html .= __('Bitte füge slug="xxx" zum Shortcode hinzu, wobei xxx der Slug des Forums ist.', 'cp-community');
 
 		else:
 
@@ -611,22 +611,22 @@ function cpc_forum_comment($atts) {
 		extract( shortcode_atts( array(
 			'class' => cpc_get_shortcode_value($values, 'cpc_forum_comment-class', ''),
 			'content_label' => cpc_get_shortcode_value($values, 'cpc_forum_comment-content_label', ''),
-			'label' => cpc_get_shortcode_value($values, 'cpc_forum_comment-label', __('Antwort hinzufügen', CPC2_TEXT_DOMAIN)),
+			'label' => cpc_get_shortcode_value($values, 'cpc_forum_comment-label', __('Antwort hinzufügen', 'cp-community')),
 			'private_msg' => cpc_get_shortcode_value($values, 'cpc_forum_comment-private_msg', ''),
-			'locked_msg' => cpc_get_shortcode_value($values, 'cpc_forum_comment-locked_msg', __('Dieses Forum ist gesperrt. Neue Beiträge und Antworten sind nicht erlaubt.', CPC2_TEXT_DOMAIN).' '),
-            'no_permission_msg' => cpc_get_shortcode_value($values, 'cpc_forum_comment-no_permission_msg', __('Du hast keine Berechtigung, in diesem Forum zu antworten.', CPC2_TEXT_DOMAIN)),
+			'locked_msg' => cpc_get_shortcode_value($values, 'cpc_forum_comment-locked_msg', __('Dieses Forum ist gesperrt. Neue Beiträge und Antworten sind nicht erlaubt.', 'cp-community').' '),
+            'no_permission_msg' => cpc_get_shortcode_value($values, 'cpc_forum_comment-no_permission_msg', __('Du hast keine Berechtigung, in diesem Forum zu antworten.', 'cp-community')),
 			'moderate' => cpc_get_shortcode_value($values, 'cpc_forum_comment-moderate', false),
 			'show' => cpc_get_shortcode_value($values, 'cpc_forum_comment-show', true),
-			'moderate_msg' => cpc_get_shortcode_value($values, 'cpc_forum_comment-moderate_msg', __('Dein Kommentar erscheint, sobald er moderiert wurde.', CPC2_TEXT_DOMAIN)),
+			'moderate_msg' => cpc_get_shortcode_value($values, 'cpc_forum_comment-moderate_msg', __('Dein Kommentar erscheint, sobald er moderiert wurde.', 'cp-community')),
 			'allow_close' => cpc_get_shortcode_value($values, 'cpc_forum_comment-allow_close', true),
-			'close_msg' => cpc_get_shortcode_value($values, 'cpc_forum_comment-close_msg', __('Klicke hier, um diesen Beitrag zu schließen', CPC2_TEXT_DOMAIN)),
-			'comments_closed_msg' => cpc_get_shortcode_value($values, 'cpc_forum_comment-comments_closed_msg', __('Dieser Beitrag ist geschlossen.', CPC2_TEXT_DOMAIN)),
-			'reopen_label' => cpc_get_shortcode_value($values, 'cpc_forum_comment-reopen_label', __('Öffne diesen Beitrag erneut', CPC2_TEXT_DOMAIN)),
+			'close_msg' => cpc_get_shortcode_value($values, 'cpc_forum_comment-close_msg', __('Klicke hier, um diesen Beitrag zu schließen', 'cp-community')),
+			'comments_closed_msg' => cpc_get_shortcode_value($values, 'cpc_forum_comment-comments_closed_msg', __('Dieser Beitrag ist geschlossen.', 'cp-community')),
+			'reopen_label' => cpc_get_shortcode_value($values, 'cpc_forum_comment-reopen_label', __('Öffne diesen Beitrag erneut', 'cp-community')),
             'allow_one' => cpc_get_shortcode_value($values, 'cpc_forum_comment-allow_one', false),
-			'allow_one_msg' => cpc_get_shortcode_value($values, 'cpc_forum_comment-allow_one_msg', __('Du kannst in diesem Forum nur einmal antworten.', CPC2_TEXT_DOMAIN)),
+			'allow_one_msg' => cpc_get_shortcode_value($values, 'cpc_forum_comment-allow_one_msg', __('Du kannst in diesem Forum nur einmal antworten.', 'cp-community')),
             'allow_private' => cpc_get_shortcode_value($values, 'cpc_forum_comment-allow_private', 'disabled'),
-            'private_reply_check_msg' => cpc_get_shortcode_value($values, 'cpc_forum_comment-private_reply_check_msg', __('Antwort nur mit %s teilen', CPC2_TEXT_DOMAIN)),
-			'show_in_label' => cpc_get_shortcode_value($values, 'cpc_forum_comment-show_in_label', __('Zeigen in:', CPC2_TEXT_DOMAIN)),
+            'private_reply_check_msg' => cpc_get_shortcode_value($values, 'cpc_forum_comment-private_reply_check_msg', __('Antwort nur mit %s teilen', 'cp-community')),
+			'show_in_label' => cpc_get_shortcode_value($values, 'cpc_forum_comment-show_in_label', __('Zeigen in:', 'cp-community')),
 			'slug' => '',
 			'before' => '',
 			'styles' => true,
@@ -635,7 +635,7 @@ function cpc_forum_comment($atts) {
 
         if ($slug == ''):
 
-			$html .= __('Bitte füge slug="xxx" zum Shortcode hinzu, wobei xxx der Slug des Forums ist.', CPC2_TEXT_DOMAIN);
+			$html .= __('Bitte füge slug="xxx" zum Shortcode hinzu, wobei xxx der Slug des Forums ist.', 'cp-community');
 
 		else:
     
@@ -651,7 +651,7 @@ function cpc_forum_comment($atts) {
 						if ($the_post):
 							$post_slug = $the_post->post_name;
 						else:
-							$html .= '<div class="cpc_error">'.__('Forumbeitrag mit topic_id konnte nicht gefunden werden', CPC2_TEXT_DOMAIN).'</div>';
+							$html .= '<div class="cpc_error">'.__('Forumbeitrag mit topic_id konnte nicht gefunden werden', 'cp-community').'</div>';
 						endif;
 					endif;
 
@@ -869,12 +869,12 @@ function cpc_forum_post($atts) {
         $values = cpc_get_shortcode_options('cpc_forum_post');    
 		extract( shortcode_atts( array(
 			'class' => cpc_get_shortcode_value($values, 'cpc_forum_post-class', ''), // layout look and feel, table|classic
-			'title_label' => cpc_get_shortcode_value($values, 'cpc_forum_post-title_label', __('Titel des Beitrags', CPC2_TEXT_DOMAIN)),
-			'post_to_label' => cpc_get_shortcode_value($values, 'cpc_forum_post-post_to_label', __('Post an', CPC2_TEXT_DOMAIN)),
-			'content_label' => cpc_get_shortcode_value($values, 'cpc_forum_post-content_label', __('Post', CPC2_TEXT_DOMAIN)),
-			'label' => cpc_get_shortcode_value($values, 'cpc_forum_post-label', __('Add Topic', CPC2_TEXT_DOMAIN)),
-			'moderate_msg' => cpc_get_shortcode_value($values, 'cpc_forum_post-moderate_msg', __('Dein Beitrag erscheint, sobald er moderiert wurde.', CPC2_TEXT_DOMAIN)),
-			'locked_msg' => cpc_get_shortcode_value($values, 'cpc_forum_post-locked_msg', __('Dieses Forum ist gesperrt. Neue Beiträge und Antworten sind nicht erlaubt.', CPC2_TEXT_DOMAIN)),
+			'title_label' => cpc_get_shortcode_value($values, 'cpc_forum_post-title_label', __('Titel des Beitrags', 'cp-community')),
+			'post_to_label' => cpc_get_shortcode_value($values, 'cpc_forum_post-post_to_label', __('Post an', 'cp-community')),
+			'content_label' => cpc_get_shortcode_value($values, 'cpc_forum_post-content_label', __('Post', 'cp-community')),
+			'label' => cpc_get_shortcode_value($values, 'cpc_forum_post-label', __('Add Topic', 'cp-community')),
+			'moderate_msg' => cpc_get_shortcode_value($values, 'cpc_forum_post-moderate_msg', __('Dein Beitrag erscheint, sobald er moderiert wurde.', 'cp-community')),
+			'locked_msg' => cpc_get_shortcode_value($values, 'cpc_forum_post-locked_msg', __('Dieses Forum ist gesperrt. Neue Beiträge und Antworten sind nicht erlaubt.', 'cp-community')),
 			'private_msg' => cpc_get_shortcode_value($values, 'cpc_forum_post-private_msg', ''),
 			'moderate' => cpc_get_shortcode_value($values, 'cpc_forum_post-moderate', false),
             'multiline' => cpc_get_shortcode_value($values, 'cpc_forum_post-multiline', 0), // set to number of lines
@@ -887,7 +887,7 @@ function cpc_forum_post($atts) {
 
 		if ($slug == ''):
 
-			$html .= __('Bitte füge slug="xxx" zum Shortcode hinzu, wobei xxx der Slug des Forums ist, oder slug="choose", damit Benutzer auswählen können, in welchem Forum sie posten möchten.', CPC2_TEXT_DOMAIN);
+			$html .= __('Bitte füge slug="xxx" zum Shortcode hinzu, wobei xxx der Slug des Forums ist, oder slug="choose", damit Benutzer auswählen können, in welchem Forum sie posten möchten.', 'cp-community');
 
 		else:
     
@@ -1071,66 +1071,66 @@ function cpc_forum($atts) {
 		'show_last_activity' => cpc_get_shortcode_value($values, 'cpc_forum-show_last_activity', true),
 		'show_comments_count' => cpc_get_shortcode_value($values, 'cpc_forum-show_comments_count', true),
         // classic...
-        'started' => cpc_get_shortcode_value($values, 'cpc_forum-started', __('Gestartet von %s %s', CPC2_TEXT_DOMAIN)),
-        'replied' => cpc_get_shortcode_value($values, 'cpc_forum-replied', __('Zuletzt geantwortet von %s %s', CPC2_TEXT_DOMAIN)),
-        'commented' => cpc_get_shortcode_value($values, 'cpc_forum-commented', __('Zuletzt kommentiert von %s %s', CPC2_TEXT_DOMAIN)),
+        'started' => cpc_get_shortcode_value($values, 'cpc_forum-started', __('Gestartet von %s %s', 'cp-community')),
+        'replied' => cpc_get_shortcode_value($values, 'cpc_forum-replied', __('Zuletzt geantwortet von %s %s', 'cp-community')),
+        'commented' => cpc_get_shortcode_value($values, 'cpc_forum-commented', __('Zuletzt kommentiert von %s %s', 'cp-community')),
         'size_posts' => cpc_get_shortcode_value($values, 'cpc_forum-size_posts', 96),
         'size_replies' => cpc_get_shortcode_value($values, 'cpc_forum-size_replies', 48),
         'post_preview' => cpc_get_shortcode_value($values, 'cpc_forum-post_preview', 250),
         'reply_preview' => cpc_get_shortcode_value($values, 'cpc_forum-reply_preview', 120),
-        'view_count_label' => cpc_get_shortcode_value($values, 'cpc_forum-view_count_label', __('ANSEHEN', CPC2_TEXT_DOMAIN)),
-        'views_count_label' => cpc_get_shortcode_value($values, 'cpc_forum-views_count_label', __('ANSICHTEN', CPC2_TEXT_DOMAIN)),
-        'reply_count_label' => cpc_get_shortcode_value($values, 'cpc_forum-reply_count_label', __('ANTWORT', CPC2_TEXT_DOMAIN)),
-        'replies_count_label' => cpc_get_shortcode_value($values, 'cpc_forum-replies_count_label', __('ANTWORTEN', CPC2_TEXT_DOMAIN)),
+        'view_count_label' => cpc_get_shortcode_value($values, 'cpc_forum-view_count_label', __('ANSEHEN', 'cp-community')),
+        'views_count_label' => cpc_get_shortcode_value($values, 'cpc_forum-views_count_label', __('ANSICHTEN', 'cp-community')),
+        'reply_count_label' => cpc_get_shortcode_value($values, 'cpc_forum-reply_count_label', __('ANTWORT', 'cp-community')),
+        'replies_count_label' => cpc_get_shortcode_value($values, 'cpc_forum-replies_count_label', __('ANTWORTEN', 'cp-community')),
         // all layout options...   
         'topic_action' => cpc_get_shortcode_value($values, 'cpc_forum-topic_action', ''),
         'new_item' => cpc_get_shortcode_value($values, 'cpc_forum-new_item', true),
         'new_seconds' => cpc_get_shortcode_value($values, 'cpc_forum-new_seconds', 259200),        
         'new_item_read' => cpc_get_shortcode_value($values, 'cpc_forum-new_item_read', true),
-        'new_item_label' => cpc_get_shortcode_value($values, 'cpc_forum-new_item_label', __('NEU!', CPC2_TEXT_DOMAIN)),
-        'reply_comment_none' => cpc_get_shortcode_value($values, 'cpc_forum-reply_comment_none', __('Keine Antworten', CPC2_TEXT_DOMAIN)),
-        'reply_comment_one' => cpc_get_shortcode_value($values, 'cpc_forum-reply_comment_none', __('1 Antwort', CPC2_TEXT_DOMAIN)),
-        'reply_comment_multiple' => cpc_get_shortcode_value($values, 'cpc_forum-reply_comment_none', __('%d Antworten', CPC2_TEXT_DOMAIN)),
-        'reply_comment_one_comment' => cpc_get_shortcode_value($values, 'cpc_forum-reply_comment_none', __('und 1 Kommentar', CPC2_TEXT_DOMAIN)),
-        'reply_comment_multiple_comments' => cpc_get_shortcode_value($values, 'cpc_forum-reply_comment_none', __('und %d Kommentare', CPC2_TEXT_DOMAIN)),        
+        'new_item_label' => cpc_get_shortcode_value($values, 'cpc_forum-new_item_label', __('NEU!', 'cp-community')),
+        'reply_comment_none' => cpc_get_shortcode_value($values, 'cpc_forum-reply_comment_none', __('Keine Antworten', 'cp-community')),
+        'reply_comment_one' => cpc_get_shortcode_value($values, 'cpc_forum-reply_comment_none', __('1 Antwort', 'cp-community')),
+        'reply_comment_multiple' => cpc_get_shortcode_value($values, 'cpc_forum-reply_comment_none', __('%d Antworten', 'cp-community')),
+        'reply_comment_one_comment' => cpc_get_shortcode_value($values, 'cpc_forum-reply_comment_none', __('und 1 Kommentar', 'cp-community')),
+        'reply_comment_multiple_comments' => cpc_get_shortcode_value($values, 'cpc_forum-reply_comment_none', __('und %d Kommentare', 'cp-community')),        
         'pagination_posts' => cpc_get_shortcode_value($values, 'cpc_forum-pagination_posts', true),
         'pagination_top_posts' => cpc_get_shortcode_value($values, 'cpc_forum-pagination_top_posts', true),
         'pagination_bottom_posts' => cpc_get_shortcode_value($values, 'cpc_forum-pagination_bottom_posts', true),
         'page_size_posts' => cpc_get_shortcode_value($values, 'cpc_forum-page_size_posts', 10),
-        'pagination_first_posts' => cpc_get_shortcode_value($values, 'cpc_forum-pagination_first_posts', __('Erste', CPC2_TEXT_DOMAIN)),
-        'pagination_previous_posts' => cpc_get_shortcode_value($values, 'cpc_forum-pagination_previous_posts', __('Vorherige', CPC2_TEXT_DOMAIN)),
-        'pagination_next_posts' => cpc_get_shortcode_value($values, 'cpc_forum-pagination_next_posts', __('Nächste', CPC2_TEXT_DOMAIN)),
-        'page_x_of_y_posts' => cpc_get_shortcode_value($values, 'cpc_forum-page_x_of_y_posts', __('Auf Seite %d von %d', CPC2_TEXT_DOMAIN)),            
+        'pagination_first_posts' => cpc_get_shortcode_value($values, 'cpc_forum-pagination_first_posts', __('Erste', 'cp-community')),
+        'pagination_previous_posts' => cpc_get_shortcode_value($values, 'cpc_forum-pagination_previous_posts', __('Vorherige', 'cp-community')),
+        'pagination_next_posts' => cpc_get_shortcode_value($values, 'cpc_forum-pagination_next_posts', __('Nächste', 'cp-community')),
+        'page_x_of_y_posts' => cpc_get_shortcode_value($values, 'cpc_forum-page_x_of_y_posts', __('Auf Seite %d von %d', 'cp-community')),            
         'max_pages_posts' => cpc_get_shortcode_value($values, 'cpc_forum-max_pages_posts', 10), // maximum number of pages        
         'max_posts_no_pagination_posts' => cpc_get_shortcode_value($values, 'cpc_forum-max_posts_no_pagination_posts', 100), // maximum number of posts if pagination disabled
-        'reply_comment_none' => cpc_get_shortcode_value($values, 'cpc_forum-reply_comment_none', __('Keine Antworten', CPC2_TEXT_DOMAIN)),
-        'reply_comment_one' => cpc_get_shortcode_value($values, 'cpc_forum-reply_comment_one', __('1 Antwort', CPC2_TEXT_DOMAIN)),
-        'reply_comment_multiple' => cpc_get_shortcode_value($values, 'cpc_forum-reply_comment_multiple', __('%d Antworten', CPC2_TEXT_DOMAIN)),
-        'reply_comment_one_comment' => cpc_get_shortcode_value($values, 'cpc_forum-reply_comment_one_comment', __('und 1 Kommentar', CPC2_TEXT_DOMAIN)),
-        'reply_comment_multiple_comments' => cpc_get_shortcode_value($values, 'cpc_forum-reply_comment_multiple_comments', __('und %d Kommentare', CPC2_TEXT_DOMAIN)),                
+        'reply_comment_none' => cpc_get_shortcode_value($values, 'cpc_forum-reply_comment_none', __('Keine Antworten', 'cp-community')),
+        'reply_comment_one' => cpc_get_shortcode_value($values, 'cpc_forum-reply_comment_one', __('1 Antwort', 'cp-community')),
+        'reply_comment_multiple' => cpc_get_shortcode_value($values, 'cpc_forum-reply_comment_multiple', __('%d Antworten', 'cp-community')),
+        'reply_comment_one_comment' => cpc_get_shortcode_value($values, 'cpc_forum-reply_comment_one_comment', __('und 1 Kommentar', 'cp-community')),
+        'reply_comment_multiple_comments' => cpc_get_shortcode_value($values, 'cpc_forum-reply_comment_multiple_comments', __('und %d Kommentare', 'cp-community')),                
         'forum_admins' => cpc_get_shortcode_value($values, 'cpc_forum-forum_admins', ''),      
         'title_length' => cpc_get_shortcode_value($values, 'cpc_forum-title_length', 150),      
 		'show_originator' => cpc_get_shortcode_value($values, 'cpc_forum-show_originator', true),
-		'originator' => cpc_get_shortcode_value($values, 'cpc_forum-originator', __(' von %s', CPC2_TEXT_DOMAIN)),
+		'originator' => cpc_get_shortcode_value($values, 'cpc_forum-originator', __(' von %s', 'cp-community')),
 		'parent' => 0,
 		'status' => cpc_get_shortcode_value($values, 'cpc_forum-status', ''), // open|closed (ie. post comment_status, default to all, ie. '')
 		'closed_switch' => cpc_get_shortcode_value($values, 'cpc_forum-closed_switch', ''), // default state, on|off or '' to not show - if logged in and not '', user choice is saved
-		'closed_switch_msg' => cpc_get_shortcode_value($values, 'cpc_forum-closed_switch_msg', __('Schließe geschlossene Beiträge ein', CPC2_TEXT_DOMAIN)),
-		'private_msg' => cpc_get_shortcode_value($values, 'cpc_forum-private_msg', __('Du musst angemeldet sein, um dieses Forum anzuzeigen.', CPC2_TEXT_DOMAIN)),
+		'closed_switch_msg' => cpc_get_shortcode_value($values, 'cpc_forum-closed_switch_msg', __('Schließe geschlossene Beiträge ein', 'cp-community')),
+		'private_msg' => cpc_get_shortcode_value($values, 'cpc_forum-private_msg', __('Du musst angemeldet sein, um dieses Forum anzuzeigen.', 'cp-community')),
 		'login_url' => cpc_get_shortcode_value($values, 'cpc_forum-login_url', ''),
-		'secure_msg' => cpc_get_shortcode_value($values, 'cpc_forum-secure_msg', __('Du hast keine Berechtigung, dieses Forum anzuzeigen.', CPC2_TEXT_DOMAIN)),
-		'secure_post_msg' => cpc_get_shortcode_value($values, 'cpc_forum-secure_post_msg', __('Du hast keine Berechtigung, diesen Beitrag anzuzeigen.', CPC2_TEXT_DOMAIN)),
-		'empty_msg' => cpc_get_shortcode_value($values, 'cpc_forum-empty_msg', __('Keine Forumbeiträge.', CPC2_TEXT_DOMAIN)),
-        'post_deleted' => cpc_get_shortcode_value($values, 'cpc_forum-post_deleted', __('Beitrag gelöscht.', CPC2_TEXT_DOMAIN)),
-		'pending' => cpc_get_shortcode_value($values, 'cpc_forum-pending', '('.__('ausstehend', CPC2_TEXT_DOMAIN).')'),
-		'comment_pending' => cpc_get_shortcode_value($values, 'cpc_forum-comment_pending', '('.__('ausstehend', CPC2_TEXT_DOMAIN).')'),
-		'closed_prefix' => cpc_get_shortcode_value($values, 'cpc_forum-closed_prefix', __('geschlossen', CPC2_TEXT_DOMAIN)),
-		'header_title' => cpc_get_shortcode_value($values, 'cpc_forum-header_title', __('Thema', CPC2_TEXT_DOMAIN)),
-		'header_count' => cpc_get_shortcode_value($values, 'cpc_forum-header_count', __('Antworten', CPC2_TEXT_DOMAIN)),
-		'header_last_activity' => cpc_get_shortcode_value($values, 'cpc_forum-header_last_activity', __('Letzte Aktivität', CPC2_TEXT_DOMAIN)),
-		'header_freshness' => cpc_get_shortcode_value($values, 'cpc_forum-header_freshness', __('Wann', CPC2_TEXT_DOMAIN)),
-		'moved_to' => cpc_get_shortcode_value($values, 'cpc_forum-moved_to', __('%s wurde erfolgreich nach %s verschoben', CPC2_TEXT_DOMAIN)),
-		'date_format' => cpc_get_shortcode_value($values, 'cpc_forum-date_format', __('vor %s', CPC2_TEXT_DOMAIN)),
+		'secure_msg' => cpc_get_shortcode_value($values, 'cpc_forum-secure_msg', __('Du hast keine Berechtigung, dieses Forum anzuzeigen.', 'cp-community')),
+		'secure_post_msg' => cpc_get_shortcode_value($values, 'cpc_forum-secure_post_msg', __('Du hast keine Berechtigung, diesen Beitrag anzuzeigen.', 'cp-community')),
+		'empty_msg' => cpc_get_shortcode_value($values, 'cpc_forum-empty_msg', __('Keine Forumbeiträge.', 'cp-community')),
+        'post_deleted' => cpc_get_shortcode_value($values, 'cpc_forum-post_deleted', __('Beitrag gelöscht.', 'cp-community')),
+		'pending' => cpc_get_shortcode_value($values, 'cpc_forum-pending', '('.__('ausstehend', 'cp-community').')'),
+		'comment_pending' => cpc_get_shortcode_value($values, 'cpc_forum-comment_pending', '('.__('ausstehend', 'cp-community').')'),
+		'closed_prefix' => cpc_get_shortcode_value($values, 'cpc_forum-closed_prefix', __('geschlossen', 'cp-community')),
+		'header_title' => cpc_get_shortcode_value($values, 'cpc_forum-header_title', __('Thema', 'cp-community')),
+		'header_count' => cpc_get_shortcode_value($values, 'cpc_forum-header_count', __('Antworten', 'cp-community')),
+		'header_last_activity' => cpc_get_shortcode_value($values, 'cpc_forum-header_last_activity', __('Letzte Aktivität', 'cp-community')),
+		'header_freshness' => cpc_get_shortcode_value($values, 'cpc_forum-header_freshness', __('Wann', 'cp-community')),
+		'moved_to' => cpc_get_shortcode_value($values, 'cpc_forum-moved_to', __('%s wurde erfolgreich nach %s verschoben', 'cp-community')),
+		'date_format' => cpc_get_shortcode_value($values, 'cpc_forum-date_format', __('vor %s', 'cp-community')),
 		'enable_timeout' => cpc_get_shortcode_value($values, 'cpc_forum-enable_timeout', true),
 		'timeout' => cpc_get_shortcode_value($values, 'cpc_forum-timeout', 120),
 		'count' => cpc_get_shortcode_value($values, 'cpc_forum-count', 0),
@@ -1141,21 +1141,21 @@ function cpc_forum($atts) {
 		'pagination_top' => cpc_get_shortcode_value($values, 'cpc_forum-pagination_top', true),
 		'pagination_bottom' => cpc_get_shortcode_value($values, 'cpc_forum-pagination_bottom', true),
 		'page_size' => cpc_get_shortcode_value($values, 'cpc_forum-page_size', 10),
-        'pagination_first' => cpc_get_shortcode_value($values, 'cpc_forum-pagination_first', __('Erste', CPC2_TEXT_DOMAIN)),        
-		'pagination_previous' => cpc_get_shortcode_value($values, 'cpc_forum-pagination_previous', __('Vorherige', CPC2_TEXT_DOMAIN)),
-		'pagination_next' => cpc_get_shortcode_value($values, 'cpc_forum-pagination_next', __('Nächste', CPC2_TEXT_DOMAIN)),
-		'page_x_of_y' => cpc_get_shortcode_value($values, 'cpc_forum-page_x_of_y', __('Auf Seite %d von %d', CPC2_TEXT_DOMAIN)),
+        'pagination_first' => cpc_get_shortcode_value($values, 'cpc_forum-pagination_first', __('Erste', 'cp-community')),        
+		'pagination_previous' => cpc_get_shortcode_value($values, 'cpc_forum-pagination_previous', __('Vorherige', 'cp-community')),
+		'pagination_next' => cpc_get_shortcode_value($values, 'cpc_forum-pagination_next', __('Nächste', 'cp-community')),
+		'page_x_of_y' => cpc_get_shortcode_value($values, 'cpc_forum-page_x_of_y', __('Auf Seite %d von %d', 'cp-community')),
 		'replies_order' => cpc_get_shortcode_value($values, 'cpc_forum-replies_order', 'ASC'),
         'report' => cpc_get_shortcode_value($values, 'cpc_forum-report', true),
-        'report_label' => cpc_get_shortcode_value($values, 'cpc_forum-report_label', __('Melden', CPC2_TEXT_DOMAIN)), 
+        'report_label' => cpc_get_shortcode_value($values, 'cpc_forum-report_label', __('Melden', 'cp-community')), 
         'report_email' => cpc_get_shortcode_value($values, 'cpc_forum-report_email', get_bloginfo('admin_email')), 
 		'hide_initial' => cpc_get_shortcode_value($values, 'cpc_forum-hide_initial', false),
 		'show_comments' => cpc_get_shortcode_value($values, 'cpc_forum-show_comments', true), // Whether comments are shown
 		'show_comment_form' => cpc_get_shortcode_value($values, 'cpc_forum-show_comment_form', true), // Default state of comment textarea
 		'allow_comments' => cpc_get_shortcode_value($values, 'cpc_forum-allow_comments', true), // Whether new comments are allowed
-		'comment_add_label' => cpc_get_shortcode_value($values, 'cpc_forum-comment_add_label', __('Einen Kommentar hinzufügen', CPC2_TEXT_DOMAIN)),
+		'comment_add_label' => cpc_get_shortcode_value($values, 'cpc_forum-comment_add_label', __('Einen Kommentar hinzufügen', 'cp-community')),
 		'comment_class' => cpc_get_shortcode_value($values, 'cpc_forum-comment_class', ''), // Class for comments button
-        'private_reply_msg' => cpc_get_shortcode_value($values, 'cpc_forum-private_reply_msg', __('PRIVATE ANTWORT', CPC2_TEXT_DOMAIN)),
+        'private_reply_msg' => cpc_get_shortcode_value($values, 'cpc_forum-private_reply_msg', __('PRIVATE ANTWORT', 'cp-community')),
         'reply_icon' => cpc_get_shortcode_value($values, 'cpc_forum-reply_icon', true),
 		'base_date' => cpc_get_shortcode_value($values, 'cpc_forum-base_date', 'post_date_gmt'),
 		'comment_base_date' => cpc_get_shortcode_value($values, 'cpc_forum-comment_base_date', 'comment_date_gmt'),
@@ -1169,7 +1169,7 @@ function cpc_forum($atts) {
         
 	if ($slug == ''):
 
-		$html .= __('Bitte füge slug="xxx" zum Shortcode [cpc-forum] hinzu, wobei xxx der Slug des Forums ist. Beispiel: [cpc-forum slug="my-general-forum"].', CPC2_TEXT_DOMAIN);
+		$html .= __('Bitte füge slug="xxx" zum Shortcode [cpc-forum] hinzu, wobei xxx der Slug des Forums ist. Beispiel: [cpc-forum slug="my-general-forum"].', 'cp-community');
 
 	else:
     
@@ -1187,7 +1187,7 @@ function cpc_forum($atts) {
 	        if (user_can_see_forum($current_user->ID, $term->term_id) || current_user_can('manage_options')):
 
 	            if (current_user_can('manage_options') && !$login_url && function_exists('cpc_login_init')):
-	                $html = cpc_admin_tip($html, 'cpc_forum_login', __('Füge login_url="/example" zum Shortcode [cpc-forum] hinzu, damit sich Benutzer anmelden und hierher zurückleiten können, wenn sie nicht angemeldet sind, und das Forum als privat festgelegt wird.', CPC2_TEXT_DOMAIN));
+	                $html = cpc_admin_tip($html, 'cpc_forum_login', __('Füge login_url="/example" zum Shortcode [cpc-forum] hinzu, damit sich Benutzer anmelden und hierher zurückleiten können, wenn sie nicht angemeldet sind, und das Forum als privat festgelegt wird.', 'cp-community'));
 	            endif;   
 
 	            if (isset($_GET['forum_action']) && isset($_GET['comment_id'])) {
@@ -1275,7 +1275,7 @@ function cpc_forum($atts) {
 
 		else:
 
-			$html .= '<div class="cpc_error">'.sprintf(__('Forum (%s) existiert nicht.', CPC2_TEXT_DOMAIN), $slug).'</div>';
+			$html .= '<div class="cpc_error">'.sprintf(__('Forum (%s) existiert nicht.', 'cp-community'), $slug).'</div>';
 
 		endif;
 
@@ -1303,16 +1303,16 @@ function cpc_forum_children($atts) {
         'show_count' => cpc_get_shortcode_value($values, 'cpc_forum_children-show_count', true),
         'show_last_activity' => cpc_get_shortcode_value($values, 'cpc_forum_children-show_last_activity', true),
         'show_freshness' => cpc_get_shortcode_value($values, 'cpc_forum_children-show_freshness', true),
-		'forum_title' => cpc_get_shortcode_value($values, 'cpc_forum_children-forum_title', __('Kind-Forum', CPC2_TEXT_DOMAIN)),
-		'forum_count' => cpc_get_shortcode_value($values, 'cpc_forum_children-forum_count', __('Themen', CPC2_TEXT_DOMAIN)),
-		'forum_last_activity' => cpc_get_shortcode_value($values, 'cpc_forum_children-forum_last_activity', __('Letzter Poster', CPC2_TEXT_DOMAIN)),		
-		'forum_freshness' => cpc_get_shortcode_value($values, 'cpc_forum_children-forum_freshness', __('Neueste', CPC2_TEXT_DOMAIN)),		
+		'forum_title' => cpc_get_shortcode_value($values, 'cpc_forum_children-forum_title', __('Kind-Forum', 'cp-community')),
+		'forum_count' => cpc_get_shortcode_value($values, 'cpc_forum_children-forum_count', __('Themen', 'cp-community')),
+		'forum_last_activity' => cpc_get_shortcode_value($values, 'cpc_forum_children-forum_last_activity', __('Letzter Poster', 'cp-community')),		
+		'forum_freshness' => cpc_get_shortcode_value($values, 'cpc_forum_children-forum_freshness', __('Neueste', 'cp-community')),		
 	    'link' => cpc_get_shortcode_value($values, 'cpc_forum_children-link', true),		
 		'base_date' => cpc_get_shortcode_value($values, 'cpc_forum_children-base_date', 'post_date_gmt'),
 	    'show_child_posts' => cpc_get_shortcode_value($values, 'cpc_forum_children-show_child_posts', false),		
-		'child_posts_count' => cpc_get_shortcode_value($values, 'cpc_forum_children-child_posts_count', __('Antworten', CPC2_TEXT_DOMAIN)),
-		'child_posts_last_activity' => cpc_get_shortcode_value($values, 'cpc_forum_children-child_posts_last_activity', __('Letzter Poster', CPC2_TEXT_DOMAIN)),		
-		'child_posts_freshness' => cpc_get_shortcode_value($values, 'cpc_forum_children-child_posts_freshness', __('Neueste', CPC2_TEXT_DOMAIN)),		
+		'child_posts_count' => cpc_get_shortcode_value($values, 'cpc_forum_children-child_posts_count', __('Antworten', 'cp-community')),
+		'child_posts_last_activity' => cpc_get_shortcode_value($values, 'cpc_forum_children-child_posts_last_activity', __('Letzter Poster', 'cp-community')),		
+		'child_posts_freshness' => cpc_get_shortcode_value($values, 'cpc_forum_children-child_posts_freshness', __('Neueste', 'cp-community')),		
 		'child_posts_max' => cpc_get_shortcode_value($values, 'cpc_forum_children-child_posts_max', 3),		
 		'slug' => '',
 		'before' => '',
@@ -1322,7 +1322,7 @@ function cpc_forum_children($atts) {
 
 	if ($slug == ''):
 
-		$html .= '<div class="cpc_error">'.__('Bitte füge slug="xxx" zum Shortcode hinzu, wobei xxx der Slug des übergeordneten Forums ist.', CPC2_TEXT_DOMAIN).'</div>';
+		$html .= '<div class="cpc_error">'.__('Bitte füge slug="xxx" zum Shortcode hinzu, wobei xxx der Slug des übergeordneten Forums ist.', 'cp-community').'</div>';
 
 	else:
 
@@ -1419,7 +1419,7 @@ function cpc_forum_children($atts) {
 			                            $user = get_user_by('id', $post->post_author);
 			                            $author = $user->display_name;
 			                            $date = $base_date == 'post_date_gmt' ? $post->post_date_gmt : $post->post_date;
-			                            $created = sprintf(__('vor %s', CPC2_TEXT_DOMAIN), human_time_diff(strtotime($date), current_time('timestamp', 1)), CPC2_TEXT_DOMAIN);
+			                            $created = sprintf(__('vor %s', 'cp-community'), human_time_diff(strtotime($date), current_time('timestamp', 1)), 'cp-community');
 			                        endif;
 			                        // Get count of comments if needed
 			                        if (true):
@@ -1434,7 +1434,7 @@ function cpc_forum_children($atts) {
 
 				                                        $comment_author = $user->display_name;
 				                                        $comment_date = $base_date == 'post_date_gmt' ? $comment->comment_date_gmt : $comment->comment_date;
-				                                        $comment_created = sprintf(__('vor %s', CPC2_TEXT_DOMAIN), human_time_diff(strtotime($comment_date), current_time('timestamp', 1)), CPC2_TEXT_DOMAIN);
+				                                        $comment_created = sprintf(__('vor %s', 'cp-community'), human_time_diff(strtotime($comment_date), current_time('timestamp', 1)), 'cp-community');
 				                                        if ($comment_date > $date):
 				                                            $author = $comment_author;
 				                                            $date = $comment_date;
@@ -1584,11 +1584,11 @@ function cpc_forums($atts) {
 		'parent' => 0,
         'show_children' 	=> cpc_get_shortcode_value($values, 'cpc_forums-show_children', false),
 		'show_as_dropdown' 	=> cpc_get_shortcode_value($values, 'cpc_forums-show_as_dropdown', false),
-		'show_as_dropdown_text' => cpc_get_shortcode_value($values, 'cpc_forums-show_as_dropdown_text', __('Schneller Sprung zum Forum...', CPC2_TEXT_DOMAIN)),		
-		'forum_title' => cpc_get_shortcode_value($values, 'cpc_forums-forum_title', __('Forum', CPC2_TEXT_DOMAIN)),
-		'forum_count' => cpc_get_shortcode_value($values, 'cpc_forums-forum_count', __('Zähler', CPC2_TEXT_DOMAIN)),
-		'forum_last_activity' => cpc_get_shortcode_value($values, 'cpc_forums-forum_last_activity', __('Letzter Poster', CPC2_TEXT_DOMAIN)),		
-		'forum_freshness' => cpc_get_shortcode_value($values, 'cpc_forums-forum_freshness', __('Neueste', CPC2_TEXT_DOMAIN)),		
+		'show_as_dropdown_text' => cpc_get_shortcode_value($values, 'cpc_forums-show_as_dropdown_text', __('Schneller Sprung zum Forum...', 'cp-community')),		
+		'forum_title' => cpc_get_shortcode_value($values, 'cpc_forums-forum_title', __('Forum', 'cp-community')),
+		'forum_count' => cpc_get_shortcode_value($values, 'cpc_forums-forum_count', __('Zähler', 'cp-community')),
+		'forum_last_activity' => cpc_get_shortcode_value($values, 'cpc_forums-forum_last_activity', __('Letzter Poster', 'cp-community')),		
+		'forum_freshness' => cpc_get_shortcode_value($values, 'cpc_forums-forum_freshness', __('Neueste', 'cp-community')),		
 		'show_header' => cpc_get_shortcode_value($values, 'cpc_forums-show_header', false),
         'show_closed' => cpc_get_shortcode_value($values, 'cpc_forums-show_closed', true),
         'show_count' => cpc_get_shortcode_value($values, 'cpc_forums-show_count', true),
@@ -1652,9 +1652,9 @@ function cpc_forum_categories_children($html, $values, $slug, $forum_id, $show_c
         'no_indent'         => cpc_get_shortcode_value($values, 'cpc_forums-no_indent', true),        
         'level_0_links'     => cpc_get_shortcode_value($values, 'cpc_forums-level_0_links', true),        
 	    'title_length'		=> (int)cpc_get_shortcode_value($values, 'cpc_forums-title_length', 50),
-		'header_title' => cpc_get_shortcode_value($values, 'cpc_forums-header_title', __('Thema', CPC2_TEXT_DOMAIN)),
-		'header_count' => cpc_get_shortcode_value($values, 'cpc_forums-header_count', __('Antworten', CPC2_TEXT_DOMAIN)),
-		'header_last_activity' => cpc_get_shortcode_value($values, 'cpc_forums-header_last_activity', __('Letzte Aktivität', CPC2_TEXT_DOMAIN)),
+		'header_title' => cpc_get_shortcode_value($values, 'cpc_forums-header_title', __('Thema', 'cp-community')),
+		'header_count' => cpc_get_shortcode_value($values, 'cpc_forums-header_count', __('Antworten', 'cp-community')),
+		'header_last_activity' => cpc_get_shortcode_value($values, 'cpc_forums-header_last_activity', __('Letzte Aktivität', 'cp-community')),
         'featured_image_width' => cpc_get_shortcode_value($values, 'cpc_forums-featured_image_width', 0),
 		'base_date' => cpc_get_shortcode_value($values, 'cpc_forums-base_date', 'post_date_gmt'),
 	), $atts, 'cpc_forums_children' ) );
@@ -1726,13 +1726,13 @@ function cpc_forum_categories_children($html, $values, $slug, $forum_id, $show_c
                     else:
                         $post_date = cpc_get_term_meta($forum['term_id'], 'cpc_last_post_created', true);
                     endif;
-                    $created = sprintf(__('vor %s', CPC2_TEXT_DOMAIN), human_time_diff(strtotime($post_date), current_time('timestamp', 1)), CPC2_TEXT_DOMAIN);
+                    $created = sprintf(__('vor %s', 'cp-community'), human_time_diff(strtotime($post_date), current_time('timestamp', 1)), 'cp-community');
                     $last_post_author = cpc_get_term_meta($forum['term_id'], 'cpc_last_post_author', true);
                     $user = get_user_by('id', $last_post_author);
                     if ($user):
                         $author = $user->display_name;
                     else:
-                        $author = __('Kein Benutzer gefunden', CPC2_TEXT_DOMAIN);
+                        $author = __('Kein Benutzer gefunden', 'cp-community');
                     endif;
 
                     // now check for latest reply
@@ -1745,13 +1745,13 @@ function cpc_forum_categories_children($html, $values, $slug, $forum_id, $show_c
                         endif;
                         // ... is this later than the last post?
                         if (strtotime($comment_date) > strtotime($post_date)):
-                            $created = sprintf(__('%s ago', CPC2_TEXT_DOMAIN), human_time_diff(strtotime($comment_date), current_time('timestamp', 1)), CPC2_TEXT_DOMAIN);
+                            $created = sprintf(__('%s ago', 'cp-community'), human_time_diff(strtotime($comment_date), current_time('timestamp', 1)), 'cp-community');
                             $last_reply_author = cpc_get_term_meta($forum['term_id'], 'cpc_last_reply_author', true);
                             $user = get_user_by('id', $last_reply_author);
                             if ($user):
                                 $author = $user->display_name;
                             else:
-                                $author = __('Kein Benutzer gefunden', CPC2_TEXT_DOMAIN);
+                                $author = __('Kein Benutzer gefunden', 'cp-community');
                             endif;                            
                         endif;
 
@@ -1790,7 +1790,7 @@ function cpc_forum_categories_children($html, $values, $slug, $forum_id, $show_c
                                 $user = get_user_by('id', $post->post_author);
                                 $author = $user->display_name;
                                 $date = $base_date == 'post_date_gmt' ? $post->post_date_gmt : $post->post_date;
-                                $created = sprintf(__('%s ago', CPC2_TEXT_DOMAIN), human_time_diff(strtotime($date), current_time('timestamp', 1)), CPC2_TEXT_DOMAIN);
+                                $created = sprintf(__('%s ago', 'cp-community'), human_time_diff(strtotime($date), current_time('timestamp', 1)), 'cp-community');
                             endif;
                             $comment_count++; // add count of post itself
                             // Get count of comments if needed
@@ -1811,7 +1811,7 @@ function cpc_forum_categories_children($html, $values, $slug, $forum_id, $show_c
 
                                                 $comment_author = $user->display_name;
                                                 $comment_date = $base_date == 'post_date_gmt' ? $comment->comment_date_gmt : $comment->comment_date;
-                                                $comment_created = sprintf(__('%s ago', CPC2_TEXT_DOMAIN), human_time_diff(strtotime($comment_date), current_time('timestamp', 1)), CPC2_TEXT_DOMAIN);
+                                                $comment_created = sprintf(__('%s ago', 'cp-community'), human_time_diff(strtotime($comment_date), current_time('timestamp', 1)), 'cp-community');
                                                 if ($comment_date > $date):
                                                     $author = $comment_author;
                                                     $date = $comment_date;
@@ -1968,7 +1968,7 @@ function cpc_forum_sharethis_insert($atts) {
 
 	if ($slug == ''):
 
-		return sprintf(__('Bitte füge slug="xxx" zum Shortcode hinzu, wobei xxx der <a href="%s">Slug des Forums</a> ist.', CPC2_TEXT_DOMAIN), admin_url('edit-tags.php?taxonomy=cpc_forum&post_type=cpc_forum_post'));
+		return sprintf(__('Bitte füge slug="xxx" zum Shortcode hinzu, wobei xxx der <a href="%s">Slug des Forums</a> ist.', 'cp-community'), admin_url('edit-tags.php?taxonomy=cpc_forum&post_type=cpc_forum_post'));
 
 	else:
 
@@ -2044,7 +2044,7 @@ function cpc_forum_toggle_accepted_answer($comment_id, $action, $current_user_id
 	if (!$comment || (int)$comment->comment_parent !== 0 || $comment->comment_approved != 1) {
 		return array(
 			'ok' => false,
-			'message' => __('Antwort konnte nicht als akzeptiert markiert werden.', CPC2_TEXT_DOMAIN),
+			'message' => __('Antwort konnte nicht als akzeptiert markiert werden.', 'cp-community'),
 		);
 	}
 
@@ -2052,7 +2052,7 @@ function cpc_forum_toggle_accepted_answer($comment_id, $action, $current_user_id
 	if (!$post || $post->post_type !== 'cpc_forum_post') {
 		return array(
 			'ok' => false,
-			'message' => __('Ungültiger Forumsbeitrag.', CPC2_TEXT_DOMAIN),
+			'message' => __('Ungültiger Forumsbeitrag.', 'cp-community'),
 		);
 	}
 
@@ -2060,7 +2060,7 @@ function cpc_forum_toggle_accepted_answer($comment_id, $action, $current_user_id
 	if (!$can_manage) {
 		return array(
 			'ok' => false,
-			'message' => __('Du hast keine Berechtigung für diese Aktion.', CPC2_TEXT_DOMAIN),
+			'message' => __('Du hast keine Berechtigung für diese Aktion.', 'cp-community'),
 		);
 	}
 
@@ -2075,7 +2075,7 @@ function cpc_forum_toggle_accepted_answer($comment_id, $action, $current_user_id
 
 		return array(
 			'ok' => true,
-			'message' => __('Antwort wurde als akzeptiert markiert.', CPC2_TEXT_DOMAIN),
+			'message' => __('Antwort wurde als akzeptiert markiert.', 'cp-community'),
 		);
 	}
 
@@ -2087,13 +2087,13 @@ function cpc_forum_toggle_accepted_answer($comment_id, $action, $current_user_id
 
 		return array(
 			'ok' => true,
-			'message' => __('Akzeptierte Antwort wurde entfernt.', CPC2_TEXT_DOMAIN),
+			'message' => __('Akzeptierte Antwort wurde entfernt.', 'cp-community'),
 		);
 	}
 
 	return array(
 		'ok' => false,
-		'message' => __('Unbekannte Aktion.', CPC2_TEXT_DOMAIN),
+		'message' => __('Unbekannte Aktion.', 'cp-community'),
 	);
 }
 
@@ -2107,7 +2107,7 @@ function cpc_forum_unanswered($atts) {
 		'days' => cpc_get_shortcode_value($values, 'cpc_forum_unanswered-days', 30),
 		'max' => cpc_get_shortcode_value($values, 'cpc_forum_unanswered-max', 10),
 		'show_count' => cpc_get_shortcode_value($values, 'cpc_forum_unanswered-show_count', true),
-		'empty' => cpc_get_shortcode_value($values, 'cpc_forum_unanswered-empty', __('Keine unbeantworteten Themen gefunden.', CPC2_TEXT_DOMAIN)),
+		'empty' => cpc_get_shortcode_value($values, 'cpc_forum_unanswered-empty', __('Keine unbeantworteten Themen gefunden.', 'cp-community')),
 		'before' => '',
 		'after' => '',
 		'styles' => true,
@@ -2165,7 +2165,7 @@ function cpc_forum_unanswered($atts) {
 			$html .= '<div class="cpc_forum_unanswered_item">';
 			$html .= '<a href="'.esc_url(get_permalink($post_id)).'">'.esc_html(get_the_title()).'</a>';
 			if ($show_count) {
-				$html .= ' <span class="cpc_forum_unanswered_count">('.intval($replies).' '.__('Antworten', CPC2_TEXT_DOMAIN).')</span>';
+				$html .= ' <span class="cpc_forum_unanswered_count">('.intval($replies).' '.__('Antworten', 'cp-community').')</span>';
 			}
 			$html .= '</div>';
 
@@ -2201,11 +2201,11 @@ function cpc_forum_experts($atts) {
 		'days' => cpc_get_shortcode_value($values, 'cpc_forum_experts-days', 30),
 		'max' => cpc_get_shortcode_value($values, 'cpc_forum_experts-max', 10),
 		'show_rank' => cpc_get_shortcode_value($values, 'cpc_forum_experts-show_rank', true),
-		'rank_newbie' => cpc_get_shortcode_value($values, 'cpc_forum_experts-rank_newbie', __('Rookie', CPC2_TEXT_DOMAIN)),
-		'rank_helper' => cpc_get_shortcode_value($values, 'cpc_forum_experts-rank_helper', __('Helper', CPC2_TEXT_DOMAIN)),
-		'rank_pro' => cpc_get_shortcode_value($values, 'cpc_forum_experts-rank_pro', __('Pro', CPC2_TEXT_DOMAIN)),
-		'rank_master' => cpc_get_shortcode_value($values, 'cpc_forum_experts-rank_master', __('Master', CPC2_TEXT_DOMAIN)),
-		'empty' => cpc_get_shortcode_value($values, 'cpc_forum_experts-empty', __('Noch keine Experten-Daten verfügbar.', CPC2_TEXT_DOMAIN)),
+		'rank_newbie' => cpc_get_shortcode_value($values, 'cpc_forum_experts-rank_newbie', __('Rookie', 'cp-community')),
+		'rank_helper' => cpc_get_shortcode_value($values, 'cpc_forum_experts-rank_helper', __('Helper', 'cp-community')),
+		'rank_pro' => cpc_get_shortcode_value($values, 'cpc_forum_experts-rank_pro', __('Pro', 'cp-community')),
+		'rank_master' => cpc_get_shortcode_value($values, 'cpc_forum_experts-rank_master', __('Master', 'cp-community')),
+		'empty' => cpc_get_shortcode_value($values, 'cpc_forum_experts-empty', __('Noch keine Experten-Daten verfügbar.', 'cp-community')),
 		'before' => '',
 		'after' => '',
 		'styles' => true,
@@ -2269,7 +2269,7 @@ function cpc_forum_experts($atts) {
 
 			$html .= '<div class="cpc_forum_expert_item">';
 			$html .= '<span class="cpc_forum_expert_user">'.$display_name.'</span>';
-			$html .= ' <span class="cpc_forum_expert_score">'.sprintf(__('%d akzeptierte Antworten', CPC2_TEXT_DOMAIN), $count).'</span>';
+			$html .= ' <span class="cpc_forum_expert_score">'.sprintf(__('%d akzeptierte Antworten', 'cp-community'), $count).'</span>';
 			if ($rank_label) {
 				$html .= ' <span class="cpc_forum_expert_rank">['.esc_html($rank_label).']</span>';
 			}

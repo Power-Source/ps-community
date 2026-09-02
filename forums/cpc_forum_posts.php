@@ -183,7 +183,7 @@ if ($forum_posts):
         if( file_exists($file) ):
             include($file);
         else:
-            $html .= sprintf(__('Die Forumdatei existiert nicht (%s).', CPC2_TEXT_DOMAIN), $file);
+            $html .= sprintf(__('Die Forumdatei existiert nicht (%s).', 'cp-community'), $file);
         endif;
 
         // pagination, if enabled
@@ -194,7 +194,7 @@ if ($forum_posts):
         endif;
 
     else:
-        $html .= sprintf(__('Ungültige style-Option für Forum-Shortcode (%s).', CPC2_TEXT_DOMAIN), $style);
+        $html .= sprintf(__('Ungültige style-Option für Forum-Shortcode (%s).', 'cp-community'), $style);
     endif;
 
 else:

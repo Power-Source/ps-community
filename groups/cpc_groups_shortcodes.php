@@ -12,6 +12,54 @@ function cpc_groups_init() {
         'nonce' => wp_create_nonce('cpc_groups_nonce'),
         'is_admin' => current_user_can('manage_options'),
         'user_id' => get_current_user_id(),
+		'i18n' => array(
+			'groupNotFound' => __('Gruppe nicht gefunden.', 'cp-community'),
+			'emptyActivity' => __('Bitte schreibe etwas oder füge Medien hinzu, bevor du postest.', 'cp-community'),
+			'posting' => __('Wird gepostet...', 'cp-community'),
+			'post' => __('Posten', 'cp-community'),
+			'postActivityError' => __('Fehler beim Posten der Aktivität', 'cp-community'),
+			'cancel' => __('Abbrechen', 'cp-community'),
+			'addReply' => __('Antwort hinzufügen', 'cp-community'),
+			'emptyReply' => __('Bitte schreibe etwas als Antwort', 'cp-community'),
+			'sending' => __('Wird gesendet...', 'cp-community'),
+			'replyPosted' => __('Antwort erfolgreich gepostet!', 'cp-community'),
+			'reply' => __('Antworten', 'cp-community'),
+			'postReplyError' => __('Fehler beim Posten der Antwort', 'cp-community'),
+			'saving' => __('Speichern...', 'cp-community'),
+			'save' => __('Speichern', 'cp-community'),
+			'saveError' => __('Fehler beim Speichern', 'cp-community'),
+			'emptyContent' => __('Bitte gib einen Inhalt ein', 'cp-community'),
+			'confirmDeletePost' => __('Möchtest du diesen Beitrag wirklich löschen?', 'cp-community'),
+			'confirmDeleteReply' => __('Möchtest du diese Antwort wirklich löschen?', 'cp-community'),
+			'deleteError' => __('Fehler beim Löschen', 'cp-community'),
+			'processing' => __('Wird verarbeitet...', 'cp-community'),
+			'pending' => __('Ausstehend', 'cp-community'),
+			'leaveGroup' => __('Gruppe verlassen', 'cp-community'),
+			'joinGroup' => __('Beitreten', 'cp-community'),
+			'genericRetryError' => __('Ein Fehler ist aufgetreten. Bitte versuche es erneut.', 'cp-community'),
+			'confirmLeaveGroup' => __('Möchtest du diese Gruppe wirklich verlassen?', 'cp-community'),
+			'creating' => __('Wird erstellt...', 'cp-community'),
+			'createGroup' => __('Gruppe erstellen', 'cp-community'),
+			'genericError' => __('Ein Fehler ist aufgetreten.', 'cp-community'),
+			'confirmRemoveMember' => __('Möchtest du dieses Mitglied wirklich entfernen?', 'cp-community'),
+			'confirmApproveRequest' => __('Möchtest du diese Beitrittanfrage wirklich annehmen?', 'cp-community'),
+			'confirmRejectRequest' => __('Möchtest du diese Beitrittanfrage wirklich ablehnen?', 'cp-community'),
+			'noPendingRequests' => __('Keine ausstehenden Beitrittanfragen.', 'cp-community'),
+			'processRequestError' => __('Fehler beim Verarbeiten der Anfrage', 'cp-community'),
+			'saveChanges' => __('Änderungen speichern', 'cp-community'),
+			'saveSettingsError' => __('Fehler beim Speichern der Einstellungen', 'cp-community'),
+			'saveForumSettings' => __('Forum-Einstellungen speichern', 'cp-community'),
+			'saveForumSettingsError' => __('Fehler beim Speichern der Forum-Einstellungen', 'cp-community'),
+			'saveModules' => __('Module speichern', 'cp-community'),
+			'saveModulesError' => __('Fehler beim Speichern der Modul-Einstellungen', 'cp-community'),
+			/* translators: %s: New group role. */
+			'confirmRoleChange' => __('Rolle wirklich zu "%s" ändern?', 'cp-community'),
+			'roleChangeError' => __('Fehler beim Ändern der Rolle', 'cp-community'),
+			'loadInviteDialogError' => __('Fehler beim Laden des Einladungsdialogs', 'cp-community'),
+			'selectFriend' => __('Bitte mindestens einen Freund auswählen.', 'cp-community'),
+			'invitationsSent' => __('Einladungen gesendet.', 'cp-community'),
+			'sendInvitationsError' => __('Fehler beim Senden der Einladungen', 'cp-community'),
+		),
     ) );		
     wp_enqueue_style('cpc-groups-css', plugins_url('cpc_groups.css', __FILE__), array(), '1.0');
 
@@ -20,6 +68,16 @@ function cpc_groups_init() {
 	wp_localize_script( 'cpc-groups-settings-js', 'cpc_groups_settings', array( 
 		'ajaxurl' => admin_url( 'admin-ajax.php' ),
 		'nonce' => wp_create_nonce('cpc_groups_nonce'),
+		'i18n' => array(
+			'confirmChangeRole' => __('Rolle für Mitglied wirklich ändern?', 'cp-community'),
+			'confirmDeleteGroup' => __('Willst du diese Gruppe wirklich löschen? Dies kann nicht rückgängig gemacht werden.', 'cp-community'),
+			'confirmDeleteAgain' => __('Bist du dir wirklich sicher?', 'cp-community'),
+			'confirmRejectRequest' => __('Anfrage wirklich ablehnen?', 'cp-community'),
+			'genericError' => __('Ein Fehler ist aufgetreten.', 'cp-community'),
+			'errorPrefix' => __('Fehler: ', 'cp-community'),
+			'unknownError' => __('Unbekannter Fehler', 'cp-community'),
+			'chatSaveError' => __('Chat-Einstellungen konnten nicht gespeichert werden.', 'cp-community'),
+		),
 	) );
 
     // Load Activity Plus assets if enabled (for group activity forms)
@@ -37,6 +95,17 @@ function cpc_groups_init() {
             'activity_post_focus' => get_option('cpccom_activity_set_focus'),
             'nonce' => wp_create_nonce('cpc-activity-nonce'),
             'activity_plus' => $activity_plus,
+			'i18n' => array(
+				'saved' => __('Gespeichert', 'cp-community'),
+				'saveFailed' => __('Speichern fehlgeschlagen', 'cp-community'),
+				'networkError' => __('Netzwerkfehler', 'cp-community'),
+				'previous' => __('&lsaquo; zurück', 'cp-community'),
+				'next' => __('weiter &rsaquo;', 'cp-community'),
+				'noPreview' => __('Keine Vorschau', 'cp-community'),
+				'unsupportedVideo' => __('Video-Format wird nicht unterstützt', 'cp-community'),
+				'tabLoadFailed' => __('Tab-Inhalt konnte nicht geladen werden.', 'cp-community'),
+				'close' => __('Schließen', 'cp-community'),
+			),
         ));
     }
 
@@ -118,7 +187,7 @@ function cpc_groups_get_dynamic_styles() {
  */
 function cpc_groups_list($atts) {
 	if (!function_exists('cpc_groups_init')) {
-		return '<p class="cpc-error">' . __('Gruppen-Modul nicht geladen.', CPC2_TEXT_DOMAIN) . '</p>';
+		return '<p class="cpc-error">' . __('Gruppen-Modul nicht geladen.', 'cp-community') . '</p>';
 	}
 	
 	// Init
@@ -158,7 +227,7 @@ function cpc_groups_list($atts) {
 	if (is_user_logged_in() && get_option('cpc_groups_allow_creation', 1)):
 		$create_page = get_option('cpccom_group_create_page');
 		if ($create_page):
-			$html .= '<a href="'.get_permalink($create_page).'" class="cpc-btn-create-group">'.__('+ Neue Gruppe erstellen', CPC2_TEXT_DOMAIN).'</a>';
+			$html .= '<a href="'.get_permalink($create_page).'" class="cpc-btn-create-group">'.__('+ Neue Gruppe erstellen', 'cp-community').'</a>';
 		endif;
 	endif;
 
@@ -166,8 +235,8 @@ function cpc_groups_list($atts) {
 	if ($search && ($search == true || $search == '1' || $search == 'true' || $search == 'on')):
 		$search_term = isset($_GET['group_search']) ? sanitize_text_field($_GET['group_search']) : '';
 		$html .= '<form method="get" action="" class="cpc-groups-search-form">';
-		$html .= '<input type="text" class="cpc-groups-search-input" name="group_search" placeholder="'.__('Gruppen durchsuchen...', CPC2_TEXT_DOMAIN).'" value="'.esc_attr($search_term).'" />';
-		$html .= '<input type="submit" class="cpc-groups-search-submit" value="'.__('Suchen', CPC2_TEXT_DOMAIN).'" />';
+		$html .= '<input type="text" class="cpc-groups-search-input" name="group_search" placeholder="'.__('Gruppen durchsuchen...', 'cp-community').'" value="'.esc_attr($search_term).'" />';
+		$html .= '<input type="submit" class="cpc-groups-search-submit" value="'.__('Suchen', 'cp-community').'" />';
 		$html .= '</form>';
 	endif;
 
@@ -236,7 +305,7 @@ function cpc_groups_list($atts) {
 			$html .= '<div class="cpc-group-meta">';
 			$html .= '<span class="cpc-group-type-badge">'.cpc_get_group_type_label($group_type).'</span>';
 			if ($show_member_count):
-				$html .= '<span class="cpc-group-members">'.$member_count.' '._n('Mitglied', 'Mitglieder', $member_count, CPC2_TEXT_DOMAIN).'</span>';
+				$html .= '<span class="cpc-group-members">'.$member_count.' '._n('Mitglied', 'Mitglieder', $member_count, 'cp-community').'</span>';
 			endif;
 			$html .= '</div>';
 
@@ -248,9 +317,9 @@ function cpc_groups_list($atts) {
 			if ($show_join_button && is_user_logged_in()):
 				$is_member = cpc_is_group_member(get_current_user_id(), $group->ID, $current_blog_id);
 				if ($is_member):
-					$html .= '<a href="#" class="cpc-group-leave-btn" data-group-id="'.$group->ID.'">'.__('Gruppe verlassen', CPC2_TEXT_DOMAIN).'</a>';
+					$html .= '<a href="#" class="cpc-group-leave-btn" data-group-id="'.$group->ID.'">'.__('Gruppe verlassen', 'cp-community').'</a>';
 				else:
-					$html .= '<a href="#" class="cpc-group-join-btn" data-group-id="'.$group->ID.'">'.__('Gruppe beitreten', CPC2_TEXT_DOMAIN).'</a>';
+					$html .= '<a href="#" class="cpc-group-join-btn" data-group-id="'.$group->ID.'">'.__('Gruppe beitreten', 'cp-community').'</a>';
 				endif;
 			endif;
 
@@ -259,7 +328,7 @@ function cpc_groups_list($atts) {
 		endforeach;
 		$html .= '</div>'; // .cpc-groups-grid
 	else:
-		$html .= '<p class="cpc-no-groups">'.__('Keine Gruppen gefunden.', CPC2_TEXT_DOMAIN).'</p>';
+		$html .= '<p class="cpc-no-groups">'.__('Keine Gruppen gefunden.', 'cp-community').'</p>';
 	endif;
 
 	$html .= '</div>'; // .cpc-groups-list
@@ -312,7 +381,7 @@ function cpc_group_single($atts) {
 		endif;
 	endif;
 	if (!$group_id):
-		return '<p>'.__('Gruppe nicht gefunden.', CPC2_TEXT_DOMAIN).'</p>';
+		return '<p>'.__('Gruppe nicht gefunden.', 'cp-community').'</p>';
 	endif;
 
 	$placeholder_svg = '<svg xmlns="http://www.w3.org/2000/svg" width="120" height="120" viewBox="0 0 120 120"><rect fill="#dbeafe" width="120" height="120"/><text x="50%" y="55%" font-size="28" text-anchor="middle" fill="#4b5563" font-family="sans-serif">G</text></svg>';
@@ -320,12 +389,12 @@ function cpc_group_single($atts) {
 
 	$group = get_post($group_id);
 	if (!$group || $group->post_type != 'cpc_group'):
-		return '<p>'.__('Gruppe nicht gefunden.', CPC2_TEXT_DOMAIN).'</p>';
+		return '<p>'.__('Gruppe nicht gefunden.', 'cp-community').'</p>';
 	endif;
 
 	// Check if user can view this group
 	if (!cpc_can_view_group(get_current_user_id(), $group_id)):
-		return '<p>'.__('Du hast keine Berechtigung, diese Gruppe zu sehen.', CPC2_TEXT_DOMAIN).'</p>';
+		return '<p>'.__('Du hast keine Berechtigung, diese Gruppe zu sehen.', 'cp-community').'</p>';
 	endif;
 
 	$html = cpc_groups_get_dynamic_styles();
@@ -351,7 +420,7 @@ function cpc_group_single($atts) {
 	$html .= '<span class="cpc-group-type-badge">'.cpc_get_group_type_label($group_type).'</span>';
 	$member_count = get_post_meta($group_id, 'cpc_group_member_count', true);
 	if (!$member_count) $member_count = cpc_update_group_member_count($group_id);
-	$html .= '<span class="cpc-group-members">'.$member_count.' '._n('Mitglied', 'Mitglieder', $member_count, CPC2_TEXT_DOMAIN).'</span>';
+	$html .= '<span class="cpc-group-members">'.$member_count.' '._n('Mitglied', 'Mitglieder', $member_count, 'cp-community').'</span>';
 	$html .= '</div>';
 
 	if (is_user_logged_in()):
@@ -361,12 +430,12 @@ function cpc_group_single($atts) {
 		if ($is_member):
 			// Invite button only if friendships module enabled and user has invite permission
 			if (defined('CPC_CORE_PLUGINS') && strpos(CPC_CORE_PLUGINS, 'core-friendships') !== false && function_exists('cpc_can_invite_members') && cpc_can_invite_members(get_current_user_id(), $group_id)) {
-				$html .= '<a href="#" class="cpc-group-invite-btn" data-group-id="'.$group_id.'">'.__('Freunde einladen', CPC2_TEXT_DOMAIN).'</a>';
+				$html .= '<a href="#" class="cpc-group-invite-btn" data-group-id="'.$group_id.'">'.__('Freunde einladen', 'cp-community').'</a>';
 			}
-			$html .= '<a href="#" class="cpc-group-leave-btn" data-group-id="'.$group_id.'">'.__('Gruppe verlassen', CPC2_TEXT_DOMAIN).'</a>';
+			$html .= '<a href="#" class="cpc-group-leave-btn" data-group-id="'.$group_id.'">'.__('Gruppe verlassen', 'cp-community').'</a>';
 		else:
 			if ($group_type != 'hidden'):
-				$html .= '<a href="#" class="cpc-group-join-btn" data-group-id="'.$group_id.'">'.__('Gruppe beitreten', CPC2_TEXT_DOMAIN).'</a>';
+				$html .= '<a href="#" class="cpc-group-join-btn" data-group-id="'.$group_id.'">'.__('Gruppe beitreten', 'cp-community').'</a>';
 			endif;
 		endif;
 		$html .= '</div>';
@@ -432,7 +501,7 @@ function cpc_group_members($atts) {
 	endif;
 
 	if (!$group_id):
-		return '<p>'.__('Gruppe nicht angegeben.', CPC2_TEXT_DOMAIN).'</p>';
+		return '<p>'.__('Gruppe nicht angegeben.', 'cp-community').'</p>';
 	endif;
 
 	// Get current blog ID for multisite support
@@ -447,7 +516,7 @@ function cpc_group_members($atts) {
 
 	if ($members):
 		$html .= '<div class="cpc-group-members">';
-		$html .= '<h3>'.__('Mitglieder', CPC2_TEXT_DOMAIN).'</h3>';
+		$html .= '<h3>'.__('Mitglieder', 'cp-community').'</h3>';
 		$html .= '<div class="cpc-members-grid cpc-members-cols-'.$columns.'">';
 		
 		foreach ($members as $member):
@@ -474,16 +543,16 @@ function cpc_group_members($atts) {
 			
 			if ($show_role && $member->member_role):
 				$role_labels = array(
-					'admin' => __('Admin', CPC2_TEXT_DOMAIN),
-					'moderator' => __('Moderator', CPC2_TEXT_DOMAIN),
-					'member' => __('Mitglied', CPC2_TEXT_DOMAIN),
+					'admin' => __('Admin', 'cp-community'),
+					'moderator' => __('Moderator', 'cp-community'),
+					'member' => __('Mitglied', 'cp-community'),
 				);
 				$role_label = isset($role_labels[$member->member_role]) ? $role_labels[$member->member_role] : $member->member_role;
 				
 				// Check if this user is the group creator/owner
 				$group = get_post($group_id);
 				if ($group && $member->ID == $group->post_author && $member->member_role === 'admin'):
-					$role_label = __('Gruppenbesitzer', CPC2_TEXT_DOMAIN);
+					$role_label = __('Gruppenbesitzer', 'cp-community');
 				endif;
 				
 				$html .= '<div class="cpc-member-role">'.$role_label.'</div>';
@@ -496,7 +565,7 @@ function cpc_group_members($atts) {
 		$html .= '</div>'; // .cpc-members-grid
 		$html .= '</div>'; // .cpc-group-members
 	else:
-		$html .= '<p class="cpc-no-members">'.__('Keine Mitglieder gefunden.', CPC2_TEXT_DOMAIN).'</p>';
+		$html .= '<p class="cpc-no-members">'.__('Keine Mitglieder gefunden.', 'cp-community').'</p>';
 	endif;
 
 	if ($html) $html = apply_filters ('cpc_wrap_shortcode_styles_filter', $html, 'cpc_group_members', '', '', $styles, $values);
@@ -527,7 +596,7 @@ function cpc_my_groups($atts) {
 	
 	// If still no user (not logged in and no ID specified), show login message
 	if (!$user_id) {
-		return '<p>'.__('Du musst angemeldet sein, um deine Gruppen zu sehen.', CPC2_TEXT_DOMAIN).'</p>';
+		return '<p>'.__('Du musst angemeldet sein, um deine Gruppen zu sehen.', 'cp-community').'</p>';
 	}
 
 	$placeholder_svg = '<svg xmlns="http://www.w3.org/2000/svg" width="120" height="120" viewBox="0 0 120 120"><rect fill="#dbeafe" width="120" height="120"/><text x="50%" y="55%" font-size="28" text-anchor="middle" fill="#4b5563" font-family="sans-serif">G</text></svg>';
@@ -566,12 +635,12 @@ function cpc_my_groups($atts) {
 		$html .= '<h3 class="cpc-group-title"><a href="'.cpc_get_group_link($group->ID).'">'.$group->post_title.'</a></h3>';
 			if ($show_role && $user_role):
 				$role_labels = array(
-					'admin' => __('Admin', CPC2_TEXT_DOMAIN),
-					'moderator' => __('Moderator', CPC2_TEXT_DOMAIN),
-					'member' => __('Mitglied', CPC2_TEXT_DOMAIN),
+					'admin' => __('Admin', 'cp-community'),
+					'moderator' => __('Moderator', 'cp-community'),
+					'member' => __('Mitglied', 'cp-community'),
 				);
 				$role_label = isset($role_labels[$user_role]) ? $role_labels[$user_role] : $user_role;
-				$html .= '<div class="cpc-group-my-role">'.__('Deine Rolle:', CPC2_TEXT_DOMAIN).' '.$role_label.'</div>';
+				$html .= '<div class="cpc-group-my-role">'.__('Deine Rolle:', 'cp-community').' '.$role_label.'</div>';
 			endif;
 
 			$html .= '</div>'; // .cpc-group-info
@@ -581,7 +650,7 @@ function cpc_my_groups($atts) {
 		$html .= '</div>'; // .cpc-groups-grid
 		$html .= '</div>'; // .cpc-my-groups
 	else:
-		$html .= '<p class="cpc-no-groups">'.__('Du bist noch in keiner Gruppe Mitglied.', CPC2_TEXT_DOMAIN).'</p>';
+		$html .= '<p class="cpc-no-groups">'.__('Du bist noch in keiner Gruppe Mitglied.', 'cp-community').'</p>';
 	endif;
 
 	if ($html) $html = apply_filters ('cpc_wrap_shortcode_styles_filter', $html, 'cpc_my_groups', '', '', $styles, $values);
@@ -596,7 +665,7 @@ function cpc_group_create($atts) {
 	cpc_groups_init();
 
 	if (!is_user_logged_in()):
-		return '<p>'.__('Du musst angemeldet sein, um eine Gruppe zu erstellen.', CPC2_TEXT_DOMAIN).'</p>';
+		return '<p>'.__('Du musst angemeldet sein, um eine Gruppe zu erstellen.', 'cp-community').'</p>';
 	endif;
 
 	$values = cpc_get_shortcode_options('cpc_group_create');
@@ -610,26 +679,26 @@ function cpc_group_create($atts) {
 	$html .= '<form id="cpc-create-group-form" method="post" enctype="multipart/form-data">';
 	
 	$html .= '<div class="cpc-form-field">';
-	$html .= '<label for="group_name">'.__('Gruppenname', CPC2_TEXT_DOMAIN).' *</label>';
+	$html .= '<label for="group_name">'.__('Gruppenname', 'cp-community').' *</label>';
 	$html .= '<input type="text" name="group_name" id="group_name" required />';
 	$html .= '</div>';
 
 	$html .= '<div class="cpc-form-field">';
-	$html .= '<label for="group_description">'.__('Beschreibung', CPC2_TEXT_DOMAIN).'</label>';
+	$html .= '<label for="group_description">'.__('Beschreibung', 'cp-community').'</label>';
 	$html .= '<textarea name="group_description" id="group_description" rows="5"></textarea>';
 	$html .= '</div>';
 
 	$html .= '<div class="cpc-form-field">';
-	$html .= '<label for="group_type">'.__('Gruppentyp', CPC2_TEXT_DOMAIN).' *</label>';
+	$html .= '<label for="group_type">'.__('Gruppentyp', 'cp-community').' *</label>';
 	$html .= '<select name="group_type" id="group_type" required>';
-	$html .= '<option value="public">'.__('Öffentlich - Jeder kann sehen und beitreten', CPC2_TEXT_DOMAIN).'</option>';
-	$html .= '<option value="private">'.__('Privat - Jeder kann sehen, Beitritt auf Anfrage', CPC2_TEXT_DOMAIN).'</option>';
-	$html .= '<option value="hidden">'.__('Versteckt - Nur Mitglieder können sehen', CPC2_TEXT_DOMAIN).'</option>';
+	$html .= '<option value="public">'.__('Öffentlich - Jeder kann sehen und beitreten', 'cp-community').'</option>';
+	$html .= '<option value="private">'.__('Privat - Jeder kann sehen, Beitritt auf Anfrage', 'cp-community').'</option>';
+	$html .= '<option value="hidden">'.__('Versteckt - Nur Mitglieder können sehen', 'cp-community').'</option>';
 	$html .= '</select>';
 	$html .= '</div>';
 
 	$html .= '<div class="cpc-form-field">';
-	$html .= '<label for="group_avatar">'.__('Gruppenbild (optional)', CPC2_TEXT_DOMAIN).'</label>';
+	$html .= '<label for="group_avatar">'.__('Gruppenbild (optional)', 'cp-community').'</label>';
 	$html .= '<input type="file" name="group_avatar" id="group_avatar" accept="image/*" />';
 	$html .= '</div>';
 
@@ -637,7 +706,7 @@ function cpc_group_create($atts) {
 	$html .= '<input type="hidden" name="redirect_to" value="'.$redirect.'" />';
 	
 	$html .= '<div class="cpc-form-submit">';
-	$html .= '<button type="submit" class="cpc-group-create-submit">'.__('Gruppe erstellen', CPC2_TEXT_DOMAIN).'</button>';
+	$html .= '<button type="submit" class="cpc-group-create-submit">'.__('Gruppe erstellen', 'cp-community').'</button>';
 	$html .= '</div>';
 
 	$html .= '</form>';
@@ -662,8 +731,8 @@ function cpc_group_join_button($atts) {
 	$values = cpc_get_shortcode_options('cpc_group_join_button');
 	extract( shortcode_atts( array(
 		'group_id' => cpc_get_shortcode_value($values, 'cpc_group_join_button-group_id', ''),
-		'join_text' => cpc_get_shortcode_value($values, 'cpc_group_join_button-join_text', __('Beitreten', CPC2_TEXT_DOMAIN)),
-		'leave_text' => cpc_get_shortcode_value($values, 'cpc_group_join_button-leave_text', __('Verlassen', CPC2_TEXT_DOMAIN)),
+		'join_text' => cpc_get_shortcode_value($values, 'cpc_group_join_button-join_text', __('Beitreten', 'cp-community')),
+		'leave_text' => cpc_get_shortcode_value($values, 'cpc_group_join_button-leave_text', __('Verlassen', 'cp-community')),
 		'styles' => true,
 	), $atts, 'cpc_group_join_button' ) );
 
@@ -708,7 +777,7 @@ function cpc_group_leave_button($atts) {
 	$values = cpc_get_shortcode_options('cpc_group_leave_button');
 	extract( shortcode_atts( array(
 		'group_id' => cpc_get_shortcode_value($values, 'cpc_group_leave_button-group_id', ''),
-		'text' => cpc_get_shortcode_value($values, 'cpc_group_leave_button-text', __('Gruppe verlassen', CPC2_TEXT_DOMAIN)),
+		'text' => cpc_get_shortcode_value($values, 'cpc_group_leave_button-text', __('Gruppe verlassen', 'cp-community')),
 		'styles' => true,
 	), $atts, 'cpc_group_leave_button' ) );
 

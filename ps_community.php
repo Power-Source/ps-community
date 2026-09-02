@@ -478,6 +478,11 @@ function cpc_enqueue_frontend_assets() {
     wp_enqueue_style('cpc-css', plugins_url('css/cp_community.css', __FILE__), 'css');
     // Core CPC JS
 	wp_enqueue_script('cpc-js', plugins_url('js/cp_community.js', __FILE__), array('jquery'));
+    wp_localize_script('cpc-js', 'cpc_common', array(
+        'i18n' => array(
+            'browse' => __('Durchsuchen', 'cp-community'),
+        ),
+    ));
 }
 
 function cpc_is_plugin_admin_screen() {
@@ -528,15 +533,27 @@ function cpc_enqueue_admin_assets() {
     // Activity admin
     if (strpos(CPC_CORE_PLUGINS, 'core-activity') !== false):
         wp_enqueue_script('cpc-activity-js', plugins_url('activity/cpc_activity.js', __FILE__), array('jquery'));
-        wp_localize_script( 'cpc-activity-js', 'cpc_ajax', array(
+        wp_localize_script( 'cpc-activity-js', 'cpc_activity_ajax', array(
             'ajaxurl' => admin_url( 'admin-ajax.php' ),
-            'nonce' => wp_create_nonce('cpc-activity-nonce')
+            'nonce' => wp_create_nonce('cpc-activity-nonce'),
+            'activity_plus' => array('enabled' => false),
+            'i18n' => array(
+                'saved' => __('Gespeichert', 'cp-community'),
+                'saveFailed' => __('Speichern fehlgeschlagen', 'cp-community'),
+                'networkError' => __('Netzwerkfehler', 'cp-community'),
+                'previous' => __('&lsaquo; zurück', 'cp-community'),
+                'next' => __('weiter &rsaquo;', 'cp-community'),
+                'noPreview' => __('Keine Vorschau', 'cp-community'),
+                'unsupportedVideo' => __('Video-Format wird nicht unterstützt', 'cp-community'),
+                'tabLoadFailed' => __('Tab-Inhalt konnte nicht geladen werden.', 'cp-community'),
+                'close' => __('Schließen', 'cp-community'),
+            ),
         ) );
     endif;
     // Forums admin
     if (strpos(CPC_CORE_PLUGINS, 'core-forums') !== false):
         wp_enqueue_script('cpc-forum-js', plugins_url('forums/cpc_forum.js', __FILE__), array('jquery'));
-        wp_localize_script( 'cpc-forum-js', 'cpc_ajax', array(
+        wp_localize_script( 'cpc-forum-js', 'cpc_forum_ajax', array(
             'ajaxurl' => admin_url( 'admin-ajax.php' ),
             'nonce' => wp_create_nonce('cpc-forum-nonce')
         ) );
@@ -544,7 +561,7 @@ function cpc_enqueue_admin_assets() {
     // Friendships
     if (strpos(CPC_CORE_PLUGINS, 'core-friendships') !== false):
         wp_enqueue_script('cpc-friendship-js', plugins_url('friendships/cpc_friends.js', __FILE__), array('jquery'));
-        wp_localize_script( 'cpc-friendship-js', 'cpc_ajax', array(
+        wp_localize_script( 'cpc-friendship-js', 'cpc_friendships_ajax', array(
             'ajaxurl' => admin_url( 'admin-ajax.php' ),
             'nonce' => wp_create_nonce('cpc-friendship-nonce')
         ) );
@@ -553,7 +570,8 @@ function cpc_enqueue_admin_assets() {
     wp_enqueue_script('cpc-admin-js', plugins_url('js/cpc.admin.js', __FILE__), array('jquery'));
     wp_localize_script( 'cpc-admin-js', 'cpc_ajax', array(
         'ajaxurl' => admin_url( 'admin-ajax.php' ),
-        'nonce' => wp_create_nonce('cpc-admin-nonce')
+        'nonce' => wp_create_nonce('cpc-admin-nonce'),
+        'selectShortcodeError' => __('Bitte wähle einen Shortcode aus und versuche es erneut.', 'cp-community'),
     ) );
     wp_enqueue_style('cpc-admin-css', plugins_url('css/cpc_admin.css', __FILE__), 'css');
 }
@@ -575,7 +593,7 @@ if (strpos(CPC_CORE_PLUGINS, 'core-alerts') !== false):
         $seconds = ($value = get_option('cpc_alerts_cron_schedule')) ? $value : 3600; // Defaults to every hour
         $schedules['cpc_community_alerts_schedule'] = array(
             'interval' => $seconds, // in seconds
-            'display' => __( 'PS Community alerts schedule', CPC2_TEXT_DOMAIN )
+            'display' => __( 'PS Community alerts schedule', 'cp-community' )
         );
         return $schedules;
     }
@@ -697,7 +715,7 @@ function cpc_cpceo_metadesc( $title ) {
                         // Shortcode parameter for [cpc-forum], set via options
                         $values = cpc_get_shortcode_options('cpc_forum');    
                         extract( shortcode_atts( array(
-                            'secure_post_msg' => cpc_get_shortcode_value($values, 'cpc_forum-secure_post_msg', __('You do not have permission to view this post.', CPC2_TEXT_DOMAIN)),
+                            'secure_post_msg' => cpc_get_shortcode_value($values, 'cpc_forum-secure_post_msg', __('You do not have permission to view this post.', 'cp-community')),
                         ), $atts, 'cpc_forum' ) );
                         
                         $return = $secure_post_msg;
@@ -715,28 +733,12 @@ function cpc_cpceo_metadesc( $title ) {
     endif;
 }
 // ****************** LANGUAGE FILES ******************
-/* .mo files should be placed in wp-content/languages/plugins/cp-community */
 function cpc_languages() {
-	$path = WP_PLUGIN_DIR.'/../languages/plugins/cp-community/';
-	if (is_admin() && !file_exists($path)) {
-		// ... make folder for translation files
-    	@mkdir($path, 0777, true);	
-	}
-    // Get locale - needs ClassicPress 4.0 or higher
-	$locale = get_locale();
-	if (@is_user_logged_in()):
-		if ($user_locale = get_user_meta(get_current_user_id(), 'cpccom_lang', true))
-            $locale = $user_locale;    
-	endif;
-	$deprecated = false;
-	$domain = CPC2_TEXT_DOMAIN;
-	// Load the textdomain according to the plugin first
-	$mofile = $domain . '-' . $locale . '.mo';
-	if ( $loaded = load_textdomain( $domain, $mofile ) )
-		return $loaded;
-	// Otherwise, load from the languages directory
-	$mofile = $path . $mofile;
-	$loaded_file = load_textdomain( $domain, $mofile );
+    return load_plugin_textdomain(
+        'cp-community',
+        false,
+        dirname(plugin_basename(__FILE__)) . '/languages'
+    );
 }
 // Filter Wordpress locale based on user selected language
 add_filter( 'locale', 'cpc_get_new_locale',20 );

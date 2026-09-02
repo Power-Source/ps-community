@@ -74,12 +74,12 @@ function cpc_alerts_activity($atts) {
             'flag_unread_radius' => cpc_get_shortcode_value($values, 'cpc_alerts_activity-flag_unread_radius', 8),
             'flag_url' => cpc_get_shortcode_value($values, 'cpc_alerts_activity-flag_url', ''),
             'flag_src' => cpc_get_shortcode_value($values, 'cpc_alerts_activity-flag_src', ''),
-			'recent_alerts_text' => cpc_get_shortcode_value($values, 'cpc_alerts_activity-recent_alerts_text', __('Aktuelle Benachrichtigungen...', CPC2_TEXT_DOMAIN)),
-			'no_activity_text' => cpc_get_shortcode_value($values, 'cpc_alerts_activity-no_activity_text', __('Keine Aktivitätsbenachrichtigung', CPC2_TEXT_DOMAIN)),
-			'select_activity_text' => cpc_get_shortcode_value($values, 'cpc_alerts_activity-select_activity_text', __('Du hast eine neue Benachrichtigung, Du hast %d neue Benachrichtigungen, Du hast keine neuen Benachrichtigungen', CPC2_TEXT_DOMAIN)),
-			'make_all_read_text' => cpc_get_shortcode_value($values, 'cpc_alerts_activity-make_all_read_text', __('Alles als gelesen markieren', CPC2_TEXT_DOMAIN)),
-            'delete_all_text' => cpc_get_shortcode_value($values, 'cpc_alerts_activity-delete_all_text', __('Alles löschen', CPC2_TEXT_DOMAIN)),
-			'date_format' => cpc_get_shortcode_value($values, 'cpc_alerts_activity-date_format', __('vor %s.', CPC2_TEXT_DOMAIN)),
+			'recent_alerts_text' => cpc_get_shortcode_value($values, 'cpc_alerts_activity-recent_alerts_text', __('Aktuelle Benachrichtigungen...', 'cp-community')),
+			'no_activity_text' => cpc_get_shortcode_value($values, 'cpc_alerts_activity-no_activity_text', __('Keine Aktivitätsbenachrichtigung', 'cp-community')),
+			'select_activity_text' => cpc_get_shortcode_value($values, 'cpc_alerts_activity-select_activity_text', __('Du hast eine neue Benachrichtigung, Du hast %d neue Benachrichtigungen, Du hast keine neuen Benachrichtigungen', 'cp-community')),
+			'make_all_read_text' => cpc_get_shortcode_value($values, 'cpc_alerts_activity-make_all_read_text', __('Alles als gelesen markieren', 'cp-community')),
+            'delete_all_text' => cpc_get_shortcode_value($values, 'cpc_alerts_activity-delete_all_text', __('Alles löschen', 'cp-community')),
+			'date_format' => cpc_get_shortcode_value($values, 'cpc_alerts_activity-date_format', __('vor %s.', 'cp-community')),
             'delete_on_click' => cpc_get_shortcode_value($values, 'cpc_alerts_activity-delete_on_click', false), // set to 1 to remove the alert when clicked on
 			'styles' => true,
             'after' => '',
@@ -145,7 +145,7 @@ function cpc_alerts_activity($atts) {
                     foreach ($list as $alert):
                         $html .= '<option data-url="'.$alert['url'].'" class="'.$alert['class'].' cpc_alert_item" value="'.$alert['ID'].'">';
                         $html .= $alert['excerpt'];
-                        $html .= ' '.sprintf($date_format, human_time_diff(strtotime($alert['post_date']), current_time('timestamp', 0)), CPC2_TEXT_DOMAIN);
+                        $html .= ' '.sprintf($date_format, human_time_diff(strtotime($alert['post_date']), current_time('timestamp', 0)), 'cp-community');
                         $html .= '</option>';
                     endforeach;
                     $html .= "</select>";
@@ -170,7 +170,7 @@ function cpc_alerts_activity($atts) {
                 $html .= '<div id="cpc_alerts_flag_unread" class="cpc_alerts_flag_unread_badge" style="position: absolute; padding-top: '.($flag_unread_size*0.2).'px; line-height:'.($flag_unread_size*0.8).'px; font-size:'.($flag_unread_size*0.8).'px; border-radius: '.$flag_unread_radius.'px; top:'.$flag_unread_top.'px; left:'.$flag_unread_left.'px; width:'.$flag_unread_size.'px; height:'.$flag_unread_size.'px;">'.$unread.'</div>';
             endif;
             $html .= '</a></div>';
-            if (!$flag_url) $html .= '<div class="cpc_error">'.__('Lege flag_url im Shortcode fest', CPC2_TEXT_DOMAIN).'</div>';
+            if (!$flag_url) $html .= '<div class="cpc_error">'.__('Lege flag_url im Shortcode fest', 'cp-community').'</div>';
     
         endif;
     
@@ -189,8 +189,8 @@ function cpc_alerts_activity($atts) {
                         $html .= '<div class="cpc_alerts_list_item '.$alert['class'].'">';
                             $url = $alert['url'];
                             $html .= '<a href="javascript:void(0)" class="cpc_alerts_list_item_link" data-id="'.$alert['ID'].'" data-url="'.$url.'">'.$alert['excerpt'].'</a>';
-                            $html .= ' '.sprintf($date_format, human_time_diff(strtotime($alert['post_date']), current_time('timestamp', 0)), CPC2_TEXT_DOMAIN);
-                            $html .= '<img title="'.__('Löschen', CPC2_TEXT_DOMAIN).'" class="cpc_alerts_list_item_delete" rel="'.$alert['ID'].'" src="'.plugins_url('../../cp-community/forums/images/trash.png', __FILE__).'" />';
+                            $html .= ' '.sprintf($date_format, human_time_diff(strtotime($alert['post_date']), current_time('timestamp', 0)), 'cp-community');
+                            $html .= '<img title="'.__('Löschen', 'cp-community').'" class="cpc_alerts_list_item_delete" rel="'.$alert['ID'].'" src="'.plugins_url('../../cp-community/forums/images/trash.png', __FILE__).'" />';
                         $html .= '</div>';
     
                     endforeach;

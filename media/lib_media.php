@@ -158,15 +158,15 @@ function cpc_media_are_users_friends($user_id, $other_user_id) {
 function cpc_media_get_gallery_status_options($component = 'members') {
     $component = sanitize_key((string)$component);
     $options = array(
-        'public' => __('Öffentlich', CPC2_TEXT_DOMAIN),
-        'loggedin' => __('Angemeldet', CPC2_TEXT_DOMAIN),
+        'public' => __('Öffentlich', 'cp-community'),
+        'loggedin' => __('Angemeldet', 'cp-community'),
     );
 
     if ($component === 'members' && cpc_media_friendships_enabled() && get_option('cpc_media_enable_friend_visibility', 1)) {
-        $options['friends'] = __('Nur Freunde', CPC2_TEXT_DOMAIN);
+        $options['friends'] = __('Nur Freunde', 'cp-community');
     }
 
-    $options['private'] = __('Privat', CPC2_TEXT_DOMAIN);
+    $options['private'] = __('Privat', 'cp-community');
 
     return $options;
 }
@@ -179,10 +179,10 @@ function cpc_media_get_gallery_status_label($status, $component = 'members') {
 
 function cpc_media_get_gallery_type_label($type) {
     $map = array(
-        'photo' => __('Bilder', CPC2_TEXT_DOMAIN),
-        'video' => __('Videos', CPC2_TEXT_DOMAIN),
-        'audio' => __('Audio', CPC2_TEXT_DOMAIN),
-        'doc' => __('Dokumente', CPC2_TEXT_DOMAIN),
+        'photo' => __('Bilder', 'cp-community'),
+        'video' => __('Videos', 'cp-community'),
+        'audio' => __('Audio', 'cp-community'),
+        'doc' => __('Dokumente', 'cp-community'),
     );
 
     $type = sanitize_key((string)$type);
@@ -191,8 +191,8 @@ function cpc_media_get_gallery_type_label($type) {
 
 function cpc_media_get_gallery_component_label($component) {
     $map = array(
-        'members' => __('Profil', CPC2_TEXT_DOMAIN),
-        'groups' => __('Gruppe', CPC2_TEXT_DOMAIN),
+        'members' => __('Profil', 'cp-community'),
+        'groups' => __('Gruppe', 'cp-community'),
     );
 
     $component = sanitize_key((string)$component);
@@ -230,10 +230,10 @@ function cpc_media_activity_wall_sync_enabled() {
 
 function cpc_media_get_group_stream_album_visibility_options() {
     return array(
-        'admins' => __('Nur Gruppen-Admins', CPC2_TEXT_DOMAIN),
-        'members' => __('Alle Gruppenmitglieder', CPC2_TEXT_DOMAIN),
-        'public' => __('Alle mit Gruppenzugriff', CPC2_TEXT_DOMAIN),
-        'hidden' => __('Versteckt (nur Moderation)', CPC2_TEXT_DOMAIN),
+        'admins' => __('Nur Gruppen-Admins', 'cp-community'),
+        'members' => __('Alle Gruppenmitglieder', 'cp-community'),
+        'public' => __('Alle mit Gruppenzugriff', 'cp-community'),
+        'hidden' => __('Versteckt (nur Moderation)', 'cp-community'),
     );
 }
 
@@ -363,9 +363,9 @@ function cpc_media_get_storage_summary($component, $component_id, $user_id = 0) 
         'used_bytes' => $used,
         'used_human' => size_format($used),
         'limit_bytes' => $limit,
-        'limit_human' => $limit > 0 ? size_format($limit) : __('Unbegrenzt', CPC2_TEXT_DOMAIN),
+        'limit_human' => $limit > 0 ? size_format($limit) : __('Unbegrenzt', 'cp-community'),
         'remaining_bytes' => $remaining,
-        'remaining_human' => $limit > 0 ? size_format($remaining) : __('Unbegrenzt', CPC2_TEXT_DOMAIN),
+        'remaining_human' => $limit > 0 ? size_format($remaining) : __('Unbegrenzt', 'cp-community'),
         'percent' => $percent,
     );
 }
@@ -496,7 +496,7 @@ function cpc_media_get_or_create_wall_gallery($component, $component_id, $user_i
     $group_visibility = ($component === 'groups') ? cpc_media_get_group_stream_album_visibility($component_id) : 'admins';
 
     $gallery_id = cpc_media_create_gallery(array(
-        'title' => $component === 'groups' ? __('Gruppen-Wall Medien', CPC2_TEXT_DOMAIN) : __('Wall Medien', CPC2_TEXT_DOMAIN),
+        'title' => $component === 'groups' ? __('Gruppen-Wall Medien', 'cp-community') : __('Wall Medien', 'cp-community'),
         'description' => '',
         'user_id' => $user_id,
         'component' => $component,
@@ -1460,12 +1460,12 @@ function cpc_media_upload_file_to_gallery($file, $gallery_id) {
 
 function cpc_media_notice_message($code) {
     $map = array(
-        'created' => __('Galerie wurde erstellt.', CPC2_TEXT_DOMAIN),
-        'uploaded' => __('Dateien wurden hochgeladen.', CPC2_TEXT_DOMAIN),
-        'denied' => __('Keine Berechtigung.', CPC2_TEXT_DOMAIN),
-        'invalid' => __('Ungültige Anfrage.', CPC2_TEXT_DOMAIN),
-        'failed' => __('Aktion fehlgeschlagen.', CPC2_TEXT_DOMAIN),
-        'upload_failed' => __('Mindestens eine Datei konnte nicht hochgeladen werden.', CPC2_TEXT_DOMAIN),
+        'created' => __('Galerie wurde erstellt.', 'cp-community'),
+        'uploaded' => __('Dateien wurden hochgeladen.', 'cp-community'),
+        'denied' => __('Keine Berechtigung.', 'cp-community'),
+        'invalid' => __('Ungültige Anfrage.', 'cp-community'),
+        'failed' => __('Aktion fehlgeschlagen.', 'cp-community'),
+        'upload_failed' => __('Mindestens eine Datei konnte nicht hochgeladen werden.', 'cp-community'),
     );
 
     return isset($map[$code]) ? $map[$code] : '';
@@ -1940,14 +1940,14 @@ function cpc_media_render_lightbox_content($media) {
                 <div class="cpc_media_lightbox_video cpc_media_video_container">
                     <video controls style="max-width: 100%; max-height: 600px;">
                         <source src="<?php echo esc_url($file_url); ?>" />
-                        <?php esc_html_e('Ihr Browser unterstützt dieses Video nicht.', CPC2_TEXT_DOMAIN); ?>
+                        <?php esc_html_e('Ihr Browser unterstützt dieses Video nicht.', 'cp-community'); ?>
                     </video>
                 </div>
             <?php elseif ($media_type === 'audio'): ?>
                 <div class="cpc_media_lightbox_audio cpc_media_audio_container">
                     <audio controls style="width: 100%; max-width: 100%;">
                         <source src="<?php echo esc_url($file_url); ?>" />
-                        <?php esc_html_e('Ihr Browser unterstützt dieses Audio nicht.', CPC2_TEXT_DOMAIN); ?>
+                        <?php esc_html_e('Ihr Browser unterstützt dieses Audio nicht.', 'cp-community'); ?>
                     </audio>
                 </div>
             <?php elseif ($is_pdf): ?>
@@ -1960,10 +1960,10 @@ function cpc_media_render_lightbox_content($media) {
                     </iframe>
                     <div class="cpc_media_lightbox_pdf_actions">
                         <a href="<?php echo esc_url($file_url); ?>" class="button" target="_blank" rel="noopener noreferrer">
-                            <?php esc_html_e('Im neuen Tab oeffnen', CPC2_TEXT_DOMAIN); ?>
+                            <?php esc_html_e('Im neuen Tab oeffnen', 'cp-community'); ?>
                         </a>
                         <a href="<?php echo esc_url($file_url); ?>" class="button button-primary cpc_media_file_download" download>
-                            <?php esc_html_e('PDF herunterladen', CPC2_TEXT_DOMAIN); ?>
+                            <?php esc_html_e('PDF herunterladen', 'cp-community'); ?>
                         </a>
                     </div>
                 </div>
@@ -1976,7 +1976,7 @@ function cpc_media_render_lightbox_content($media) {
                     <a href="<?php echo esc_url($file_url); ?>" 
                        class="button button-primary cpc_media_file_download"
                        download>
-                        <?php esc_html_e('Datei herunterladen', CPC2_TEXT_DOMAIN); ?>
+                        <?php esc_html_e('Datei herunterladen', 'cp-community'); ?>
                     </a>
                 </div>
             <?php endif; ?>
@@ -2016,10 +2016,10 @@ function cpc_media_render_lightbox_content($media) {
             ?>
                 <div class="cpc_media_lightbox_actions">
                     <a href="#" class="cpc_media_lightbox_edit" data-media-id="<?php echo esc_attr($media->ID); ?>">
-                        <?php esc_html_e('Bearbeiten', CPC2_TEXT_DOMAIN); ?>
+                        <?php esc_html_e('Bearbeiten', 'cp-community'); ?>
                     </a>
                     <a href="#" class="cpc_media_lightbox_delete" data-media-id="<?php echo esc_attr($media->ID); ?>">
-                        <?php esc_html_e('Löschen', CPC2_TEXT_DOMAIN); ?>
+                        <?php esc_html_e('Löschen', 'cp-community'); ?>
                     </a>
                 </div>
             <?php endif; endif; ?>

@@ -22,18 +22,18 @@ jQuery(document).ready(function($) {
         var submitBtn = form.find('button[type="submit"]');
         
         if (!groupId) {
-            cpc_show_notification('Fehler: Gruppe nicht gefunden.', 'error');
+            cpc_show_notification(cpc_groups_ajax.i18n.groupNotFound, 'error');
             return;
         }
         
         content = content ? content.trim() : '';
 
         if (!content && !cpcGroupActivityHasMedia(form)) {
-            cpc_show_notification('Bitte schreibe etwas oder füge Medien hinzu, bevor du postest.', 'error');
+            cpc_show_notification(cpc_groups_ajax.i18n.emptyActivity, 'error');
             return;
         }
         
-        submitBtn.prop('disabled', true).text('Wird gepostet...');
+        submitBtn.prop('disabled', true).text(cpc_groups_ajax.i18n.posting);
         
         // Use FormData to support file uploads
         var formData = new FormData();
@@ -87,7 +87,7 @@ jQuery(document).ready(function($) {
                     form.find('input[type="file"]').val('');
                     form.find('input[type="url"]').val('');
                     form.find('.cpc_activity_plus_wrap').hide();
-                    submitBtn.prop('disabled', false).text('Posten');
+                    submitBtn.prop('disabled', false).text(cpc_groups_ajax.i18n.post);
 
                     if (response.data && response.data.html) {
                         var newItem = $(response.data.html).hide();
@@ -107,12 +107,12 @@ jQuery(document).ready(function($) {
                     }
                 } else {
                     cpc_show_notification(response.data.message, 'error');
-                    submitBtn.prop('disabled', false).text('Posten');
+                    submitBtn.prop('disabled', false).text(cpc_groups_ajax.i18n.post);
                 }
             },
             error: function() {
-                cpc_show_notification('Fehler beim Posten der Aktivität', 'error');
-                submitBtn.prop('disabled', false).text('Posten');
+                cpc_show_notification(cpc_groups_ajax.i18n.postActivityError, 'error');
+                submitBtn.prop('disabled', false).text(cpc_groups_ajax.i18n.post);
             }
         });
     });
@@ -148,7 +148,7 @@ jQuery(document).ready(function($) {
             toggle.text($(this).data('original-text') || 'Antwort hinzufügen');
         } else {
             form.slideDown();
-            toggle.text('Abbrechen');
+            toggle.text(cpc_groups_ajax.i18n.cancel);
             toggle.data('original-text', 'Antwort hinzufügen');
             form.find('textarea').focus();
         }
@@ -165,11 +165,11 @@ jQuery(document).ready(function($) {
         var repliesContainer = btn.closest('.cpc-activity-replies');
         
         if (!content || content.trim() === '') {
-            cpc_show_notification('Bitte schreibe etwas als Antwort', 'error');
+            cpc_show_notification(cpc_groups_ajax.i18n.emptyReply, 'error');
             return;
         }
         
-        btn.prop('disabled', true).text('Wird gesendet...');
+        btn.prop('disabled', true).text(cpc_groups_ajax.i18n.sending);
         
         $.ajax({
             url: cpc_groups_ajax.ajaxurl,
@@ -182,9 +182,9 @@ jQuery(document).ready(function($) {
             },
             success: function(response) {
                 if (response.success) {
-                    cpc_show_notification('Antwort erfolgreich gepostet!', 'success');
+                    cpc_show_notification(cpc_groups_ajax.i18n.replyPosted, 'success');
                     textarea.val('');
-                    btn.prop('disabled', false).text('Antworten');
+                    btn.prop('disabled', false).text(cpc_groups_ajax.i18n.reply);
                     
                     // Add reply to DOM immediately
                     if (response.data.reply_html) {
@@ -204,15 +204,15 @@ jQuery(document).ready(function($) {
                     
                     // Hide the form
                     repliesContainer.find('.cpc-activity-reply-form').slideUp();
-                    repliesContainer.find('.cpc-reply-toggle').text('Antwort hinzufügen');
+                    repliesContainer.find('.cpc-reply-toggle').text(cpc_groups_ajax.i18n.addReply);
                 } else {
                     cpc_show_notification(response.data.message, 'error');
-                    btn.prop('disabled', false).text('Antworten');
+                    btn.prop('disabled', false).text(cpc_groups_ajax.i18n.reply);
                 }
             },
             error: function() {
-                cpc_show_notification('Fehler beim Posten der Antwort', 'error');
-                btn.prop('disabled', false).text('Antworten');
+                cpc_show_notification(cpc_groups_ajax.i18n.postReplyError, 'error');
+                btn.prop('disabled', false).text(cpc_groups_ajax.i18n.reply);
             }
         });
     });
@@ -225,7 +225,7 @@ jQuery(document).ready(function($) {
         var submitBtn = form.find('button[type="submit"]');
         var groupId = form.find('input[name="group_id"]').val() || form.data('group-id');
         
-        submitBtn.prop('disabled', true).text('Speichern...');
+        submitBtn.prop('disabled', true).text(cpc_groups_ajax.i18n.saving);
         
         $.ajax({
             url: cpc_groups_ajax.ajaxurl,
@@ -244,11 +244,11 @@ jQuery(document).ready(function($) {
                 } else {
                     cpc_show_notification(response.data.message, 'error');
                 }
-                submitBtn.prop('disabled', false).text('Speichern');
+                submitBtn.prop('disabled', false).text(cpc_groups_ajax.i18n.save);
             },
             error: function() {
-                cpc_show_notification('Fehler beim Speichern', 'error');
-                submitBtn.prop('disabled', false).text('Speichern');
+                cpc_show_notification(cpc_groups_ajax.i18n.saveError, 'error');
+                submitBtn.prop('disabled', false).text(cpc_groups_ajax.i18n.save);
             }
         });
     });
@@ -267,8 +267,8 @@ jQuery(document).ready(function($) {
         var editForm = $('<div class="cpc-edit-activity-form">' +
             '<textarea class="cpc-edit-activity-textarea">' + $('<div>').html(originalContent).text() + '</textarea>' +
             '<div class="cpc-edit-actions">' +
-                '<button type="button" class="cpc-save-activity-edit" data-post-id="' + postId + '">Speichern</button>' +
-                '<button type="button" class="cpc-cancel-activity-edit">Abbrechen</button>' +
+                '<button type="button" class="cpc-save-activity-edit" data-post-id="' + postId + '">' + cpc_groups_ajax.i18n.save + '</button>' +
+                '<button type="button" class="cpc-cancel-activity-edit">' + cpc_groups_ajax.i18n.cancel + '</button>' +
             '</div>' +
         '</div>');
         
@@ -287,11 +287,11 @@ jQuery(document).ready(function($) {
         var textDiv = activityPost.find('.cpc-activity-text');
         
         if (!content.trim()) {
-            cpc_show_notification('Bitte gib einen Inhalt ein', 'error');
+            cpc_show_notification(cpc_groups_ajax.i18n.emptyContent, 'error');
             return;
         }
         
-        btn.prop('disabled', true).text('Speichern...');
+        btn.prop('disabled', true).text(cpc_groups_ajax.i18n.saving);
         
         $.ajax({
             url: cpc_groups_ajax.ajaxurl,
@@ -310,12 +310,12 @@ jQuery(document).ready(function($) {
                     activityPost.find('.cpc-edit-activity').show();
                 } else {
                     cpc_show_notification(response.data.message, 'error');
-                    btn.prop('disabled', false).text('Speichern');
+                    btn.prop('disabled', false).text(cpc_groups_ajax.i18n.save);
                 }
             },
             error: function() {
-                cpc_show_notification('Fehler beim Speichern', 'error');
-                btn.prop('disabled', false).text('Speichern');
+                cpc_show_notification(cpc_groups_ajax.i18n.saveError, 'error');
+                btn.prop('disabled', false).text(cpc_groups_ajax.i18n.save);
             }
         });
     });
@@ -334,7 +334,7 @@ jQuery(document).ready(function($) {
     $(document).on('click', '.cpc-delete-activity', function(e) {
         e.preventDefault();
         
-        if (!confirm('Möchtest du diesen Beitrag wirklich löschen?')) {
+        if (!confirm(cpc_groups_ajax.i18n.confirmDeletePost)) {
             return;
         }
         
@@ -361,7 +361,7 @@ jQuery(document).ready(function($) {
                 }
             },
             error: function() {
-                cpc_show_notification('Fehler beim Löschen', 'error');
+                cpc_show_notification(cpc_groups_ajax.i18n.deleteError, 'error');
             }
         });
     });
@@ -380,8 +380,8 @@ jQuery(document).ready(function($) {
         var editForm = $('<div class="cpc-edit-reply-form">' +
             '<textarea class="cpc-edit-reply-textarea">' + $('<div>').html(originalContent).text() + '</textarea>' +
             '<div class="cpc-edit-actions">' +
-                '<button type="button" class="cpc-save-reply-edit" data-comment-id="' + commentId + '">Speichern</button>' +
-                '<button type="button" class="cpc-cancel-reply-edit">Abbrechen</button>' +
+                '<button type="button" class="cpc-save-reply-edit" data-comment-id="' + commentId + '">' + cpc_groups_ajax.i18n.save + '</button>' +
+                '<button type="button" class="cpc-cancel-reply-edit">' + cpc_groups_ajax.i18n.cancel + '</button>' +
             '</div>' +
         '</div>');
         
@@ -400,11 +400,11 @@ jQuery(document).ready(function($) {
         var textDiv = reply.find('.cpc-reply-text');
         
         if (!content.trim()) {
-            cpc_show_notification('Bitte gib einen Inhalt ein', 'error');
+            cpc_show_notification(cpc_groups_ajax.i18n.emptyContent, 'error');
             return;
         }
         
-        btn.prop('disabled', true).text('Speichern...');
+        btn.prop('disabled', true).text(cpc_groups_ajax.i18n.saving);
         
         $.ajax({
             url: cpc_groups_ajax.ajaxurl,
@@ -423,12 +423,12 @@ jQuery(document).ready(function($) {
                     reply.find('.cpc-edit-reply').show();
                 } else {
                     cpc_show_notification(response.data.message, 'error');
-                    btn.prop('disabled', false).text('Speichern');
+                    btn.prop('disabled', false).text(cpc_groups_ajax.i18n.save);
                 }
             },
             error: function() {
-                cpc_show_notification('Fehler beim Speichern', 'error');
-                btn.prop('disabled', false).text('Speichern');
+                cpc_show_notification(cpc_groups_ajax.i18n.saveError, 'error');
+                btn.prop('disabled', false).text(cpc_groups_ajax.i18n.save);
             }
         });
     });
@@ -447,7 +447,7 @@ jQuery(document).ready(function($) {
     $(document).on('click', '.cpc-delete-reply', function(e) {
         e.preventDefault();
         
-        if (!confirm('Möchtest du diese Antwort wirklich löschen?')) {
+        if (!confirm(cpc_groups_ajax.i18n.confirmDeleteReply)) {
             return;
         }
         
@@ -474,7 +474,7 @@ jQuery(document).ready(function($) {
                 }
             },
             error: function() {
-                cpc_show_notification('Fehler beim Löschen', 'error');
+                cpc_show_notification(cpc_groups_ajax.i18n.deleteError, 'error');
             }
         });
     });
@@ -487,11 +487,11 @@ jQuery(document).ready(function($) {
         var groupId = button.data('group-id');
         
         if (!groupId) {
-            alert('Gruppe nicht gefunden.');
+            alert(cpc_groups_ajax.i18n.groupNotFound);
             return;
         }
 
-        button.prop('disabled', true).text('Wird verarbeitet...');
+        button.prop('disabled', true).text(cpc_groups_ajax.i18n.processing);
         
         $.ajax({
             url: cpc_groups_ajax.ajaxurl,
@@ -504,10 +504,10 @@ jQuery(document).ready(function($) {
             success: function(response) {
                 if (response.success) {
                     if (response.data.status === 'pending') {
-                        button.text('Ausstehend').removeClass('cpc-group-join-btn').addClass('cpc-group-pending-btn');
+                        button.text(cpc_groups_ajax.i18n.pending).removeClass('cpc-group-join-btn').addClass('cpc-group-pending-btn');
                         alert(response.data.message);
                     } else {
-                        button.text('Gruppe verlassen').removeClass('cpc-group-join-btn').addClass('cpc-group-leave-btn');
+                        button.text(cpc_groups_ajax.i18n.leaveGroup).removeClass('cpc-group-join-btn').addClass('cpc-group-leave-btn');
                     }
                     
                     // Reload page to update member count
@@ -516,12 +516,12 @@ jQuery(document).ready(function($) {
                     }, 1000);
                 } else {
                     alert(response.data.message);
-                    button.prop('disabled', false).text('Beitreten');
+                    button.prop('disabled', false).text(cpc_groups_ajax.i18n.joinGroup);
                 }
             },
             error: function() {
-                alert('Ein Fehler ist aufgetreten. Bitte versuche es erneut.');
-                button.prop('disabled', false).text('Beitreten');
+                alert(cpc_groups_ajax.i18n.genericRetryError);
+                button.prop('disabled', false).text(cpc_groups_ajax.i18n.joinGroup);
             }
         });
     });
@@ -534,15 +534,15 @@ jQuery(document).ready(function($) {
         var groupId = button.data('group-id');
         
         if (!groupId) {
-            alert('Gruppe nicht gefunden.');
+            alert(cpc_groups_ajax.i18n.groupNotFound);
             return;
         }
 
-        if (!confirm('Möchtest du diese Gruppe wirklich verlassen?')) {
+        if (!confirm(cpc_groups_ajax.i18n.confirmLeaveGroup)) {
             return;
         }
 
-        button.prop('disabled', true).text('Wird verarbeitet...');
+        button.prop('disabled', true).text(cpc_groups_ajax.i18n.processing);
         
         $.ajax({
             url: cpc_groups_ajax.ajaxurl,
@@ -554,7 +554,7 @@ jQuery(document).ready(function($) {
             },
             success: function(response) {
                 if (response.success) {
-                    button.text('Beitreten').removeClass('cpc-group-leave-btn').addClass('cpc-group-join-btn');
+                    button.text(cpc_groups_ajax.i18n.joinGroup).removeClass('cpc-group-leave-btn').addClass('cpc-group-join-btn');
                     
                     // Reload page to update member count
                     setTimeout(function() {
@@ -562,12 +562,12 @@ jQuery(document).ready(function($) {
                     }, 1000);
                 } else {
                     alert(response.data.message);
-                    button.prop('disabled', false).text('Gruppe verlassen');
+                    button.prop('disabled', false).text(cpc_groups_ajax.i18n.leaveGroup);
                 }
             },
             error: function() {
-                alert('Ein Fehler ist aufgetreten. Bitte versuche es erneut.');
-                button.prop('disabled', false).text('Gruppe verlassen');
+                alert(cpc_groups_ajax.i18n.genericRetryError);
+                button.prop('disabled', false).text(cpc_groups_ajax.i18n.leaveGroup);
             }
         });
     });
@@ -584,7 +584,7 @@ jQuery(document).ready(function($) {
         var submitBtn = form.find('.cpc-group-create-submit');
         var messageDiv = form.siblings('.cpc-group-create-message');
         
-        submitBtn.prop('disabled', true).text('Wird erstellt...');
+        submitBtn.prop('disabled', true).text(cpc_groups_ajax.i18n.creating);
         messageDiv.removeClass('success error').empty();
         
         $.ajax({
@@ -610,15 +610,15 @@ jQuery(document).ready(function($) {
                         }, 1500);
                     }
                     
-                    submitBtn.prop('disabled', false).text('Gruppe erstellen');
+                    submitBtn.prop('disabled', false).text(cpc_groups_ajax.i18n.createGroup);
                 } else {
                     messageDiv.addClass('error').text(response.data.message);
-                    submitBtn.prop('disabled', false).text('Gruppe erstellen');
+                    submitBtn.prop('disabled', false).text(cpc_groups_ajax.i18n.createGroup);
                 }
             },
             error: function() {
-                messageDiv.addClass('error').text('Ein Fehler ist aufgetreten. Bitte versuche es erneut.');
-                submitBtn.prop('disabled', false).text('Gruppe erstellen');
+                messageDiv.addClass('error').text(cpc_groups_ajax.i18n.genericRetryError);
+                submitBtn.prop('disabled', false).text(cpc_groups_ajax.i18n.createGroup);
             }
         });
     });
@@ -650,7 +650,7 @@ jQuery(document).ready(function($) {
                 }
             },
             error: function() {
-                alert('Ein Fehler ist aufgetreten.');
+                alert(cpc_groups_ajax.i18n.genericError);
             }
         });
     });
@@ -659,7 +659,7 @@ jQuery(document).ready(function($) {
     $(document).on('click', '.cpc-remove-member', function(e) {
         e.preventDefault();
         
-        if (!confirm('Möchtest du dieses Mitglied wirklich entfernen?')) {
+        if (!confirm(cpc_groups_ajax.i18n.confirmRemoveMember)) {
             return;
         }
         
@@ -684,7 +684,7 @@ jQuery(document).ready(function($) {
                 }
             },
             error: function() {
-                alert('Ein Fehler ist aufgetreten.');
+                alert(cpc_groups_ajax.i18n.genericError);
             }
         });
     });
@@ -768,7 +768,7 @@ jQuery(document).ready(function($) {
                 }
             },
             error: function() {
-                alert('Ein Fehler ist aufgetreten.');
+                alert(cpc_groups_ajax.i18n.genericError);
             }
         });
     });
@@ -798,7 +798,7 @@ jQuery(document).ready(function($) {
         var requestId = btn.data('request-id');
         var groupId = btn.data('group-id');
         
-        if (!confirm('Möchtest du diese Beitrittanfrage wirklich annehmen?')) {
+        if (!confirm(cpc_groups_ajax.i18n.confirmApproveRequest)) {
             return;
         }
         
@@ -819,7 +819,7 @@ jQuery(document).ready(function($) {
                         $(this).remove();
                         // Check if there are any requests left
                         if ($('.cpc-membership-request').length === 0) {
-                            $('.cpc-membership-requests').html('<p>Keine ausstehenden Beitrittanfragen.</p>');
+                            $('.cpc-membership-requests').html('<p>' + cpc_groups_ajax.i18n.noPendingRequests + '</p>');
                         }
                     });
                 } else {
@@ -828,7 +828,7 @@ jQuery(document).ready(function($) {
                 }
             },
             error: function() {
-                alert('Fehler beim Verarbeiten der Anfrage');
+                alert(cpc_groups_ajax.i18n.processRequestError);
                 btn.prop('disabled', false);
             }
         });
@@ -842,7 +842,7 @@ jQuery(document).ready(function($) {
         var requestId = btn.data('request-id');
         var groupId = btn.data('group-id');
         
-        if (!confirm('Möchtest du diese Beitrittanfrage wirklich ablehnen?')) {
+        if (!confirm(cpc_groups_ajax.i18n.confirmRejectRequest)) {
             return;
         }
         
@@ -863,7 +863,7 @@ jQuery(document).ready(function($) {
                         $(this).remove();
                         // Check if there are any requests left
                         if ($('.cpc-membership-request').length === 0) {
-                            $('.cpc-membership-requests').html('<p>Keine ausstehenden Beitrittanfragen.</p>');
+                            $('.cpc-membership-requests').html('<p>' + cpc_groups_ajax.i18n.noPendingRequests + '</p>');
                         }
                     });
                 } else {
@@ -872,7 +872,7 @@ jQuery(document).ready(function($) {
                 }
             },
             error: function() {
-                alert('Fehler beim Verarbeiten der Anfrage');
+                alert(cpc_groups_ajax.i18n.processRequestError);
                 btn.prop('disabled', false);
             }
         });
@@ -897,7 +897,7 @@ jQuery(document).ready(function($) {
         var streamVisibility = form.find('select[name="group_stream_album_visibility"]').val() || '';
         var submitBtn = form.find('button[type="submit"]');
 
-        submitBtn.prop('disabled', true).text('Speichern...');
+        submitBtn.prop('disabled', true).text(cpc_groups_ajax.i18n.saving);
 
         $.ajax({
             url: cpc_groups_ajax.ajaxurl,
@@ -910,7 +910,7 @@ jQuery(document).ready(function($) {
                 group_stream_album_visibility: streamVisibility
             },
             success: function(response) {
-                submitBtn.prop('disabled', false).text('Änderungen speichern');
+                submitBtn.prop('disabled', false).text(cpc_groups_ajax.i18n.saveChanges);
 
                 if (response.success) {
                     cpc_show_notification(response.data.message, 'success');
@@ -919,8 +919,8 @@ jQuery(document).ready(function($) {
                 }
             },
             error: function() {
-                cpc_show_notification('Fehler beim Speichern der Einstellungen', 'error');
-                submitBtn.prop('disabled', false).text('Änderungen speichern');
+                cpc_show_notification(cpc_groups_ajax.i18n.saveSettingsError, 'error');
+                submitBtn.prop('disabled', false).text(cpc_groups_ajax.i18n.saveChanges);
             }
         });
     });
@@ -935,7 +935,7 @@ jQuery(document).ready(function($) {
         var forumVisibility = form.find('input[name="forum_visibility"]:checked').val();
         var submitBtn = form.find('button[type="submit"]');
         
-        submitBtn.prop('disabled', true).text('Speichern...');
+        submitBtn.prop('disabled', true).text(cpc_groups_ajax.i18n.saving);
         
         $.ajax({
             url: cpc_groups_ajax.ajaxurl,
@@ -948,7 +948,7 @@ jQuery(document).ready(function($) {
                 forum_visibility: forumVisibility
             },
             success: function(response) {
-                submitBtn.prop('disabled', false).text('Forum-Einstellungen speichern');
+                submitBtn.prop('disabled', false).text(cpc_groups_ajax.i18n.saveForumSettings);
                 
                 if (response.success) {
                     alert(response.data.message);
@@ -960,8 +960,8 @@ jQuery(document).ready(function($) {
                 }
             },
             error: function() {
-                alert('Fehler beim Speichern der Forum-Einstellungen');
-                submitBtn.prop('disabled', false).text('Forum-Einstellungen speichern');
+                alert(cpc_groups_ajax.i18n.saveForumSettingsError);
+                submitBtn.prop('disabled', false).text(cpc_groups_ajax.i18n.saveForumSettings);
             }
         });
     });
@@ -974,7 +974,7 @@ jQuery(document).ready(function($) {
         var groupId = form.data('group-id');
         var submitBtn = form.find('button[type="submit"]');
 
-        submitBtn.prop('disabled', true).text('Speichern...');
+        submitBtn.prop('disabled', true).text(cpc_groups_ajax.i18n.saving);
 
         $.ajax({
             url: cpc_groups_ajax.ajaxurl,
@@ -989,7 +989,7 @@ jQuery(document).ready(function($) {
                 enable_event_emails: form.find('#enable_event_emails').is(':checked') ? 1 : 0
             },
             success: function(response) {
-                submitBtn.prop('disabled', false).text('Module speichern');
+                submitBtn.prop('disabled', false).text(cpc_groups_ajax.i18n.saveModules);
 
                 if (response.success) {
                     cpc_show_notification(response.data.message, 'success');
@@ -1001,8 +1001,8 @@ jQuery(document).ready(function($) {
                 }
             },
             error: function() {
-                cpc_show_notification('Fehler beim Speichern der Modul-Einstellungen', 'error');
-                submitBtn.prop('disabled', false).text('Module speichern');
+                cpc_show_notification(cpc_groups_ajax.i18n.saveModulesError, 'error');
+                submitBtn.prop('disabled', false).text(cpc_groups_ajax.i18n.saveModules);
             }
         });
     });
@@ -1015,7 +1015,7 @@ jQuery(document).ready(function($) {
         var newRole = select.val();
         var oldRole = select.find('option[selected]').val() || select.find('option:first').val();
         
-        if (confirm('Rolle wirklich zu "' + newRole + '" ändern?')) {
+        if (confirm(cpc_groups_ajax.i18n.confirmRoleChange.replace('%s', newRole))) {
             $.ajax({
                 url: cpc_groups_ajax.ajaxurl,
                 type: 'POST',
@@ -1041,7 +1041,7 @@ jQuery(document).ready(function($) {
                     }
                 },
                 error: function() {
-                    cpc_show_notification('Fehler beim Ändern der Rolle', 'error');
+                    cpc_show_notification(cpc_groups_ajax.i18n.roleChangeError, 'error');
                     // Revert to old role
                     select.val(oldRole);
                 }
@@ -1073,7 +1073,7 @@ jQuery(document).ready(function($) {
                 }
             },
             error: function() {
-                alert('Fehler beim Laden des Einladungsdialogs');
+                alert(cpc_groups_ajax.i18n.loadInviteDialogError);
             }
         });
     });
@@ -1093,7 +1093,7 @@ jQuery(document).ready(function($) {
         var groupId = form.data('group-id');
         var selected = form.find('input[name="friend_ids[]"]:checked');
         if (selected.length === 0) {
-            alert('Bitte mindestens einen Freund auswählen.');
+            alert(cpc_groups_ajax.i18n.selectFriend);
             return;
         }
         var friendIds = [];
@@ -1111,14 +1111,14 @@ jQuery(document).ready(function($) {
             },
             success: function(response) {
                 if (response.success) {
-                    alert(response.data.message || 'Einladungen gesendet.');
+                    alert(response.data.message || cpc_groups_ajax.i18n.invitationsSent);
                     $('.cpc-group-invite-modal-overlay').remove();
                 } else if (response.data && response.data.message) {
                     alert(response.data.message);
                 }
             },
             error: function() {
-                alert('Fehler beim Senden der Einladungen');
+                alert(cpc_groups_ajax.i18n.sendInvitationsError);
             }
         });
     });

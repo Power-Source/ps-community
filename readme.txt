@@ -131,6 +131,10 @@ Hinweis zum Rangsystem:
 * Fix: Gruppenersteller aus `post_author` und `cpc_group_creator` bleiben dauerhaft aktive Gruppenadmins und können nicht versehentlich entfernt, herabgestuft oder aus der Gruppe ausgetragen werden
 * Verbesserung: Einmalige Bestandsbereinigung normalisiert bestehende Gruppenmitgliedschaften, entfernt Duplikate und aktualisiert die Mitgliederzahlen
 * Security-Fix: Genehmigen und Ablehnen von Gruppenanfragen validiert jetzt zuverlässig die Zuordnung von Anfrage, Benutzer und Gruppe
+* Internationalisierung: Plugin-Texte verwenden einheitlich die Textdomain `cp-community` und werden über den Standard-Pluginloader geladen
+* Internationalisierung: Sichtbare JavaScript-Texte werden über lokalisierte PHP-Objekte bereitgestellt
+* Übersetzungen: Frische Basisdatei `languages/cp-community.pot` hinzugefügt
+* UX-Fix: Ein installiertes, aber deaktiviertes PS Jobboard kann wie PS-Chat und PS PM-System direkt auf der Integrationsseite aktiviert werden
 
 = 1.1.9 =
 

@@ -608,9 +608,9 @@ function cpc_update_group_activity($group_id) {
  */
 function cpc_get_group_type_label($type) {
 	$labels = array(
-		'public' => __('Öffentlich', CPC2_TEXT_DOMAIN),
-		'private' => __('Privat', CPC2_TEXT_DOMAIN),
-		'hidden' => __('Versteckt', CPC2_TEXT_DOMAIN),
+		'public' => __('Öffentlich', 'cp-community'),
+		'private' => __('Privat', 'cp-community'),
+		'hidden' => __('Versteckt', 'cp-community'),
 	);
 	return isset($labels[$type]) ? $labels[$type] : $type;
 }
@@ -803,12 +803,12 @@ function cpc_get_group_link($group_id) {
 function cpc_create_group_forum($group_id) {
 	// Check if taxonomy exists
 	if (!taxonomy_exists('cpc_forum')) {
-		return new WP_Error('forum_not_available', __('Forum-Funktion ist nicht verfügbar', CPC2_TEXT_DOMAIN));
+		return new WP_Error('forum_not_available', __('Forum-Funktion ist nicht verfügbar', 'cp-community'));
 	}
 	
 	$group = get_post($group_id);
 	if (!$group || $group->post_type !== 'cpc_group') {
-		return new WP_Error('invalid_group', __('Ungültige Gruppe', CPC2_TEXT_DOMAIN));
+		return new WP_Error('invalid_group', __('Ungültige Gruppe', 'cp-community'));
 	}
 	
 	// Generate forum slug from group name
@@ -830,7 +830,7 @@ function cpc_create_group_forum($group_id) {
 		'cpc_forum',
 		array(
 			'slug' => $forum_slug,
-			'description' => sprintf(__('Diskussionsforum für die Gruppe %s', CPC2_TEXT_DOMAIN), $group->post_title),
+			'description' => sprintf(__('Diskussionsforum für die Gruppe %s', 'cp-community'), $group->post_title),
 		)
 	);
 	

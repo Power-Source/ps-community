@@ -31,6 +31,17 @@ function cpc_activity_init() {
         'activity_post_focus' => get_option('cpccom_activity_set_focus'),
         'nonce' => wp_create_nonce('cpc-activity-nonce'),
         'activity_plus' => $activity_plus,
+        'i18n' => array(
+            'saved' => __('Gespeichert', 'cp-community'),
+            'saveFailed' => __('Speichern fehlgeschlagen', 'cp-community'),
+            'networkError' => __('Netzwerkfehler', 'cp-community'),
+            'previous' => __('&lsaquo; zurück', 'cp-community'),
+            'next' => __('weiter &rsaquo;', 'cp-community'),
+            'noPreview' => __('Keine Vorschau', 'cp-community'),
+            'unsupportedVideo' => __('Video-Format wird nicht unterstützt', 'cp-community'),
+            'tabLoadFailed' => __('Tab-Inhalt konnte nicht geladen werden.', 'cp-community'),
+            'close' => __('Schließen', 'cp-community'),
+        ),
     ));
     
     // CSS-Datei einbinden (mit Versionsnummer für Cache-Busting)
@@ -154,9 +165,9 @@ function cpc_activity_page($atts){
 		'map_style' => cpc_get_shortcode_value($values, 'cpc_activity_page-map_style', 'dynamic'),
 		'map_size' => cpc_get_shortcode_value($values, 'cpc_activity_page-map_size', '150,150'),
 		'map_zoom' => cpc_get_shortcode_value($values, 'cpc_activity_page-map_zoom', 4),
-		'town_label' => cpc_get_shortcode_value($values, 'cpc_activity_page-town_label', __('Stadt/Gemeinde', CPC2_TEXT_DOMAIN)),
-        'country_label' => cpc_get_shortcode_value($values, 'cpc_activity_page-country_label', __('Land', CPC2_TEXT_DOMAIN)),
-        'requests_label' => cpc_get_shortcode_value($values, 'cpc_activity_page-requests_label', __('Freundschaftsanfragen', CPC2_TEXT_DOMAIN)),
+		'town_label' => cpc_get_shortcode_value($values, 'cpc_activity_page-town_label', __('Stadt/Gemeinde', 'cp-community')),
+        'country_label' => cpc_get_shortcode_value($values, 'cpc_activity_page-country_label', __('Land', 'cp-community')),
+        'requests_label' => cpc_get_shortcode_value($values, 'cpc_activity_page-requests_label', __('Freundschaftsanfragen', 'cp-community')),
         'styles' => true,
 	), $atts, 'cpc_activity_page' ) );
     
@@ -255,9 +266,9 @@ function cpc_activity_post($atts) {
     	extract( shortcode_atts( array(
             'user_id' => false,
     		'class' => cpc_get_shortcode_value($values, 'cpc_activity_post-class', ''),
-    		'label' => cpc_get_shortcode_value($values, 'cpc_activity_post-label', __('Beitrag hinzufügen', CPC2_TEXT_DOMAIN)),
-    		'private_msg' => cpc_get_shortcode_value($values, 'cpc_activity_post-private_msg', __('Du hast keine Berechtigung, hier etwas zu posten', CPC2_TEXT_DOMAIN)),
-            'account_closed_msg' => cpc_get_shortcode_value($values, 'cpc_activity_post-private_msg', __('Konto geschlossen.', CPC2_TEXT_DOMAIN)),
+    		'label' => cpc_get_shortcode_value($values, 'cpc_activity_post-label', __('Beitrag hinzufügen', 'cp-community')),
+    		'private_msg' => cpc_get_shortcode_value($values, 'cpc_activity_post-private_msg', __('Du hast keine Berechtigung, hier etwas zu posten', 'cp-community')),
+            'account_closed_msg' => cpc_get_shortcode_value($values, 'cpc_activity_post-private_msg', __('Konto geschlossen.', 'cp-community')),
             'background_icon' => cpc_get_shortcode_value($values, 'cpc_activity_post-background_icon', false),
     		'before' => '',
     		'styles' => true,
@@ -351,10 +362,10 @@ if ($debug) $debug_html .= 'Start: '.date('Y-m-d H:i:s').'<br />';
 		'hide_until_loaded' => cpc_get_shortcode_value($values, 'cpc_activity-hide_until_loaded', false),
 		'type' => '',
 		'class' => cpc_get_shortcode_value($values, 'cpc_activity-class', ''),
-        'private_msg' => cpc_get_shortcode_value($values, 'cpc_activity-private_msg', __('Die Aktivität ist privat', CPC2_TEXT_DOMAIN)),
-		'not_found' => cpc_get_shortcode_value($values, 'cpc_activity-not_found', __('Leider ist dieser Aktivitätsbeitrag nicht mehr verfügbar.', CPC2_TEXT_DOMAIN)),
+        'private_msg' => cpc_get_shortcode_value($values, 'cpc_activity-private_msg', __('Die Aktivität ist privat', 'cp-community')),
+		'not_found' => cpc_get_shortcode_value($values, 'cpc_activity-not_found', __('Leider ist dieser Aktivitätsbeitrag nicht mehr verfügbar.', 'cp-community')),
         'stick_others' => cpc_get_shortcode_value($values, 'cpc_activity-hide_until_loaded', 0), // set to 1 to stick other's activity to own stream
-        'logged_out_msg' => cpc_get_shortcode_value($values, 'cpc_activity-logged_out_msg', __('Du musst angemeldet sein, um die Profilseite anzuzeigen.', CPC2_TEXT_DOMAIN)),
+        'logged_out_msg' => cpc_get_shortcode_value($values, 'cpc_activity-logged_out_msg', __('Du musst angemeldet sein, um die Profilseite anzuzeigen.', 'cp-community')),
         'login_url' => cpc_get_shortcode_value($values, 'cpc_activity-login_url', ''),
 		'before' => '',
 		'styles' => true,
@@ -384,7 +395,7 @@ if ($debug) $debug_html .= 'Start: '.date('Y-m-d H:i:s').'<br />';
     if ($user_can_see_activity && $user_id):
 
         if (current_user_can('manage_options') && !$login_url && function_exists('cpc_login_init')):
-            $html = cpc_admin_tip($html, 'cpc_activity_login', __('Füge login_url="/example" zum Shortcode [cpc-activity] hinzu, damit sich Benutzer anmelden und hierher zurückleiten können, wenn sie nicht angemeldet sind.', CPC2_TEXT_DOMAIN));
+            $html = cpc_admin_tip($html, 'cpc_activity_login', __('Füge login_url="/example" zum Shortcode [cpc-activity] hinzu, damit sich Benutzer anmelden und hierher zurückleiten können, wenn sie nicht angemeldet sind.', 'cp-community'));
         endif;    
     
         // Check for single post view
@@ -638,7 +649,7 @@ if ($debug) $debug_html .= 'Start: '.date('Y-m-d H:i:s').'<br />';
     
             else:
     
-                $html .= '<div id="cpc_activity_post_private_msg">'.__('Keine Aktivität zum Anzeigen...', CPC2_TEXT_DOMAIN).'</div>';
+                $html .= '<div id="cpc_activity_post_private_msg">'.__('Keine Aktivität zum Anzeigen...', 'cp-community').'</div>';
                 $html .= '<div style="display:none" id="cpc_wait_url">'.plugins_url('../css/images/wait.gif', __FILE__).'</div>';
                 $html .= '<div id="cpc_activity_items" class="cpc_activity_items"></div>';
 
@@ -762,7 +773,7 @@ function cpc_activity_wall_render_items_container($activity, $page_size, $this_u
         $html .= '<div style="display:none" id="cpc_nonce_'.$user_id.'">'.wp_create_nonce('cpc_get_activity_nonce_'.$user_id).'</div>';
         $html .= '</div>';
     } else {
-        $html .= '<div id="cpc_activity_post_private_msg">'.__('Keine öffentliche Aktivität zum Anzeigen...', CPC2_TEXT_DOMAIN).'</div>';
+        $html .= '<div id="cpc_activity_post_private_msg">'.__('Keine öffentliche Aktivität zum Anzeigen...', 'cp-community').'</div>';
         $html .= '<div style="display:none" id="cpc_wait_url">'.plugins_url('../css/images/wait.gif', __FILE__).'</div>';
         $html .= '<div id="cpc_activity_items" class="cpc_activity_items"></div>';
     }
@@ -780,7 +791,7 @@ function cpc_activity_wall($atts) {
 
     $values = cpc_get_shortcode_options('cpc_activity_wall');
     extract(shortcode_atts(array(
-        'title' => isset($settings['title']) ? $settings['title'] : __('Aktivitätswall', CPC2_TEXT_DOMAIN),
+        'title' => isset($settings['title']) ? $settings['title'] : __('Aktivitätswall', 'cp-community'),
         'page_size' => isset($settings['per_page']) ? $settings['per_page'] : 12,
         'show_post_form' => 1,
         'styles' => true,

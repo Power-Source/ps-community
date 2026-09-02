@@ -30,16 +30,16 @@ function cpc_menu() {
 	$menu_label = (defined('CPC_MENU')) ? CPC_MENU : 'PS Community';
     $menu_icon = plugins_url('css/images/cpc_logo.png', __FILE__);
     add_menu_page($menu_label, $menu_label, 'manage_options', 'cpc_com', 'cpccom_setup', $menu_icon); 
-	add_submenu_page('cpc_com', __('Versionshinweise', CPC2_TEXT_DOMAIN), __('Versionshinweise', CPC2_TEXT_DOMAIN), 'manage_options', 'cpc_com_release_notes', 'cpccom_release_notes');
-	add_submenu_page('cpc_com', __('Einstellungen', CPC2_TEXT_DOMAIN), __('Einstellungen', CPC2_TEXT_DOMAIN), 'manage_options', 'cpc_com_setup', 'cpccom_setup');
-	add_submenu_page('cpc_com', __('Shortcodes', CPC2_TEXT_DOMAIN), __('Shortcodes', CPC2_TEXT_DOMAIN), 'manage_options', 'cpc_com_shortcodes', 'cpc_com_shortcodes');
-	add_submenu_page('cpc_com', __('Styles (BETA)', CPC2_TEXT_DOMAIN), __('Styles (BETA)', CPC2_TEXT_DOMAIN), 'manage_options', 'cpc_com_styles', 'cpc_com_styles');
-	add_submenu_page(get_option('cpc_core_admin_icons') ? 'cpc_com' : '', __('Benutzerdefiniertes CSS', CPC2_TEXT_DOMAIN), __('Benutzerdefiniertes CSS', CPC2_TEXT_DOMAIN), 'manage_options', 'cpc_com_custom_css', 'cpccom_custom_css');
-	add_submenu_page(get_option('cpc_core_admin_icons') ? 'cpc_com' : '', __('Lösche alle CPC-Daten', CPC2_TEXT_DOMAIN), __('Lösche CPC-Daten', CPC2_TEXT_DOMAIN), 'manage_options', 'cpc_com_reset', 'cpc_com_reset');
-	add_submenu_page('cpc_com', __('Übersetzungen', CPC2_TEXT_DOMAIN), __('Übersetzungen', CPC2_TEXT_DOMAIN), 'manage_options', 'cpc_com_translations', 'cpc_com_translations');
-	add_submenu_page('cpc_com', __('Integrationen', CPC2_TEXT_DOMAIN), __('Integrationen', CPC2_TEXT_DOMAIN), 'manage_options', 'cpc_integrations', 'cpc_integrations_page');
+	add_submenu_page('cpc_com', __('Versionshinweise', 'cp-community'), __('Versionshinweise', 'cp-community'), 'manage_options', 'cpc_com_release_notes', 'cpccom_release_notes');
+	add_submenu_page('cpc_com', __('Einstellungen', 'cp-community'), __('Einstellungen', 'cp-community'), 'manage_options', 'cpc_com_setup', 'cpccom_setup');
+	add_submenu_page('cpc_com', __('Shortcodes', 'cp-community'), __('Shortcodes', 'cp-community'), 'manage_options', 'cpc_com_shortcodes', 'cpc_com_shortcodes');
+	add_submenu_page('cpc_com', __('Styles (BETA)', 'cp-community'), __('Styles (BETA)', 'cp-community'), 'manage_options', 'cpc_com_styles', 'cpc_com_styles');
+	add_submenu_page(get_option('cpc_core_admin_icons') ? 'cpc_com' : '', __('Benutzerdefiniertes CSS', 'cp-community'), __('Benutzerdefiniertes CSS', 'cp-community'), 'manage_options', 'cpc_com_custom_css', 'cpccom_custom_css');
+	add_submenu_page(get_option('cpc_core_admin_icons') ? 'cpc_com' : '', __('Lösche alle CPC-Daten', 'cp-community'), __('Lösche CPC-Daten', 'cp-community'), 'manage_options', 'cpc_com_reset', 'cpc_com_reset');
+	add_submenu_page('cpc_com', __('Übersetzungen', 'cp-community'), __('Übersetzungen', 'cp-community'), 'manage_options', 'cpc_com_translations', 'cpc_com_translations');
+	add_submenu_page('cpc_com', __('Integrationen', 'cp-community'), __('Integrationen', 'cp-community'), 'manage_options', 'cpc_integrations', 'cpc_integrations_page');
     
-    add_submenu_page(get_option('cpc_core_admin_icons') ? 'cpc_com' : '', __('Benachrichtigungen (pro Benutzer)', CPC2_TEXT_DOMAIN), __('Benachrichtigungen (pro Benutzer)', CPC2_TEXT_DOMAIN), 'manage_options', 'cpc_alerts_per_user', 'cpc_alerts_per_user');
+    add_submenu_page(get_option('cpc_core_admin_icons') ? 'cpc_com' : '', __('Benachrichtigungen (pro Benutzer)', 'cp-community'), __('Benachrichtigungen (pro Benutzer)', 'cp-community'), 'manage_options', 'cpc_alerts_per_user', 'cpc_alerts_per_user');
     
 	remove_submenu_page('cpc_com','cpc_com');
 
@@ -108,7 +108,7 @@ function cpc_menu() {
     
             update_option('cpc_forum_meta_update_all', true);
     
-            echo '<div class="error"><p>'.__('PS Community-Update erfolgreich.', CPC2_TEXT_DOMAIN).'</p></div>';    
+            echo '<div class="error"><p>'.__('PS Community-Update erfolgreich.', 'cp-community').'</p></div>';    
     
         endif;
     
@@ -257,22 +257,22 @@ function cpccom_manage() {
 	  	echo '<div id="cpc_admin_admin_links">';
 
 		  	echo '<div class="cpc_manage_left">';
-			  	echo '<h3>'.__('Konfigurieren', CPC2_TEXT_DOMAIN).'</h3>';
+			  	echo '<h3>'.__('Konfigurieren', 'cp-community').'</h3>';
 			  	echo '<ul class="cpc_manage_icons">';
-			  	echo '<li class="cpc_icon_css'.cpc_admin_fav('custom_css').'"><a href="admin.php?page=cpc_com_custom_css">'.__('Benutzerdefinierte CSS', CPC2_TEXT_DOMAIN).'</a></li>';
-			  	echo '<li class="cpc_icon_reset'.cpc_admin_fav('cpc_com_reset').'"><a href="admin.php?page=cpc_com_reset">'.__('Lösche alle PS Community-Daten', CPC2_TEXT_DOMAIN).'</a></li>';
+			  	echo '<li class="cpc_icon_css'.cpc_admin_fav('custom_css').'"><a href="admin.php?page=cpc_com_custom_css">'.__('Benutzerdefinierte CSS', 'cp-community').'</a></li>';
+			  	echo '<li class="cpc_icon_reset'.cpc_admin_fav('cpc_com_reset').'"><a href="admin.php?page=cpc_com_reset">'.__('Lösche alle PS Community-Daten', 'cp-community').'</a></li>';
 			  	echo '</ul>';
 		  	echo '</div>';
 
             if (strpos(CPC_CORE_PLUGINS, 'core-activity') !== false || strpos(CPC_CORE_PLUGINS, 'core-friendships') !== false || (strpos(CPC_CORE_PLUGINS, 'core-profile') !== false && ((in_array('core-rewards', $values) || in_array('core-rewards', $values)))) ):
                 echo '<div class="cpc_manage_left">';
-                    echo '<h3>'.__('Benutzer', CPC2_TEXT_DOMAIN).'</h3>';
+                    echo '<h3>'.__('Benutzer', 'cp-community').'</h3>';
                     echo '<ul class="cpc_manage_icons">';
                     if (strpos(CPC_CORE_PLUGINS, 'core-activity') !== false)
-                        echo '<li class="cpc_icon_activity'.cpc_admin_fav('activity_posts').'"><a href="edit.php?post_type=cpc_activity">'.__('Aktivitätsbeiträge verwalten', CPC2_TEXT_DOMAIN).'</a></li>';
+                        echo '<li class="cpc_icon_activity'.cpc_admin_fav('activity_posts').'"><a href="edit.php?post_type=cpc_activity">'.__('Aktivitätsbeiträge verwalten', 'cp-community').'</a></li>';
                     if (strpos(CPC_CORE_PLUGINS, 'core-friendships') !== false):
-                        echo '<li class="cpc_icon_friends'.cpc_admin_fav('friendships').'"><a href="edit.php?post_type=cpc_friendship">'.__('Freundschaften verwalten', CPC2_TEXT_DOMAIN).'</a></li>';
-                        echo '<li class="cpc_icon_friends'.cpc_admin_fav('favourite_friendships').'"><a href="edit.php?post_type=cpc_favourite_friend">'.__('Favoriten verwalten', CPC2_TEXT_DOMAIN).'</a></li>';
+                        echo '<li class="cpc_icon_friends'.cpc_admin_fav('friendships').'"><a href="edit.php?post_type=cpc_friendship">'.__('Freundschaften verwalten', 'cp-community').'</a></li>';
+                        echo '<li class="cpc_icon_friends'.cpc_admin_fav('favourite_friendships').'"><a href="edit.php?post_type=cpc_favourite_friend">'.__('Favoriten verwalten', 'cp-community').'</a></li>';
                     endif;
                     echo '</ul>';
                 echo '</div>';
@@ -280,31 +280,31 @@ function cpccom_manage() {
 
             if (strpos(CPC_CORE_PLUGINS, 'core-forums') !== false):
                 echo '<div class="cpc_manage_left">';
-                    echo '<h3>'.__('Foren', CPC2_TEXT_DOMAIN).'</h3>';
+                    echo '<h3>'.__('Foren', 'cp-community').'</h3>';
                     echo '<ul class="cpc_manage_icons">';
-                    echo '<li class="cpc_icon_forums'.cpc_admin_fav('manage_all_forums').'"><a href="admin.php?page=cpccom_forum_setup">'.__('Alle Foren verwalten', CPC2_TEXT_DOMAIN).'</a></li>';
-                    echo '<li class="cpc_icon_forums'.cpc_admin_fav('forum_posts').'"><a href="edit.php?post_type=cpc_forum_post">'.__('Forenbeiträge verwalten', CPC2_TEXT_DOMAIN).'</a></li>';
+                    echo '<li class="cpc_icon_forums'.cpc_admin_fav('manage_all_forums').'"><a href="admin.php?page=cpccom_forum_setup">'.__('Alle Foren verwalten', 'cp-community').'</a></li>';
+                    echo '<li class="cpc_icon_forums'.cpc_admin_fav('forum_posts').'"><a href="edit.php?post_type=cpc_forum_post">'.__('Forenbeiträge verwalten', 'cp-community').'</a></li>';
                     echo '</ul>';
                 echo '</div>';
             endif;
 
             if (strpos(CPC_CORE_PLUGINS, 'core-alerts') !== false):
                 echo '<div class="cpc_manage_left">';
-                    echo '<h3>'.__('Benachrichtigungen', CPC2_TEXT_DOMAIN).'</h3>';
+                    echo '<h3>'.__('Benachrichtigungen', 'cp-community').'</h3>';
                     echo '<ul class="cpc_manage_icons">';
-                    echo '<li class="cpc_icon_alerts'.cpc_admin_fav('manage_alerts').'"><a href="edit.php?post_type=cpc_alerts">'.__('Benachrichtigungen verwalten', CPC2_TEXT_DOMAIN).'</a></li>';
-                    echo '<li class="cpc_icon_alerts'.cpc_admin_fav('manage_user_alerts').'"><a href="edit.php?page=cpc_alerts_per_user">'.__('Benutzer-Benachrichtigungen verwalten', CPC2_TEXT_DOMAIN).'</a></li>';
+                    echo '<li class="cpc_icon_alerts'.cpc_admin_fav('manage_alerts').'"><a href="edit.php?post_type=cpc_alerts">'.__('Benachrichtigungen verwalten', 'cp-community').'</a></li>';
+                    echo '<li class="cpc_icon_alerts'.cpc_admin_fav('manage_user_alerts').'"><a href="edit.php?page=cpc_alerts_per_user">'.__('Benutzer-Benachrichtigungen verwalten', 'cp-community').'</a></li>';
                     echo '</ul>';
-                    echo '<p>'.sprintf(__('Lösche regelmäßig Deine <a href="%s">gesendeten und ausstehenden Benachrichtigungen</a>.', CPC2_TEXT_DOMAIN), admin_url( 'edit.php?post_type=cpc_alerts' )).'</p>';
+                    echo '<p>'.sprintf(__('Lösche regelmäßig Deine <a href="%s">gesendeten und ausstehenden Benachrichtigungen</a>.', 'cp-community'), admin_url( 'edit.php?post_type=cpc_alerts' )).'</p>';
                 echo '</div>';
             endif;
 
             if (strpos(CPC_CORE_PLUGINS, 'core-groups') !== false):
 		  	    echo '<div class="cpc_manage_left">';
-			  	    echo '<h3>'.__('Gruppen', CPC2_TEXT_DOMAIN).'</h3>';
+			  	    echo '<h3>'.__('Gruppen', 'cp-community').'</h3>';
 			  	    echo '<ul class="cpc_manage_icons">';
-			  	    echo '<li class="cpc_icon_groups'.cpc_admin_fav('manage_groups').'"><a href="edit.php?post_type=cpc_group">'.__('Gruppen verwalten', CPC2_TEXT_DOMAIN).'</a></li>';
-			  	    echo '<li class="cpc_icon_groups'.cpc_admin_fav('group_members').'"><a href="edit.php?post_type=cpc_group_members">'.__('Gruppenmitglieder', CPC2_TEXT_DOMAIN).'</a></li>';
+			  	    echo '<li class="cpc_icon_groups'.cpc_admin_fav('manage_groups').'"><a href="edit.php?post_type=cpc_group">'.__('Gruppen verwalten', 'cp-community').'</a></li>';
+			  	    echo '<li class="cpc_icon_groups'.cpc_admin_fav('group_members').'"><a href="edit.php?post_type=cpc_group_members">'.__('Gruppenmitglieder', 'cp-community').'</a></li>';
 			  	    echo '</ul>';
 		  	    echo '</div>';
 		  	endif;
@@ -342,30 +342,30 @@ function cpccom_release_notes() {
 	  	echo '</style>';
 	  	echo '<div id="cpc_release_notes">';
 	  		echo '<div id="cpc_welcome_bar" style="margin-top: 20px;">';
-		  		echo '<img id="cpc_welcome_logo" style="width:56px; height:56px; float:left;" src="'.plugins_url('../ps-community/css/images/cpc_logo.png', __FILE__).'" title="'.__('help', CPC2_TEXT_DOMAIN).'" />';
-		  		echo '<div style="font-size:2em; line-height:1em; font-weight:100; color:#fff;">'.__('Willkommen bei PS Community', CPC2_TEXT_DOMAIN).'</div>';
-		  		echo '<p style="color:#fff;"><em>'.__('Das ultimative Plugin für soziale Netzwerke für ClassicPress', CPC2_TEXT_DOMAIN).'</em></p>';
+		  		echo '<img id="cpc_welcome_logo" style="width:56px; height:56px; float:left;" src="'.plugins_url('../ps-community/css/images/cpc_logo.png', __FILE__).'" title="'.__('help', 'cp-community').'" />';
+		  		echo '<div style="font-size:2em; line-height:1em; font-weight:100; color:#fff;">'.__('Willkommen bei PS Community', 'cp-community').'</div>';
+		  		echo '<p style="color:#fff;"><em>'.__('Das ultimative Plugin für soziale Netzwerke für ClassicPress', 'cp-community').'</em></p>';
 	  		echo '</div>';
 
-	  		echo '<div style="font-size:1.4em; margin-top:20px">'.__('Vielen Dank, dass Du PS Community installiert hast!', CPC2_TEXT_DOMAIN).'</div>';
+	  		echo '<div style="font-size:1.4em; margin-top:20px">'.__('Vielen Dank, dass Du PS Community installiert hast!', 'cp-community').'</div>';
 
 	  		?>
 
             <div id="cpc_release_notes_psource" class="cpc_release_notes" style="float:right; width:280px; margin-left: 20px;">
-                <div style="float:right;width:200px"><?php echo sprintf(__('Bitte besuche unsere <a href="%s" target="_blank">Projektseite</a>, oder wirke auf <a href="%s" target="_blank">GitHub</a> mit, um PS Community noch großartiger zu machen!', CPC2_TEXT_DOMAIN), 'https://cp-community.n3rds.work/', 'http://twitter.com/cpcymposium'); ?></div>
+                <div style="float:right;width:200px"><?php echo sprintf(__('Bitte besuche unsere <a href="%s" target="_blank">Projektseite</a>, oder wirke auf <a href="%s" target="_blank">GitHub</a> mit, um PS Community noch großartiger zu machen!', 'cp-community'), 'https://cp-community.n3rds.work/', 'http://twitter.com/cpcymposium'); ?></div>
             </div>
             <p>
-            	<?php echo sprintf(__('Wenn Du neu bei PS Community bist, solltest Du die <a href="%s">Setup-Seite</a> besuchen...', CPC2_TEXT_DOMAIN), admin_url('admin.php?page=cpc_com_setup')); ?>
+            	<?php echo sprintf(__('Wenn Du neu bei PS Community bist, solltest Du die <a href="%s">Setup-Seite</a> besuchen...', 'cp-community'), admin_url('admin.php?page=cpc_com_setup')); ?>
             </p>
             
             <p>
-            	<?php echo __('Wenn Du einen Cache oder ein CDN (vielleicht wie CloudFlare) verwendest, empfehlen wir, nach dem Upgrade aller Plugins alle Deine Dateien zu löschen/löschen.', CPC2_TEXT_DOMAIN); ?>
+            	<?php echo __('Wenn Du einen Cache oder ein CDN (vielleicht wie CloudFlare) verwendest, empfehlen wir, nach dem Upgrade aller Plugins alle Deine Dateien zu löschen/löschen.', 'cp-community'); ?>
             </p>
 
             <em><strong>DerN3rd, PS Community-Entwickler</strong></em></p>
 
             <?php
-            echo '<div style="font-size:1.4em; margin:20px 0 20px 0">'.sprintf(__('Versionshinweise für den aktuellen Build (%s)', CPC2_TEXT_DOMAIN), get_option('cp_community_ver')).'...</div>';
+            echo '<div style="font-size:1.4em; margin:20px 0 20px 0">'.sprintf(__('Versionshinweise für den aktuellen Build (%s)', 'cp-community'), get_option('cp_community_ver')).'...</div>';
 
             $cup_position = 'right';
             if ($cup_position == 'left'):
@@ -441,25 +441,25 @@ function cpccom_setup() {
         // Backdoor to de-activate everything
         if (isset($_GET['cpc_deactivate_all'])):
             delete_option('cpc_default_core');
-            echo '<div class="cpc_warning">'.__('Alle Funktionen deaktiviert', CPC2_TEXT_DOMAIN).'</div>';
+            echo '<div class="cpc_warning">'.__('Alle Funktionen deaktiviert', 'cp-community').'</div>';
         endif;
 
 		$show_header = get_option('cpc_show_welcome_header') ? ' style="display:none; "' : '';
 
 		echo '<div '.$show_header.'id="cpc_welcome">';
 			echo '<div id="cpc_welcome_bar">';
-				echo '<img id="cpc_welcome_logo" style="width:56px; height:56px; float:left;" src="'.plugins_url('../ps-community/css/images/cpc_logo.png', __FILE__).'" title="'.__('Hilfe', CPC2_TEXT_DOMAIN).'" />';
-				echo '<div style="font-size:2em; line-height:1em; font-weight:100; color:#fff;">'.__('Willkommen bei PS Community', CPC2_TEXT_DOMAIN).'</div>';
-				echo '<p style="color:#fff;"><em>'.__('Das ultimative Plugin für soziale Netzwerke für ClassicPress', CPC2_TEXT_DOMAIN).'</em></p>';
+				echo '<img id="cpc_welcome_logo" style="width:56px; height:56px; float:left;" src="'.plugins_url('../ps-community/css/images/cpc_logo.png', __FILE__).'" title="'.__('Hilfe', 'cp-community').'" />';
+				echo '<div style="font-size:2em; line-height:1em; font-weight:100; color:#fff;">'.__('Willkommen bei PS Community', 'cp-community').'</div>';
+				echo '<p style="color:#fff;"><em>'.__('Das ultimative Plugin für soziale Netzwerke für ClassicPress', 'cp-community').'</em></p>';
 			echo '</div>';
 			echo '<div style="width:30%; min-width:200px; margin-right:10px; float: left;">';
-				echo '<p style="font-size:1.4em; font-weight:100;">'.__('Erste Schritte...', CPC2_TEXT_DOMAIN).'</p>';
-				echo '<p style="font-weight:100;">'.__('Verwende die Schnellstart-Schaltflächen unten,', CPC2_TEXT_DOMAIN).'<br />';
-				echo sprintf(__('füge dann Deine neuen Seiten zu Deinem <a href="%s">ClassicPress-Menü</a> hinzu.', CPC2_TEXT_DOMAIN), 'nav-menus.php').'<br />';
-				echo sprintf(__('Anpassen über <a href="%s">Shortcodes</a> (über das Menü).', CPC2_TEXT_DOMAIN), admin_url( 'admin.php?page=cpc_com_shortcodes' )).'</p>';
-				echo '<p style="font-size:1.4em; font-weight:100;">'.__('So erhältst Du Unterstützung', CPC2_TEXT_DOMAIN).'</p>';
-				echo '<p style="font-weight:100;">'.sprintf(__('Support gibt es unter <a target="_blank" href="%s">cp-community.n3rds.work</a>', CPC2_TEXT_DOMAIN), 'https://cp-community.n3rds.work/').'<br />';
-				echo sprintf(__('mit <a href="%s" target="_blank">Forum</a>, <a href="https://cp-community.n3rds.work/help/" target="_blank">helpdesk</a>, und Live-Chat-Unterstützung.', CPC2_TEXT_DOMAIN), 'https://cp-community.n3rds.work/forums/', 'https://cp-community.n3rds.work/help/').'</p>';
+				echo '<p style="font-size:1.4em; font-weight:100;">'.__('Erste Schritte...', 'cp-community').'</p>';
+				echo '<p style="font-weight:100;">'.__('Verwende die Schnellstart-Schaltflächen unten,', 'cp-community').'<br />';
+				echo sprintf(__('füge dann Deine neuen Seiten zu Deinem <a href="%s">ClassicPress-Menü</a> hinzu.', 'cp-community'), 'nav-menus.php').'<br />';
+				echo sprintf(__('Anpassen über <a href="%s">Shortcodes</a> (über das Menü).', 'cp-community'), admin_url( 'admin.php?page=cpc_com_shortcodes' )).'</p>';
+				echo '<p style="font-size:1.4em; font-weight:100;">'.__('So erhältst Du Unterstützung', 'cp-community').'</p>';
+				echo '<p style="font-weight:100;">'.sprintf(__('Support gibt es unter <a target="_blank" href="%s">cp-community.n3rds.work</a>', 'cp-community'), 'https://cp-community.n3rds.work/').'<br />';
+				echo sprintf(__('mit <a href="%s" target="_blank">Forum</a>, <a href="https://cp-community.n3rds.work/help/" target="_blank">helpdesk</a>, und Live-Chat-Unterstützung.', 'cp-community'), 'https://cp-community.n3rds.work/forums/', 'https://cp-community.n3rds.work/help/').'</p>';
 			echo '</div>';
 		echo '</div>';
 
@@ -472,19 +472,19 @@ function cpccom_setup() {
 		endif;
 
 		// Show and hide header
-		echo '<div style="float:right"><a id="cpc_hide_welcome_header" style="text-decoration:none;" href="javascript:void(0); return false;">'.__('Willkommen ein-/ausblenden', CPC2_TEXT_DOMAIN).'</a></div>';
+		echo '<div style="float:right"><a id="cpc_hide_welcome_header" style="text-decoration:none;" href="javascript:void(0); return false;">'.__('Willkommen ein-/ausblenden', 'cp-community').'</a></div>';
 
         // Check that profile pages are set up
         $missing_profile_pages = array();
-        if (!cpc_admin_get_valid_page_id('cpccom_profile_page')) $missing_profile_pages[] = __('Profilseite', CPC2_TEXT_DOMAIN);
-        if (!cpc_admin_get_valid_page_id('cpccom_edit_profile_page')) $missing_profile_pages[] = __('Profilseite bearbeiten', CPC2_TEXT_DOMAIN);
-        if (!cpc_admin_get_valid_page_id('cpccom_change_avatar_page')) $missing_profile_pages[] = __('Avatar-Seite ändern', CPC2_TEXT_DOMAIN);
+        if (!cpc_admin_get_valid_page_id('cpccom_profile_page')) $missing_profile_pages[] = __('Profilseite', 'cp-community');
+        if (!cpc_admin_get_valid_page_id('cpccom_edit_profile_page')) $missing_profile_pages[] = __('Profilseite bearbeiten', 'cp-community');
+        if (!cpc_admin_get_valid_page_id('cpccom_change_avatar_page')) $missing_profile_pages[] = __('Avatar-Seite ändern', 'cp-community');
         if (!empty($missing_profile_pages)):
-            echo '<div class="cpc_error">'.sprintf(__('Folgende Profilseiten fehlen oder sind ungültig: %s. Bitte unten festlegen oder neu erstellen.', CPC2_TEXT_DOMAIN), esc_html(implode(', ', $missing_profile_pages))).'</div>';
+            echo '<div class="cpc_error">'.sprintf(__('Folgende Profilseiten fehlen oder sind ungültig: %s. Bitte unten festlegen oder neu erstellen.', 'cp-community'), esc_html(implode(', ', $missing_profile_pages))).'</div>';
         endif;
 
 		// Quick start hook
-		echo '<div style="width: 300px; float: left; font-size:1.8em; margin-bottom:15px;">'.__('Schnellstart', CPC2_TEXT_DOMAIN).'</div>';
+		echo '<div style="width: 300px; float: left; font-size:1.8em; margin-bottom:15px;">'.__('Schnellstart', 'cp-community').'</div>';
 		echo '<div style="clear: both; margin-bottom:15px;overflow:auto;">';
 		do_action( 'cpc_admin_quick_start_hook' );
 		echo '</div>';
@@ -492,14 +492,14 @@ function cpccom_setup() {
 		// Admin links
 		$hide_icons = get_option('cpc_core_admin_icons');
 		if ($hide_icons):
-			echo '<div style="float:right"><a id="cpc_hide_admin_links_show" style="text-decoration:none;" href="javascript:void(0); return false;">'.__('Admin-Links hierher verschieben', CPC2_TEXT_DOMAIN).'</a></div>';
+			echo '<div style="float:right"><a id="cpc_hide_admin_links_show" style="text-decoration:none;" href="javascript:void(0); return false;">'.__('Admin-Links hierher verschieben', 'cp-community').'</a></div>';
 		else:
-			echo '<div style="float:right; text-align:right;"><a id="cpc_hide_admin_links" style="text-decoration:none;" href="javascript:void(0); return false;">'.__('Verschiebe Admin-Links in das Dashboard-Menü', CPC2_TEXT_DOMAIN).'</a><br />('.__('Klicke auf einzelne Symbole, um sie einzeln zu verschieben', CPC2_TEXT_DOMAIN).')</div>';
+			echo '<div style="float:right; text-align:right;"><a id="cpc_hide_admin_links" style="text-decoration:none;" href="javascript:void(0); return false;">'.__('Verschiebe Admin-Links in das Dashboard-Menü', 'cp-community').'</a><br />('.__('Klicke auf einzelne Symbole, um sie einzeln zu verschieben', 'cp-community').')</div>';
 		endif;
 		cpccom_manage();		
 
 		// Option Sections
-		echo '<p style="clear:both;">'.__('Klicke unten auf einen Abschnittstitel, um Optionen und Hilfe für den Einstieg anzuzeigen.', CPC2_TEXT_DOMAIN).'</p>';
+		echo '<p style="clear:both;">'.__('Klicke unten auf einen Abschnittstitel, um Optionen und Hilfe für den Einstieg anzuzeigen.', 'cp-community').'</p>';
 	
 		// Do any saving
 		if (isset($_POST['cpccom_update']) && $_POST['cpccom_update'] == 'yes'):
@@ -514,7 +514,7 @@ function cpccom_setup() {
 			// Getting Started/Help hook
 			do_action( 'cpc_admin_getting_started_hook' );
 
-		echo '<p><input type="submit" id="cpc_setup_submit" name="Submit" class="button-primary" value="'.__('Änderungen speichern', CPC2_TEXT_DOMAIN).'" /></p>';
+		echo '<p><input type="submit" id="cpc_setup_submit" name="Submit" class="button-primary" value="'.__('Änderungen speichern', 'cp-community').'" /></p>';
 
 		echo '</form>';
 		
@@ -593,63 +593,53 @@ function cpc_com_translations() {
         	
 	  	echo '<div id="icon-themes" class="icon32"><br /></div>';
     
-	  	echo '<h2>'.__('Übersetzungen', CPC2_TEXT_DOMAIN).'</h2>';
+	  	echo '<h2>'.__('Übersetzungen', 'cp-community').'</h2>';
 
-		$path = WP_CONTENT_DIR.'/languages/plugins/cp-community/';
+        $path = WP_LANG_DIR.'/plugins/';
 
 		if (is_admin() && !file_exists($path)) {
-			// ... make folder for translation files
-	    	@mkdir($path, 0777, true);	
+        	wp_mkdir_p($path);
 		}
 
 		$locale = get_locale();
-		$deprecated = false;
-		$domain = CPC2_TEXT_DOMAIN;
-
-		// Load the textdomain according to the plugin first
+		$domain = 'cp-community';
 		$sep = $locale ? '-' : '';
 		$mofile = $domain . $sep . $locale . '.mo';
-		if ( $loaded = load_textdomain( $domain, $mofile ) )
-			return $loaded;
 
-		// Otherwise, load from the languages directory
-		$mofile = $path . $mofile;
-		$loaded_file = load_textdomain( $domain, $mofile );
+		echo '<h3>'.__('Shortcode-Optionen', 'cp-community').'</h3>';
+	  	echo '<p>'.sprintf(__('Du kannst von Shortcodes verwendete Texte und Beschriftungen auf der Admin-Seite <a href="%s">Shortcodes</a> ändern', 'cp-community'), admin_url( 'admin.php?page=cpc_com_shortcodes' )).'.</p>';
 
-		echo '<h3>'.__('Shortcode-Optionen', CPC2_TEXT_DOMAIN).'</h3>';
-	  	echo '<p>'.sprintf(__('Du kannst von Shortcodes verwendete Texte und Beschriftungen auf der Admin-Seite <a href="%s">Shortcodes</a> ändern', CPC2_TEXT_DOMAIN), admin_url( 'admin.php?page=cpc_com_shortcodes' )).'.</p>';
-
-        echo '<h3>'.__('Standardsprache (Gebietsschema), wie in Einstellungen->Allgemein definiert', CPC2_TEXT_DOMAIN).'</h3>';
-        echo '<p>'.__('Dies ist die Standardsprache Deiner Webseite:', CPC2_TEXT_DOMAIN).' '.$locale.'</p>';
+        echo '<h3>'.__('Standardsprache (Gebietsschema), wie in Einstellungen->Allgemein definiert', 'cp-community').'</h3>';
+        echo '<p>'.__('Dies ist die Standardsprache Deiner Webseite:', 'cp-community').' '.$locale.'</p>';
     
-		echo '<h3>'.__('Standardmäßige .mo-Datei basierend auf dem Standardgebietsschema', CPC2_TEXT_DOMAIN).'</h3>';
-        echo '<p>'.sprintf(__('Wenn Du die Übersetzungen für PS Community für die Standardsprache/das Standardgebietsschema Deiner Webseite ändern möchtest, <a href="%s" target="_blank">hole Dir die Basis-.pot-Datei</a> und dann die .mo Die Datei, die Du erstellen solltest (mit einer Anwendung wie <a href="%s" target="_blank">PoEdit</a>), ist:', CPC2_TEXT_DOMAIN), "https://n3rds.work/translation/", "http://www.poedit.com").'</p>';
+		echo '<h3>'.__('Standardmäßige .mo-Datei basierend auf dem Standardgebietsschema', 'cp-community').'</h3>';
+        echo '<p>'.sprintf(__('Wenn Du die Übersetzungen für PS Community für die Standardsprache/das Standardgebietsschema Deiner Webseite ändern möchtest, <a href="%s" target="_blank">hole Dir die Basis-.pot-Datei</a> und dann die .mo Die Datei, die Du erstellen solltest (mit einer Anwendung wie <a href="%s" target="_blank">PoEdit</a>), ist:', 'cp-community'), "https://n3rds.work/translation/", "http://www.poedit.com").'</p>';
 		echo '<p><span style="padding:4px 8px 4px 8px;border-radius: 3px; border: 1px solid #aaa; background-color:white">'.$mofile.'</span></p>';    
 
-		echo '<h3>'.__('Hinzufügen von Sprachen, die Benutzer selbst auswählen können', CPC2_TEXT_DOMAIN).'</h3>';
-		echo '<p>'.sprintf(__('Du musst mit PoEdit eine .mo-Datei generieren, die auf heruntergeladenen .po-Dateien von <a href="%s" target="_blank">CrowdIn.Net</a> basiert, die Du Deinen Benutzern anbietest (oder eine wie oben beschrieben erstellen). mit einer Anwendung wie PoEdit) wäre cp-community-fr_FR.mo beispielsweise die .mo-Datei für Französisch. Du legst die .mo-Dateien im Übersetzungsordner ab, wie im nächsten Abschnitt unten auf dieser Seite gezeigt. Lies mehr darüber im <a href="%s" target="_blank">PS Community Codex</a>.', CPC2_TEXT_DOMAIN), "https://crowdin.com/project/community", "https://cp-community.n3rds.work/translating-cp-community/").'</p>';
+		echo '<h3>'.__('Hinzufügen von Sprachen, die Benutzer selbst auswählen können', 'cp-community').'</h3>';
+		echo '<p>'.sprintf(__('Du musst mit PoEdit eine .mo-Datei generieren, die auf heruntergeladenen .po-Dateien von <a href="%s" target="_blank">CrowdIn.Net</a> basiert, die Du Deinen Benutzern anbietest (oder eine wie oben beschrieben erstellen). mit einer Anwendung wie PoEdit) wäre cp-community-fr_FR.mo beispielsweise die .mo-Datei für Französisch. Du legst die .mo-Dateien im Übersetzungsordner ab, wie im nächsten Abschnitt unten auf dieser Seite gezeigt. Lies mehr darüber im <a href="%s" target="_blank">PS Community Codex</a>.', 'cp-community'), "https://crowdin.com/project/community", "https://cp-community.n3rds.work/translating-cp-community/").'</p>';
 
-        echo '<p>'.__('Um Benutzern die Möglichkeit zu geben, zwischen alternativen Sprachen zu wählen, gib unten zusätzliche Sprachen und Gebietsschemas ein, siehe Beispiel weiter unten auf der Seite.', CPC2_TEXT_DOMAIN).'</p>';
-        echo '<p>'.__('Gib die Standardsprache Deiner Webseite ganz oben ein und gib kein Komma und kein Gebietsschema ein (sieh Dir das Beispiel für eine englische Webseite an).', CPC2_TEXT_DOMAIN).'</p>';
+        echo '<p>'.__('Um Benutzern die Möglichkeit zu geben, zwischen alternativen Sprachen zu wählen, gib unten zusätzliche Sprachen und Gebietsschemas ein, siehe Beispiel weiter unten auf der Seite.', 'cp-community').'</p>';
+        echo '<p>'.__('Gib die Standardsprache Deiner Webseite ganz oben ein und gib kein Komma und kein Gebietsschema ein (sieh Dir das Beispiel für eine englische Webseite an).', 'cp-community').'</p>';
 
 		echo '<form action="" method="POST">';
         echo '<textarea name="cpc_com_lang" style="border:1px solid black; width:500px;height:100px">';
         echo get_option('cpc_com_lang');
         echo '</textarea><br />';
-        echo '<input type="submit" class="button-primary" value="'.__('Speichern', CPC2_TEXT_DOMAIN).'" />';			
+        echo '<input type="submit" class="button-primary" value="'.__('Speichern', 'cp-community').'" />';			
 
-        echo '<p>'.__('Nach dem Speichern können Benutzer auf der Seite "Profil bearbeiten" eine der Sprachen auswählen, die Du oben festgelegt hast.', CPC2_TEXT_DOMAIN).'</p>';
-		echo '<p>'.sprintf(__('Beachte dass wenn Du <strong>TABS</strong> für Deine Seite "Profil bearbeiten" auf der Webseite verwendest, im Abschnitt "Profil bearbeiten" von <a href="%s">Setup-Seite</a> auswählen kannst, auf welcher Registerkarte die Sprachauswahl angezeigt wird.', CPC2_TEXT_DOMAIN), admin_url( 'admin.php?page=cpc_com_setup' )).'</p>';
+        echo '<p>'.__('Nach dem Speichern können Benutzer auf der Seite "Profil bearbeiten" eine der Sprachen auswählen, die Du oben festgelegt hast.', 'cp-community').'</p>';
+		echo '<p>'.sprintf(__('Beachte dass wenn Du <strong>TABS</strong> für Deine Seite "Profil bearbeiten" auf der Webseite verwendest, im Abschnitt "Profil bearbeiten" von <a href="%s">Setup-Seite</a> auswählen kannst, auf welcher Registerkarte die Sprachauswahl angezeigt wird.', 'cp-community'), admin_url( 'admin.php?page=cpc_com_setup' )).'</p>';
 
-		echo '<p>'.__('Wenn Deine Webseite beispielsweise Englisch war und Du eine .mo-Datei für Französisch (cp-community-fr_FR.mo), Deutsch (cp-community-de_DE.mo) und Russisch (cp-community-ru_RU.mo) und Spanisch (cp-community-es_ES.mo) hast, kannst Du im Textbereich oben Folgendes eingeben:', CPC2_TEXT_DOMAIN).'</p>';
+		echo '<p>'.__('Wenn Deine Webseite beispielsweise Englisch war und Du eine .mo-Datei für Französisch (cp-community-fr_FR.mo), Deutsch (cp-community-de_DE.mo) und Russisch (cp-community-ru_RU.mo) und Spanisch (cp-community-es_ES.mo) hast, kannst Du im Textbereich oben Folgendes eingeben:', 'cp-community').'</p>';
 		echo '<div style="font-family:courier">English<br />';
 		echo 'Français,fr_FR<br />';
 		echo 'Deutsche,de_DE<br />';
 		echo 'Pусский,ru_RU<br />';
 		echo 'Español,es_ES</div>';
 
-		echo '<h3>'.__('Übersetzungs-Ordner.', CPC2_TEXT_DOMAIN).'</h3>';
-        echo '<p>'.__('Dies ist der Ordner, in dem Du Deine Übersetzungsdateien (.mo-Dateien) ablegst, wenn Du Deinen Benutzern alternative Sprachen anbieten möchtest.', CPC2_TEXT_DOMAIN).'</p>';
+		echo '<h3>'.__('Übersetzungs-Ordner.', 'cp-community').'</h3>';
+        echo '<p>'.__('Dies ist der Ordner, in dem Du Deine Übersetzungsdateien (.mo-Dateien) ablegst, wenn Du Deinen Benutzern alternative Sprachen anbieten möchtest.', 'cp-community').'</p>';
 		echo '<p><span style="padding:4px 8px 4px 8px;border-radius: 3px; border: 1px solid #aaa; background-color:white">'.$path.'</span></p>';
     
         $files = scandir($path);
@@ -665,18 +655,18 @@ function cpc_com_translations() {
         endif;
         $list .= '</ul>';
         if ($valid_files):
-            echo '<p>'.__('Gefundene Sprachdateien:', CPC2_TEXT_DOMAIN).'</p>';
+            echo '<p>'.__('Gefundene Sprachdateien:', 'cp-community').'</p>';
             echo $list;
         else:
-            echo '<p>'.__('Derzeit sind keine gültigen Sprachdateien im Verzeichnis vorhanden.', CPC2_TEXT_DOMAIN).'</p>';            
+            echo '<p>'.__('Derzeit sind keine gültigen Sprachdateien im Verzeichnis vorhanden.', 'cp-community').'</p>';            
         endif;
 
-		echo '<h3>'.__('Ändern der Sprache der gesamten Webseite', CPC2_TEXT_DOMAIN).'</h3>';
-	  	echo '<p>'.sprintf(__('Wenn Du die entsprechende Webseiten-Sprache für ClassicPress installiert hast (siehe <a target="_blank" href="%s">hier</a>), kann diese optional auch für den Benutzer verwendet werden, wenn er eine Sprache auswählt!', CPC2_TEXT_DOMAIN ), "https://codex.wordpress.org/Installing_ClassicPress_in_Your_Language").'</p>';
+		echo '<h3>'.__('Ändern der Sprache der gesamten Webseite', 'cp-community').'</h3>';
+	  	echo '<p>'.sprintf(__('Wenn Du die entsprechende Webseiten-Sprache für ClassicPress installiert hast (siehe <a target="_blank" href="%s">hier</a>), kann diese optional auch für den Benutzer verwendet werden, wenn er eine Sprache auswählt!', 'cp-community' ), "https://codex.wordpress.org/Installing_ClassicPress_in_Your_Language").'</p>';
         echo '<p><input type="checkbox" ';
         if (get_option('cpc_com_lang_site')) echo 'CHECKED ';
-            echo 'name="cpc_com_lang_site" />'.__('Aktiviere dieses Kontrollkästchen, um den automatischen Sprach-/Gebietsschemawechsel für die ClassicPress-Installation zu bestätigen.', CPC2_TEXT_DOMAIN).'</p>';
-        echo '<input type="submit" class="button-primary" value="'.__('Speichern', CPC2_TEXT_DOMAIN).'" />';			
+            echo 'name="cpc_com_lang_site" />'.__('Aktiviere dieses Kontrollkästchen, um den automatischen Sprach-/Gebietsschemawechsel für die ClassicPress-Installation zu bestätigen.', 'cp-community').'</p>';
+        echo '<input type="submit" class="button-primary" value="'.__('Speichern', 'cp-community').'" />';			
 		echo '</form>';
         
     echo '</div>';	  	
@@ -692,14 +682,14 @@ function cpc_com_reset() {
 	  	echo '</style>';
         	
   		echo '<div id="cpc_welcome_bar" style="margin-top: 20px;">';
-	  		echo '<img id="cpc_welcome_logo" style="width:56px; height:56px; float:left;" src="'.plugins_url('../ps-community/css/images/cpc_logo.png', __FILE__).'" title="'.__('Hilfe', CPC2_TEXT_DOMAIN).'" />';
-	  		echo '<div style="font-size:2em; line-height:1em; font-weight:100; color:#fff;">'.__('Willkommen bei PS Community', CPC2_TEXT_DOMAIN).'</div>';
-	  		echo '<p style="color:#fff;"><em>'.__('Das ultimative Plugin für soziale Netzwerke für ClassicPress', CPC2_TEXT_DOMAIN).'</em></p>';
+	  		echo '<img id="cpc_welcome_logo" style="width:56px; height:56px; float:left;" src="'.plugins_url('../ps-community/css/images/cpc_logo.png', __FILE__).'" title="'.__('Hilfe', 'cp-community').'" />';
+	  		echo '<div style="font-size:2em; line-height:1em; font-weight:100; color:#fff;">'.__('Willkommen bei PS Community', 'cp-community').'</div>';
+	  		echo '<p style="color:#fff;"><em>'.__('Das ultimative Plugin für soziale Netzwerke für ClassicPress', 'cp-community').'</em></p>';
   		echo '</div>';
 
-  		echo '<div style="font-size:1.4em; margin-top:20px">'.__('PS Community-Datenentfernung (Zurücksetzen)', CPC2_TEXT_DOMAIN).'</div>';
+  		echo '<div style="font-size:1.4em; margin-top:20px">'.__('PS Community-Datenentfernung (Zurücksetzen)', 'cp-community').'</div>';
 
-		echo '<p>'.__('Verwende diesen Bildschirm, um PS Community zurückzusetzen oder alle Daten zu entfernen, bevor Du das Plugin deinstallierst.', CPC2_TEXT_DOMAIN).'</p>';
+		echo '<p>'.__('Verwende diesen Bildschirm, um PS Community zurückzusetzen oder alle Daten zu entfernen, bevor Du das Plugin deinstallierst.', 'cp-community').'</p>';
 
 		// admins only!
 		if (current_user_can('manage_options')):
@@ -714,52 +704,52 @@ function cpc_com_reset() {
                         if ($blogs) {
                             foreach($blogs as $blog) {
                               switch_to_blog($blog->blog_id);
-                              echo '<div class="cpc_warning">'.sprintf(__('Wechsel zur Blog-ID %d', CPC2_TEXT_DOMAIN), $blog->blog_id).'</div>';
+                              echo '<div class="cpc_warning">'.sprintf(__('Wechsel zur Blog-ID %d', 'cp-community'), $blog->blog_id).'</div>';
                                     echo '<div class="cpc_warning">';
                                     __cpc_com_uninstall_delete();
-                                    echo __('Lokale Dateien entfernen', CPC2_TEXT_DOMAIN).'... ';
+                                    echo __('Lokale Dateien entfernen', 'cp-community').'... ';
                                     __cpc_com_uninstall_rrmdir(WP_CONTENT_DIR.'/cpc-pro-content');
-                                    echo __('ok', CPC2_TEXT_DOMAIN).'<br />';
-                                    echo __('ClassicPress spülen', CPC2_TEXT_DOMAIN).'... ';                        
+                                    echo __('ok', 'cp-community').'<br />';
+                                    echo __('ClassicPress spülen', 'cp-community').'... ';                        
                         			$wp_rewrite->flush_rules();
-                        			echo __('ok', CPC2_TEXT_DOMAIN).'<br />';
-									echo '</div><div class="cpc_success">'.__('Vollständig', CPC2_TEXT_DOMAIN).'</div>';
-									echo '<p>'.__('Du musst alle von Dir erstellten Seiten entfernen.', CPC2_TEXT_DOMAIN).'</p>';
+                        			echo __('ok', 'cp-community').'<br />';
+									echo '</div><div class="cpc_success">'.__('Vollständig', 'cp-community').'</div>';
+									echo '<p>'.__('Du musst alle von Dir erstellten Seiten entfernen.', 'cp-community').'</p>';
                             }
                             restore_current_blog();
                         }   
                     } else {
                     	echo '<div class="cpc_warning">';
                         __cpc_com_uninstall_delete();
-						echo __('Lokale Dateien entfernen', CPC2_TEXT_DOMAIN).'... ';                        
+						echo __('Lokale Dateien entfernen', 'cp-community').'... ';                        
                         __cpc_com_uninstall_rrmdir(WP_CONTENT_DIR.'/cpc-pro-content');
-						echo __('ok', CPC2_TEXT_DOMAIN).'<br />';
-						echo __('ClassicPress spülen', CPC2_TEXT_DOMAIN).'... ';                        
+						echo __('ok', 'cp-community').'<br />';
+						echo __('ClassicPress spülen', 'cp-community').'... ';                        
                         $wp_rewrite->flush_rules();
-						echo __('ok', CPC2_TEXT_DOMAIN).'<br />';
-						echo '</div><div class="cpc_success">'.__('Vollständig', CPC2_TEXT_DOMAIN).'</div>';
-						echo '<p>'.__('Du musst alle von Dir erstellten Seiten entfernen.', CPC2_TEXT_DOMAIN).'</p>';
+						echo __('ok', 'cp-community').'<br />';
+						echo '</div><div class="cpc_success">'.__('Vollständig', 'cp-community').'</div>';
+						echo '<p>'.__('Du musst alle von Dir erstellten Seiten entfernen.', 'cp-community').'</p>';
                     }
 
 				} else {
-					echo '<div class="cpc_error">'.__('NONCE fehlgeschlagen – verdächtige Aktivität, Zurücksetzen abgebrochen', CPC2_TEXT_DOMAIN).'</div>';
+					echo '<div class="cpc_error">'.__('NONCE fehlgeschlagen – verdächtige Aktivität, Zurücksetzen abgebrochen', 'cp-community').'</div>';
 				}
 
 			else:
 
-				echo '<div class="cpc_warning">'.__('Dies kann nicht rückgängig gemacht werden – bitte stelle sicher, dass Du zuerst eine Sicherung der Webseiten-Datenbank erstellst (für den Fall von Problemen oder Fehlern)!', CPC2_TEXT_DOMAIN).'</div>';
+				echo '<div class="cpc_warning">'.__('Dies kann nicht rückgängig gemacht werden – bitte stelle sicher, dass Du zuerst eine Sicherung der Webseiten-Datenbank erstellst (für den Fall von Problemen oder Fehlern)!', 'cp-community').'</div>';
 
 			endif;
 
-			echo '<form onsubmit="return confirm(\''.__('Bist du sicher? Letzte Möglichkeit!', CPC2_TEXT_DOMAIN).'\')" action="'.admin_url( 'admin.php?page=cpc_com_reset' ).'" method="POST">';
+			echo '<form onsubmit="return confirm(\''.__('Bist du sicher? Letzte Möglichkeit!', 'cp-community').'\')" action="'.admin_url( 'admin.php?page=cpc_com_reset' ).'" method="POST">';
 				wp_nonce_field( 'cpc_com_reset', 'cpc_com_reset_nonce' );				
 				echo '<input type="hidden" name="cpc_com_reset_confirm" value="Y" />';
-				echo '<input type="submit" class="button-primary" value="'.__('Lösche alle PS Community-Daten', CPC2_TEXT_DOMAIN).'" />';			
+				echo '<input type="submit" class="button-primary" value="'.__('Lösche alle PS Community-Daten', 'cp-community').'" />';			
 			echo '</form>';
 
 		else:
 
-			echo '<div class="cpc_error">'.__('Nur für Webseiten-Administratoren verfügbar.', CPC2_TEXT_DOMAIN).'</div>';
+			echo '<div class="cpc_error">'.__('Nur für Webseiten-Administratoren verfügbar.', 'cp-community').'</div>';
 
 		endif;
 
@@ -786,9 +776,9 @@ function cpccom_custom_css() {
   	echo '<div class="wrap">';
         	
 	  	echo '<div id="icon-themes" class="icon32"><br /></div>';
-	  	echo '<h2>'.__('Benutzerdefinierte CSS', CPC2_TEXT_DOMAIN).'</h2>';
+	  	echo '<h2>'.__('Benutzerdefinierte CSS', 'cp-community').'</h2>';
 
-	  	echo __('Um Designstile zu überschreiben, musst Du möglicherweise !important zu den Stilen hinzufügen.', CPC2_TEXT_DOMAIN);
+	  	echo __('Um Designstile zu überschreiben, musst Du möglicherweise !important zu den Stilen hinzufügen.', 'cp-community');
 	  	?>
 		<form action="" method="POST">
 
@@ -810,7 +800,7 @@ function cpccom_custom_css() {
 			</table> 
 			
 			<p style="margin-left:6px"> 
-			<input type="submit" name="Submit" class="button-primary" value="<?php echo __('Speichere benutzerdefiniertes CSS', CPC2_TEXT_DOMAIN); ?>" /> 
+			<input type="submit" name="Submit" class="button-primary" value="<?php echo __('Speichere benutzerdefiniertes CSS', 'cp-community'); ?>" /> 
 			</p> 
 			
 		</form> 
@@ -826,32 +816,32 @@ function __cpc_com_uninstall_delete () {
 
     // delete shortcode options
     $sql = "DELETE FROM ".$wpdb->prefix."options WHERE option_name like 'cpc_shortcode_options%'";
-    echo __('Removing shortcode options', CPC2_TEXT_DOMAIN).'... '; 
+    echo __('Removing shortcode options', 'cp-community').'... '; 
     $wpdb->query($sql);
-	echo __('ok', CPC2_TEXT_DOMAIN).'<br />';
+	echo __('ok', 'cp-community').'<br />';
     // delete other options
     $sql = "DELETE FROM ".$wpdb->prefix."options WHERE option_name like 'cpc_%' OR option_name like 'cpccom_%'";
-    echo __('Removing application options', CPC2_TEXT_DOMAIN).'... '; 
+    echo __('Removing application options', 'cp-community').'... '; 
     $wpdb->query($sql);
-	echo __('ok', CPC2_TEXT_DOMAIN).'<br />';
+	echo __('ok', 'cp-community').'<br />';
     // delete user meta data
-    echo __('Removing user meta', CPC2_TEXT_DOMAIN).'... ';    
+    echo __('Removing user meta', 'cp-community').'... ';    
     $wpdb->query("DELETE FROM ".$wpdb->base_prefix."usermeta WHERE meta_key like 'cpc_%'");
-	echo __('ok', CPC2_TEXT_DOMAIN).'<br />';
+	echo __('ok', 'cp-community').'<br />';
 	// removing custom posts (core)
     $sql = "DELETE FROM ".$wpdb->prefix."posts WHERE post_type = 'cpc_activity' OR post_type = 'cpc_alerts' OR post_type = 'cpc_forum_post' OR post_type = 'cpc_friendship'";
-    echo __('Removing core custom post types', CPC2_TEXT_DOMAIN).'... '; 
+    echo __('Removing core custom post types', 'cp-community').'... '; 
     $wpdb->query($sql);
-	echo __('ok', CPC2_TEXT_DOMAIN).'<br />';
+	echo __('ok', 'cp-community').'<br />';
 	// removing custom posts (extensions)
     $sql = "DELETE FROM ".$wpdb->prefix."posts WHERE post_type = 'cpc_calendar' OR post_type = 'cpc_event' OR post_type = 'cpc_crowd' OR post_type = 'cpc_extension' OR post_type = 'cpc_forum_extension' OR post_type = 'cpc_forum_subs' OR post_type = 'cpc_subs' OR post_type = 'cpc_gallery' OR post_type = 'cpc_group_members' OR post_type = 'cpc_group' OR post_type = 'cpc_lounge' OR post_type = 'cpc_mail' OR post_type = 'cpc_reward' OR post_type = 'cpc_rewards'";
-    echo __('Removing additional custom post types', CPC2_TEXT_DOMAIN).'... '; 
+    echo __('Removing additional custom post types', 'cp-community').'... '; 
     $wpdb->query($sql);
-	echo __('ok', CPC2_TEXT_DOMAIN).'<br />';
+	echo __('ok', 'cp-community').'<br />';
     // clear schedules
-    echo __('Removing ClassicPress schedule', CPC2_TEXT_DOMAIN).'... ';    
+    echo __('Removing ClassicPress schedule', 'cp-community').'... ';    
     wp_clear_scheduled_hook( 'cpc_community_alerts_hook' );
-	echo __('ok', CPC2_TEXT_DOMAIN).'<br />';
+	echo __('ok', 'cp-community').'<br />';
 }
 
 function __cpc_com_uninstall_rrmdir($dir) {

@@ -63,9 +63,9 @@ if ($action) {
                 extract( shortcode_atts( array(
                     'avatar_size' => cpc_get_shortcode_value($values, 'cpc_activity-avatar_size', 64),                    
                     'link' => cpc_get_shortcode_value($values, 'cpc_activity-link', true),
-                    'date_format' => cpc_get_shortcode_value($values, 'cpc_activity-date_format', __('vor %s', CPC2_TEXT_DOMAIN)),                    
+                    'date_format' => cpc_get_shortcode_value($values, 'cpc_activity-date_format', __('vor %s', 'cp-community')),                    
                     'more' =>  cpc_get_shortcode_value($values, 'cpc_activity-more', 50),
-                    'more_label' =>  cpc_get_shortcode_value($values, 'cpc_activity-more_label', __('mehr', CPC2_TEXT_DOMAIN)),    
+                    'more_label' =>  cpc_get_shortcode_value($values, 'cpc_activity-more_label', __('mehr', 'cp-community')),    
                 ), $atts, 'cpc_activity' ) );
 
                 $item_html = '<div class="cpc_activity_item" id="cpc_activity_'.$new_id.'" style="margin-bottom: 20px; position:relative;padding-left: '.($avatar_size+10).'px">';            
@@ -84,7 +84,7 @@ if ($action) {
                         $item_html .= '<div class="cpc_activity_item_meta">';
                             $item_html .= cpc_display_name(array('user_id'=>$_POST['cpc_activity_post_author'], 'link'=>$link));
                             // Date
-                            $item_html .= '<br /><div class="cpc_ago">'.sprintf($date_format, human_time_diff(current_time('timestamp', 0), current_time('timestamp', 0)), CPC2_TEXT_DOMAIN).'</div>';
+                            $item_html .= '<br /><div class="cpc_ago">'.sprintf($date_format, human_time_diff(current_time('timestamp', 0), current_time('timestamp', 0)), 'cp-community').'</div>';
                         $item_html .= '</div>';             
 
                         // Post
@@ -158,7 +158,7 @@ if ($action) {
             
                         else:
 
-                            echo __('Aktivitätsbeitrag kann nicht angezeigt werden.', CPC2_TEXT_DOMAIN);
+                            echo __('Aktivitätsbeitrag kann nicht angezeigt werden.', 'cp-community');
             
                         endif;
 
@@ -169,7 +169,7 @@ if ($action) {
             
             else:
                 
-                echo __('Der Aktivitätsbeitrag konnte nicht abgerufen werden.', CPC2_TEXT_DOMAIN);
+                echo __('Der Aktivitätsbeitrag konnte nicht abgerufen werden.', 'cp-community');
             
             endif;
 

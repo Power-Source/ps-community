@@ -8,19 +8,19 @@
 
 function cpc_custom_post_activity() {
 	$labels = array(
-		'name'               => __( 'Aktivitäten', CPC2_TEXT_DOMAIN ),
-		'singular_name'      => __( 'Aktivität',  CPC2_TEXT_DOMAIN ),
-		'add_new'            => __( 'Neue hinzufügen',  CPC2_TEXT_DOMAIN ),
-		'add_new_item'       => __( 'Neue Aktivität hinzufügen', CPC2_TEXT_DOMAIN ),
-		'edit_item'          => __( 'Aktivität bearbeiten', CPC2_TEXT_DOMAIN ),
-		'new_item'           => __( 'Neue Aktivität', CPC2_TEXT_DOMAIN ),
-		'all_items'          => __( 'Aktivitäten', CPC2_TEXT_DOMAIN ),
-		'view_item'          => __( 'Aktivität anzeigen', CPC2_TEXT_DOMAIN ),
-		'search_items'       => __( 'Suche Aktivitäten', CPC2_TEXT_DOMAIN ),
-		'not_found'          => __( 'Keine Aktivität gefunden', CPC2_TEXT_DOMAIN ),
-		'not_found_in_trash' => __( 'Im Papierkorb wurden keine Aktivitäten gefunden', CPC2_TEXT_DOMAIN ), 
+		'name'               => __( 'Aktivitäten', 'cp-community' ),
+		'singular_name'      => __( 'Aktivität',  'cp-community' ),
+		'add_new'            => __( 'Neue hinzufügen',  'cp-community' ),
+		'add_new_item'       => __( 'Neue Aktivität hinzufügen', 'cp-community' ),
+		'edit_item'          => __( 'Aktivität bearbeiten', 'cp-community' ),
+		'new_item'           => __( 'Neue Aktivität', 'cp-community' ),
+		'all_items'          => __( 'Aktivitäten', 'cp-community' ),
+		'view_item'          => __( 'Aktivität anzeigen', 'cp-community' ),
+		'search_items'       => __( 'Suche Aktivitäten', 'cp-community' ),
+		'not_found'          => __( 'Keine Aktivität gefunden', 'cp-community' ),
+		'not_found_in_trash' => __( 'Im Papierkorb wurden keine Aktivitäten gefunden', 'cp-community' ), 
 		'parent_item_colon'  => '',
-		'menu_name'          => __('Aktivität', CPC2_TEXT_DOMAIN),
+		'menu_name'          => __('Aktivität', 'cp-community'),
 	);
 	$args = array(
 		'labels'        		=> $labels,
@@ -53,16 +53,16 @@ function cpc_updated_activity_messages( $messages ) {
 	global $post, $post_ID;
 	$messages['cpc_activity'] = array(
 		0 => '', 
-		1 => __('Activity updated.'),
-		2 => __('Custom field updated.'),
-		3 => __('Custom field deleted.'),
-		4 => __('Activity updated.'),
-		5 => isset($_GET['revision']) ? sprintf( __('Die Aktivität wurde in der Revision von %s wiederhergestellt'), wp_post_revision_title( (int) $_GET['revision'], false ) ) : false,
-		6 => __('Activity published.'),
-		7 => __('Activity saved.'),
-		8 => __('Activity submitted.'),
-		9 => sprintf( __('Aktivität geplant für: <strong>%1$s</strong>.'), date_i18n( __( 'M j, Y @ G:i' ), strtotime( $post->post_date ) ) ),
-		10 => __('Aktivitätsentwurf aktualisiert.'),
+		1 => __('Activity updated.', 'cp-community'),
+		2 => __('Custom field updated.', 'cp-community'),
+		3 => __('Custom field deleted.', 'cp-community'),
+		4 => __('Activity updated.', 'cp-community'),
+		5 => isset($_GET['revision']) ? sprintf( __('Die Aktivität wurde in der Revision von %s wiederhergestellt', 'cp-community'), wp_post_revision_title( (int) $_GET['revision'], false ) ) : false,
+		6 => __('Activity published.', 'cp-community'),
+		7 => __('Activity saved.', 'cp-community'),
+		8 => __('Activity submitted.', 'cp-community'),
+		9 => sprintf( __('Aktivität geplant für: <strong>%1$s</strong>.', 'cp-community'), date_i18n( __( 'M j, Y @ G:i' ), strtotime( $post->post_date ) ) ),
+		10 => __('Aktivitätsentwurf aktualisiert.', 'cp-community'),
 	);
 	return $messages;
 }
@@ -76,7 +76,7 @@ add_action( 'add_meta_boxes', 'activity_info_box' );
 function activity_info_box() {
     add_meta_box( 
         'activity_info_box',
-        __( 'Aktivitätsdetails', CPC2_TEXT_DOMAIN ),
+        __( 'Aktivitätsdetails', 'cp-community' ),
         'activity_info_box_content',
         'cpc_activity',
         'normal',
@@ -88,11 +88,11 @@ function activity_info_box_content( $post ) {
 	global $wpdb;
 	wp_nonce_field( 'activity_info_box_content', 'activity_info_box_content_nonce' );
 
-	echo '<div style="margin-top:10px;font-weight:bold">'.__('Autor', CPC2_TEXT_DOMAIN).'</div>';
+	echo '<div style="margin-top:10px;font-weight:bold">'.__('Autor', 'cp-community').'</div>';
 	$author = get_user_by( 'id', $post->post_author );
 	echo '<input type="text" id="cpc_author" name="cpc_author" placeholder="Select author..." value="'.$author->user_login.'" />';
 
-	echo '<div style="margin-top:10px;font-weight:bold">'.__('Ziel(e)', CPC2_TEXT_DOMAIN).'</div>';
+	echo '<div style="margin-top:10px;font-weight:bold">'.__('Ziel(e)', 'cp-community').'</div>';
 	$target_ids = get_post_meta( $post->ID, 'cpc_target', true );
 	$targets = array();
 	if (is_array($target_ids)):
@@ -111,8 +111,8 @@ function activity_info_box_content( $post ) {
 		endif;
 	endif;
     
-	echo '<div style="margin-top:10px;font-weight:bold">'.__('Einblenden', CPC2_TEXT_DOMAIN).'</div>';
-    echo '<a id="cpc_activity_unhide_all" rel="'.$post->ID.'" href="javascript:void(0);">'.__('Entferne alle versteckten Flags', CPC2_TEXT_DOMAIN).'</a>';
+	echo '<div style="margin-top:10px;font-weight:bold">'.__('Einblenden', 'cp-community').'</div>';
+    echo '<a id="cpc_activity_unhide_all" rel="'.$post->ID.'" href="javascript:void(0);">'.__('Entferne alle versteckten Flags', 'cp-community').'</a>';
 
 }
 
@@ -179,7 +179,7 @@ function activity_columns_content($column_name, $post_ID) {
             echo $user->user_login.' ';
             echo '('.$user->display_name.') &rarr;';
         else:
-            echo sprintf(__('Benutzer %d nicht gefunden', CPC2_TEXT_DOMAIN), $post->post_author);
+            echo sprintf(__('Benutzer %d nicht gefunden', 'cp-community'), $post->post_author);
         endif;
     }
     if ($column_name == 'col_target') {
@@ -196,7 +196,7 @@ function activity_columns_content($column_name, $post_ID) {
                     echo $user->user_login.' ';
                     echo '('.$user->display_name.')';			
                 else:
-                    echo sprintf(__('Benutzer %d nicht gefunden', CPC2_TEXT_DOMAIN), $target_ids);
+                    echo sprintf(__('Benutzer %d nicht gefunden', 'cp-community'), $target_ids);
                 endif;
 			endif;
 		else:

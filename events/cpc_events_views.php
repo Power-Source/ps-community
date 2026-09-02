@@ -6,15 +6,15 @@ if (!defined('ABSPATH')) {
 
 function cpc_events_frontend_notice_message($notice) {
     $messages = array(
-        'created' => __('Event erstellt.', CPC2_TEXT_DOMAIN),
-        'updated' => __('Event aktualisiert.', CPC2_TEXT_DOMAIN),
-        'deleted' => __('Event geloescht.', CPC2_TEXT_DOMAIN),
-        'prefs_saved' => __('Benachrichtigungseinstellungen gespeichert.', CPC2_TEXT_DOMAIN),
-        'pending' => __('Event eingereicht und wartet auf Freigabe.', CPC2_TEXT_DOMAIN),
-        'denied' => __('Du hast keine Berechtigung fuer diese Aktion.', CPC2_TEXT_DOMAIN),
-        'invalid' => __('Bitte pruefe die Eingaben (Titel/Startzeit).', CPC2_TEXT_DOMAIN),
-        'nonce' => __('Sicherheitspruefung fehlgeschlagen.', CPC2_TEXT_DOMAIN),
-        'missing' => __('Event nicht gefunden.', CPC2_TEXT_DOMAIN),
+        'created' => __('Event erstellt.', 'cp-community'),
+        'updated' => __('Event aktualisiert.', 'cp-community'),
+        'deleted' => __('Event geloescht.', 'cp-community'),
+        'prefs_saved' => __('Benachrichtigungseinstellungen gespeichert.', 'cp-community'),
+        'pending' => __('Event eingereicht und wartet auf Freigabe.', 'cp-community'),
+        'denied' => __('Du hast keine Berechtigung fuer diese Aktion.', 'cp-community'),
+        'invalid' => __('Bitte pruefe die Eingaben (Titel/Startzeit).', 'cp-community'),
+        'nonce' => __('Sicherheitspruefung fehlgeschlagen.', 'cp-community'),
+        'missing' => __('Event nicht gefunden.', 'cp-community'),
     );
 
     return isset($messages[$notice]) ? $messages[$notice] : '';
@@ -294,9 +294,9 @@ function cpc_events_render_notification_pref_form($component, $component_id) {
     $html .= '<input type="hidden" name="cpc_events_nonce" value="' . esc_attr(wp_create_nonce('cpc_events_frontend_action')) . '" />';
     $html .= '<label>';
     $html .= '<input type="checkbox" name="cpc_events_notify_group_events" value="1" ' . checked($enabled, true, false) . ' /> ';
-    $html .= esc_html__('E-Mail bei neuen Gruppen-Events erhalten', CPC2_TEXT_DOMAIN);
+    $html .= esc_html__('E-Mail bei neuen Gruppen-Events erhalten', 'cp-community');
     $html .= '</label> ';
-    $html .= '<button type="submit" class="cpc-btn cpc-btn-secondary">' . esc_html__('Speichern', CPC2_TEXT_DOMAIN) . '</button>';
+    $html .= '<button type="submit" class="cpc-btn cpc-btn-secondary">' . esc_html__('Speichern', 'cp-community') . '</button>';
     $html .= '</form>';
 
     return $html;
@@ -410,7 +410,7 @@ function cpc_events_render_month_calendar($component, $component_id, $events, $m
         $events_by_day[$day_key][] = $event;
     }
 
-    $labels = array(__('Mo', CPC2_TEXT_DOMAIN), __('Di', CPC2_TEXT_DOMAIN), __('Mi', CPC2_TEXT_DOMAIN), __('Do', CPC2_TEXT_DOMAIN), __('Fr', CPC2_TEXT_DOMAIN), __('Sa', CPC2_TEXT_DOMAIN), __('So', CPC2_TEXT_DOMAIN));
+    $labels = array(__('Mo', 'cp-community'), __('Di', 'cp-community'), __('Mi', 'cp-community'), __('Do', 'cp-community'), __('Fr', 'cp-community'), __('Sa', 'cp-community'), __('So', 'cp-community'));
 
     $html = '<div class="cpc-events-calendar">';
     foreach ($labels as $label) {
@@ -479,7 +479,7 @@ function cpc_events_render_create_form($component, $component_id) {
     }
 
     $html  = '<details class="cpc-events-create-toggle">';
-    $html .= '<summary class="cpc_button cpc-events-create-summary">' . esc_html__('Neues Event', CPC2_TEXT_DOMAIN) . '</summary>';
+    $html .= '<summary class="cpc_button cpc-events-create-summary">' . esc_html__('Neues Event', 'cp-community') . '</summary>';
     $html .= '<form method="post" class="cpc-events-create-form">';
     $html .= '<input type="hidden" name="cpc_events_action" value="create_event" />';
     $html .= '<input type="hidden" name="cpc_events_component" value="' . esc_attr($component) . '" />';
@@ -487,14 +487,14 @@ function cpc_events_render_create_form($component, $component_id) {
     $html .= '<input type="hidden" name="cpc_events_nonce" value="' . esc_attr(wp_create_nonce('cpc_events_frontend_action')) . '" />';
 
     $html .= '<div class="cpc-events-form-grid">';
-    $html .= '<p><label><strong>' . esc_html__('Titel', CPC2_TEXT_DOMAIN) . '</strong></label><input type="text" name="cpc_events_title" required class="widefat" /></p>';
-    $html .= '<p><label><strong>' . esc_html__('Ort', CPC2_TEXT_DOMAIN) . '</strong></label><input type="text" name="cpc_events_location" class="widefat" /></p>';
-    $html .= '<p><label><strong>' . esc_html__('Start', CPC2_TEXT_DOMAIN) . '</strong></label><input type="datetime-local" name="cpc_events_start" required /></p>';
-    $html .= '<p><label><strong>' . esc_html__('Ende', CPC2_TEXT_DOMAIN) . '</strong></label><input type="datetime-local" name="cpc_events_end" /></p>';
+    $html .= '<p><label><strong>' . esc_html__('Titel', 'cp-community') . '</strong></label><input type="text" name="cpc_events_title" required class="widefat" /></p>';
+    $html .= '<p><label><strong>' . esc_html__('Ort', 'cp-community') . '</strong></label><input type="text" name="cpc_events_location" class="widefat" /></p>';
+    $html .= '<p><label><strong>' . esc_html__('Start', 'cp-community') . '</strong></label><input type="datetime-local" name="cpc_events_start" required /></p>';
+    $html .= '<p><label><strong>' . esc_html__('Ende', 'cp-community') . '</strong></label><input type="datetime-local" name="cpc_events_end" /></p>';
     $html .= '</div>';
 
-    $html .= '<p><label><strong>' . esc_html__('Beschreibung', CPC2_TEXT_DOMAIN) . '</strong></label><textarea name="cpc_events_content" rows="4" class="widefat"></textarea></p>';
-    $html .= '<p><button type="submit" class="cpc-btn cpc-btn-primary">' . esc_html__('Event speichern', CPC2_TEXT_DOMAIN) . '</button></p>';
+    $html .= '<p><label><strong>' . esc_html__('Beschreibung', 'cp-community') . '</strong></label><textarea name="cpc_events_content" rows="4" class="widefat"></textarea></p>';
+    $html .= '<p><button type="submit" class="cpc-btn cpc-btn-primary">' . esc_html__('Event speichern', 'cp-community') . '</button></p>';
     $html .= '</form>';
     $html .= '</details>';
 
@@ -503,7 +503,7 @@ function cpc_events_render_create_form($component, $component_id) {
 
 function cpc_events_render_event_cards(array $events, $component, $component_id) {
     if (empty($events)) {
-        return '<p class="cpc-events-empty">' . esc_html__('Keine Events vorhanden.', CPC2_TEXT_DOMAIN) . '</p>';
+        return '<p class="cpc-events-empty">' . esc_html__('Keine Events vorhanden.', 'cp-community') . '</p>';
     }
 
     $component = sanitize_key((string)$component);
@@ -539,7 +539,7 @@ function cpc_events_render_event_cards(array $events, $component, $component_id)
 
         if ($can_edit) {
             $html .= '<details class="cpc-events-edit-toggle">';
-            $html .= '<summary>' . esc_html__('Bearbeiten', CPC2_TEXT_DOMAIN) . '</summary>';
+            $html .= '<summary>' . esc_html__('Bearbeiten', 'cp-community') . '</summary>';
             $html .= '<form method="post" class="cpc-events-edit-form">';
             $html .= '<input type="hidden" name="cpc_events_action" value="update_event" />';
             $html .= '<input type="hidden" name="cpc_events_event_id" value="' . (int)$event->ID . '" />';
@@ -548,23 +548,23 @@ function cpc_events_render_event_cards(array $events, $component, $component_id)
             $html .= '<input type="hidden" name="cpc_events_nonce" value="' . esc_attr(wp_create_nonce('cpc_events_frontend_action')) . '" />';
 
             $html .= '<div class="cpc-events-form-grid">';
-            $html .= '<p><label><strong>' . esc_html__('Titel', CPC2_TEXT_DOMAIN) . '</strong></label><input type="text" name="cpc_events_title" required class="widefat" value="' . esc_attr(get_the_title($event->ID)) . '" /></p>';
-            $html .= '<p><label><strong>' . esc_html__('Ort', CPC2_TEXT_DOMAIN) . '</strong></label><input type="text" name="cpc_events_location" class="widefat" value="' . esc_attr((string)$location) . '" /></p>';
-            $html .= '<p><label><strong>' . esc_html__('Start', CPC2_TEXT_DOMAIN) . '</strong></label><input type="datetime-local" name="cpc_events_start" required value="' . esc_attr((string)get_post_meta($event->ID, 'cpc_event_start', true)) . '" /></p>';
-            $html .= '<p><label><strong>' . esc_html__('Ende', CPC2_TEXT_DOMAIN) . '</strong></label><input type="datetime-local" name="cpc_events_end" value="' . esc_attr((string)get_post_meta($event->ID, 'cpc_event_end', true)) . '" /></p>';
+            $html .= '<p><label><strong>' . esc_html__('Titel', 'cp-community') . '</strong></label><input type="text" name="cpc_events_title" required class="widefat" value="' . esc_attr(get_the_title($event->ID)) . '" /></p>';
+            $html .= '<p><label><strong>' . esc_html__('Ort', 'cp-community') . '</strong></label><input type="text" name="cpc_events_location" class="widefat" value="' . esc_attr((string)$location) . '" /></p>';
+            $html .= '<p><label><strong>' . esc_html__('Start', 'cp-community') . '</strong></label><input type="datetime-local" name="cpc_events_start" required value="' . esc_attr((string)get_post_meta($event->ID, 'cpc_event_start', true)) . '" /></p>';
+            $html .= '<p><label><strong>' . esc_html__('Ende', 'cp-community') . '</strong></label><input type="datetime-local" name="cpc_events_end" value="' . esc_attr((string)get_post_meta($event->ID, 'cpc_event_end', true)) . '" /></p>';
             $html .= '</div>';
 
-            $html .= '<p><label><strong>' . esc_html__('Beschreibung', CPC2_TEXT_DOMAIN) . '</strong></label><textarea name="cpc_events_content" rows="3" class="widefat">' . esc_textarea((string)$event->post_content) . '</textarea></p>';
-            $html .= '<p><button type="submit" class="cpc-btn cpc-btn-primary">' . esc_html__('Aenderungen speichern', CPC2_TEXT_DOMAIN) . '</button></p>';
+            $html .= '<p><label><strong>' . esc_html__('Beschreibung', 'cp-community') . '</strong></label><textarea name="cpc_events_content" rows="3" class="widefat">' . esc_textarea((string)$event->post_content) . '</textarea></p>';
+            $html .= '<p><button type="submit" class="cpc-btn cpc-btn-primary">' . esc_html__('Aenderungen speichern', 'cp-community') . '</button></p>';
             $html .= '</form>';
 
-            $html .= '<form method="post" class="cpc-events-delete-form" onsubmit="return confirm(\'' . esc_js(__('Event wirklich loeschen?', CPC2_TEXT_DOMAIN)) . '\');">';
+            $html .= '<form method="post" class="cpc-events-delete-form" onsubmit="return confirm(\'' . esc_js(__('Event wirklich loeschen?', 'cp-community')) . '\');">';
             $html .= '<input type="hidden" name="cpc_events_action" value="delete_event" />';
             $html .= '<input type="hidden" name="cpc_events_event_id" value="' . (int)$event->ID . '" />';
             $html .= '<input type="hidden" name="cpc_events_component" value="' . esc_attr($component) . '" />';
             $html .= '<input type="hidden" name="cpc_events_component_id" value="' . (int)$component_id . '" />';
             $html .= '<input type="hidden" name="cpc_events_nonce" value="' . esc_attr(wp_create_nonce('cpc_events_frontend_action')) . '" />';
-            $html .= '<p><button type="submit" class="cpc-btn cpc-btn-danger">' . esc_html__('Event loeschen', CPC2_TEXT_DOMAIN) . '</button></p>';
+            $html .= '<p><button type="submit" class="cpc-btn cpc-btn-danger">' . esc_html__('Event loeschen', 'cp-community') . '</button></p>';
             $html .= '</form>';
 
             $html .= '</details>';
@@ -591,10 +591,10 @@ function cpc_events_render_context_layout($component, $component_id, $title) {
     $html .= '<div class="cpc-events-headline">';
     $html .= '<h3>' . esc_html($title) . '</h3>';
     $html .= '<div class="cpc-events-month-nav">';
-    $html .= '<a href="' . esc_url($nav['prev']) . '">&larr; ' . esc_html__('Zurueck', CPC2_TEXT_DOMAIN) . '</a>';
+    $html .= '<a href="' . esc_url($nav['prev']) . '">&larr; ' . esc_html__('Zurueck', 'cp-community') . '</a>';
     $html .= '<strong>' . esc_html(date_i18n('F Y', strtotime($month . '-01'))) . '</strong>';
-    $html .= '<a href="' . esc_url($nav['next']) . '">' . esc_html__('Weiter', CPC2_TEXT_DOMAIN) . ' &rarr;</a>';
-    $html .= '<a class="cpc-events-today-link" href="' . esc_url($nav['today']) . '">' . esc_html__('Heute', CPC2_TEXT_DOMAIN) . '</a>';
+    $html .= '<a href="' . esc_url($nav['next']) . '">' . esc_html__('Weiter', 'cp-community') . ' &rarr;</a>';
+    $html .= '<a class="cpc-events-today-link" href="' . esc_url($nav['today']) . '">' . esc_html__('Heute', 'cp-community') . '</a>';
     $html .= '</div>';
     $html .= '</div>';
 
@@ -602,7 +602,7 @@ function cpc_events_render_context_layout($component, $component_id, $title) {
     $html .= cpc_events_render_create_form($component, $component_id);
     $html .= cpc_events_render_month_calendar($component, $component_id, $month_events, $month);
 
-    $html .= '<h4 class="cpc-events-list-title">' . esc_html__('Event-Liste', CPC2_TEXT_DOMAIN) . '</h4>';
+    $html .= '<h4 class="cpc-events-list-title">' . esc_html__('Event-Liste', 'cp-community') . '</h4>';
     $html .= cpc_events_render_event_cards($all_events, $component, $component_id);
     $html .= '</div>';
 
@@ -618,14 +618,14 @@ function cpc_events_render_profile_tab_content($html, $active_tab, $user_id, $sh
 
     $user_id = (int)$user_id;
     if (!$user_id) {
-        return '<p>' . esc_html__('Benutzer nicht gefunden.', CPC2_TEXT_DOMAIN) . '</p>';
+        return '<p>' . esc_html__('Benutzer nicht gefunden.', 'cp-community') . '</p>';
     }
 
     if (function_exists('cpc_events_external_plugin_active') && cpc_events_external_plugin_active()) {
         return '<div class="cpc-events-context">' . do_shortcode('[eab_my_events user="' . (int)$user_id . '" show_titles="yes" sections="organized,yes,maybe,no"]') . '</div>';
     }
 
-    return cpc_events_render_context_layout('members', $user_id, __('Events', CPC2_TEXT_DOMAIN));
+    return cpc_events_render_context_layout('members', $user_id, __('Events', 'cp-community'));
 }
 add_filter('cpc_profile_tab_content', 'cpc_events_render_profile_tab_content', 20, 4);
 
@@ -665,7 +665,7 @@ function cpc_events_on_save_post($post_id, $post) {
     $url = get_permalink($post_id);
 
     $message = sprintf(
-        __('Hat ein neues Event erstellt: <a href="%s">%s</a>', CPC2_TEXT_DOMAIN),
+        __('Hat ein neues Event erstellt: <a href="%s">%s</a>', 'cp-community'),
         esc_url($url),
         esc_html($title)
     );
@@ -681,7 +681,7 @@ if (is_admin() && (!function_exists('cpc_events_external_plugin_active') || !cpc
 function cpc_events_add_group_meta_box() {
     add_meta_box(
         'cpc_event_group',
-        __('Gruppe zuordnen', CPC2_TEXT_DOMAIN),
+        __('Gruppe zuordnen', 'cp-community'),
         'cpc_events_group_meta_box_html',
         'cpc_event',
         'side',
@@ -691,7 +691,7 @@ function cpc_events_add_group_meta_box() {
 
 function cpc_events_group_meta_box_html($post) {
     if (function_exists('cpc_events_allow_group_calendar') && !cpc_events_allow_group_calendar()) {
-        echo '<p class="description">' . esc_html__('Gruppen-Kalender sind global deaktiviert.', CPC2_TEXT_DOMAIN) . '</p>';
+        echo '<p class="description">' . esc_html__('Gruppen-Kalender sind global deaktiviert.', 'cp-community') . '</p>';
         return;
     }
 
@@ -709,7 +709,7 @@ function cpc_events_group_meta_box_html($post) {
 
     echo '<p>';
     echo '<select name="cpc_event_group_id" style="width:100%;">';
-    echo '<option value="0"' . selected($current_group_id, 0, false) . '>' . esc_html__('Keine Gruppe', CPC2_TEXT_DOMAIN) . '</option>';
+    echo '<option value="0"' . selected($current_group_id, 0, false) . '>' . esc_html__('Keine Gruppe', 'cp-community') . '</option>';
     foreach ($groups as $gid) {
         echo '<option value="' . (int)$gid . '"' . selected($current_group_id, $gid, false) . '>' . esc_html(get_the_title($gid)) . '</option>';
     }

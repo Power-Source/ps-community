@@ -45,7 +45,7 @@
             })
             .fail(function () {
                 $btn.prop('disabled', false);
-                showMsg('Verbindungsfehler. Bitte versuche es erneut.', true);
+                showMsg(cpc2fa.i18n.connectionError, true);
             });
         });
 
@@ -53,7 +53,7 @@
         $(document).on('click', '#cpc_2fa_verify_app', function () {
             var code = $('#cpc_2fa_app_code').val().replace(/\s/g, '');
             if (!/^\d{6}$/.test(code)) {
-                showMsg('Bitte gib einen 6-stelligen Zahlencode ein.', true);
+                showMsg(cpc2fa.i18n.invalidCode, true);
                 $('#cpc_2fa_app_code').focus();
                 return;
             }
@@ -74,7 +74,7 @@
             })
             .fail(function () {
                 $btn.prop('disabled', false);
-                showMsg('Verbindungsfehler. Bitte versuche es erneut.', true);
+                showMsg(cpc2fa.i18n.connectionError, true);
             });
         });
 
@@ -88,7 +88,7 @@
 
         /* ── E-Mail-2FA aktivieren ────────────────────────────────────── */
         $(document).on('click', '#cpc_2fa_enable_email', function () {
-            if (!window.confirm('Zwei-Faktor-Authentifizierung per E-Mail aktivieren?')) return;
+            if (!window.confirm(cpc2fa.i18n.confirmEnableEmail)) return;
             var $btn = $(this).prop('disabled', true);
             $.post(cpc2fa.ajaxurl, {
                 action:   'cpc_2fa_enable_email',
@@ -104,13 +104,13 @@
             })
             .fail(function () {
                 $btn.prop('disabled', false);
-                showMsg('Verbindungsfehler. Bitte versuche es erneut.', true);
+                showMsg(cpc2fa.i18n.connectionError, true);
             });
         });
 
         /* ── 2FA deaktivieren ─────────────────────────────────────────── */
         $(document).on('click', '#cpc_2fa_disable', function () {
-            if (!window.confirm('Zwei-Faktor-Authentifizierung wirklich deaktivieren?')) return;
+            if (!window.confirm(cpc2fa.i18n.confirmDisable)) return;
             var $btn = $(this).prop('disabled', true);
             $.post(cpc2fa.ajaxurl, {
                 action:   'cpc_2fa_disable',
@@ -126,13 +126,13 @@
             })
             .fail(function () {
                 $btn.prop('disabled', false);
-                showMsg('Verbindungsfehler. Bitte versuche es erneut.', true);
+                showMsg(cpc2fa.i18n.connectionError, true);
             });
         });
 
         /* ── Backup-Code neu generieren ───────────────────────────────── */
         $(document).on('click', '#cpc_2fa_regen_backup', function () {
-            if (!window.confirm('Neuen Backup-Code generieren? Der bisherige Code wird ungültig.')) return;
+            if (!window.confirm(cpc2fa.i18n.confirmRegenerateBackup)) return;
             var $btn = $(this).prop('disabled', true);
             $.post(cpc2fa.ajaxurl, {
                 action:   'cpc_2fa_regen_backup',
@@ -160,7 +160,7 @@
             })
             .fail(function () {
                 $btn.prop('disabled', false);
-                showMsg('Verbindungsfehler. Bitte versuche es erneut.', true);
+                showMsg(cpc2fa.i18n.connectionError, true);
             });
         });
     });

@@ -150,13 +150,13 @@
             contentType: false
         }).done(function(resp) {
             if (!resp || !resp.success || !resp.data || !resp.data.tasks_html) {
-                alert(cpc_projects_ajax.addTaskError || 'Task konnte nicht erstellt werden.');
+                alert(cpc_projects_ajax.addTaskError);
                 return;
             }
             replaceTaskPanel(projectId, resp.data.tasks_html);
             replaceActivityPanel(projectId, resp.data.activity_html || '');
         }).fail(function() {
-            alert(cpc_projects_ajax.addTaskError || 'Task konnte nicht erstellt werden.');
+            alert(cpc_projects_ajax.addTaskError);
         });
     });
 
@@ -294,13 +294,13 @@
             contentType: false
         }).done(function(resp) {
             if (!resp || !resp.success || !resp.data || !resp.data.tasks_html) {
-                alert(cpc_projects_ajax.updateTaskError || 'Task konnte nicht aktualisiert werden.');
+                alert(cpc_projects_ajax.updateTaskError);
                 return;
             }
             replaceTaskPanel(projectId, resp.data.tasks_html);
             replaceActivityPanel(projectId, resp.data.activity_html || '');
         }).fail(function() {
-            alert(cpc_projects_ajax.updateTaskError || 'Task konnte nicht aktualisiert werden.');
+            alert(cpc_projects_ajax.updateTaskError);
         });
     });
 
@@ -348,14 +348,14 @@
             contentType: false
         }).done(function(resp) {
             if (!resp || !resp.success || !resp.data || !resp.data.tasks_html) {
-                alert(cpc_projects_ajax.addCommentError || 'Kommentar konnte nicht gespeichert werden.');
+                alert(cpc_projects_ajax.addCommentError);
                 return;
             }
 
             replaceTaskPanel(projectId, resp.data.tasks_html);
             replaceActivityPanel(projectId, resp.data.activity_html || '');
         }).fail(function() {
-            alert(cpc_projects_ajax.addCommentError || 'Kommentar konnte nicht gespeichert werden.');
+            alert(cpc_projects_ajax.addCommentError);
         });
     });
 
@@ -538,7 +538,7 @@
             status:      $form.find('[name="status"]').val() || 'public'
         }).done(function(resp) {
             if (!resp || !resp.success) {
-                alert(cpc_projects_ajax.updateProjectError || 'Projekt konnte nicht aktualisiert werden.');
+                alert(cpc_projects_ajax.updateProjectError);
                 return;
             }
             if (resp.data && resp.data.title) {
@@ -548,7 +548,7 @@
             $notice.text((resp.data && resp.data.message) ? resp.data.message : 'Gespeichert.').show();
             setTimeout(function() { $notice.hide(); }, 3500);
         }).fail(function() {
-            alert(cpc_projects_ajax.updateProjectError || 'Projekt konnte nicht aktualisiert werden.');
+            alert(cpc_projects_ajax.updateProjectError);
         });
     });
 
@@ -571,7 +571,7 @@
             project_id: projectId
         }).done(function(resp) {
             if (!resp || !resp.success) {
-                alert(cpc_projects_ajax.deleteProjectError || 'Projekt konnte nicht geloescht werden.');
+                alert(cpc_projects_ajax.deleteProjectError);
                 return;
             }
             if (resp.data && resp.data.redirect) {
@@ -580,7 +580,7 @@
                 window.history.back();
             }
         }).fail(function() {
-            alert(cpc_projects_ajax.deleteProjectError || 'Projekt konnte nicht geloescht werden.');
+            alert(cpc_projects_ajax.deleteProjectError);
         });
     });
 

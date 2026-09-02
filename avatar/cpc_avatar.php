@@ -238,7 +238,7 @@ function user_avatar_add_photo() {
         }
         die();
     } else {
-        wp_die(__("Du darfst das nicht.", CPC2_TEXT_DOMAIN));
+        wp_die(__("Du darfst das nicht.", 'cp-community'));
     }
 }
 
@@ -253,8 +253,8 @@ function user_avatar_add_photo() {
 function user_avatar_add_photo_step1($uid)
 {
     $values = cpc_get_shortcode_options('cpc_avatar');
-    $upload_prompt = cpc_get_shortcode_value($values, 'cpc_avatar-upload_prompt', __('Wähle ein Bild von Deinem Computer:', CPC2_TEXT_DOMAIN));
-    $upload_button = cpc_get_shortcode_value($values, 'cpc_avatar-upload_button', __('Hochladen', CPC2_TEXT_DOMAIN));
+    $upload_prompt = cpc_get_shortcode_value($values, 'cpc_avatar-upload_prompt', __('Wähle ein Bild von Deinem Computer:', 'cp-community'));
+    $upload_button = cpc_get_shortcode_value($values, 'cpc_avatar-upload_button', __('Hochladen', 'cp-community'));
 	?>
 	<p id="step1-image" >
 	<?php
@@ -285,7 +285,7 @@ function user_avatar_add_photo_step1($uid)
 function user_avatar_add_photo_step2($uid) {
 	
 		if (!(($_FILES["uploadedfile"]["type"] == "image/gif") || ($_FILES["uploadedfile"]["type"] == "image/jpeg") || ($_FILES["uploadedfile"]["type"] == "image/png") || ($_FILES["uploadedfile"]["type"] == "image/pjpeg") || ($_FILES["uploadedfile"]["type"] == "image/x-png"))){
-			echo "<div class='error'><p>".__("Bitte lade eine Bilddatei hoch (.jpeg, .gif, .png).", CPC2_TEXT_DOMAIN)."</p></div>";
+			echo "<div class='error'><p>".__("Bitte lade eine Bilddatei hoch (.jpeg, .gif, .png).", 'cp-community')."</p></div>";
 			user_avatar_add_photo_step1($uid);
 			die();
 		}
@@ -294,7 +294,7 @@ function user_avatar_add_photo_step2($uid) {
         $file_size = $_FILES["uploadedfile"]["size"];
         $file_size = $file_size / 1024; // KB
         if ($file_size > 5120): // 5 MB Limit
-            echo "<div class='error'><p>".sprintf(__("Bitte lade eine Bilddatei mit weniger als 5 MB hoch (Deine war %dKB).", CPC2_TEXT_DOMAIN), $file_size)."</p></div>";
+            echo "<div class='error'><p>".sprintf(__("Bitte lade eine Bilddatei mit weniger als 5 MB hoch (Deine war %dKB).", 'cp-community'), $file_size)."</p></div>";
             die();
         else:
             $overrides = array('test_form' => false);
@@ -353,7 +353,7 @@ function user_avatar_add_photo_step2($uid) {
             <input type="hidden" name="oitar" id="oitar" value="<?php echo esc_attr($oitar); ?>" />
             <?php wp_nonce_field('user-avatar'); ?>
             </p>
-            <input type="submit" class="cpc_button btn btn-primary" style="margin-left:0;" id="user-avatar-crop-button" value="<?php esc_attr_e('Bild zuschneiden', CPC2_TEXT_DOMAIN); ?>" />
+            <input type="submit" class="cpc_button btn btn-primary" style="margin-left:0;" id="user-avatar-crop-button" value="<?php esc_attr_e('Bild zuschneiden', 'cp-community'); ?>" />
             </div>
             </form>
 			
@@ -438,7 +438,7 @@ function user_avatar_add_photo_step3($uid)
 	set_time_limit(3600); // increase script timeout to 60 minutes (3600 seconds)
     
     $values = cpc_get_shortcode_options('cpc_avatar');
-    $upload = cpc_get_shortcode_value($values, 'cpc_avatar-uploaded', __('Avatar aktualisiert...', CPC2_TEXT_DOMAIN));
+    $upload = cpc_get_shortcode_value($values, 'cpc_avatar-uploaded', __('Avatar aktualisiert...', 'cp-community'));
 
 	if ( $_POST['oitar'] > 1 ) {
 		$_POST['x1'] = $_POST['x1'] * $_POST['oitar'];
@@ -450,7 +450,7 @@ function user_avatar_add_photo_step3($uid)
 	$original_file = get_transient( 'avatar_file_'.$uid );
 					 delete_transient('avatar_file_'.$uid );
 	if( !file_exists($original_file) ) {
-		echo "<div class='error'><p>". __('Leider ist keine Datei verfügbar', CPC2_TEXT_DOMAIN)."</p></div>";
+		echo "<div class='error'><p>". __('Leider ist keine Datei verfügbar', 'cp-community')."</p></div>";
 		return true;
 	}
 
@@ -485,7 +485,7 @@ function user_avatar_add_photo_step3($uid)
 	update_user_meta( $uid, 'cpc_com_avatar', user_avatar_core_avatar_meta_path($uid, $time_now."-cpcfull.jpg") );
 
 	if ( is_wp_error( $cropped_full ) )
-		wp_die( __( 'Bild konnte nicht verarbeitet werden. Bitte gehe zurück und versuche es erneut.' ), __( 'Bildverarbeitungsfehler' ) );		
+		wp_die( __( 'Bild konnte nicht verarbeitet werden. Bitte gehe zurück und versuche es erneut.', 'cp-community' ), __( 'Bildverarbeitungsfehler', 'cp-community' ) );		
 	?>
 	<script type="text/javascript">
         if (typeof user_avatar_refresh_image === 'function') {
@@ -728,7 +728,7 @@ function user_avatar_form($profile)
 	{
 		$avatar_folder_dir = user_avatar_core_avatar_upload_path($profile->ID);
 	?>
-	<h3><?php _e('Bild', CPC2_TEXT_DOMAIN); ?></h3>
+	<h3><?php _e('Bild', 'cp-community'); ?></h3>
 
 	<div id="user-avatar-display" class="submitbox" >
 	<p id="user-avatar-display-image"><?php echo user_avatar_get_avatar($profile->ID, 150); ?></p>
@@ -736,8 +736,8 @@ function user_avatar_form($profile)
 	class="button-secondary"
 	data-psource-modal-open="user-avatar-modal"
 	href="<?php echo admin_url('admin-ajax.php'); ?>?action=user_avatar_add_photo&step=1&uid=<?php echo $profile->ID; ?>&modal=1"
-	title="<?php _e('Hochladen und Zuschneiden des anzuzeigenden Bildes', CPC2_TEXT_DOMAIN); ?>">
-	<?php _e('Bild aktualisieren', CPC2_TEXT_DOMAIN); ?>
+	title="<?php _e('Hochladen und Zuschneiden des anzuzeigenden Bildes', 'cp-community'); ?>">
+	<?php _e('Bild aktualisieren', 'cp-community'); ?>
 	</a>
 	<dialog id="user-avatar-modal" class="psource-modal" style="width: 750px; max-width: 95vw;">
 		<button class="psource-modal-close" aria-label="Schließen" style="float:right;">&times;</button>
@@ -755,7 +755,7 @@ function user_avatar_form($profile)
 		endif;
 		if ( user_avatar_avatar_exists($profile->ID) ):?>
 
-			<a id="user-avatar-remove" class="submitdelete deleteaction" href="<?php echo esc_url_raw($remove_url); ?>" title="<?php _e('Benutzer-Avatar-Bild entfernen', CPC2_TEXT_DOMAIN); ?>" ><?php _e('Entfernen', CPC2_TEXT_DOMAIN); ?></a>
+			<a id="user-avatar-remove" class="submitdelete deleteaction" href="<?php echo esc_url_raw($remove_url); ?>" title="<?php _e('Benutzer-Avatar-Bild entfernen', 'cp-community'); ?>" ><?php _e('Entfernen', 'cp-community'); ?></a>
 			<?php
 		endif;
 	?>
@@ -766,7 +766,7 @@ function user_avatar_form($profile)
 	}
 	function add_remove_avatar_link(){
 		if(!jQuery("#user-avatar-remove").is('a')){
-			jQuery('#user-avatar-link').after(" <a href='<?php echo $remove_url; ?>' class='submitdelete'  id='user-avatar-remove' ><?php _e('Entfernen', CPC2_TEXT_DOMAIN); ?></a>")
+			jQuery('#user-avatar-link').after(" <a href='<?php echo $remove_url; ?>' class='submitdelete'  id='user-avatar-remove' ><?php _e('Entfernen', 'cp-community'); ?></a>")
 		}
 			
 	

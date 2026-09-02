@@ -34,7 +34,7 @@ function cpc_check_login($user, $username, $password) {
 
     $return = $user;
 
-    if ($user && !is_wp_error($user) && $user->ID && $username && cpc_is_account_closed($user->ID)) $return = new WP_Error('cpc_login_fail', __('Dieses Konto ist geschlossen.', CPC2_TEXT_DOMAIN));
+    if ($user && !is_wp_error($user) && $user->ID && $username && cpc_is_account_closed($user->ID)) $return = new WP_Error('cpc_login_fail', __('Dieses Konto ist geschlossen.', 'cp-community'));
         
     return $return;
 
@@ -97,7 +97,7 @@ function cpc_usermeta_form($user)
 	{
 		?>
 
-		<h3><?php _e('PS Community', CPC2_TEXT_DOMAIN); ?></h3>
+		<h3><?php _e('PS Community', 'cp-community'); ?></h3>
 
 		<table class="form-table">
 
@@ -106,20 +106,20 @@ function cpc_usermeta_form($user)
                 <?php if (!cpc_is_account_closed($user->ID)): ?>
 
                     <tr>
-                        <th><label for="cpc_close_account"><?php _e('Konto schließen', CPC2_TEXT_DOMAIN); ?></label></th>
+                        <th><label for="cpc_close_account"><?php _e('Konto schließen', 'cp-community'); ?></label></th>
                         <td>
                             <input type="checkbox" name="cpc_close_account" id="cpc_close_account" />
-                            <span class="description"><?php _e('Alle personenbezogenen Daten werden gelöscht, dies kann nicht rückgängig gemacht werden.', CPC2_TEXT_DOMAIN); ?></span>
+                            <span class="description"><?php _e('Alle personenbezogenen Daten werden gelöscht, dies kann nicht rückgängig gemacht werden.', 'cp-community'); ?></span>
                         </td>
                     </tr>
 
                 <?php else: ?>
 
                     <tr>
-                        <th><label for="cpc_reopen_account"><?php _e('Konto erneut eröffnen', CPC2_TEXT_DOMAIN); ?></label></th>
+                        <th><label for="cpc_reopen_account"><?php _e('Konto erneut eröffnen', 'cp-community'); ?></label></th>
                         <td>
                             <input type="checkbox" name="cpc_reopen_account" id="cpc_reopen_account" />
-                            <span class="description"><?php _e('Du kannst oben vor dem Speichern optional das Passwort, die E-Mail-Adresse usw. festlegen.', CPC2_TEXT_DOMAIN); ?></span>
+                            <span class="description"><?php _e('Du kannst oben vor dem Speichern optional das Passwort, die E-Mail-Adresse usw. festlegen.', 'cp-community'); ?></span>
                         </td>
                     </tr>
 
@@ -128,18 +128,18 @@ function cpc_usermeta_form($user)
             <?php endif; ?>
 
 			<tr>
-				<th><label for="cpccom_home"><?php _e('Stadt/Gemeinde', CPC2_TEXT_DOMAIN); ?></label></th>
+				<th><label for="cpccom_home"><?php _e('Stadt/Gemeinde', 'cp-community'); ?></label></th>
 				<td>
 					<input type="text" name="cpccom_home" id="cpccom_home" value="<?php echo esc_attr( get_the_author_meta( 'cpccom_home', $user->ID ) ); ?>" class="regular-text" /><br />
-					<span class="description"><?php _e('Bitte gib Deinen Ort ein.', CPC2_TEXT_DOMAIN); ?></span>
+					<span class="description"><?php _e('Bitte gib Deinen Ort ein.', 'cp-community'); ?></span>
 				</td>
 			</tr>
 
 			<tr>
-				<th><label for="cpccom_country"><?php _e('Land', CPC2_TEXT_DOMAIN); ?></label></th>
+				<th><label for="cpccom_country"><?php _e('Land', 'cp-community'); ?></label></th>
 				<td>
 					<input type="text" name="cpccom_country" id="cpccom_country" value="<?php echo esc_attr( get_the_author_meta( 'cpccom_country', $user->ID ) ); ?>" class="regular-text" /><br />
-					<span class="description"><?php _e('Bitte gib Dein Land ein.', CPC2_TEXT_DOMAIN); ?></span>
+					<span class="description"><?php _e('Bitte gib Dein Land ein.', 'cp-community'); ?></span>
 				</td>
 			</tr>
 

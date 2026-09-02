@@ -39,24 +39,24 @@ function cpc_return_activity_posts() {
                 extract( shortcode_atts( array(
                     'class' => cpc_get_shortcode_value($values, 'cpc_activity-class', ''),                    
                     'report' => cpc_get_shortcode_value($values, 'cpc_activity-report', true),
-                    'report_label' => cpc_get_shortcode_value($values, 'cpc_activity-report_label', __('Report', CPC2_TEXT_DOMAIN)), 
+                    'report_label' => cpc_get_shortcode_value($values, 'cpc_activity-report_label', __('Report', 'cp-community')), 
                     'report_email' => cpc_get_shortcode_value($values, 'cpc_activity-report_email', get_bloginfo('admin_email')), 
-                    'sticky_label' => cpc_get_shortcode_value($values, 'cpc_activity-sticky_label', __('Stick', CPC2_TEXT_DOMAIN)), // blank to hide
-                    'unsticky_label' => cpc_get_shortcode_value($values, 'cpc_activity-unsticky_label', __('Unstick', CPC2_TEXT_DOMAIN)),
-                    'delete_label' => cpc_get_shortcode_value($values, 'cpc_activity-delete_label', __('Delete', CPC2_TEXT_DOMAIN)), // blank to hide
-                    'hide_label' => cpc_get_shortcode_value($values, 'cpc_activity-hide_label', __('Hide', CPC2_TEXT_DOMAIN)), // blank to hide
+                    'sticky_label' => cpc_get_shortcode_value($values, 'cpc_activity-sticky_label', __('Stick', 'cp-community')), // blank to hide
+                    'unsticky_label' => cpc_get_shortcode_value($values, 'cpc_activity-unsticky_label', __('Unstick', 'cp-community')),
+                    'delete_label' => cpc_get_shortcode_value($values, 'cpc_activity-delete_label', __('Delete', 'cp-community')), // blank to hide
+                    'hide_label' => cpc_get_shortcode_value($values, 'cpc_activity-hide_label', __('Hide', 'cp-community')), // blank to hide
                     'avatar_size' => cpc_get_shortcode_value($values, 'cpc_activity-avatar_size', 64),                    
-                    'label' => cpc_get_shortcode_value($values, 'cpc_activity-label', __('Comment', CPC2_TEXT_DOMAIN)),
+                    'label' => cpc_get_shortcode_value($values, 'cpc_activity-label', __('Comment', 'cp-community')),
                     'link' => cpc_get_shortcode_value($values, 'cpc_activity-link', true),
                     'more' =>  cpc_get_shortcode_value($values, 'cpc_activity-more', 50),
-                    'more_label' =>  cpc_get_shortcode_value($values, 'cpc_activity-more_label', __('more', CPC2_TEXT_DOMAIN)),    
+                    'more_label' =>  cpc_get_shortcode_value($values, 'cpc_activity-more_label', __('more', 'cp-community')),    
                     'comment_avatar_size' => cpc_get_shortcode_value($values, 'cpc_activity-comment_avatar_size', 40),
                     'comment_size' => cpc_get_shortcode_value($values, 'cpc_activity-comment_size', 5),
-                    'comment_size_text_plural' => cpc_get_shortcode_value($values, 'cpc_activity-comment_size_text_plural', __('Show previous %d comments...', CPC2_TEXT_DOMAIN)),
-                    'comment_size_text_singular' => cpc_get_shortcode_value($values, 'cpc_activity-comment_size_text_singular', __('Show previous comment...', CPC2_TEXT_DOMAIN)),          
-                    'date_format' => cpc_get_shortcode_value($values, 'cpc_activity-date_format', __('%s ago', CPC2_TEXT_DOMAIN)),                    
+                    'comment_size_text_plural' => cpc_get_shortcode_value($values, 'cpc_activity-comment_size_text_plural', __('Show previous %d comments...', 'cp-community')),
+                    'comment_size_text_singular' => cpc_get_shortcode_value($values, 'cpc_activity-comment_size_text_singular', __('Show previous comment...', 'cp-community')),          
+                    'date_format' => cpc_get_shortcode_value($values, 'cpc_activity-date_format', __('%s ago', 'cp-community')),                    
                     'allow_replies' => cpc_get_shortcode_value($values, 'cpc_activity-allow_replies', true),                    
-                    'load_more_label' => cpc_get_shortcode_value($values, 'cpc_activity-load_more_label', __('more...', CPC2_TEXT_DOMAIN)),                    
+                    'load_more_label' => cpc_get_shortcode_value($values, 'cpc_activity-load_more_label', __('more...', 'cp-community')),                    
                 ), $atts, 'cpc_activity' ) );
             
                 // Protect email from tags
@@ -164,7 +164,7 @@ function cpc_return_activity_posts() {
 
                                         // Date
                                         $item_html .= '<br />';
-                                        $item_html .= '<div class="cpc_ago">'.sprintf($date_format, human_time_diff(strtotime($item->post_date), current_time('timestamp', 0)), CPC2_TEXT_DOMAIN).'</div>';
+                                        $item_html .= '<div class="cpc_ago">'.sprintf($date_format, human_time_diff(strtotime($item->post_date), current_time('timestamp', 0)), 'cp-community').'</div>';
 
                                         // Any more meta?
                                         // Passes $item_html, shortcodes options ($atts), current post ID ($item->ID), user page ($user_id), current users ID ($this_user)
@@ -270,7 +270,7 @@ function cpc_return_activity_posts() {
                                                         $item_html .= '<img style="height:15px;width:15px;" src="'.plugins_url('images/wrench'.get_option('cpccom_icon_colors').'.png', __FILE__).'" />';
                                                     $item_html .= '</div>';
                                                     $item_html .= '<div class="cpc_comment_settings_options">';
-                                                        $item_html .= '<a class="cpc_comment_settings_delete" rel="'.$comment->comment_ID.'" href="javascript:void(0);">'.__('Delete comment', CPC2_TEXT_DOMAIN).'</a>';
+                                                        $item_html .= '<a class="cpc_comment_settings_delete" rel="'.$comment->comment_ID.'" href="javascript:void(0);">'.__('Delete comment', 'cp-community').'</a>';
                                                         if ($report) $item_html .= '<a class="cpc_comment_settings_report" rel="'.$comment->ID.'" href="mailto:'.$report_email.'?subject='.cpc_curPageURL().cpc_query_mark(cpc_curPageURL()).'view='.$item->ID.'">'.$report_label.'</a>';
                                                     $item_html .= '</div>';
                                                 endif;
@@ -287,7 +287,7 @@ function cpc_return_activity_posts() {
                                                 // Name and date
                                                 $item_html .= cpc_display_name(array('user_id'=>$comment->user_id, 'link'=>$link));
                                                 $item_html .= '<br />';
-                                                $item_html .= '<div class="cpc_ago">'.sprintf($date_format, human_time_diff(strtotime($comment->comment_date), current_time('timestamp', 0)), CPC2_TEXT_DOMAIN).'</div>';
+                                                $item_html .= '<div class="cpc_ago">'.sprintf($date_format, human_time_diff(strtotime($comment->comment_date), current_time('timestamp', 0)), 'cp-community').'</div>';
 
                                                 // Any other meta
                                                 // Passes $item_html, shortcodes options ($atts), current post ID ($item->ID), current comment ID ($comment->comment_ID), user page ($user_id), current users ID ($this_user)

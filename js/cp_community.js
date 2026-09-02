@@ -114,7 +114,7 @@ jQuery.fn.cpcbootstrapFileInput = function() {
     }
 
     // Set the word to be displayed on the button
-    var buttonWord = 'Browse';
+    var buttonWord = cpc_common.i18n.browse;
 
     if (typeof jQueryelem.attr('title') != 'undefined') {
       buttonWord = jQueryelem.attr('title');

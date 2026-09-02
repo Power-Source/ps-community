@@ -16,7 +16,7 @@ function cpc_get_profile_tabs($user_id, $viewer_id = 0) {
 	
 	// Activity tab - always visible (main profile content)
 	$tabs['activity'] = array(
-		'label' => __('Aktivität', CPC2_TEXT_DOMAIN),
+		'label' => __('Aktivität', 'cp-community'),
 		'icon' => 'format-chat',
 		'priority' => 10,
 	);
@@ -155,7 +155,7 @@ function cpc_render_profile_tab_content($user_id, $active_tab = 'activity', $sho
 			// If no plugin handled it, show error
 			if (empty($html)) {
 				$html .= '<div class="cpc-error">';
-				$html .= __('Dieser Tab konnte nicht geladen werden.', CPC2_TEXT_DOMAIN);
+				$html .= __('Dieser Tab konnte nicht geladen werden.', 'cp-community');
 				$html .= '</div>';
 			}
 			break;

@@ -7,14 +7,14 @@
 function cpc_groups_admin_page() {
 	?>
 	<div class="wrap">
-		<h1><?php _e('Gruppen Verwaltung', CPC2_TEXT_DOMAIN); ?></h1>
+		<h1><?php _e('Gruppen Verwaltung', 'cp-community'); ?></h1>
 
 		<div class="cpc-admin-help">
-			<h2><?php _e('Verfügbare Shortcodes', CPC2_TEXT_DOMAIN); ?></h2>
+			<h2><?php _e('Verfügbare Shortcodes', 'cp-community'); ?></h2>
 			
 			<h3>[cpc-groups]</h3>
-			<p><?php _e('Zeigt eine Liste aller Gruppen an.', CPC2_TEXT_DOMAIN); ?></p>
-			<p><strong><?php _e('Parameter:', CPC2_TEXT_DOMAIN); ?></strong></p>
+			<p><?php _e('Zeigt eine Liste aller Gruppen an.', 'cp-community'); ?></p>
+			<p><strong><?php _e('Parameter:', 'cp-community'); ?></strong></p>
 			<ul>
 				<li><code>type</code> - all|public|private|hidden (Standard: all)</li>
 				<li><code>columns</code> - Anzahl der Spalten (Standard: 2)</li>
@@ -24,11 +24,11 @@ function cpc_groups_admin_page() {
 				<li><code>show_join_button</code> - true|false (Standard: true)</li>
 				<li><code>search</code> - true|false (Standard: true)</li>
 			</ul>
-			<p><strong><?php _e('Beispiel:', CPC2_TEXT_DOMAIN); ?></strong> <code>[cpc-groups type="public" columns="3"]</code></p>
+			<p><strong><?php _e('Beispiel:', 'cp-community'); ?></strong> <code>[cpc-groups type="public" columns="3"]</code></p>
 
 			<h3>[cpc-group-single]</h3>
-			<p><?php _e('Zeigt Details einer einzelnen Gruppe an.', CPC2_TEXT_DOMAIN); ?></p>
-			<p><strong><?php _e('Parameter:', CPC2_TEXT_DOMAIN); ?></strong></p>
+			<p><?php _e('Zeigt Details einer einzelnen Gruppe an.', 'cp-community'); ?></p>
+			<p><strong><?php _e('Parameter:', 'cp-community'); ?></strong></p>
 			<ul>
 				<li><code>group_id</code> - ID der Gruppe (optional, verwendet automatisch aktuelle Gruppe)</li>
 				<li><code>show_avatar</code> - true|false (Standard: true)</li>
@@ -36,11 +36,11 @@ function cpc_groups_admin_page() {
 				<li><code>show_members</code> - true|false (Standard: true)</li>
 				<li><code>show_actions</code> - true|false (Standard: true)</li>
 			</ul>
-			<p><strong><?php _e('Beispiel:', CPC2_TEXT_DOMAIN); ?></strong> <code>[cpc-group-single]</code></p>
+			<p><strong><?php _e('Beispiel:', 'cp-community'); ?></strong> <code>[cpc-group-single]</code></p>
 
 			<h3>[cpc-group-members]</h3>
-			<p><?php _e('Zeigt die Mitglieder einer Gruppe an.', CPC2_TEXT_DOMAIN); ?></p>
-			<p><strong><?php _e('Parameter:', CPC2_TEXT_DOMAIN); ?></strong></p>
+			<p><?php _e('Zeigt die Mitglieder einer Gruppe an.', 'cp-community'); ?></p>
+			<p><strong><?php _e('Parameter:', 'cp-community'); ?></strong></p>
 			<ul>
 				<li><code>group_id</code> - ID der Gruppe (optional)</li>
 				<li><code>role</code> - admin|moderator|member (optional)</li>
@@ -48,52 +48,52 @@ function cpc_groups_admin_page() {
 				<li><code>show_avatar</code> - true|false (Standard: true)</li>
 				<li><code>show_role</code> - true|false (Standard: true)</li>
 			</ul>
-			<p><strong><?php _e('Beispiel:', CPC2_TEXT_DOMAIN); ?></strong> <code>[cpc-group-members columns="3"]</code></p>
+			<p><strong><?php _e('Beispiel:', 'cp-community'); ?></strong> <code>[cpc-group-members columns="3"]</code></p>
 
 			<h3>[cpc-my-groups]</h3>
-			<p><?php _e('Zeigt die Gruppen des aktuell angemeldeten Benutzers an.', CPC2_TEXT_DOMAIN); ?></p>
-			<p><strong><?php _e('Parameter:', CPC2_TEXT_DOMAIN); ?></strong></p>
+			<p><?php _e('Zeigt die Gruppen des aktuell angemeldeten Benutzers an.', 'cp-community'); ?></p>
+			<p><strong><?php _e('Parameter:', 'cp-community'); ?></strong></p>
 			<ul>
 				<li><code>columns</code> - Anzahl der Spalten (Standard: 3)</li>
 				<li><code>show_avatar</code> - true|false (Standard: true)</li>
 				<li><code>show_role</code> - true|false (Standard: true)</li>
 			</ul>
-			<p><strong><?php _e('Beispiel:', CPC2_TEXT_DOMAIN); ?></strong> <code>[cpc-my-groups columns="2"]</code></p>
+			<p><strong><?php _e('Beispiel:', 'cp-community'); ?></strong> <code>[cpc-my-groups columns="2"]</code></p>
 
 			<h3>[cpc-group-create]</h3>
-			<p><?php _e('Zeigt ein Formular zum Erstellen einer neuen Gruppe an.', CPC2_TEXT_DOMAIN); ?></p>
-			<p><strong><?php _e('Parameter:', CPC2_TEXT_DOMAIN); ?></strong></p>
+			<p><?php _e('Zeigt ein Formular zum Erstellen einer neuen Gruppe an.', 'cp-community'); ?></p>
+			<p><strong><?php _e('Parameter:', 'cp-community'); ?></strong></p>
 			<ul>
 				<li><code>redirect</code> - URL zur Weiterleitung nach Erstellung (optional)</li>
 			</ul>
-			<p><strong><?php _e('Beispiel:', CPC2_TEXT_DOMAIN); ?></strong> <code>[cpc-group-create]</code></p>
+			<p><strong><?php _e('Beispiel:', 'cp-community'); ?></strong> <code>[cpc-group-create]</code></p>
 
 			<h3>[cpc-group-join-button]</h3>
-			<p><?php _e('Zeigt einen Beitreten/Verlassen-Button an.', CPC2_TEXT_DOMAIN); ?></p>
-			<p><strong><?php _e('Parameter:', CPC2_TEXT_DOMAIN); ?></strong></p>
+			<p><?php _e('Zeigt einen Beitreten/Verlassen-Button an.', 'cp-community'); ?></p>
+			<p><strong><?php _e('Parameter:', 'cp-community'); ?></strong></p>
 			<ul>
 				<li><code>group_id</code> - ID der Gruppe (optional)</li>
 				<li><code>join_text</code> - Text für Beitreten-Button</li>
 				<li><code>leave_text</code> - Text für Verlassen-Button</li>
 			</ul>
-			<p><strong><?php _e('Beispiel:', CPC2_TEXT_DOMAIN); ?></strong> <code>[cpc-group-join-button]</code></p>
+			<p><strong><?php _e('Beispiel:', 'cp-community'); ?></strong> <code>[cpc-group-join-button]</code></p>
 
-			<h2><?php _e('Gruppentypen', CPC2_TEXT_DOMAIN); ?></h2>
+			<h2><?php _e('Gruppentypen', 'cp-community'); ?></h2>
 			<ul>
-				<li><strong><?php _e('Öffentlich:', CPC2_TEXT_DOMAIN); ?></strong> <?php _e('Jeder kann die Gruppe sehen und direkt beitreten.', CPC2_TEXT_DOMAIN); ?></li>
-				<li><strong><?php _e('Privat:', CPC2_TEXT_DOMAIN); ?></strong> <?php _e('Jeder kann die Gruppe sehen, aber Beitritt muss genehmigt werden.', CPC2_TEXT_DOMAIN); ?></li>
-				<li><strong><?php _e('Versteckt:', CPC2_TEXT_DOMAIN); ?></strong> <?php _e('Nur Mitglieder können die Gruppe sehen und Inhalte einsehen.', CPC2_TEXT_DOMAIN); ?></li>
+				<li><strong><?php _e('Öffentlich:', 'cp-community'); ?></strong> <?php _e('Jeder kann die Gruppe sehen und direkt beitreten.', 'cp-community'); ?></li>
+				<li><strong><?php _e('Privat:', 'cp-community'); ?></strong> <?php _e('Jeder kann die Gruppe sehen, aber Beitritt muss genehmigt werden.', 'cp-community'); ?></li>
+				<li><strong><?php _e('Versteckt:', 'cp-community'); ?></strong> <?php _e('Nur Mitglieder können die Gruppe sehen und Inhalte einsehen.', 'cp-community'); ?></li>
 			</ul>
 
-			<h2><?php _e('Erste Schritte', CPC2_TEXT_DOMAIN); ?></h2>
+			<h2><?php _e('Erste Schritte', 'cp-community'); ?></h2>
 			<ol>
-				<li><?php _e('Erstelle eine WordPress-Seite für die Gruppenliste und füge den Shortcode [cpc-groups] hinzu.', CPC2_TEXT_DOMAIN); ?></li>
-				<li><?php _e('Erstelle eine Seite zum Erstellen von Gruppen und füge [cpc-group-create] hinzu.', CPC2_TEXT_DOMAIN); ?></li>
-				<li><?php _e('Optional: Erstelle eine Seite für "Meine Gruppen" mit [cpc-my-groups].', CPC2_TEXT_DOMAIN); ?></li>
-				<li><?php _e('Einzelne Gruppen werden automatisch auf ihrer eigenen Seite angezeigt.', CPC2_TEXT_DOMAIN); ?></li>
+				<li><?php _e('Erstelle eine WordPress-Seite für die Gruppenliste und füge den Shortcode [cpc-groups] hinzu.', 'cp-community'); ?></li>
+				<li><?php _e('Erstelle eine Seite zum Erstellen von Gruppen und füge [cpc-group-create] hinzu.', 'cp-community'); ?></li>
+				<li><?php _e('Optional: Erstelle eine Seite für "Meine Gruppen" mit [cpc-my-groups].', 'cp-community'); ?></li>
+				<li><?php _e('Einzelne Gruppen werden automatisch auf ihrer eigenen Seite angezeigt.', 'cp-community'); ?></li>
 			</ol>
 
-			<h2><?php _e('Statistiken', CPC2_TEXT_DOMAIN); ?></h2>
+			<h2><?php _e('Statistiken', 'cp-community'); ?></h2>
 			<?php
 			$total_groups = wp_count_posts('cpc_group');
 			$total_memberships = wp_count_posts('cpc_group_members');
@@ -133,32 +133,32 @@ function cpc_groups_admin_page() {
 			?>
 			<table class="widefat">
 				<tr>
-					<td><?php _e('Gesamte Gruppen:', CPC2_TEXT_DOMAIN); ?></td>
+					<td><?php _e('Gesamte Gruppen:', 'cp-community'); ?></td>
 					<td><strong><?php echo $total_groups->publish; ?></strong></td>
 				</tr>
 				<tr>
-					<td><?php _e('Öffentliche Gruppen:', CPC2_TEXT_DOMAIN); ?></td>
+					<td><?php _e('Öffentliche Gruppen:', 'cp-community'); ?></td>
 					<td><strong><?php echo $public_groups->found_posts; ?></strong></td>
 				</tr>
 				<tr>
-					<td><?php _e('Private Gruppen:', CPC2_TEXT_DOMAIN); ?></td>
+					<td><?php _e('Private Gruppen:', 'cp-community'); ?></td>
 					<td><strong><?php echo $private_groups->found_posts; ?></strong></td>
 				</tr>
 				<tr>
-					<td><?php _e('Versteckte Gruppen:', CPC2_TEXT_DOMAIN); ?></td>
+					<td><?php _e('Versteckte Gruppen:', 'cp-community'); ?></td>
 					<td><strong><?php echo $hidden_groups->found_posts; ?></strong></td>
 				</tr>
 				<tr>
-					<td><?php _e('Gesamte Mitgliedschaften:', CPC2_TEXT_DOMAIN); ?></td>
+					<td><?php _e('Gesamte Mitgliedschaften:', 'cp-community'); ?></td>
 					<td><strong><?php echo $total_memberships->publish; ?></strong></td>
 				</tr>
 			</table>
 
 			<br>
 			<p>
-				<a href="<?php echo admin_url('edit.php?post_type=cpc_group'); ?>" class="button button-primary"><?php _e('Gruppen verwalten', CPC2_TEXT_DOMAIN); ?></a>
-				<a href="<?php echo admin_url('post-new.php?post_type=cpc_group'); ?>" class="button"><?php _e('Neue Gruppe erstellen', CPC2_TEXT_DOMAIN); ?></a>
-				<a href="<?php echo admin_url('edit.php?post_type=cpc_group_members'); ?>" class="button"><?php _e('Mitgliedschaften verwalten', CPC2_TEXT_DOMAIN); ?></a>
+				<a href="<?php echo admin_url('edit.php?post_type=cpc_group'); ?>" class="button button-primary"><?php _e('Gruppen verwalten', 'cp-community'); ?></a>
+				<a href="<?php echo admin_url('post-new.php?post_type=cpc_group'); ?>" class="button"><?php _e('Neue Gruppe erstellen', 'cp-community'); ?></a>
+				<a href="<?php echo admin_url('edit.php?post_type=cpc_group_members'); ?>" class="button"><?php _e('Mitgliedschaften verwalten', 'cp-community'); ?></a>
 			</p>
 		</div>
 	</div>
@@ -168,7 +168,7 @@ function cpc_groups_admin_page() {
 // Add settings to main admin page if needed
 add_filter('cpc_admin_settings_sections', 'cpc_groups_add_settings_section');
 function cpc_groups_add_settings_section($sections) {
-	$sections['groups'] = __('Gruppen', CPC2_TEXT_DOMAIN);
+	$sections['groups'] = __('Gruppen', 'cp-community');
 	return $sections;
 }
 
@@ -176,15 +176,15 @@ add_filter('cpc_admin_settings_fields', 'cpc_groups_add_settings_fields');
 function cpc_groups_add_settings_fields($fields) {
 	$fields['groups'] = array(
 		'cpc_groups_allow_creation' => array(
-			'title' => __('Gruppenerstellung erlauben', CPC2_TEXT_DOMAIN),
+			'title' => __('Gruppenerstellung erlauben', 'cp-community'),
 			'type' => 'checkbox',
-			'description' => __('Erlaubt registrierten Benutzern, eigene Gruppen zu erstellen.', CPC2_TEXT_DOMAIN),
+			'description' => __('Erlaubt registrierten Benutzern, eigene Gruppen zu erstellen.', 'cp-community'),
 			'default' => true,
 		),
 		'cpc_groups_require_approval' => array(
-			'title' => __('Gruppengenehmigung erforderlich', CPC2_TEXT_DOMAIN),
+			'title' => __('Gruppengenehmigung erforderlich', 'cp-community'),
 			'type' => 'checkbox',
-			'description' => __('Neue Gruppen müssen von einem Admin genehmigt werden, bevor sie veröffentlicht werden.', CPC2_TEXT_DOMAIN),
+			'description' => __('Neue Gruppen müssen von einem Admin genehmigt werden, bevor sie veröffentlicht werden.', 'cp-community'),
 			'default' => false,
 		),
 	);
@@ -196,7 +196,7 @@ add_action('cpc_admin_getting_started_hook', 'cpc_admin_getting_started_groups',
 function cpc_admin_getting_started_groups() {
 
     $css = isset($_POST['cpc_expand']) && $_POST['cpc_expand'] == 'cpc_admin_getting_started_groups' ? 'cpc_admin_getting_started_menu_item_remove_icon ' : '';    
-  	echo '<div class="'.$css.'cpc_admin_getting_started_menu_item" rel="cpc_admin_getting_started_groups" id="cpc_admin_getting_started_groups_div">'.__('Gruppen', CPC2_TEXT_DOMAIN).'</div>';
+  	echo '<div class="'.$css.'cpc_admin_getting_started_menu_item" rel="cpc_admin_getting_started_groups" id="cpc_admin_getting_started_groups_div">'.__('Gruppen', 'cp-community').'</div>';
 
   	$display = isset($_POST['cpc_expand']) && $_POST['cpc_expand'] == 'cpc_admin_getting_started_groups' ? 'block' : 'none';
   	echo '<div class="cpc_admin_getting_started_content" id="cpc_admin_getting_started_groups" style="display:'.$display.'">';
@@ -204,13 +204,13 @@ function cpc_admin_getting_started_groups() {
 		?>
 		<table class="form-table">
 		<tr valign="top"> 
-			<td scope="row"><label for="groups_page"><?php echo __('Gruppen-Übersichtsseite', CPC2_TEXT_DOMAIN); ?></label></td>
+			<td scope="row"><label for="groups_page"><?php echo __('Gruppen-Übersichtsseite', 'cp-community'); ?></label></td>
 			<td>
 				<?php $groups_page = cpc_admin_get_valid_page_id('cpccom_groups_page'); ?>
 				<select name="groups_page">
 				 <?php 
-				  if (!$groups_page) echo '<option value="0">'.__('Seite auswählen...', CPC2_TEXT_DOMAIN).'</option>';
-				  if ($groups_page) echo '<option value="0">'.__('Zurücksetzen...', CPC2_TEXT_DOMAIN).'</option>';						
+				  if (!$groups_page) echo '<option value="0">'.__('Seite auswählen...', 'cp-community').'</option>';
+				  if ($groups_page) echo '<option value="0">'.__('Zurücksetzen...', 'cp-community').'</option>';						
 				  $pages = get_pages(); 
 				  foreach ( $pages as $page ) {
 				  	$option = '<option value="' . $page->ID . '"';
@@ -223,25 +223,25 @@ function cpc_admin_getting_started_groups() {
 				 ?>						
 				</select>
 				<?php if (!$groups_page) { ?>
-				<button type="submit" name="cpccom_create_page" value="groups_page" class="button-secondary" style="margin-left:8px;"><?php echo __('Seite erstellen', CPC2_TEXT_DOMAIN); ?></button>
+				<button type="submit" name="cpccom_create_page" value="groups_page" class="button-secondary" style="margin-left:8px;"><?php echo __('Seite erstellen', 'cp-community'); ?></button>
 				<?php } ?>
-				<span class="description"><?php echo __('ClassicPress-Seite, die alle Gruppen anzeigt (automatisch: [cpc-groups]).', CPC2_TEXT_DOMAIN); ?>
+				<span class="description"><?php echo __('ClassicPress-Seite, die alle Gruppen anzeigt (automatisch: [cpc-groups]).', 'cp-community'); ?>
 				<?php if ($groups_page) {
-					echo ' [<a href="post.php?post='.$groups_page.'&action=edit">'.__('bearbeiten', CPC2_TEXT_DOMAIN).'</a>';
-					echo '|<a href="'.get_permalink($groups_page).'">'.__('ansehen', CPC2_TEXT_DOMAIN).'</a>]';
+					echo ' [<a href="post.php?post='.$groups_page.'&action=edit">'.__('bearbeiten', 'cp-community').'</a>';
+					echo '|<a href="'.get_permalink($groups_page).'">'.__('ansehen', 'cp-community').'</a>]';
 				}
 				?>
 				</span></td> 
 		</tr>
 
 		<tr valign="top"> 
-			<td scope="row"><label for="group_single_page"><?php echo __('Einzelgruppen-Seite', CPC2_TEXT_DOMAIN); ?></label></td>
+			<td scope="row"><label for="group_single_page"><?php echo __('Einzelgruppen-Seite', 'cp-community'); ?></label></td>
 			<td>
 				<?php $single_page = cpc_admin_get_valid_page_id('cpccom_group_single_page'); ?>
 				<select name="group_single_page">
 				 <?php 
-				  if (!$single_page) echo '<option value="0">'.__('Seite auswählen...', CPC2_TEXT_DOMAIN).'</option>';
-				  if ($single_page) echo '<option value="0">'.__('Zurücksetzen...', CPC2_TEXT_DOMAIN).'</option>';						
+				  if (!$single_page) echo '<option value="0">'.__('Seite auswählen...', 'cp-community').'</option>';
+				  if ($single_page) echo '<option value="0">'.__('Zurücksetzen...', 'cp-community').'</option>';						
 				  $pages = get_pages(); 
 				  foreach ( $pages as $page ) {
 				  	$option = '<option value="' . $page->ID . '"';
@@ -254,25 +254,25 @@ function cpc_admin_getting_started_groups() {
 				 ?>						
 				</select>
 				<?php if (!$single_page) { ?>
-				<button type="submit" name="cpccom_create_page" value="group_single_page" class="button-secondary" style="margin-left:8px;"><?php echo __('Seite erstellen', CPC2_TEXT_DOMAIN); ?></button>
+				<button type="submit" name="cpccom_create_page" value="group_single_page" class="button-secondary" style="margin-left:8px;"><?php echo __('Seite erstellen', 'cp-community'); ?></button>
 				<?php } ?>
-				<span class="description"><?php echo __('ClassicPress-Seite für einzelne Gruppenansicht (automatisch: [cpc-group-single]).', CPC2_TEXT_DOMAIN); ?>
+				<span class="description"><?php echo __('ClassicPress-Seite für einzelne Gruppenansicht (automatisch: [cpc-group-single]).', 'cp-community'); ?>
 				<?php if ($single_page) {
-					echo ' [<a href="post.php?post='.$single_page.'&action=edit">'.__('bearbeiten', CPC2_TEXT_DOMAIN).'</a>';
-					echo '|<a href="'.get_permalink($single_page).'">'.__('ansehen', CPC2_TEXT_DOMAIN).'</a>]';
+					echo ' [<a href="post.php?post='.$single_page.'&action=edit">'.__('bearbeiten', 'cp-community').'</a>';
+					echo '|<a href="'.get_permalink($single_page).'">'.__('ansehen', 'cp-community').'</a>]';
 				}
 				?>
 				</span></td> 
 		</tr>
 
 		<tr valign="top"> 
-			<td scope="row"><label for="group_create_page"><?php echo __('Gruppe erstellen Seite', CPC2_TEXT_DOMAIN); ?></label></td>
+			<td scope="row"><label for="group_create_page"><?php echo __('Gruppe erstellen Seite', 'cp-community'); ?></label></td>
 			<td>
 				<?php $create_page = cpc_admin_get_valid_page_id('cpccom_group_create_page'); ?>
 				<select name="group_create_page">
 				 <?php 
-				  if (!$create_page) echo '<option value="0">'.__('Seite auswählen...', CPC2_TEXT_DOMAIN).'</option>';
-				  if ($create_page) echo '<option value="0">'.__('Zurücksetzen...', CPC2_TEXT_DOMAIN).'</option>';						
+				  if (!$create_page) echo '<option value="0">'.__('Seite auswählen...', 'cp-community').'</option>';
+				  if ($create_page) echo '<option value="0">'.__('Zurücksetzen...', 'cp-community').'</option>';						
 				  $pages = get_pages(); 
 				  foreach ( $pages as $page ) {
 				  	$option = '<option value="' . $page->ID . '"';
@@ -285,25 +285,25 @@ function cpc_admin_getting_started_groups() {
 				 ?>						
 				</select>
 				<?php if (!$create_page) { ?>
-				<button type="submit" name="cpccom_create_page" value="group_create_page" class="button-secondary" style="margin-left:8px;"><?php echo __('Seite erstellen', CPC2_TEXT_DOMAIN); ?></button>
+				<button type="submit" name="cpccom_create_page" value="group_create_page" class="button-secondary" style="margin-left:8px;"><?php echo __('Seite erstellen', 'cp-community'); ?></button>
 				<?php } ?>
-				<span class="description"><?php echo __('ClassicPress-Seite zum Erstellen neuer Gruppen (automatisch: [cpc-group-create]).', CPC2_TEXT_DOMAIN); ?>
+				<span class="description"><?php echo __('ClassicPress-Seite zum Erstellen neuer Gruppen (automatisch: [cpc-group-create]).', 'cp-community'); ?>
 				<?php if ($create_page) {
-					echo ' [<a href="post.php?post='.$create_page.'&action=edit">'.__('bearbeiten', CPC2_TEXT_DOMAIN).'</a>';
-					echo '|<a href="'.get_permalink($create_page).'">'.__('ansehen', CPC2_TEXT_DOMAIN).'</a>]';
+					echo ' [<a href="post.php?post='.$create_page.'&action=edit">'.__('bearbeiten', 'cp-community').'</a>';
+					echo '|<a href="'.get_permalink($create_page).'">'.__('ansehen', 'cp-community').'</a>]';
 				}
 				?>
 				</span></td> 
 		</tr>
 
 		<tr valign="top"> 
-			<td scope="row"><label for="my_groups_page"><?php echo __('Meine Gruppen Seite', CPC2_TEXT_DOMAIN); ?></label></td>
+			<td scope="row"><label for="my_groups_page"><?php echo __('Meine Gruppen Seite', 'cp-community'); ?></label></td>
 			<td>
 				<?php $my_page = cpc_admin_get_valid_page_id('cpccom_my_groups_page'); ?>
 				<select name="my_groups_page">
 				 <?php 
-				  if (!$my_page) echo '<option value="0">'.__('Seite auswählen...', CPC2_TEXT_DOMAIN).'</option>';
-				  if ($my_page) echo '<option value="0">'.__('Zurücksetzen...', CPC2_TEXT_DOMAIN).'</option>';						
+				  if (!$my_page) echo '<option value="0">'.__('Seite auswählen...', 'cp-community').'</option>';
+				  if ($my_page) echo '<option value="0">'.__('Zurücksetzen...', 'cp-community').'</option>';						
 				  $pages = get_pages(); 
 				  foreach ( $pages as $page ) {
 				  	$option = '<option value="' . $page->ID . '"';
@@ -316,12 +316,12 @@ function cpc_admin_getting_started_groups() {
 				 ?>						
 				</select>
 				<?php if (!$my_page) { ?>
-				<button type="submit" name="cpccom_create_page" value="my_groups_page" class="button-secondary" style="margin-left:8px;"><?php echo __('Seite erstellen', CPC2_TEXT_DOMAIN); ?></button>
+				<button type="submit" name="cpccom_create_page" value="my_groups_page" class="button-secondary" style="margin-left:8px;"><?php echo __('Seite erstellen', 'cp-community'); ?></button>
 				<?php } ?>
-				<span class="description"><?php echo __('ClassicPress-Seite für Benutzer-Gruppen (automatisch: [cpc-my-groups]).', CPC2_TEXT_DOMAIN); ?>
+				<span class="description"><?php echo __('ClassicPress-Seite für Benutzer-Gruppen (automatisch: [cpc-my-groups]).', 'cp-community'); ?>
 				<?php if ($my_page) {
-					echo ' [<a href="post.php?post='.$my_page.'&action=edit">'.__('bearbeiten', CPC2_TEXT_DOMAIN).'</a>';
-					echo '|<a href="'.get_permalink($my_page).'">'.__('ansehen', CPC2_TEXT_DOMAIN).'</a>]';
+					echo ' [<a href="post.php?post='.$my_page.'&action=edit">'.__('bearbeiten', 'cp-community').'</a>';
+					echo '|<a href="'.get_permalink($my_page).'">'.__('ansehen', 'cp-community').'</a>]';
 				}
 				?>
 				</span></td> 
@@ -329,51 +329,51 @@ function cpc_admin_getting_started_groups() {
 
 		<tr class="form-field">
 			<td scope="row" valign="top">
-				<label for="cpc_groups_allow_creation"><?php _e('Gruppenerstellung erlauben', CPC2_TEXT_DOMAIN); ?></label>
+				<label for="cpc_groups_allow_creation"><?php _e('Gruppenerstellung erlauben', 'cp-community'); ?></label>
 			</td>
 			<td>
 				<input type="checkbox" name="cpc_groups_allow_creation" value="1" <?php checked((int) get_option('cpc_groups_allow_creation', 1), 1); ?> />
-				<span class="description"><?php _e('Erlaubt registrierten Benutzern, eigene Gruppen zu erstellen.', CPC2_TEXT_DOMAIN); ?></span>
+				<span class="description"><?php _e('Erlaubt registrierten Benutzern, eigene Gruppen zu erstellen.', 'cp-community'); ?></span>
 			</td>
 		</tr>
 		<tr class="form-field">
 			<td scope="row" valign="top">
-				<label for="cpc_groups_require_approval"><?php _e('Gruppengenehmigung erforderlich', CPC2_TEXT_DOMAIN); ?></label>
+				<label for="cpc_groups_require_approval"><?php _e('Gruppengenehmigung erforderlich', 'cp-community'); ?></label>
 			</td>
 			<td>
 				<input type="checkbox" name="cpc_groups_require_approval" 
 				<?php if (get_option('cpc_groups_require_approval')) echo ' CHECKED'; ?>
 				/>
-				<span class="description"><?php _e('Neue Gruppen müssen von einem Admin genehmigt werden, bevor sie veröffentlicht werden.', CPC2_TEXT_DOMAIN); ?></span>
+				<span class="description"><?php _e('Neue Gruppen müssen von einem Admin genehmigt werden, bevor sie veröffentlicht werden.', 'cp-community'); ?></span>
 			</td>
 		</tr>
 		<tr class="form-field">
 			<td scope="row" valign="top">
-				<label for="cpc_groups_default_type"><?php _e('Standard-Gruppentyp', CPC2_TEXT_DOMAIN); ?></label>
+				<label for="cpc_groups_default_type"><?php _e('Standard-Gruppentyp', 'cp-community'); ?></label>
 			</td>
 			<td>
 				<?php $default_type = get_option('cpc_groups_default_type', 'public'); ?>
 				<select name="cpc_groups_default_type" id="cpc_groups_default_type">
-					<option value="public" <?php selected($default_type, 'public'); ?>><?php _e('Öffentlich', CPC2_TEXT_DOMAIN); ?></option>
-					<option value="private" <?php selected($default_type, 'private'); ?>><?php _e('Privat', CPC2_TEXT_DOMAIN); ?></option>
-					<option value="hidden" <?php selected($default_type, 'hidden'); ?>><?php _e('Versteckt', CPC2_TEXT_DOMAIN); ?></option>
+					<option value="public" <?php selected($default_type, 'public'); ?>><?php _e('Öffentlich', 'cp-community'); ?></option>
+					<option value="private" <?php selected($default_type, 'private'); ?>><?php _e('Privat', 'cp-community'); ?></option>
+					<option value="hidden" <?php selected($default_type, 'hidden'); ?>><?php _e('Versteckt', 'cp-community'); ?></option>
 				</select>
-				<span class="description"><?php _e('Standard-Sichtbarkeit für neue Gruppen.', CPC2_TEXT_DOMAIN); ?></span>
+				<span class="description"><?php _e('Standard-Sichtbarkeit für neue Gruppen.', 'cp-community'); ?></span>
 			</td>
 		</tr>
 		<tr class="form-field">
 			<td scope="row" valign="top">
-				<label for="cpc_groups_slug_length"><?php _e('Slug Länge', CPC2_TEXT_DOMAIN); ?></label>
+				<label for="cpc_groups_slug_length"><?php _e('Slug Länge', 'cp-community'); ?></label>
 			</td>
 			<td>
 				<?php $cpc_groups_slug_length = get_option('cpc_groups_slug_length') ? get_option('cpc_groups_slug_length') : 50; ?>
 				<input type="text" style="width:50px" name="cpc_groups_slug_length" value="<?php echo $cpc_groups_slug_length; ?>" /> 
-				<span class="description"><?php echo __('Maximale Länge für Gruppentitel in URLs.', CPC2_TEXT_DOMAIN) ; ?></span>
+				<span class="description"><?php echo __('Maximale Länge für Gruppentitel in URLs.', 'cp-community') ; ?></span>
 			</td>
 		</tr>
 		<tr class="form-field">
 			<td scope="row" valign="top">
-				<label for="cpc_enable_group_chats"><?php _e('Gruppen-Chats', CPC2_TEXT_DOMAIN); ?></label>
+				<label for="cpc_enable_group_chats"><?php _e('Gruppen-Chats', 'cp-community'); ?></label>
 			</td>
 			<td>
 				<?php 
@@ -384,28 +384,28 @@ function cpc_admin_getting_started_groups() {
 					<p style="color: #d9534f; margin: 0;">
 						<?php 
 						if ($pschat_available['installed']) {
-							_e('PS-Chat ist installiert, aber nicht aktiviert. Aktiviere es zuerst.', CPC2_TEXT_DOMAIN);
+							_e('PS-Chat ist installiert, aber nicht aktiviert. Aktiviere es zuerst.', 'cp-community');
 						} else {
-							_e('PS-Chat ist nicht installiert. Installiere es, um Gruppen-Chats zu nutzen.', CPC2_TEXT_DOMAIN);
+							_e('PS-Chat ist nicht installiert. Installiere es, um Gruppen-Chats zu nutzen.', 'cp-community');
 						}
 						?>
 					</p>
 					<input type="checkbox" name="cpc_enable_group_chats" id="cpc_enable_group_chats" disabled />
-					<span class="description"><?php _e('Aktiviert wenn PS-Chat verfügbar ist', CPC2_TEXT_DOMAIN); ?></span>
+					<span class="description"><?php _e('Aktiviert wenn PS-Chat verfügbar ist', 'cp-community'); ?></span>
 				<?php else: ?>
 					<input type="checkbox" name="cpc_enable_group_chats" id="cpc_enable_group_chats" value="1" <?php checked($chats_enabled, 1); ?> />
-					<span class="description"><?php _e('Erlaubt Gruppen-Admins, einen Chat für ihre Gruppe zu aktivieren. Denke daran, dass Chat-Features ressourcenintensiv sind.', CPC2_TEXT_DOMAIN); ?></span>
+					<span class="description"><?php _e('Erlaubt Gruppen-Admins, einen Chat für ihre Gruppe zu aktivieren. Denke daran, dass Chat-Features ressourcenintensiv sind.', 'cp-community'); ?></span>
 				<?php endif; ?>
 			</td>
 		</tr>
 		<tr class="form-field">
 			<td scope="row" valign="top">
-				<label for="cpc_groups_cloud_limit_mb"><?php _e('Gruppen-Speicher-Limit', CPC2_TEXT_DOMAIN); ?></label>
+				<label for="cpc_groups_cloud_limit_mb"><?php _e('Gruppen-Speicher-Limit', 'cp-community'); ?></label>
 			</td>
 			<td>
 				<?php $cloud_limit = get_option('cpc_groups_cloud_limit_mb', 100); ?>
 				<input type="number" name="cpc_groups_cloud_limit_mb" id="cpc_groups_cloud_limit_mb" value="<?php echo esc_attr($cloud_limit); ?>" min="0" step="1" style="width:80px;" /> MB
-				<span class="description"><?php _e('Maximaler Speicherplatz für Medien-Uploads pro Gruppe (in MB). Standard: 100 MB.', CPC2_TEXT_DOMAIN); ?></span>
+				<span class="description"><?php _e('Maximaler Speicherplatz für Medien-Uploads pro Gruppe (in MB). Standard: 100 MB.', 'cp-community'); ?></span>
 			</td>
 		</tr>
 		<?php 
@@ -427,7 +427,7 @@ function cpc_admin_getting_started_groups_save($the_post) {
 		$the_post['groups_page'] = cpc_admin_create_standard_page('cpccom_groups_page', array(
 			'post_content'   => '['.CPC_PREFIX.'-groups]',
 			'post_name'      => 'groups',
-			'post_title'     => __('Gruppen', CPC2_TEXT_DOMAIN),
+			'post_title'     => __('Gruppen', 'cp-community'),
 			'post_status'    => 'publish',
 			'post_type'      => 'page',
 			'ping_status'    => 'closed',
@@ -438,7 +438,7 @@ function cpc_admin_getting_started_groups_save($the_post) {
 		$the_post['group_single_page'] = cpc_admin_create_standard_page('cpccom_group_single_page', array(
 			'post_content'   => '['.CPC_PREFIX.'-group-single]',
 			'post_name'      => 'group',
-			'post_title'     => __('Gruppe', CPC2_TEXT_DOMAIN),
+			'post_title'     => __('Gruppe', 'cp-community'),
 			'post_status'    => 'publish',
 			'post_type'      => 'page',
 			'ping_status'    => 'closed',
@@ -449,7 +449,7 @@ function cpc_admin_getting_started_groups_save($the_post) {
 		$the_post['group_create_page'] = cpc_admin_create_standard_page('cpccom_group_create_page', array(
 			'post_content'   => '['.CPC_PREFIX.'-group-create]',
 			'post_name'      => 'create-group',
-			'post_title'     => __('Gruppe erstellen', CPC2_TEXT_DOMAIN),
+			'post_title'     => __('Gruppe erstellen', 'cp-community'),
 			'post_status'    => 'publish',
 			'post_type'      => 'page',
 			'ping_status'    => 'closed',
@@ -460,7 +460,7 @@ function cpc_admin_getting_started_groups_save($the_post) {
 		$the_post['my_groups_page'] = cpc_admin_create_standard_page('cpccom_my_groups_page', array(
 			'post_content'   => '['.CPC_PREFIX.'-my-groups]',
 			'post_name'      => 'my-groups',
-			'post_title'     => __('Meine Gruppen', CPC2_TEXT_DOMAIN),
+			'post_title'     => __('Meine Gruppen', 'cp-community'),
 			'post_status'    => 'publish',
 			'post_type'      => 'page',
 			'ping_status'    => 'closed',
@@ -472,7 +472,7 @@ function cpc_admin_getting_started_groups_save($the_post) {
 		|| ($create_page === 'group_single_page' && is_wp_error($the_post['group_single_page']))
 		|| ($create_page === 'group_create_page' && is_wp_error($the_post['group_create_page']))
 		|| ($create_page === 'my_groups_page' && is_wp_error($the_post['my_groups_page']))) {
-		echo '<div class="cpc_error">'.__('Die gewünschte Gruppen-Standardseite konnte nicht erstellt werden.', CPC2_TEXT_DOMAIN).'</div>';
+		echo '<div class="cpc_error">'.__('Die gewünschte Gruppen-Standardseite konnte nicht erstellt werden.', 'cp-community').'</div>';
 		return;
 	}
 	
@@ -546,7 +546,7 @@ function cpc_admin_quick_start_groups() {
 		echo '<div style="margin-right:10px; float:left">';
 		echo '<form action="" method="POST">';
 		echo '<input type="hidden" name="cpccom_quick_start" value="groups" />';
-		echo '<input type="submit" class="button-secondary" value="'.__('Gruppenseiten hinzufügen', CPC2_TEXT_DOMAIN).'" />';
+		echo '<input type="submit" class="button-secondary" value="'.__('Gruppenseiten hinzufügen', 'cp-community').'" />';
 		echo '</form></div>';
 
 	endif;
@@ -563,7 +563,7 @@ function cpc_admin_quick_start_groups_save($the_post) {
 		$post = array(
 		  'post_content'   => $post_content,
 		  'post_name'      => 'groups',
-		  'post_title'     => __('Gruppen', CPC2_TEXT_DOMAIN),
+		  'post_title'     => __('Gruppen', 'cp-community'),
 		  'post_status'    => 'publish',
 		  'post_type'      => 'page',
 		  'ping_status'    => 'closed',
@@ -576,7 +576,7 @@ function cpc_admin_quick_start_groups_save($the_post) {
 		$post = array(
 		  'post_content'   => '['.CPC_PREFIX.'-group-single]',
 		  'post_name'      => 'group',
-		  'post_title'     => __('Gruppe', CPC2_TEXT_DOMAIN),
+		  'post_title'     => __('Gruppe', 'cp-community'),
 		  'post_status'    => 'publish',
 		  'post_type'      => 'page',
 		  'ping_status'    => 'closed',
@@ -589,7 +589,7 @@ function cpc_admin_quick_start_groups_save($the_post) {
 		$post = array(
 		  'post_content'   => '['.CPC_PREFIX.'-group-create]',
 		  'post_name'      => 'create-group',
-		  'post_title'     => __('Gruppe erstellen', CPC2_TEXT_DOMAIN),
+		  'post_title'     => __('Gruppe erstellen', 'cp-community'),
 		  'post_status'    => 'publish',
 		  'post_type'      => 'page',
 		  'ping_status'    => 'closed',
@@ -602,7 +602,7 @@ function cpc_admin_quick_start_groups_save($the_post) {
 		$post = array(
 		  'post_content'   => '['.CPC_PREFIX.'-my-groups]',
 		  'post_name'      => 'my-groups',
-		  'post_title'     => __('Meine Gruppen', CPC2_TEXT_DOMAIN),
+		  'post_title'     => __('Meine Gruppen', 'cp-community'),
 		  'post_status'    => 'publish',
 		  'post_type'      => 'page',
 		  'ping_status'    => 'closed',
@@ -612,7 +612,7 @@ function cpc_admin_quick_start_groups_save($the_post) {
 		$my_groups_page_id = cpc_admin_create_standard_page('cpccom_my_groups_page', $post, CPC_PREFIX.'-my-groups');
 
 		if (is_wp_error($groups_page_id) || is_wp_error($group_single_page_id) || is_wp_error($group_create_page_id) || is_wp_error($my_groups_page_id)) {
-			echo '<div class="cpc_error">'.__('Mindestens eine Gruppen-Standardseite konnte nicht erstellt werden.', CPC2_TEXT_DOMAIN).'</div>';
+			echo '<div class="cpc_error">'.__('Mindestens eine Gruppen-Standardseite konnte nicht erstellt werden.', 'cp-community').'</div>';
 		}
 
 	endif;

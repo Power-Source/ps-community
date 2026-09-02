@@ -20,17 +20,17 @@ function cpc_admin_getting_started_members_core_option() {
     }
 
     echo '<tr class="form-field">';
-    echo '<th scope="row" valign="top"><label>'.__('Mitgliederverzeichnis-Seite', CPC2_TEXT_DOMAIN).'</label></th>';
+    echo '<th scope="row" valign="top"><label>'.__('Mitgliederverzeichnis-Seite', 'cp-community').'</label></th>';
     echo '<td>';
     echo wp_dropdown_pages(array(
         'name' => 'cpc_members_directory_page',
         'echo' => 0,
-        'show_option_none' => __('Keine feste Seite', CPC2_TEXT_DOMAIN),
+        'show_option_none' => __('Keine feste Seite', 'cp-community'),
         'option_none_value' => '0',
         'selected' => cpc_members_get_directory_page_id(),
     ));
-    echo '<br /><span class="description">'.__('Wähle eine bestehende Seite mit [cpc-members-directory] oder erstelle unten automatisch eine neue Seite mit eingefügtem Shortcode.', CPC2_TEXT_DOMAIN).'</span>';
-    echo '<br /><label><input type="checkbox" style="width:10px" name="cpc_members_directory_create_page" /> '.__('Mitglieder-Seite automatisch erstellen (inkl. [cpc-members-directory]).', CPC2_TEXT_DOMAIN).'</label>';
+    echo '<br /><span class="description">'.__('Wähle eine bestehende Seite mit [cpc-members-directory] oder erstelle unten automatisch eine neue Seite mit eingefügtem Shortcode.', 'cp-community').'</span>';
+    echo '<br /><label><input type="checkbox" style="width:10px" name="cpc_members_directory_create_page" /> '.__('Mitglieder-Seite automatisch erstellen (inkl. [cpc-members-directory]).', 'cp-community').'</label>';
     echo '</td>';
     echo '</tr>';
 }
@@ -42,8 +42,8 @@ function cpc_admin_members_save($the_post) {
 
     if (isset($the_post['cpc_members_directory_create_page']) && function_exists('cpc_admin_create_standard_page')) {
         $new_page_id = cpc_admin_create_standard_page('cpc_members_directory_page', array(
-            'post_name' => sanitize_title(__('mitglieder', CPC2_TEXT_DOMAIN)),
-            'post_title' => __('Mitglieder', CPC2_TEXT_DOMAIN),
+            'post_name' => sanitize_title(__('mitglieder', 'cp-community')),
+            'post_title' => __('Mitglieder', 'cp-community'),
             'post_content' => '[cpc-members-directory]',
             'post_status' => 'publish',
             'post_type' => 'page',
@@ -116,7 +116,7 @@ function cpc_members_render_chat_status($user_id) {
     $status_options = function_exists('cpc_pschat_get_status_options') ? (array)cpc_pschat_get_status_options() : array();
     $status_label = isset($status_options[$status_key]) ? (string)$status_options[$status_key] : $status_key;
 
-    return '<div class="cpc-member-chat-status cpc-pschat-status-'.esc_attr(sanitize_html_class($status_key)).'">'.esc_html__('Chat:', CPC2_TEXT_DOMAIN).' '.esc_html($status_label).'</div>';
+    return '<div class="cpc-member-chat-status cpc-pschat-status-'.esc_attr(sanitize_html_class($status_key)).'">'.esc_html__('Chat:', 'cp-community').' '.esc_html($status_label).'</div>';
 }
 
 function cpc_members_render_pm_action($target_user) {
@@ -170,7 +170,7 @@ function cpc_members_render_member_actions($target_user, $profile_url) {
     }
 
     $actions = '<div class="cpc-member-actions">';
-    $actions .= '<a class="cpc_button cpc-member-action-profile" href="'.esc_url($profile_url).'">'.esc_html__('Profil', CPC2_TEXT_DOMAIN).'</a>';
+    $actions .= '<a class="cpc_button cpc-member-action-profile" href="'.esc_url($profile_url).'">'.esc_html__('Profil', 'cp-community').'</a>';
 
     if (function_exists('cpc_friends_add_button') && is_user_logged_in() && (int)get_current_user_id() !== (int)$target_user->ID) {
         $actions .= '<div class="cpc-member-action-friend">';
@@ -237,7 +237,7 @@ function cpc_members_render_atoz($current_letter) {
         }
     }
     $reset_url = remove_query_arg(array('letter', 'cpc_members_page'));
-    $html .= '<a class="cpc-members-reset" href="' . esc_url($reset_url) . '">' . esc_html__('Alle', CPC2_TEXT_DOMAIN) . '</a>';
+    $html .= '<a class="cpc-members-reset" href="' . esc_url($reset_url) . '">' . esc_html__('Alle', 'cp-community') . '</a>';
     $html .= '</div>';
 
     return $html;
@@ -308,8 +308,8 @@ function cpc_members_directory($atts) {
                 $html .= '<input type="hidden" name="' . esc_attr($key) . '" value="' . esc_attr(wp_unslash($value)) . '">';
             }
         }
-        $html .= '<input type="text" name="member" value="' . esc_attr($search_term) . '" placeholder="' . esc_attr__('Mitglied suchen...', CPC2_TEXT_DOMAIN) . '">';
-        $html .= '<button type="submit">' . esc_html__('Suche', CPC2_TEXT_DOMAIN) . '</button>';
+        $html .= '<input type="text" name="member" value="' . esc_attr($search_term) . '" placeholder="' . esc_attr__('Mitglied suchen...', 'cp-community') . '">';
+        $html .= '<button type="submit">' . esc_html__('Suche', 'cp-community') . '</button>';
         $html .= '</form>';
     }
 
@@ -317,10 +317,10 @@ function cpc_members_directory($atts) {
         $html .= cpc_members_render_atoz($letter);
     }
 
-    $html .= '<div class="cpc-members-summary">' . sprintf(esc_html__('%d Mitglieder gefunden', CPC2_TEXT_DOMAIN), $total) . '</div>';
+    $html .= '<div class="cpc-members-summary">' . sprintf(esc_html__('%d Mitglieder gefunden', 'cp-community'), $total) . '</div>';
 
     if (empty($users)) {
-        $html .= '<p>' . esc_html__('Keine Mitglieder gefunden.', CPC2_TEXT_DOMAIN) . '</p>';
+        $html .= '<p>' . esc_html__('Keine Mitglieder gefunden.', 'cp-community') . '</p>';
     } else {
         $html .= '<div class="cpc-members-grid">';
         foreach ($users as $user) {
@@ -339,7 +339,7 @@ function cpc_members_directory($atts) {
                 $last_active_ts = $last_active ? strtotime((string)$last_active) : 0;
                 if ($last_active_ts) {
                     $ago = human_time_diff($last_active_ts, current_time('timestamp'));
-                    $html .= '<div class="cpc-member-last-active">' . sprintf(esc_html__('Aktiv: vor %s', CPC2_TEXT_DOMAIN), esc_html($ago)) . '</div>';
+                    $html .= '<div class="cpc-member-last-active">' . sprintf(esc_html__('Aktiv: vor %s', 'cp-community'), esc_html($ago)) . '</div>';
                 }
             }
             if (!empty($atts['show_actions'])) {

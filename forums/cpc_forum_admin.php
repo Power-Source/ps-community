@@ -7,7 +7,7 @@ function cpccom_forum_setup() {
         	
 	  	echo '<div id="icon-themes" class="icon32"><br /></div>';
 
-	  	echo '<h2>'.__('Alle Foren', CPC2_TEXT_DOMAIN).'</h2>';
+	  	echo '<h2>'.__('Alle Foren', 'cp-community').'</h2>';
 
 	  	if (isset($_GET['action']) && $_GET['action'] == 'cpc_forum_delete'):
 
@@ -162,12 +162,12 @@ function cpccom_forum_setup() {
 				echo '<br /><table class="widefat">';
     
                 echo '<tr>';
-                    echo '<td>'.__('Forum', CPC2_TEXT_DOMAIN).'</td>';
-                    echo '<td style="text-align:center">'.__('Sortierung', CPC2_TEXT_DOMAIN).'</td>';
-                    echo '<td style="text-align:center">'.__('Privatsphäre', CPC2_TEXT_DOMAIN).'</td>';
-                    echo '<td style="text-align:center">'.__('Status', CPC2_TEXT_DOMAIN).'</td>';
-                    echo '<td style="text-align:center">'.__('Sichtbarkeit', CPC2_TEXT_DOMAIN).'</td>';
-                    if (function_exists('cpc_forum_subs_extension_insert_rewrite_rules')) echo '<td style="text-align:center">'.__('Automatisch abonnieren', CPC2_TEXT_DOMAIN).'</td>';
+                    echo '<td>'.__('Forum', 'cp-community').'</td>';
+                    echo '<td style="text-align:center">'.__('Sortierung', 'cp-community').'</td>';
+                    echo '<td style="text-align:center">'.__('Privatsphäre', 'cp-community').'</td>';
+                    echo '<td style="text-align:center">'.__('Status', 'cp-community').'</td>';
+                    echo '<td style="text-align:center">'.__('Sichtbarkeit', 'cp-community').'</td>';
+                    if (function_exists('cpc_forum_subs_extension_insert_rewrite_rules')) echo '<td style="text-align:center">'.__('Automatisch abonnieren', 'cp-community').'</td>';
                 echo '<tr>';
 
 				foreach ($terms as $term):
@@ -179,14 +179,14 @@ function cpccom_forum_setup() {
 
 						echo '<td style="border-top:1px solid #cfcfcf;width:40%;">';
 						echo '<strong><a style="text-decoration:none" href="edit-tags.php?action=edit&taxonomy=cpc_forum&tag_ID='.$term->term_id.'&post_type=cpc_forum_post">'.$term->name.'</a></strong><br />'.urldecode($term->slug).'<br />';
-						echo '<a style="text-decoration:none" href="edit-tags.php?action=edit&taxonomy=cpc_forum&tag_ID='.$term->term_id.'&post_type=cpc_forum_post">'.__('Bearbeiten', CPC2_TEXT_DOMAIN).'</a> | ';
+						echo '<a style="text-decoration:none" href="edit-tags.php?action=edit&taxonomy=cpc_forum&tag_ID='.$term->term_id.'&post_type=cpc_forum_post">'.__('Bearbeiten', 'cp-community').'</a> | ';
 						if ($page_id) {
-							echo '<a style="text-decoration:none" href="post.php?post='.$page_id.'&action=edit">'.__('Seite', CPC2_TEXT_DOMAIN).'</a> | ';
-							if ($url) echo '<a style="text-decoration:none" href="'.$url.'">'.__('Ansehen', CPC2_TEXT_DOMAIN).'</a>';
+							echo '<a style="text-decoration:none" href="post.php?post='.$page_id.'&action=edit">'.__('Seite', 'cp-community').'</a> | ';
+							if ($url) echo '<a style="text-decoration:none" href="'.$url.'">'.__('Ansehen', 'cp-community').'</a>';
 						} else {
-							echo '<a href="edit-tags.php?action=edit&taxonomy=cpc_forum&tag_ID='.$term->term_id.'&post_type=cpc_forum_post">'.__('ClassicPress-Seite auswählen...', CPC2_TEXT_DOMAIN).'</a>';
+							echo '<a href="edit-tags.php?action=edit&taxonomy=cpc_forum&tag_ID='.$term->term_id.'&post_type=cpc_forum_post">'.__('ClassicPress-Seite auswählen...', 'cp-community').'</a>';
 						}
-						echo ' | <a style="text-decoration:none;color:#f00;" onclick="if (!confirm(\'Are you sure, this cannot be reversed?\')) return false;" href="admin.php?page=cpccom_forum_setup&action=cpc_forum_delete&term_ID='.$term->term_id.'">'.__('Löschen', CPC2_TEXT_DOMAIN).'</a>';
+						echo ' | <a style="text-decoration:none;color:#f00;" onclick="if (!confirm(\'Are you sure, this cannot be reversed?\')) return false;" href="admin.php?page=cpccom_forum_setup&action=cpc_forum_delete&term_ID='.$term->term_id.'">'.__('Löschen', 'cp-community').'</a>';
 						echo '</td>';
 
 						echo '<input name="cpc_forum_id[]" type="hidden" value="'.$term->term_id.'" />'; 
@@ -200,11 +200,11 @@ function cpccom_forum_setup() {
 						echo '<td style="text-align:center;border-top:1px solid #cfcfcf;width:15%;">';
 						echo '<select name="cpc_forum_public[]">';
 						if ( !cpc_get_term_meta($term->term_id, 'cpc_forum_public', true) ):
-							echo '<option value="0" SELECTED>'.__('Privat', CPC2_TEXT_DOMAIN).'</option>';
-							echo '<option value="1">'.__('Öffentlich', CPC2_TEXT_DOMAIN).'</option>';
+							echo '<option value="0" SELECTED>'.__('Privat', 'cp-community').'</option>';
+							echo '<option value="1">'.__('Öffentlich', 'cp-community').'</option>';
 						else:
-							echo '<option value="0">'.__('Privat', CPC2_TEXT_DOMAIN).'</option>';
-							echo '<option value="1" SELECTED>'.__('Öffentlich', CPC2_TEXT_DOMAIN).'</option>';
+							echo '<option value="0">'.__('Privat', 'cp-community').'</option>';
+							echo '<option value="1" SELECTED>'.__('Öffentlich', 'cp-community').'</option>';
 						endif;
 						echo '</select>';
 						echo '</td>';
@@ -212,11 +212,11 @@ function cpccom_forum_setup() {
 						echo '<td style="text-align:center;border-top:1px solid #cfcfcf;width:15%;">';
 						echo '<select name="cpc_forum_closed[]">';
 						if ( !cpc_get_term_meta($term->term_id, 'cpc_forum_closed', true) ):
-							echo '<option value="0" SELECTED>'.__('Offen', CPC2_TEXT_DOMAIN).'</option>';
-							echo '<option value="1">'.__('Geschlossen', CPC2_TEXT_DOMAIN).'</option>';
+							echo '<option value="0" SELECTED>'.__('Offen', 'cp-community').'</option>';
+							echo '<option value="1">'.__('Geschlossen', 'cp-community').'</option>';
 						else:
-							echo '<option value="0">'.__('Offen', CPC2_TEXT_DOMAIN).'</option>';
-							echo '<option value="1" SELECTED>'.__('Geschlossen', CPC2_TEXT_DOMAIN).'</option>';
+							echo '<option value="0">'.__('Offen', 'cp-community').'</option>';
+							echo '<option value="1" SELECTED>'.__('Geschlossen', 'cp-community').'</option>';
 						endif;
 						echo '</select>';
 						echo '</td>';
@@ -224,11 +224,11 @@ function cpccom_forum_setup() {
 						echo '<td style="text-align:center;border-top:1px solid #cfcfcf;width:15%;">';
 						echo '<select name="cpc_forum_author[]">';
 						if ( !cpc_get_term_meta($term->term_id, 'cpc_forum_author', true) ):
-							echo '<option value="0" SELECTED>'.__('Alle', CPC2_TEXT_DOMAIN).'</option>';
-							echo '<option value="1">'.__('Nur eigene', CPC2_TEXT_DOMAIN).'</option>';
+							echo '<option value="0" SELECTED>'.__('Alle', 'cp-community').'</option>';
+							echo '<option value="1">'.__('Nur eigene', 'cp-community').'</option>';
 						else:
-							echo '<option value="0">'.__('Alle', CPC2_TEXT_DOMAIN).'</option>';
-							echo '<option value="1" SELECTED>'.__('Nur eigene', CPC2_TEXT_DOMAIN).'</option>';
+							echo '<option value="0">'.__('Alle', 'cp-community').'</option>';
+							echo '<option value="1" SELECTED>'.__('Nur eigene', 'cp-community').'</option>';
 						endif;
 						echo '</select>';
 						echo '</td>';
@@ -237,11 +237,11 @@ function cpccom_forum_setup() {
                             echo '<td style="text-align:center;border-top:1px solid #cfcfcf;width:15%;">';
                             echo '<select name="cpc_forum_auto[]">';
                             if ( !cpc_get_term_meta($term->term_id, 'cpc_forum_auto', true) ):
-                                echo '<option value="0" SELECTED>'.__('Nein', CPC2_TEXT_DOMAIN).'</option>';
-                                echo '<option value="1">'.__('Ja', CPC2_TEXT_DOMAIN).'</option>';
+                                echo '<option value="0" SELECTED>'.__('Nein', 'cp-community').'</option>';
+                                echo '<option value="1">'.__('Ja', 'cp-community').'</option>';
                             else:
-                                echo '<option value="0">'.__('Nein', CPC2_TEXT_DOMAIN).'</option>';
-                                echo '<option value="1" SELECTED>'.__('Ja', CPC2_TEXT_DOMAIN).'</option>';
+                                echo '<option value="0">'.__('Nein', 'cp-community').'</option>';
+                                echo '<option value="1" SELECTED>'.__('Ja', 'cp-community').'</option>';
                             endif;
                             echo '</select>';
                             echo '</td>';
@@ -256,12 +256,12 @@ function cpccom_forum_setup() {
 
 				echo '</table>';
 
-			echo '<br /><input type="submit" class="button-primary" value="'.__('Aktualisieren', CPC2_TEXT_DOMAIN).'" />';
+			echo '<br /><input type="submit" class="button-primary" value="'.__('Aktualisieren', 'cp-community').'" />';
 			echo '</form>';
 
 		else:
 
-			echo '<a href="admin.php?page=cpc_com_setup">'.__('Füge über Setup ein Forum hinzu', CPC2_TEXT_DOMAIN).'</a>';
+			echo '<a href="admin.php?page=cpc_com_setup">'.__('Füge über Setup ein Forum hinzu', 'cp-community').'</a>';
 
 		endif;
 

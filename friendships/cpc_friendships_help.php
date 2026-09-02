@@ -5,7 +5,7 @@ add_action('cpc_admin_getting_started_hook', 'cpc_admin_getting_started_friendsh
 function cpc_admin_getting_started_friendships() {
 
     $css = isset($_POST['cpc_expand']) && $_POST['cpc_expand'] == 'cpc_admin_getting_started_friendships' ? 'cpc_admin_getting_started_menu_item_remove_icon ' : '';    
-  	echo '<div class="'.$css.'cpc_admin_getting_started_menu_item" rel="cpc_admin_getting_started_friendships" id="cpc_admin_getting_started_friendships_div">'.__('Freundschaften', CPC2_TEXT_DOMAIN).'</div>';
+  	echo '<div class="'.$css.'cpc_admin_getting_started_menu_item" rel="cpc_admin_getting_started_friendships" id="cpc_admin_getting_started_friendships_div">'.__('Freundschaften', 'cp-community').'</div>';
 
   	$display = isset($_POST['cpc_expand']) && $_POST['cpc_expand'] == 'cpc_admin_getting_started_friendships' ? 'block' : 'none';
   	echo '<div class="cpc_admin_getting_started_content" id="cpc_admin_getting_started_friendships" style="display:'.$display.'">';
@@ -14,80 +14,80 @@ function cpc_admin_getting_started_friendships() {
 		<table class="form-table">
 		<tr class="form-field">
 			<td scope="row" valign="top">
-				<label for="cpc_friendships_all"><?php _e('Alle Freunde', CPC2_TEXT_DOMAIN); ?></label>
+				<label for="cpc_friendships_all"><?php _e('Alle Freunde', 'cp-community'); ?></label>
 			</td>
 			<td>
 				<input type="checkbox" style="width:10px" name="cpc_friendships_all" <?php if (get_option('cpc_friendships_all')) echo 'CHECKED'; ?> /> 
-				<span class="description"><?php _e('Macht jeden Benutzer immer mit allen anderen befreundet. Gut für private soziale Netzwerke.', CPC2_TEXT_DOMAIN); ?></span>
+				<span class="description"><?php _e('Macht jeden Benutzer immer mit allen anderen befreundet. Gut für private soziale Netzwerke.', 'cp-community'); ?></span>
 			</td>
 		</tr>
 		<tr class="form-field">
         <td scope="row" valign="top">
-            <label for="cpc_friends_layout"><?php _e('Freunde-Layout', CPC2_TEXT_DOMAIN); ?></label>
+            <label for="cpc_friends_layout"><?php _e('Freunde-Layout', 'cp-community'); ?></label>
         </td>
         <td>
             <select name="cpc_friends_layout">
-                <option value="list" <?php selected(get_option('cpc_friends_layout', 'list'), 'list'); ?>><?php _e('Liste', CPC2_TEXT_DOMAIN); ?></option>
-                <option value="fluid" <?php selected(get_option('cpc_friends_layout', 'list'), 'fluid'); ?>><?php _e('Flüssig', CPC2_TEXT_DOMAIN); ?></option>
+                <option value="list" <?php selected(get_option('cpc_friends_layout', 'list'), 'list'); ?>><?php _e('Liste', 'cp-community'); ?></option>
+                <option value="fluid" <?php selected(get_option('cpc_friends_layout', 'list'), 'fluid'); ?>><?php _e('Flüssig', 'cp-community'); ?></option>
             </select>
         </td>
     	</tr> 
 		<tr class="form-field">
 			<td scope="row" valign="top">
-				<label for="cpc_friendships_profile_visibility_default"><?php _e('Standard Profilsichtbarkeit', CPC2_TEXT_DOMAIN); ?></label>
+				<label for="cpc_friendships_profile_visibility_default"><?php _e('Standard Profilsichtbarkeit', 'cp-community'); ?></label>
 			</td>
 			<td>
 				<select name="cpc_friendships_profile_visibility_default" id="cpc_friendships_profile_visibility_default">
-					<option value="private" <?php selected(get_option('cpc_friendships_profile_visibility_default', 'private'), 'private'); ?>><?php _e('Privat (nur Freunde)', CPC2_TEXT_DOMAIN); ?></option>
-					<option value="public" <?php selected(get_option('cpc_friendships_profile_visibility_default', 'private'), 'public'); ?>><?php _e('Öffentlich', CPC2_TEXT_DOMAIN); ?></option>
+					<option value="private" <?php selected(get_option('cpc_friendships_profile_visibility_default', 'private'), 'private'); ?>><?php _e('Privat (nur Freunde)', 'cp-community'); ?></option>
+					<option value="public" <?php selected(get_option('cpc_friendships_profile_visibility_default', 'private'), 'public'); ?>><?php _e('Öffentlich', 'cp-community'); ?></option>
 				</select>
-				<span class="description"><?php _e('Definiert die Profil- und Aktivitäts-Sichtbarkeit, wenn Freundschaften aktiv sind.', CPC2_TEXT_DOMAIN); ?></span>
+				<span class="description"><?php _e('Definiert die Profil- und Aktivitäts-Sichtbarkeit, wenn Freundschaften aktiv sind.', 'cp-community'); ?></span>
 			</td>
 		</tr>
 		<tr class="form-field">
 			<td scope="row" valign="top">
-				<label for="cpc_friendships_allow_profile_privacy_choice"><?php _e('Privatsphärenauswahl erlauben', CPC2_TEXT_DOMAIN); ?></label>
+				<label for="cpc_friendships_allow_profile_privacy_choice"><?php _e('Privatsphärenauswahl erlauben', 'cp-community'); ?></label>
 			</td>
 			<td>
 				<select name="cpc_friendships_allow_profile_privacy_choice" id="cpc_friendships_allow_profile_privacy_choice">
-					<option value="0" <?php selected(get_option('cpc_friendships_allow_profile_privacy_choice', '0'), '0'); ?>><?php _e('Nein', CPC2_TEXT_DOMAIN); ?></option>
-					<option value="1" <?php selected(get_option('cpc_friendships_allow_profile_privacy_choice', '0'), '1'); ?>><?php _e('Ja', CPC2_TEXT_DOMAIN); ?></option>
+					<option value="0" <?php selected(get_option('cpc_friendships_allow_profile_privacy_choice', '0'), '0'); ?>><?php _e('Nein', 'cp-community'); ?></option>
+					<option value="1" <?php selected(get_option('cpc_friendships_allow_profile_privacy_choice', '0'), '1'); ?>><?php _e('Ja', 'cp-community'); ?></option>
 				</select>
-				<span class="description"><?php _e('Wenn aktiv, können Benutzer ihre Sichtbarkeit auf der Seite Profil bearbeiten selbst festlegen.', CPC2_TEXT_DOMAIN); ?></span>
+				<span class="description"><?php _e('Wenn aktiv, können Benutzer ihre Sichtbarkeit auf der Seite Profil bearbeiten selbst festlegen.', 'cp-community'); ?></span>
 			</td>
 		</tr>
 		<tr class="form-field">
 			<td scope="row" valign="top">
-				<label for="cpc_friendships_activity_privacy_enabled"><?php _e('Aktivitäts-Privatsphäre aktivieren', CPC2_TEXT_DOMAIN); ?></label>
+				<label for="cpc_friendships_activity_privacy_enabled"><?php _e('Aktivitäts-Privatsphäre aktivieren', 'cp-community'); ?></label>
 			</td>
 			<td>
 				<select name="cpc_friendships_activity_privacy_enabled" id="cpc_friendships_activity_privacy_enabled">
-					<option value="0" <?php selected(get_option('cpc_friendships_activity_privacy_enabled', '0'), '0'); ?>><?php _e('Nein', CPC2_TEXT_DOMAIN); ?></option>
-					<option value="1" <?php selected(get_option('cpc_friendships_activity_privacy_enabled', '0'), '1'); ?>><?php _e('Ja', CPC2_TEXT_DOMAIN); ?></option>
+					<option value="0" <?php selected(get_option('cpc_friendships_activity_privacy_enabled', '0'), '0'); ?>><?php _e('Nein', 'cp-community'); ?></option>
+					<option value="1" <?php selected(get_option('cpc_friendships_activity_privacy_enabled', '0'), '1'); ?>><?php _e('Ja', 'cp-community'); ?></option>
 				</select>
-				<span class="description"><?php _e('Aktiviert Sichtbarkeitsstufen pro Aktivitätsbeitrag im Stream.', CPC2_TEXT_DOMAIN); ?></span>
+				<span class="description"><?php _e('Aktiviert Sichtbarkeitsstufen pro Aktivitätsbeitrag im Stream.', 'cp-community'); ?></span>
 			</td>
 		</tr>
 		<tr class="form-field">
 			<td scope="row" valign="top">
-				<label for="cpc_activity_visibility_default"><?php _e('Standard Aktivitäts-Sichtbarkeit', CPC2_TEXT_DOMAIN); ?></label>
+				<label for="cpc_activity_visibility_default"><?php _e('Standard Aktivitäts-Sichtbarkeit', 'cp-community'); ?></label>
 			</td>
 			<td>
 				<select name="cpc_activity_visibility_default" id="cpc_activity_visibility_default">
-					<option value="public" <?php selected(get_option('cpc_activity_visibility_default', 'public'), 'public'); ?>><?php _e('Öffentlich', CPC2_TEXT_DOMAIN); ?></option>
-					<option value="loggedin" <?php selected(get_option('cpc_activity_visibility_default', 'public'), 'loggedin'); ?>><?php _e('Nur angemeldete Benutzer', CPC2_TEXT_DOMAIN); ?></option>
+					<option value="public" <?php selected(get_option('cpc_activity_visibility_default', 'public'), 'public'); ?>><?php _e('Öffentlich', 'cp-community'); ?></option>
+					<option value="loggedin" <?php selected(get_option('cpc_activity_visibility_default', 'public'), 'loggedin'); ?>><?php _e('Nur angemeldete Benutzer', 'cp-community'); ?></option>
 					<?php if (function_exists('cpc_are_friends') || (defined('CPC_CORE_PLUGINS') && strpos(CPC_CORE_PLUGINS, 'core-friendships') !== false)): ?>
-					<option value="friends" <?php selected(get_option('cpc_activity_visibility_default', 'public'), 'friends'); ?>><?php _e('Nur Freunde', CPC2_TEXT_DOMAIN); ?></option>
+					<option value="friends" <?php selected(get_option('cpc_activity_visibility_default', 'public'), 'friends'); ?>><?php _e('Nur Freunde', 'cp-community'); ?></option>
 					<?php endif; ?>
-					<option value="onlyme" <?php selected(get_option('cpc_activity_visibility_default', 'public'), 'onlyme'); ?>><?php _e('Nur ich', CPC2_TEXT_DOMAIN); ?></option>
-					<option value="adminsonly" <?php selected(get_option('cpc_activity_visibility_default', 'public'), 'adminsonly'); ?>><?php _e('Nur Administratoren', CPC2_TEXT_DOMAIN); ?></option>
+					<option value="onlyme" <?php selected(get_option('cpc_activity_visibility_default', 'public'), 'onlyme'); ?>><?php _e('Nur ich', 'cp-community'); ?></option>
+					<option value="adminsonly" <?php selected(get_option('cpc_activity_visibility_default', 'public'), 'adminsonly'); ?>><?php _e('Nur Administratoren', 'cp-community'); ?></option>
 				</select>
-				<span class="description"><?php _e('Dieser Wert wird beim Erstellen neuer Aktivitätsbeiträge vorausgewählt.', CPC2_TEXT_DOMAIN); ?></span>
+				<span class="description"><?php _e('Dieser Wert wird beim Erstellen neuer Aktivitätsbeiträge vorausgewählt.', 'cp-community'); ?></span>
 			</td>
 		</tr>
 		<tr class="form-field">
 			<td scope="row" valign="top">
-				<label><?php _e('Erlaubte Sichtbarkeitsstufen', CPC2_TEXT_DOMAIN); ?></label>
+				<label><?php _e('Erlaubte Sichtbarkeitsstufen', 'cp-community'); ?></label>
 			</td>
 			<td>
 				<?php
@@ -101,7 +101,7 @@ function cpc_admin_getting_started_friendships() {
 					<?php echo esc_html($level_label); ?>
 				</label>
 				<?php endforeach; ?>
-				<span class="description"><?php _e('Nur aktivierte Stufen werden in der Auswahl angezeigt und ausgewertet.', CPC2_TEXT_DOMAIN); ?></span>
+				<span class="description"><?php _e('Nur aktivierte Stufen werden in der Auswahl angezeigt und ausgewertet.', 'cp-community'); ?></span>
 			</td>
 		</tr>
 		</table>
@@ -181,22 +181,22 @@ function cpc_friendships_activity_privacy_enabled() {
 
 function cpc_friendships_get_activity_visibility_levels_base() {
 	$levels = array(
-		'public' => __('Öffentlich', CPC2_TEXT_DOMAIN),
-		'loggedin' => __('Nur angemeldete Benutzer', CPC2_TEXT_DOMAIN),
-		'onlyme' => __('Nur ich', CPC2_TEXT_DOMAIN),
-		'adminsonly' => __('Nur Administratoren', CPC2_TEXT_DOMAIN),
+		'public' => __('Öffentlich', 'cp-community'),
+		'loggedin' => __('Nur angemeldete Benutzer', 'cp-community'),
+		'onlyme' => __('Nur ich', 'cp-community'),
+		'adminsonly' => __('Nur Administratoren', 'cp-community'),
 	);
 
 	if (function_exists('cpc_are_friends') || (defined('CPC_CORE_PLUGINS') && strpos(CPC_CORE_PLUGINS, 'core-friendships') !== false)) {
 		$levels = array_merge(
 			array(
-				'public' => __('Öffentlich', CPC2_TEXT_DOMAIN),
-				'loggedin' => __('Nur angemeldete Benutzer', CPC2_TEXT_DOMAIN),
-				'friends' => __('Nur Freunde', CPC2_TEXT_DOMAIN),
+				'public' => __('Öffentlich', 'cp-community'),
+				'loggedin' => __('Nur angemeldete Benutzer', 'cp-community'),
+				'friends' => __('Nur Freunde', 'cp-community'),
 			),
 			array(
-				'onlyme' => __('Nur ich', CPC2_TEXT_DOMAIN),
-				'adminsonly' => __('Nur Administratoren', CPC2_TEXT_DOMAIN),
+				'onlyme' => __('Nur ich', 'cp-community'),
+				'adminsonly' => __('Nur Administratoren', 'cp-community'),
 			)
 		);
 	}
@@ -344,7 +344,7 @@ function cpc_friendships_add_activity_privacy_field($form_html, $atts, $user_id,
 	$default = cpc_friendships_get_default_activity_visibility();
 
 	$form_html .= '<div class="cpc_activity_visibility_field" style="margin:10px 0 6px;">';
-	$form_html .= '<label for="cpc_activity_visibility" style="display:block;margin-bottom:4px;">' . esc_html__('Sichtbarkeit', CPC2_TEXT_DOMAIN) . '</label>';
+	$form_html .= '<label for="cpc_activity_visibility" style="display:block;margin-bottom:4px;">' . esc_html__('Sichtbarkeit', 'cp-community') . '</label>';
 	$form_html .= '<select name="cpc_activity_visibility" id="cpc_activity_visibility">';
 	foreach ($levels as $level_key => $level_label) {
 		$form_html .= '<option value="' . esc_attr($level_key) . '"' . selected($default, $level_key, false) . '>' . esc_html($level_label) . '</option>';
@@ -395,25 +395,25 @@ function cpc_friendships_ajax_update_activity_visibility() {
 	check_ajax_referer('cpc-activity-nonce', 'security');
 
 	if (!is_user_logged_in() || !cpc_friendships_activity_privacy_enabled()) {
-		wp_send_json_error(array('message' => __('Nicht erlaubt.', CPC2_TEXT_DOMAIN)));
+		wp_send_json_error(array('message' => __('Nicht erlaubt.', 'cp-community')));
 	}
 
 	$post_id = isset($_POST['post_id']) ? absint($_POST['post_id']) : 0;
 	$visibility = isset($_POST['visibility']) ? sanitize_key($_POST['visibility']) : '';
 
 	if (!$post_id || get_post_type($post_id) !== 'cpc_activity') {
-		wp_send_json_error(array('message' => __('Ungültiger Aktivitätsbeitrag.', CPC2_TEXT_DOMAIN)));
+		wp_send_json_error(array('message' => __('Ungültiger Aktivitätsbeitrag.', 'cp-community')));
 	}
 
 	$author_id = (int) get_post_field('post_author', $post_id);
 	$current_user_id = get_current_user_id();
 	if (!$author_id || ($current_user_id !== $author_id && !current_user_can('manage_options'))) {
-		wp_send_json_error(array('message' => __('Keine Berechtigung.', CPC2_TEXT_DOMAIN)));
+		wp_send_json_error(array('message' => __('Keine Berechtigung.', 'cp-community')));
 	}
 
 	$levels = cpc_friendships_get_activity_visibility_levels();
 	if (!isset($levels[$visibility])) {
-		wp_send_json_error(array('message' => __('Ungültige Sichtbarkeit.', CPC2_TEXT_DOMAIN)));
+		wp_send_json_error(array('message' => __('Ungültige Sichtbarkeit.', 'cp-community')));
 	}
 
 	update_post_meta($post_id, 'cpc_activity_visibility', $visibility);
@@ -512,7 +512,7 @@ function cpc_friendships_get_private_profile_notice($profile_user_id, $viewer_us
 	$viewer_user_id = (int) $viewer_user_id;
 
 	$defaults = array(
-		'message' => __('Dieses Profil ist privat. Nur Freunde koennen Inhalte sehen.', CPC2_TEXT_DOMAIN),
+		'message' => __('Dieses Profil ist privat. Nur Freunde koennen Inhalte sehen.', 'cp-community'),
 		'include_friend_action' => true,
 		'wrapper_id' => 'cpc_activity_post_private_msg',
 		'wrapper_class' => 'cpc_activity_post_private_msg',
@@ -577,12 +577,12 @@ function cpc_friendships_add_profile_visibility_field($tabs, $atts, $user_id) {
 	}
 
 	$html  = '<div class="cpc_usermeta_change_item">';
-	$html .= '<div class="cpc_usermeta_change_label">' . esc_html__('Profilsichtbarkeit', CPC2_TEXT_DOMAIN) . '</div>';
+	$html .= '<div class="cpc_usermeta_change_label">' . esc_html__('Profilsichtbarkeit', 'cp-community') . '</div>';
 	$html .= '<select name="cpc_profile_visibility" id="cpc_profile_visibility">';
-	$html .= '<option value="private"' . selected($current_visibility, 'private', false) . '>' . esc_html__('Privat (nur Freunde)', CPC2_TEXT_DOMAIN) . '</option>';
-	$html .= '<option value="public"' . selected($current_visibility, 'public', false) . '>' . esc_html__('Öffentlich', CPC2_TEXT_DOMAIN) . '</option>';
+	$html .= '<option value="private"' . selected($current_visibility, 'private', false) . '>' . esc_html__('Privat (nur Freunde)', 'cp-community') . '</option>';
+	$html .= '<option value="public"' . selected($current_visibility, 'public', false) . '>' . esc_html__('Öffentlich', 'cp-community') . '</option>';
 	$html .= '</select>';
-	$html .= '<div class="cpc_note" style="margin-top:6px;">' . esc_html__('Steuert, wer Dein Profil und Deine Aktivitaeten sehen darf.', CPC2_TEXT_DOMAIN) . '</div>';
+	$html .= '<div class="cpc_note" style="margin-top:6px;">' . esc_html__('Steuert, wer Dein Profil und Deine Aktivitaeten sehen darf.', 'cp-community') . '</div>';
 	$html .= '</div>';
 
 	$tabs[] = array(

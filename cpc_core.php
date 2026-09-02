@@ -461,7 +461,7 @@ function cpc_forum_close_comments( $posts ) {
 						// Füge einen Kommentar hinzu, der erklärt, dass das Forum geschlossen wurde
 						$data = array(
 						    'comment_post_ID' => $posts[0]->ID,
-						    'comment_content' => __('Wegen Inaktivität geschlossen.', CPC2_TEXT_DOMAIN),
+						    'comment_content' => __('Wegen Inaktivität geschlossen.', 'cp-community'),
 						    'comment_type' => 'cpc_forum_comment',
 						    'comment_parent' => 0,
 						    'comment_author' => 0,
@@ -892,9 +892,9 @@ function cpc_admin_tip($html, $tip, $msg) {
             $url = cpc_curPageURL();
             $url .= cpc_query_mark($url).'dismiss='.$tip;
             $html .= '<div class="cpc_admin_tip">';
-            $html .= '<div style="font-size: 0.8em; float:right; margin-left: 20px; margin-bottom; 5px;"><a href="'.$url.'">'.__('Tipp verwerfen', CPC2_TEXT_DOMAIN).'</a></div>';
-            $html .= __('Tipp', CPC2_TEXT_DOMAIN).': '.__($msg, CPC2_TEXT_DOMAIN);
-            $html .= '<div style="font-style:italic; margin-top: 15px; font-size:0.8em;">'.sprintf(__('Dieser Tipp ist nur für Webseiten-Administratoren sichtbar und kann bei Ablehnung über PS Community->Setup-><a href="%s">Core Options</a> erneut aktiviert werden.', CPC2_TEXT_DOMAIN), admin_url( 'admin.php?page=cpc_com_setup&cpc_expand=cpc_admin_getting_started_core#core' )).'</div>';
+            $html .= '<div style="font-size: 0.8em; float:right; margin-left: 20px; margin-bottom; 5px;"><a href="'.$url.'">'.__('Tipp verwerfen', 'cp-community').'</a></div>';
+            $html .= __('Tipp', 'cp-community').': '.__($msg, 'cp-community');
+            $html .= '<div style="font-style:italic; margin-top: 15px; font-size:0.8em;">'.sprintf(__('Dieser Tipp ist nur für Webseiten-Administratoren sichtbar und kann bei Ablehnung über PS Community->Setup-><a href="%s">Core Options</a> erneut aktiviert werden.', 'cp-community'), admin_url( 'admin.php?page=cpc_com_setup&cpc_expand=cpc_admin_getting_started_core#core' )).'</div>';
             $html .= '</div>';
         endif;
     endif;

@@ -122,7 +122,7 @@ function cpc_jobboard_add_profile_tab($tabs, $user_id, $viewer_id) {
 	
 	// Add jobboard tab
 	$tabs['jobboard'] = array(
-		'label' => __('Jobboard', CPC2_TEXT_DOMAIN),
+		'label' => __('Jobboard', 'cp-community'),
 		'icon' => 'portfolio',
 		'priority' => 20, // After activity and messages
 	);
@@ -197,17 +197,17 @@ function cpc_jobboard_render_tab_content($html, $active_tab, $user_id, $shortcod
 
 	// Only if Jobboard integration is enabled
 	if (!cpc_jobboard_integration_enabled()) {
-		return '<div class="cpc-error">'.__('Jobboard Integration ist nicht aktiviert.', CPC2_TEXT_DOMAIN).'</div>';
+		return '<div class="cpc-error">'.__('Jobboard Integration ist nicht aktiviert.', 'cp-community').'</div>';
 	}
 
 	// Only if user is viewing their own profile
 	if (get_current_user_id() != $user_id) {
-		return '<div class="cpc-error">'.__('Du kannst nur deine eigene Jobboard sehen.', CPC2_TEXT_DOMAIN).'</div>';
+		return '<div class="cpc-error">'.__('Du kannst nur deine eigene Jobboard sehen.', 'cp-community').'</div>';
 	}
 
 	// Render the Jobboard profile panel shortcode
 	if (!shortcode_exists('jbp-profile-panel')) {
-		return '<div class="cpc-error">'.__('Jobboard Shortcode nicht verfügbar (jbp-profile-panel).', CPC2_TEXT_DOMAIN).'</div>';
+		return '<div class="cpc-error">'.__('Jobboard Shortcode nicht verfügbar (jbp-profile-panel).', 'cp-community').'</div>';
 	}
 
 	// Render shortcode content
@@ -265,7 +265,7 @@ function cpc_jobboard_integration_settings() {
 		update_option('cpc_enable_jobboard_integration', isset($_POST['cpc_enable_jobboard_integration']) ? 1 : 0);
 		
 		echo '<div class="notice notice-success is-dismissible"><p>';
-		echo __('Jobboard-Integrations-Einstellungen gespeichert.', CPC2_TEXT_DOMAIN);
+		echo __('Jobboard-Integrations-Einstellungen gespeichert.', 'cp-community');
 		echo '</p></div>';
 	}
 	
@@ -274,16 +274,16 @@ function cpc_jobboard_integration_settings() {
 	
 	?>
 	<div class="cpc-integration-box" style="border: 1px solid #ddd; padding: 20px; margin-top: 20px; background-color: #f9f9f9; border-radius: 5px;">
-		<h2><?php _e('PS Jobboard Integration', CPC2_TEXT_DOMAIN); ?></h2>
+		<h2><?php _e('PS Jobboard Integration', 'cp-community'); ?></h2>
 		
 		<?php if ($jb_status['installed'] && $jb_status['active']): ?>
 			<div class="notice notice-success inline" style="margin: 0 0 20px 0;">
 				<p>
-					<strong><?php _e('Status:', CPC2_TEXT_DOMAIN); ?></strong>
-					<span style="color: #155724;">✓ <?php _e('Aktiviert', CPC2_TEXT_DOMAIN); ?></span>
+					<strong><?php _e('Status:', 'cp-community'); ?></strong>
+					<span style="color: #155724;">✓ <?php _e('Aktiviert', 'cp-community'); ?></span>
 				</p>
 				<p style="margin: 5px 0 0 0;">
-					<strong><?php _e('Plugin:', CPC2_TEXT_DOMAIN); ?></strong>
+					<strong><?php _e('Plugin:', 'cp-community'); ?></strong>
 					<?php echo esc_html($jb_status['name']); ?> v<?php echo esc_html($jb_status['version']); ?>
 				</p>
 			</div>
@@ -295,7 +295,7 @@ function cpc_jobboard_integration_settings() {
 					<tr>
 						<th scope="row">
 							<label for="cpc_enable_jobboard_integration">
-								<?php _e('Integration aktivieren', CPC2_TEXT_DOMAIN); ?>
+								<?php _e('Integration aktivieren', 'cp-community'); ?>
 							</label>
 						</th>
 						<td>
@@ -305,10 +305,10 @@ function cpc_jobboard_integration_settings() {
 									   name="cpc_enable_jobboard_integration" 
 									   value="1" 
 									   <?php checked($integration_enabled, 1); ?> />
-								<?php _e('Jobboard in Profilseiten integrieren', CPC2_TEXT_DOMAIN); ?>
+								<?php _e('Jobboard in Profilseiten integrieren', 'cp-community'); ?>
 							</label>
 							<p class="description">
-								<?php _e('Fügt einen "Jobboard"-Tab zu Profilseiten hinzu mit Inline-Navigation für Jobs und Experten.', CPC2_TEXT_DOMAIN); ?>
+								<?php _e('Fügt einen "Jobboard"-Tab zu Profilseiten hinzu mit Inline-Navigation für Jobs und Experten.', 'cp-community'); ?>
 							</p>
 						</td>
 					</tr>
@@ -316,43 +316,52 @@ function cpc_jobboard_integration_settings() {
 				
 				<p class="submit">
 					<button type="submit" name="cpc_jobboard_integration_save" class="button button-primary">
-						<?php _e('Einstellungen speichern', CPC2_TEXT_DOMAIN); ?>
+						<?php _e('Einstellungen speichern', 'cp-community'); ?>
 					</button>
 				</p>
 			</form>
 			
 			<?php if ($integration_enabled): ?>
 				<div style="background: #e7f5fe; padding: 15px; border-left: 4px solid #0073aa; margin-top: 20px;">
-					<h4 style="margin-top: 0;"><?php _e('Integration aktiv', CPC2_TEXT_DOMAIN); ?></h4>
+					<h4 style="margin-top: 0;"><?php _e('Integration aktiv', 'cp-community'); ?></h4>
 					<ul style="margin: 0;">
-						<li>✓ <?php _e('Jobboard-Tab wird in Profilseiten angezeigt', CPC2_TEXT_DOMAIN); ?></li>
-						<li>✓ <?php _e('Smooth AJAX-Navigation innerhalb des Tabs', CPC2_TEXT_DOMAIN); ?></li>
+						<li>✓ <?php _e('Jobboard-Tab wird in Profilseiten angezeigt', 'cp-community'); ?></li>
+						<li>✓ <?php _e('Smooth AJAX-Navigation innerhalb des Tabs', 'cp-community'); ?></li>
 					</ul>
 				</div>
 			<?php endif; ?>
 		
 		<?php elseif ($jb_status['installed'] && !$jb_status['active']): ?>
-			<div class="notice notice-warning" style="margin: 0 0 20px 0;">
+			<div class="notice notice-warning inline" style="margin: 0 0 20px 0;">
 				<p>
-					<strong><?php _e('Status:', CPC2_TEXT_DOMAIN); ?></strong>
-					<span style="color: #856404;">⚠ <?php _e('Installiert aber deaktiviert', CPC2_TEXT_DOMAIN); ?></span>
+					<strong><?php _e('Status:', 'cp-community'); ?></strong>
+					<span style="color: #856404;">⚠ <?php _e('Installiert aber deaktiviert', 'cp-community'); ?></span>
 				</p>
 			</div>
 			
 			<p>
-				<?php _e('PS Jobboard ist installiert, aber nicht aktiviert. Um die Jobboard-Integration nutzen zu können, musst du das Plugin aktivieren.', CPC2_TEXT_DOMAIN); ?>
+				<?php _e('PS Jobboard ist installiert, aber nicht aktiviert. Um die Jobboard-Integration nutzen zu können, musst du das Plugin aktivieren.', 'cp-community'); ?>
+			</p>
+
+			<p>
+				<a href="<?php echo esc_url(wp_nonce_url(
+					admin_url('plugins.php?action=activate&plugin=' . $jb_status['file']),
+					'activate-plugin_' . $jb_status['file']
+				)); ?>" class="button button-primary">
+					<?php _e('PS Jobboard aktivieren', 'cp-community'); ?>
+				</a>
 			</p>
 			
 		<?php else: ?>
-			<div class="notice notice-info" style="margin: 0 0 20px 0;">
+			<div class="notice notice-info inline" style="margin: 0 0 20px 0;">
 				<p>
-					<strong><?php _e('Status:', CPC2_TEXT_DOMAIN); ?></strong>
-					<span style="color: #0c5460;">ℹ <?php _e('Nicht installiert', CPC2_TEXT_DOMAIN); ?></span>
+					<strong><?php _e('Status:', 'cp-community'); ?></strong>
+					<span style="color: #0c5460;">ℹ <?php _e('Nicht installiert', 'cp-community'); ?></span>
 				</p>
 			</div>
 			
 			<p>
-				<?php _e('PS Jobboard ist nicht installiert. Installiere zuerst das Jobboard-Plugin, um diese Integration nutzen zu können.', CPC2_TEXT_DOMAIN); ?>
+				<?php _e('PS Jobboard ist nicht installiert. Installiere zuerst das Jobboard-Plugin, um diese Integration nutzen zu können.', 'cp-community'); ?>
 			</p>
 			
 		<?php endif; ?>

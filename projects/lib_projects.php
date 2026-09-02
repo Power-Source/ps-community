@@ -162,12 +162,12 @@ function cpc_projects_install_tables() {
 
 function cpc_projects_get_user_tab_name() {
     $label = trim((string)get_option('cpc_projects_user_tab_name', 'Projekte'));
-    return $label !== '' ? $label : __('Projekte', CPC2_TEXT_DOMAIN);
+    return $label !== '' ? $label : __('Projekte', 'cp-community');
 }
 
 function cpc_projects_get_group_tab_name() {
     $label = trim((string)get_option('cpc_projects_group_tab_name', 'Projekte'));
-    return $label !== '' ? $label : __('Projekte', CPC2_TEXT_DOMAIN);
+    return $label !== '' ? $label : __('Projekte', 'cp-community');
 }
 
 function cpc_projects_get_directory_page_id() {
@@ -176,7 +176,7 @@ function cpc_projects_get_directory_page_id() {
 
 function cpc_projects_get_directory_title() {
     $title = trim((string)get_option('cpc_projects_directory_title', 'Projekte-Verzeichnis'));
-    return $title !== '' ? $title : __('Projekte-Verzeichnis', CPC2_TEXT_DOMAIN);
+    return $title !== '' ? $title : __('Projekte-Verzeichnis', 'cp-community');
 }
 
 function cpc_projects_get_directory_items_per_page() {
@@ -529,13 +529,13 @@ function cpc_projects_get_notification_pref($user_id, $pref_key) {
 
 function cpc_projects_notice_message($code) {
     $map = array(
-        'created' => __('Projekt wurde erstellt.', CPC2_TEXT_DOMAIN),
-        'task_created' => __('Task wurde erstellt.', CPC2_TEXT_DOMAIN),
-        'task_updated' => __('Task wurde aktualisiert.', CPC2_TEXT_DOMAIN),
-        'task_deleted' => __('Task wurde geloescht.', CPC2_TEXT_DOMAIN),
-        'denied' => __('Keine Berechtigung.', CPC2_TEXT_DOMAIN),
-        'invalid' => __('Ungueltige Anfrage.', CPC2_TEXT_DOMAIN),
-        'failed' => __('Aktion fehlgeschlagen.', CPC2_TEXT_DOMAIN),
+        'created' => __('Projekt wurde erstellt.', 'cp-community'),
+        'task_created' => __('Task wurde erstellt.', 'cp-community'),
+        'task_updated' => __('Task wurde aktualisiert.', 'cp-community'),
+        'task_deleted' => __('Task wurde geloescht.', 'cp-community'),
+        'denied' => __('Keine Berechtigung.', 'cp-community'),
+        'invalid' => __('Ungueltige Anfrage.', 'cp-community'),
+        'failed' => __('Aktion fehlgeschlagen.', 'cp-community'),
     );
 
     return isset($map[$code]) ? $map[$code] : '';
@@ -1255,11 +1255,11 @@ function cpc_projects_notify_task_event($project_id, $task, $event_type, $actor_
     $task_id = (int)$task->id;
     $task_title = trim((string)$task->title);
     if ($task_title === '') {
-        $task_title = __('Task', CPC2_TEXT_DOMAIN);
+        $task_title = __('Task', 'cp-community');
     }
 
     $actor = get_user_by('id', $actor_id);
-    $actor_name = $actor ? $actor->display_name : __('Ein Mitglied', CPC2_TEXT_DOMAIN);
+    $actor_name = $actor ? $actor->display_name : __('Ein Mitglied', 'cp-community');
 
     $url = cpc_projects_get_task_url($project_id, $task_id);
     if ($url === '') {
@@ -1269,28 +1269,28 @@ function cpc_projects_notify_task_event($project_id, $task, $event_type, $actor_
         }
     }
 
-    $subject = get_bloginfo('name').': '.__('Projekt-Task Update', CPC2_TEXT_DOMAIN);
+    $subject = get_bloginfo('name').': '.__('Projekt-Task Update', 'cp-community');
     $message = '';
     $activity_text = '';
 
     if ($event_type === 'created') {
-        $message = sprintf(__('"%s" hat die Task "%s" erstellt.', CPC2_TEXT_DOMAIN), $actor_name, $task_title);
-        $activity_text = sprintf(__('hat die Task <a href="%1$s">%2$s</a> im Projekt <a href="%3$s">%4$s</a> erstellt', CPC2_TEXT_DOMAIN), esc_url($url), esc_html($task_title), esc_url(get_permalink($project_id)), esc_html(get_the_title($project_id)));
+        $message = sprintf(__('"%s" hat die Task "%s" erstellt.', 'cp-community'), $actor_name, $task_title);
+        $activity_text = sprintf(__('hat die Task <a href="%1$s">%2$s</a> im Projekt <a href="%3$s">%4$s</a> erstellt', 'cp-community'), esc_url($url), esc_html($task_title), esc_url(get_permalink($project_id)), esc_html(get_the_title($project_id)));
     } elseif ($event_type === 'updated') {
-        $message = sprintf(__('"%s" hat die Task "%s" aktualisiert.', CPC2_TEXT_DOMAIN), $actor_name, $task_title);
-        $activity_text = sprintf(__('hat die Task <a href="%1$s">%2$s</a> aktualisiert', CPC2_TEXT_DOMAIN), esc_url($url), esc_html($task_title));
+        $message = sprintf(__('"%s" hat die Task "%s" aktualisiert.', 'cp-community'), $actor_name, $task_title);
+        $activity_text = sprintf(__('hat die Task <a href="%1$s">%2$s</a> aktualisiert', 'cp-community'), esc_url($url), esc_html($task_title));
     } elseif ($event_type === 'completed') {
-        $message = sprintf(__('"%s" hat die Task "%s" abgeschlossen.', CPC2_TEXT_DOMAIN), $actor_name, $task_title);
-        $activity_text = sprintf(__('hat die Task <a href="%1$s">%2$s</a> als erledigt markiert', CPC2_TEXT_DOMAIN), esc_url($url), esc_html($task_title));
+        $message = sprintf(__('"%s" hat die Task "%s" abgeschlossen.', 'cp-community'), $actor_name, $task_title);
+        $activity_text = sprintf(__('hat die Task <a href="%1$s">%2$s</a> als erledigt markiert', 'cp-community'), esc_url($url), esc_html($task_title));
     } elseif ($event_type === 'reopened') {
-        $message = sprintf(__('"%s" hat die Task "%s" wieder geoeffnet.', CPC2_TEXT_DOMAIN), $actor_name, $task_title);
-        $activity_text = sprintf(__('hat die Task <a href="%1$s">%2$s</a> wieder geoeffnet', CPC2_TEXT_DOMAIN), esc_url($url), esc_html($task_title));
+        $message = sprintf(__('"%s" hat die Task "%s" wieder geoeffnet.', 'cp-community'), $actor_name, $task_title);
+        $activity_text = sprintf(__('hat die Task <a href="%1$s">%2$s</a> wieder geoeffnet', 'cp-community'), esc_url($url), esc_html($task_title));
     } elseif ($event_type === 'commented') {
-        $message = sprintf(__('"%s" hat die Task "%s" kommentiert: %s', CPC2_TEXT_DOMAIN), $actor_name, $task_title, wp_trim_words(wp_strip_all_tags($comment_text), 18));
-        $activity_text = sprintf(__('hat die Task <a href="%1$s">%2$s</a> kommentiert', CPC2_TEXT_DOMAIN), esc_url($url), esc_html($task_title));
+        $message = sprintf(__('"%s" hat die Task "%s" kommentiert: %s', 'cp-community'), $actor_name, $task_title, wp_trim_words(wp_strip_all_tags($comment_text), 18));
+        $activity_text = sprintf(__('hat die Task <a href="%1$s">%2$s</a> kommentiert', 'cp-community'), esc_url($url), esc_html($task_title));
     } elseif ($event_type === 'deleted') {
-        $message = sprintf(__('"%s" hat die Task "%s" geloescht.', CPC2_TEXT_DOMAIN), $actor_name, $task_title);
-        $activity_text = sprintf(__('hat die Task "%s" im Projekt %s geloescht', CPC2_TEXT_DOMAIN), esc_html($task_title), esc_html(get_the_title($project_id)));
+        $message = sprintf(__('"%s" hat die Task "%s" geloescht.', 'cp-community'), $actor_name, $task_title);
+        $activity_text = sprintf(__('hat die Task "%s" im Projekt %s geloescht', 'cp-community'), esc_html($task_title), esc_html(get_the_title($project_id)));
     }
 
     if ($message === '') {
@@ -1802,7 +1802,7 @@ function cpc_projects_get_project_timeline_items($project_id, $limit = 80) {
         $items[] = (object)array(
             'kind' => 'event',
             'timestamp' => (int)$ts,
-            'author' => $event->comment_author ? $event->comment_author : __('Mitglied', CPC2_TEXT_DOMAIN),
+            'author' => $event->comment_author ? $event->comment_author : __('Mitglied', 'cp-community'),
             'text' => wp_strip_all_tags((string)$event->comment_content),
         );
     }
@@ -1830,7 +1830,7 @@ function cpc_projects_get_project_timeline_items($project_id, $limit = 80) {
                 $ts = current_time('timestamp', 1);
             }
 
-            $author_name = __('Mitglied', CPC2_TEXT_DOMAIN);
+            $author_name = __('Mitglied', 'cp-community');
             $author = get_user_by('id', (int)$activity->post_author);
             if ($author) {
                 $author_name = $author->display_name;

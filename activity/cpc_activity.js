@@ -107,12 +107,12 @@ jQuery('#cpc_activity_post_button').attr("disabled", false);
 						select.closest('.cpc_activity_visibility_meta').find('.cpc_activity_visibility_label').html('&middot; ' + response.data.label);
 					}
 					select.data('prev', visibility);
-					cpcShowVisibilityFeedback(select, 'Gespeichert', true);
+					cpcShowVisibilityFeedback(select, cpc_activity_ajax.i18n.saved, true);
 				} else {
 					if (typeof prev !== 'undefined') {
 						select.val(prev);
 					}
-					var errorText = (response && response.data && response.data.message) ? response.data.message : 'Speichern fehlgeschlagen';
+					var errorText = (response && response.data && response.data.message) ? response.data.message : cpc_activity_ajax.i18n.saveFailed;
 					cpcShowVisibilityFeedback(select, errorText, false);
 				}
 				select.prop('disabled', false);
@@ -121,7 +121,7 @@ jQuery('#cpc_activity_post_button').attr("disabled", false);
 			if (typeof prev !== 'undefined') {
 				select.val(prev);
 			}
-			cpcShowVisibilityFeedback(select, 'Netzwerkfehler', false);
+			cpcShowVisibilityFeedback(select, cpc_activity_ajax.i18n.networkError, false);
 			select.prop('disabled', false);
 		});
 	});
@@ -177,13 +177,13 @@ jQuery('#cpc_activity_post_button').attr("disabled", false);
 					if (response.data.images && response.data.images.length > 1) {
 						html += '<div class="cpc_activity_plus_thumbnail_chooser">' +
 							'<div class="cpc_activity_plus_thumbnail_nav">' +
-								'<button type="button" class="cpc_activity_plus_thumb_left">&lsaquo; zurück</button>' +
+								'<button type="button" class="cpc_activity_plus_thumb_left">' + cpc_activity_ajax.i18n.previous + '</button>' +
 								'<span>Thumbnail</span>' +
-								'<button type="button" class="cpc_activity_plus_thumb_right">weiter &rsaquo;</button>' +
+								'<button type="button" class="cpc_activity_plus_thumb_right">' + cpc_activity_ajax.i18n.next + '</button>' +
 							'</div>' +
 							'<label class="cpc_activity_plus_no_thumbnail_option">' +
 								'<input type="checkbox" id="cpc_activity_plus_no_thumbnail" /> ' +
-								'Keine Vorschau' +
+								cpc_activity_ajax.i18n.noPreview +
 							'</label>' +
 						'</div>';
 					}
@@ -257,7 +257,7 @@ jQuery('#cpc_activity_post_button').attr("disabled", false);
 					html += '</div>';
 					jQuery('#cpc_activity_plus_video_preview').html(html);
 				} else {
-					jQuery('#cpc_activity_plus_video_preview').html('<small style="color:#c00;">Video-Format wird nicht unterstützt</small>');
+					jQuery('#cpc_activity_plus_video_preview').html('<small style="color:#c00;">' + cpc_activity_ajax.i18n.unsupportedVideo + '</small>');
 				}
 			}
 		);
@@ -501,9 +501,6 @@ jQuery('#cpc_activity_post_button').attr("disabled", false);
                 action : 'cpc_activity_unhide_all',
                 post_id : jQuery(this).attr('rel'),
                 security : cpc_activity_ajax.nonce
-            },
-            function(response) {
-                alert('OK');
             }   
         ); 
 
@@ -650,7 +647,7 @@ function cpc_get_ajax_activity(start, page_size, mode) {
 		lightbox.innerHTML = '' +
 			'<div class="cpc_activity_plus_lightbox__backdrop" data-lightbox-close="1"></div>' +
 			'<div class="cpc_activity_plus_lightbox__content" role="dialog" aria-modal="true" aria-label="Bildvorschau">' +
-				'<button type="button" class="cpc_activity_plus_lightbox__close" aria-label="Schließen">&times;</button>' +
+				'<button type="button" class="cpc_activity_plus_lightbox__close" aria-label="' + cpc_activity_ajax.i18n.close + '">&times;</button>' +
 				'<img class="cpc_activity_plus_lightbox__image" alt="" />' +
 				'<div class="cpc_activity_plus_lightbox__caption_wrap is-hidden">' +
 					'<button type="button" class="cpc_activity_plus_lightbox__caption_toggle">Beschreibung anzeigen</button>' +

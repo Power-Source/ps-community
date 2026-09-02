@@ -12,7 +12,7 @@ function cpc_get_group_tabs($group_id, $user_id = 0) {
 	
 	// Overview tab - everyone
 	$tabs['overview'] = array(
-		'label' => __('Aktivität', CPC2_TEXT_DOMAIN),
+		'label' => __('Aktivität', 'cp-community'),
 		'icon' => 'comments',
 		'priority' => 10,
 	);
@@ -20,7 +20,7 @@ function cpc_get_group_tabs($group_id, $user_id = 0) {
 	// Forum tab - only if enabled for this group
 	if (get_post_meta($group_id, 'cpc_group_has_forum', true)) {
 		$tabs['forum'] = array(
-			'label' => __('Forum', CPC2_TEXT_DOMAIN),
+			'label' => __('Forum', 'cp-community'),
 			'icon' => 'comments-alt',
 			'priority' => 15,
 		);
@@ -29,7 +29,7 @@ function cpc_get_group_tabs($group_id, $user_id = 0) {
 	// Chat tab - only if PS-Chat is available and enabled for this group
 	if (function_exists('cpc_group_has_chat') && cpc_group_has_chat($group_id)) {
 		$tabs['chat'] = array(
-			'label' => __('Chat', CPC2_TEXT_DOMAIN),
+			'label' => __('Chat', 'cp-community'),
 			'icon' => 'format-chat',
 			'priority' => 17,
 		);
@@ -37,7 +37,7 @@ function cpc_get_group_tabs($group_id, $user_id = 0) {
 	
 	// Members tab - everyone
 	$tabs['members'] = array(
-		'label' => __('Mitglieder', CPC2_TEXT_DOMAIN),
+		'label' => __('Mitglieder', 'cp-community'),
 		'icon' => 'users',
 		'priority' => 20,
 	);
@@ -45,7 +45,7 @@ function cpc_get_group_tabs($group_id, $user_id = 0) {
 	// Settings tab - only group admins
 	if (cpc_is_group_admin($user_id, $group_id)):
 		$tabs['settings'] = array(
-			'label' => __('Einstellungen', CPC2_TEXT_DOMAIN),
+			'label' => __('Einstellungen', 'cp-community'),
 			'icon' => 'cog',
 			'priority' => 30,
 		);
@@ -185,7 +185,7 @@ function cpc_render_group_tab_overview($group_id, $atts = array()) {
 			// Previous page link
 			if ($current_page > 1):
 				$prev_url = add_query_arg('page', $current_page - 1);
-				$html .= '<a href="'.$prev_url.'" class="cpc-pagination-prev">&laquo; '.__('Zurück', CPC2_TEXT_DOMAIN).'</a>';
+				$html .= '<a href="'.$prev_url.'" class="cpc-pagination-prev">&laquo; '.__('Zurück', 'cp-community').'</a>';
 			endif;
 			
 			// Page numbers
@@ -201,13 +201,13 @@ function cpc_render_group_tab_overview($group_id, $atts = array()) {
 			// Next page link
 			if ($current_page < $activity_query->max_num_pages):
 				$next_url = add_query_arg('page', $current_page + 1);
-				$html .= '<a href="'.$next_url.'" class="cpc-pagination-next">'.__('Weiter', CPC2_TEXT_DOMAIN).' &raquo;</a>';
+				$html .= '<a href="'.$next_url.'" class="cpc-pagination-next">'.__('Weiter', 'cp-community').' &raquo;</a>';
 			endif;
 			
 			$html .= '</div>';
 		endif;
 	else:
-		$html .= '<p class="cpc-no-activity">'.__('Noch keine Aktivität in dieser Gruppe.', CPC2_TEXT_DOMAIN).'</p>';
+		$html .= '<p class="cpc-no-activity">'.__('Noch keine Aktivität in dieser Gruppe.', 'cp-community').'</p>';
 	endif;
 	
 	$html .= '</div>'; // .cpc-group-overview-tab
@@ -228,19 +228,19 @@ function cpc_render_group_tab_members($group_id, $atts = array()) {
 function cpc_render_group_tab_forum($group_id, $atts = array()) {
 	// Check if group has forum enabled
 	if (!get_post_meta($group_id, 'cpc_group_has_forum', true)) {
-		return '<p>'.__('Forum ist für diese Gruppe nicht aktiviert.', CPC2_TEXT_DOMAIN).'</p>';
+		return '<p>'.__('Forum ist für diese Gruppe nicht aktiviert.', 'cp-community').'</p>';
 	}
 	
 	// Get forum slug for this group
 	$forum_slug = get_post_meta($group_id, 'cpc_group_forum_slug', true);
 	
 	if (!$forum_slug) {
-		return '<p>'.__('Forum-Fehler: Kein Forum-Slug gefunden.', CPC2_TEXT_DOMAIN).'</p>';
+		return '<p>'.__('Forum-Fehler: Kein Forum-Slug gefunden.', 'cp-community').'</p>';
 	}
 	
 	// Check if forum module is active
 	if (!function_exists('cpc_forum_page')) {
-		return '<p>'.__('Forum-Modul ist nicht aktiviert.', CPC2_TEXT_DOMAIN).'</p>';
+		return '<p>'.__('Forum-Modul ist nicht aktiviert.', 'cp-community').'</p>';
 	}
 	
 	// Initialize forum (load JS/CSS) - important for AJAX context
@@ -344,7 +344,7 @@ function cpc_render_group_tab_activity($group_id, $atts = array()) {
 			$html .= cpc_render_group_activity_post($activity);
 		endforeach;
 	else:
-		$html .= '<p class="cpc-no-activity">'.__('Noch keine Aktivität in dieser Gruppe.', CPC2_TEXT_DOMAIN).'</p>';
+		$html .= '<p class="cpc-no-activity">'.__('Noch keine Aktivität in dieser Gruppe.', 'cp-community').'</p>';
 	endif;
 	
 	// Post activity form if member
@@ -362,7 +362,7 @@ function cpc_render_group_tab_activity($group_id, $atts = array()) {
  */
 function cpc_render_group_tab_settings($group_id, $atts = array()) {
 	if (!cpc_is_group_admin(get_current_user_id(), $group_id)):
-		return '<p>'.__('Du hast keine Berechtigung, diese Einstellungen zu ändern.', CPC2_TEXT_DOMAIN).'</p>';
+		return '<p>'.__('Du hast keine Berechtigung, diese Einstellungen zu ändern.', 'cp-community').'</p>';
 	endif;
 	
 	$group = get_post($group_id);
@@ -372,32 +372,32 @@ function cpc_render_group_tab_settings($group_id, $atts = array()) {
 	$html = '';
 	$html .= '<div class="cpc-group-settings-tab">';
 	
-	$html .= '<h3>'.__('Grundeinstellungen', CPC2_TEXT_DOMAIN).'</h3>';
+	$html .= '<h3>'.__('Grundeinstellungen', 'cp-community').'</h3>';
 	$html .= '<form class="cpc-group-settings-form" data-group-id="'.$group_id.'">';
 	$html .= wp_nonce_field('cpc_groups_nonce', 'cpc_groups_nonce', true, false);
 	
 	$html .= '<div class="cpc-form-field">';
-	$html .= '<label for="group_type_setting">'.__('Gruppentyp', CPC2_TEXT_DOMAIN).'</label>';
+	$html .= '<label for="group_type_setting">'.__('Gruppentyp', 'cp-community').'</label>';
 	$html .= '<select name="group_type" id="group_type_setting">';
-	$html .= '<option value="public" '.selected($group_type, 'public', false).'>'.__('Öffentlich', CPC2_TEXT_DOMAIN).'</option>';
-	$html .= '<option value="private" '.selected($group_type, 'private', false).'>'.__('Privat', CPC2_TEXT_DOMAIN).'</option>';
-	$html .= '<option value="hidden" '.selected($group_type, 'hidden', false).'>'.__('Versteckt', CPC2_TEXT_DOMAIN).'</option>';
+	$html .= '<option value="public" '.selected($group_type, 'public', false).'>'.__('Öffentlich', 'cp-community').'</option>';
+	$html .= '<option value="private" '.selected($group_type, 'private', false).'>'.__('Privat', 'cp-community').'</option>';
+	$html .= '<option value="hidden" '.selected($group_type, 'hidden', false).'>'.__('Versteckt', 'cp-community').'</option>';
 	$html .= '</select>';
 	$html .= '</div>';
 
 	if (function_exists('cpc_media_get_group_stream_album_visibility_options')) {
 		$html .= '<div class="cpc-form-field">';
-		$html .= '<label for="group_stream_album_visibility">'.__('Gruppenstream-Album Sichtbarkeit', CPC2_TEXT_DOMAIN).'</label>';
+		$html .= '<label for="group_stream_album_visibility">'.__('Gruppenstream-Album Sichtbarkeit', 'cp-community').'</label>';
 		$html .= '<select name="group_stream_album_visibility" id="group_stream_album_visibility">';
 		foreach (cpc_media_get_group_stream_album_visibility_options() as $value => $label) {
 			$html .= '<option value="'.esc_attr($value).'" '.selected($stream_visibility, $value, false).'>'.esc_html($label).'</option>';
 		}
 		$html .= '</select>';
-		$html .= '<p class="description">'.__('Steuert das automatische Album, das Medien aus dem Gruppen-Aktivitätsstream sammelt. Standard ist nur für Gruppen-Admins sichtbar.', CPC2_TEXT_DOMAIN).'</p>';
+		$html .= '<p class="description">'.__('Steuert das automatische Album, das Medien aus dem Gruppen-Aktivitätsstream sammelt. Standard ist nur für Gruppen-Admins sichtbar.', 'cp-community').'</p>';
 		$html .= '</div>';
 	}
 	
-	$html .= '<button type="submit" class="cpc-btn cpc-btn-primary">'.__('Änderungen speichern', CPC2_TEXT_DOMAIN).'</button>';
+	$html .= '<button type="submit" class="cpc-btn cpc-btn-primary">'.__('Änderungen speichern', 'cp-community').'</button>';
 	$html .= '</form>';
 	
 	// Forum Settings (only if forum module is active)
@@ -408,7 +408,7 @@ function cpc_render_group_tab_settings($group_id, $atts = array()) {
 
 	if ($has_modules):
 		$html .= '<hr>';
-		$html .= '<h3>'.__('Optionale Module', CPC2_TEXT_DOMAIN).'</h3>';
+		$html .= '<h3>'.__('Optionale Module', 'cp-community').'</h3>';
 		$html .= '<form class="cpc-group-modules-form" data-group-id="'.$group_id.'">';
 		$html .= wp_nonce_field('cpc_groups_nonce', 'cpc_groups_nonce', true, false);
 
@@ -418,9 +418,9 @@ function cpc_render_group_tab_settings($group_id, $atts = array()) {
 			$html .= '<label>';
 			$html .= '<input type="checkbox" name="enable_media" id="enable_media" '.checked($has_media, true, false).'> ';
 			$html .= '<span class="dashicons dashicons-format-gallery" style="vertical-align:middle;"></span> ';
-			$html .= __('Galerien / Medien für diese Gruppe aktivieren', CPC2_TEXT_DOMAIN);
+			$html .= __('Galerien / Medien für diese Gruppe aktivieren', 'cp-community');
 			$html .= '</label>';
-			$html .= '<p class="description">'.__('Zeigt den Galerien-Tab und erlaubt Medien-Uploads in dieser Gruppe. Hinweis: Das Aktivitätsstream-Album ist davon unabhängig und bleibt erhalten.', CPC2_TEXT_DOMAIN).'</p>';
+			$html .= '<p class="description">'.__('Zeigt den Galerien-Tab und erlaubt Medien-Uploads in dieser Gruppe. Hinweis: Das Aktivitätsstream-Album ist davon unabhängig und bleibt erhalten.', 'cp-community').'</p>';
 			$html .= '</div>';
 		endif;
 
@@ -430,20 +430,20 @@ function cpc_render_group_tab_settings($group_id, $atts = array()) {
 			$html .= '<label>';
 			$html .= '<input type="checkbox" name="enable_projects" id="enable_projects" '.checked($has_projects, true, false).'> ';
 			$html .= '<span class="dashicons dashicons-portfolio" style="vertical-align:middle;"></span> ';
-			$html .= __('Projekte für diese Gruppe aktivieren', CPC2_TEXT_DOMAIN);
+			$html .= __('Projekte für diese Gruppe aktivieren', 'cp-community');
 			$html .= '</label>';
-			$html .= '<p class="description">'.__('Zeigt den Projekte-Tab und ermöglicht Projektverwaltung in dieser Gruppe.', CPC2_TEXT_DOMAIN).'</p>';
+			$html .= '<p class="description">'.__('Zeigt den Projekte-Tab und ermöglicht Projektverwaltung in dieser Gruppe.', 'cp-community').'</p>';
 			$html .= '</div>';
 		endif;
 
-		$html .= '<button type="submit" class="cpc-btn cpc-btn-primary">'.__('Module speichern', CPC2_TEXT_DOMAIN).'</button>';
+		$html .= '<button type="submit" class="cpc-btn cpc-btn-primary">'.__('Module speichern', 'cp-community').'</button>';
 		$html .= '</form>';
 	endif;
 
 	// Forum Settings (only if forum module is active)
 	if (function_exists('cpc_forum_page')):
 		$html .= '<hr>';
-		$html .= '<h3>'.__('Forum-Einstellungen', CPC2_TEXT_DOMAIN).'</h3>';
+		$html .= '<h3>'.__('Forum-Einstellungen', 'cp-community').'</h3>';
 		
 		$has_forum = get_post_meta($group_id, 'cpc_group_has_forum', true);
 		$forum_visibility = get_post_meta($group_id, 'cpc_group_forum_visibility', true);
@@ -455,31 +455,31 @@ function cpc_render_group_tab_settings($group_id, $atts = array()) {
 		$html .= '<div class="cpc-form-field">';
 		$html .= '<label>';
 		$html .= '<input type="checkbox" name="enable_forum" id="enable_forum" '.checked($has_forum, true, false).'> ';
-		$html .= __('Forum für diese Gruppe aktivieren', CPC2_TEXT_DOMAIN);
+		$html .= __('Forum für diese Gruppe aktivieren', 'cp-community');
 		$html .= '</label>';
-		$html .= '<p class="description">'.__('Wenn aktiviert, können Gruppenmitglieder im Gruppen-Forum diskutieren.', CPC2_TEXT_DOMAIN).'</p>';
+		$html .= '<p class="description">'.__('Wenn aktiviert, können Gruppenmitglieder im Gruppen-Forum diskutieren.', 'cp-community').'</p>';
 		$html .= '</div>';
 		
 		$html .= '<div class="cpc-form-field cpc-forum-visibility-field" '.(!$has_forum ? 'style="display:none;"' : '').'>';
-		$html .= '<label>'.__('Forum-Sichtbarkeit', CPC2_TEXT_DOMAIN).'</label>';
+		$html .= '<label>'.__('Forum-Sichtbarkeit', 'cp-community').'</label>';
 		$html .= '<label style="display:block;margin:5px 0;">';
 		$html .= '<input type="radio" name="forum_visibility" value="group_only" '.checked($forum_visibility, 'group_only', false).'> ';
-		$html .= __('Nur für Gruppenmitglieder sichtbar', CPC2_TEXT_DOMAIN);
+		$html .= __('Nur für Gruppenmitglieder sichtbar', 'cp-community');
 		$html .= '</label>';
 		$html .= '<label style="display:block;margin:5px 0;">';
 		$html .= '<input type="radio" name="forum_visibility" value="public" '.checked($forum_visibility, 'public', false).'> ';
-		$html .= __('Auch in der öffentlichen Forenansicht sichtbar', CPC2_TEXT_DOMAIN);
+		$html .= __('Auch in der öffentlichen Forenansicht sichtbar', 'cp-community');
 		$html .= '</label>';
 		$html .= '</div>';
 		
-		$html .= '<button type="submit" class="cpc-btn cpc-btn-primary">'.__('Forum-Einstellungen speichern', CPC2_TEXT_DOMAIN).'</button>';
+		$html .= '<button type="submit" class="cpc-btn cpc-btn-primary">'.__('Forum-Einstellungen speichern', 'cp-community').'</button>';
 		$html .= '</form>';
 	endif;
 	
 	// Chat Settings (if PS-Chat is available and group chats are enabled)
 	if (function_exists('cpc_pschat_is_available') && cpc_group_chats_enabled()):
 		$html .= '<hr>';
-		$html .= '<h3>'.__('Chat-Einstellungen', CPC2_TEXT_DOMAIN).'</h3>';
+		$html .= '<h3>'.__('Chat-Einstellungen', 'cp-community').'</h3>';
 		
 		$has_chat = get_post_meta($group_id, 'cpc_group_has_chat', true);
 		$chat_config = cpc_get_group_chat_config($group_id);
@@ -491,90 +491,90 @@ function cpc_render_group_tab_settings($group_id, $atts = array()) {
 		$html .= '<div class="cpc-form-field">';
 		$html .= '<label>';
 		$html .= '<input type="checkbox" name="enable_chat" id="enable_chat" '.checked($has_chat, true, false).'> ';
-		$html .= __('Chat für diese Gruppe aktivieren', CPC2_TEXT_DOMAIN);
+		$html .= __('Chat für diese Gruppe aktivieren', 'cp-community');
 		$html .= '</label>';
-		$html .= '<p class="description">'.__('Wenn aktiviert, wird den Gruppenmitgliedern ein Chat-Tab angezeigt.', CPC2_TEXT_DOMAIN).'</p>';
+		$html .= '<p class="description">'.__('Wenn aktiviert, wird den Gruppenmitgliedern ein Chat-Tab angezeigt.', 'cp-community').'</p>';
 		$html .= '</div>';
 		
 		// Chat Configuration section (hidden when chat disabled)
 		$chat_section_style = $has_chat ? '' : 'display:none;';
 		$html .= '<div class="cpc-chat-config-section" style="background: #f5f5f5; padding: 15px; border-left: 4px solid #0073aa; margin: 20px 0; '.$chat_section_style.'">';
-		$html .= '<h4>'.__('Chat-Konfiguration', CPC2_TEXT_DOMAIN).'</h4>';
+		$html .= '<h4>'.__('Chat-Konfiguration', 'cp-community').'</h4>';
 			
 			// Chat Name
 			$html .= '<div class="cpc-form-field">';
-			$html .= '<label for="chat_box_title">'.__('Chat-Name / Titel', CPC2_TEXT_DOMAIN).'</label>';
+			$html .= '<label for="chat_box_title">'.__('Chat-Name / Titel', 'cp-community').'</label>';
 			$html .= '<input type="text" id="chat_box_title" name="chat_box_title" value="'.esc_attr($chat_config['box_title']).'" style="width:100%;max-width:500px;" />';
-			$html .= '<p class="description">'.__('Der Titel für die Chat-Box in dieser Gruppe.', CPC2_TEXT_DOMAIN).'</p>';
+			$html .= '<p class="description">'.__('Der Titel für die Chat-Box in dieser Gruppe.', 'cp-community').'</p>';
 			$html .= '</div>';
 			
 			// Emojis
 			$html .= '<div class="cpc-form-field">';
 			$html .= '<label>';
 			$html .= '<input type="checkbox" name="chat_emoticons" id="chat_emoticons" value="enabled" '.checked($chat_config['emoticons'], 'enabled', false).'> ';
-			$html .= __('Emojis erlauben', CPC2_TEXT_DOMAIN);
+			$html .= __('Emojis erlauben', 'cp-community');
 			$html .= '</label>';
-			$html .= '<p class="description">'.__('Zeige den Emoji-Picker in der Chat-Eingabe.', CPC2_TEXT_DOMAIN).'</p>';
+			$html .= '<p class="description">'.__('Zeige den Emoji-Picker in der Chat-Eingabe.', 'cp-community').'</p>';
 			$html .= '</div>';
 			
 			// Timestamps
 			$html .= '<div class="cpc-form-field">';
 			$html .= '<label>';
 			$html .= '<input type="checkbox" name="chat_row_time" id="chat_row_time" value="enabled" '.checked($chat_config['row_time'], 'enabled', false).'> ';
-			$html .= __('Zeitstempel anzeigen', CPC2_TEXT_DOMAIN);
+			$html .= __('Zeitstempel anzeigen', 'cp-community');
 			$html .= '</label>';
-			$html .= '<p class="description">'.__('Zeige die Uhrzeit neben jeder Chat-Nachricht.', CPC2_TEXT_DOMAIN).'</p>';
+			$html .= '<p class="description">'.__('Zeige die Uhrzeit neben jeder Chat-Nachricht.', 'cp-community').'</p>';
 			$html .= '</div>';
 			
 			// User List
 			$html .= '<div class="cpc-form-field">';
-			$html .= '<label for="chat_users_list_position">'.__('Aktive Teilnehmer anzeigen', CPC2_TEXT_DOMAIN).'</label>';
+			$html .= '<label for="chat_users_list_position">'.__('Aktive Teilnehmer anzeigen', 'cp-community').'</label>';
 			$html .= '<select name="chat_users_list_position" id="chat_users_list_position">';
-			$html .= '<option value="none" '.selected($chat_config['users_list_position'], 'none', false).'>'.__('Nicht anzeigen', CPC2_TEXT_DOMAIN).'</option>';
-			$html .= '<option value="right" '.selected($chat_config['users_list_position'], 'right', false).'>'.__('Rechts', CPC2_TEXT_DOMAIN).'</option>';
-			$html .= '<option value="left" '.selected($chat_config['users_list_position'], 'left', false).'>'.__('Links', CPC2_TEXT_DOMAIN).'</option>';
-			$html .= '<option value="above" '.selected($chat_config['users_list_position'], 'above', false).'>'.__('Oben', CPC2_TEXT_DOMAIN).'</option>';
-			$html .= '<option value="below" '.selected($chat_config['users_list_position'], 'below', false).'>'.__('Unten', CPC2_TEXT_DOMAIN).'</option>';
+			$html .= '<option value="none" '.selected($chat_config['users_list_position'], 'none', false).'>'.__('Nicht anzeigen', 'cp-community').'</option>';
+			$html .= '<option value="right" '.selected($chat_config['users_list_position'], 'right', false).'>'.__('Rechts', 'cp-community').'</option>';
+			$html .= '<option value="left" '.selected($chat_config['users_list_position'], 'left', false).'>'.__('Links', 'cp-community').'</option>';
+			$html .= '<option value="above" '.selected($chat_config['users_list_position'], 'above', false).'>'.__('Oben', 'cp-community').'</option>';
+			$html .= '<option value="below" '.selected($chat_config['users_list_position'], 'below', false).'>'.__('Unten', 'cp-community').'</option>';
 			$html .= '</select>';
-			$html .= '<p class="description">'.__('Wo sollen aktive Chatmitglieder angezeigt werden?', CPC2_TEXT_DOMAIN).'</p>';
+			$html .= '<p class="description">'.__('Wo sollen aktive Chatmitglieder angezeigt werden?', 'cp-community').'</p>';
 			$html .= '</div>';
 			
 			// Sounds
 			$html .= '<div class="cpc-form-field">';
 			$html .= '<label>';
 			$html .= '<input type="checkbox" name="chat_sound" id="chat_sound" value="enabled" '.checked($chat_config['sound'], 'enabled', false).'> ';
-			$html .= __('Benachrichtigungston abspielen', CPC2_TEXT_DOMAIN);
+			$html .= __('Benachrichtigungston abspielen', 'cp-community');
 			$html .= '</label>';
-			$html .= '<p class="description">'.__('Sound abspielen, wenn neue Nachrichten eintreffen.', CPC2_TEXT_DOMAIN).'</p>';
+			$html .= '<p class="description">'.__('Sound abspielen, wenn neue Nachrichten eintreffen.', 'cp-community').'</p>';
 			$html .= '</div>';
 			
 			// File Uploads
 			$html .= '<div class="cpc-form-field">';
 			$html .= '<label>';
 			$html .= '<input type="checkbox" name="chat_file_uploads_enabled" id="chat_file_uploads_enabled" value="enabled" '.checked($chat_config['file_uploads_enabled'], 'enabled', false).'> ';
-			$html .= __('Datei-Upload erlauben', CPC2_TEXT_DOMAIN);
+			$html .= __('Datei-Upload erlauben', 'cp-community');
 			$html .= '</label>';
-			$html .= '<p class="description">'.__('Erlaube Gruppenmitgliedern, Dateien im Chat hochzuladen.', CPC2_TEXT_DOMAIN).'</p>';
+			$html .= '<p class="description">'.__('Erlaube Gruppenmitgliedern, Dateien im Chat hochzuladen.', 'cp-community').'</p>';
 			$html .= '</div>';
 			
 			// Chat Logging
 			$html .= '<div class="cpc-form-field">';
 			$html .= '<label>';
 			$html .= '<input type="checkbox" name="chat_log_creation" id="chat_log_creation" value="enabled" '.checked($chat_config['log_creation'], 'enabled', false).'> ';
-			$html .= __('Chat-Verlauf speichern', CPC2_TEXT_DOMAIN);
+			$html .= __('Chat-Verlauf speichern', 'cp-community');
 			$html .= '</label>';
-			$html .= '<p class="description">'.__('Speichere alle Chat-Nachrichten zur späteren Anzeige.', CPC2_TEXT_DOMAIN).'</p>';
+			$html .= '<p class="description">'.__('Speichere alle Chat-Nachrichten zur späteren Anzeige.', 'cp-community').'</p>';
 			$html .= '</div>';
 			
 			$html .= '</div>'; // .cpc-chat-config-section
 		
-		$html .= '<button type="submit" class="cpc-btn cpc-btn-primary">'.__('Chat-Einstellungen speichern', CPC2_TEXT_DOMAIN).'</button>';
+		$html .= '<button type="submit" class="cpc-btn cpc-btn-primary">'.__('Chat-Einstellungen speichern', 'cp-community').'</button>';
 		$html .= '</form>';
 	endif;
 	
 	// Group Permissions
 	$html .= '<hr>';
-	$html .= '<h3>'.__('Gruppenberechtigungen', CPC2_TEXT_DOMAIN).'</h3>';
+	$html .= '<h3>'.__('Gruppenberechtigungen', 'cp-community').'</h3>';
 	
 	$permissions = get_post_meta($group_id, 'cpc_group_permissions', true);
 	if (!is_array($permissions)) {
@@ -596,49 +596,49 @@ function cpc_render_group_tab_settings($group_id, $atts = array()) {
 	$html .= '<input type="hidden" name="group_id" value="'.$group_id.'">';
 	
 	$html .= '<div class="cpc-form-field">';
-	$html .= '<label>'.__('Wer darf im Forum posten?', CPC2_TEXT_DOMAIN).'</label>';
+	$html .= '<label>'.__('Wer darf im Forum posten?', 'cp-community').'</label>';
 	$html .= '<select name="forum_post">';
-	$html .= '<option value="member" '.selected($permissions['forum_post'], 'member', false).'>'.__('Alle Mitglieder', CPC2_TEXT_DOMAIN).'</option>';
-	$html .= '<option value="moderator" '.selected($permissions['forum_post'], 'moderator', false).'>'.__('Nur Moderatoren und Admins', CPC2_TEXT_DOMAIN).'</option>';
-	$html .= '<option value="admin" '.selected($permissions['forum_post'], 'admin', false).'>'.__('Nur Admins', CPC2_TEXT_DOMAIN).'</option>';
+	$html .= '<option value="member" '.selected($permissions['forum_post'], 'member', false).'>'.__('Alle Mitglieder', 'cp-community').'</option>';
+	$html .= '<option value="moderator" '.selected($permissions['forum_post'], 'moderator', false).'>'.__('Nur Moderatoren und Admins', 'cp-community').'</option>';
+	$html .= '<option value="admin" '.selected($permissions['forum_post'], 'admin', false).'>'.__('Nur Admins', 'cp-community').'</option>';
 	$html .= '</select>';
 	$html .= '</div>';
 
 	$html .= '<div class="cpc-form-field">';
-	$html .= '<label>'.__('Wer darf Mitglieder einladen?', CPC2_TEXT_DOMAIN).'</label>';
+	$html .= '<label>'.__('Wer darf Mitglieder einladen?', 'cp-community').'</label>';
 	$html .= '<select name="invite_members">';
-	$html .= '<option value="member" '.selected($permissions['invite_members'], 'member', false).'>'.__('Alle Mitglieder', CPC2_TEXT_DOMAIN).'</option>';
-	$html .= '<option value="moderator" '.selected($permissions['invite_members'], 'moderator', false).'>'.__('Nur Moderatoren und Admins', CPC2_TEXT_DOMAIN).'</option>';
-	$html .= '<option value="admin" '.selected($permissions['invite_members'], 'admin', false).'>'.__('Nur Admins', CPC2_TEXT_DOMAIN).'</option>';
+	$html .= '<option value="member" '.selected($permissions['invite_members'], 'member', false).'>'.__('Alle Mitglieder', 'cp-community').'</option>';
+	$html .= '<option value="moderator" '.selected($permissions['invite_members'], 'moderator', false).'>'.__('Nur Moderatoren und Admins', 'cp-community').'</option>';
+	$html .= '<option value="admin" '.selected($permissions['invite_members'], 'admin', false).'>'.__('Nur Admins', 'cp-community').'</option>';
 	$html .= '</select>';
 	$html .= '</div>';
 
 	$html .= '<div class="cpc-form-field">';
-	$html .= '<label>'.__('Wer darf fremde Aktivitäts-Beiträge bearbeiten?', CPC2_TEXT_DOMAIN).'</label>';
+	$html .= '<label>'.__('Wer darf fremde Aktivitäts-Beiträge bearbeiten?', 'cp-community').'</label>';
 	$html .= '<select name="activity_edit_all">';
-	$html .= '<option value="moderator" '.selected($permissions['activity_edit_all'], 'moderator', false).'>'.__('Moderatoren und Admins', CPC2_TEXT_DOMAIN).'</option>';
-	$html .= '<option value="admin" '.selected($permissions['activity_edit_all'], 'admin', false).'>'.__('Nur Admins', CPC2_TEXT_DOMAIN).'</option>';
+	$html .= '<option value="moderator" '.selected($permissions['activity_edit_all'], 'moderator', false).'>'.__('Moderatoren und Admins', 'cp-community').'</option>';
+	$html .= '<option value="admin" '.selected($permissions['activity_edit_all'], 'admin', false).'>'.__('Nur Admins', 'cp-community').'</option>';
 	$html .= '</select>';
-	$html .= '<p class="description">'.__('Eigene Beiträge kann jeder immer bearbeiten.', CPC2_TEXT_DOMAIN).'</p>';
+	$html .= '<p class="description">'.__('Eigene Beiträge kann jeder immer bearbeiten.', 'cp-community').'</p>';
 	$html .= '</div>';
 	
 	$html .= '<div class="cpc-form-field">';
-	$html .= '<label>'.__('Wer darf fremde Aktivitäts-Beiträge löschen?', CPC2_TEXT_DOMAIN).'</label>';
+	$html .= '<label>'.__('Wer darf fremde Aktivitäts-Beiträge löschen?', 'cp-community').'</label>';
 	$html .= '<select name="activity_delete_all">';
-	$html .= '<option value="moderator" '.selected($permissions['activity_delete_all'], 'moderator', false).'>'.__('Moderatoren und Admins', CPC2_TEXT_DOMAIN).'</option>';
-	$html .= '<option value="admin" '.selected($permissions['activity_delete_all'], 'admin', false).'>'.__('Nur Admins', CPC2_TEXT_DOMAIN).'</option>';
+	$html .= '<option value="moderator" '.selected($permissions['activity_delete_all'], 'moderator', false).'>'.__('Moderatoren und Admins', 'cp-community').'</option>';
+	$html .= '<option value="admin" '.selected($permissions['activity_delete_all'], 'admin', false).'>'.__('Nur Admins', 'cp-community').'</option>';
 	$html .= '</select>';
-	$html .= '<p class="description">'.__('Eigene Beiträge kann jeder immer löschen.', CPC2_TEXT_DOMAIN).'</p>';
+	$html .= '<p class="description">'.__('Eigene Beiträge kann jeder immer löschen.', 'cp-community').'</p>';
 	$html .= '</div>';
 	
-	$html .= '<button type="submit" class="cpc-btn cpc-btn-primary">'.__('Berechtigungen speichern', CPC2_TEXT_DOMAIN).'</button>';
+	$html .= '<button type="submit" class="cpc-btn cpc-btn-primary">'.__('Berechtigungen speichern', 'cp-community').'</button>';
 	$html .= '</form>';
 	
 	$pending_requests = cpc_get_pending_membership_requests($group_id);
 	
 	if (!empty($pending_requests)):
 		$html .= '<div class="cpc-membership-requests">';
-		$html .= '<p><strong>'.sprintf(__('%d Ausstehende Anfragen', CPC2_TEXT_DOMAIN), count($pending_requests)).'</strong></p>';
+		$html .= '<p><strong>'.sprintf(__('%d Ausstehende Anfragen', 'cp-community'), count($pending_requests)).'</strong></p>';
 		
 		foreach ($pending_requests as $request):
 			$user = get_userdata($request->post_author);
@@ -655,27 +655,27 @@ function cpc_render_group_tab_settings($group_id, $atts = array()) {
 			$html .= '</div>';
 			
 			$html .= '<div class="cpc-request-actions">';
-			$html .= '<button type="button" class="cpc-btn cpc-btn-primary cpc-approve-membership" data-request-id="'.$request->ID.'" data-group-id="'.$group_id.'" data-user-id="'.$user->ID.'">'.__('Annehmen', CPC2_TEXT_DOMAIN).'</button>';
-			$html .= '<button type="button" class="cpc-btn cpc-btn-danger cpc-reject-membership" data-request-id="'.$request->ID.'" data-group-id="'.$group_id.'">'.__('Ablehnen', CPC2_TEXT_DOMAIN).'</button>';
+			$html .= '<button type="button" class="cpc-btn cpc-btn-primary cpc-approve-membership" data-request-id="'.$request->ID.'" data-group-id="'.$group_id.'" data-user-id="'.$user->ID.'">'.__('Annehmen', 'cp-community').'</button>';
+			$html .= '<button type="button" class="cpc-btn cpc-btn-danger cpc-reject-membership" data-request-id="'.$request->ID.'" data-group-id="'.$group_id.'">'.__('Ablehnen', 'cp-community').'</button>';
 			$html .= '</div>';
 			$html .= '</div>';
 		endforeach;
 		
 		$html .= '</div>';
 	else:
-		$html .= '<p>'.__('Keine ausstehenden Beitrittanfragen.', CPC2_TEXT_DOMAIN).'</p>';
+		$html .= '<p>'.__('Keine ausstehenden Beitrittanfragen.', 'cp-community').'</p>';
 	endif;
 	
 	// Moderators Management Section
 	$html .= '<hr>';
-	$html .= '<h3>'.__('Moderatoren verwalten', CPC2_TEXT_DOMAIN).'</h3>';
+	$html .= '<h3>'.__('Moderatoren verwalten', 'cp-community').'</h3>';
 	
 	// Get all group members
 	$members = cpc_get_group_members($group_id);
 	
 	if (!empty($members)):
 		$html .= '<table class="cpc-members-role-table">';
-		$html .= '<thead><tr><th>'.__('Mitglied', CPC2_TEXT_DOMAIN).'</th><th>'.__('Aktuelle Rolle', CPC2_TEXT_DOMAIN).'</th><th>'.__('Aktion', CPC2_TEXT_DOMAIN).'</th></tr></thead><tbody>';
+		$html .= '<thead><tr><th>'.__('Mitglied', 'cp-community').'</th><th>'.__('Aktuelle Rolle', 'cp-community').'</th><th>'.__('Aktion', 'cp-community').'</th></tr></thead><tbody>';
 		
 		foreach ($members as $member):
 			$user = get_userdata($member->user_id);
@@ -689,12 +689,12 @@ function cpc_render_group_tab_settings($group_id, $atts = array()) {
 			// Don't allow changing own role
 			if ($member->user_id != get_current_user_id()):
 				$html .= '<select class="cpc-change-member-role" data-user-id="'.$member->user_id.'" data-group-id="'.$group_id.'">';
-				$html .= '<option value="member"'.($member->member_role === 'member' ? ' selected' : '').'>'.__('Mitglied', CPC2_TEXT_DOMAIN).'</option>';
-				$html .= '<option value="moderator"'.($member->member_role === 'moderator' ? ' selected' : '').'>'.__('Moderator', CPC2_TEXT_DOMAIN).'</option>';
-				$html .= '<option value="admin"'.($member->member_role === 'admin' ? ' selected' : '').'>'.__('Admin', CPC2_TEXT_DOMAIN).'</option>';
+				$html .= '<option value="member"'.($member->member_role === 'member' ? ' selected' : '').'>'.__('Mitglied', 'cp-community').'</option>';
+				$html .= '<option value="moderator"'.($member->member_role === 'moderator' ? ' selected' : '').'>'.__('Moderator', 'cp-community').'</option>';
+				$html .= '<option value="admin"'.($member->member_role === 'admin' ? ' selected' : '').'>'.__('Admin', 'cp-community').'</option>';
 				$html .= '</select>';
 			else:
-				$html .= '<em>'.__('(Du selbst)', CPC2_TEXT_DOMAIN).'</em>';
+				$html .= '<em>'.__('(Du selbst)', 'cp-community').'</em>';
 			endif;
 			
 			$html .= '</td>';
@@ -703,14 +703,14 @@ function cpc_render_group_tab_settings($group_id, $atts = array()) {
 		
 		$html .= '</tbody></table>';
 	else:
-		$html .= '<p>'.__('Keine Mitglieder gefunden.', CPC2_TEXT_DOMAIN).'</p>';
+		$html .= '<p>'.__('Keine Mitglieder gefunden.', 'cp-community').'</p>';
 	endif;
 	
 	$html .= '<hr>';
-	$html .= '<h3>'.__('Gefährliche Zonen', CPC2_TEXT_DOMAIN).'</h3>';
+	$html .= '<h3>'.__('Gefährliche Zonen', 'cp-community').'</h3>';
 	$html .= '<p>';
 	$html .= '<button type="button" class="cpc-btn cpc-btn-danger cpc-delete-group-btn" data-group-id="'.$group_id.'">';
-	$html .= __('Gruppe löschen', CPC2_TEXT_DOMAIN);
+	$html .= __('Gruppe löschen', 'cp-community');
 	$html .= '</button>';
 	$html .= '</p>';
 	
@@ -785,7 +785,7 @@ function cpc_render_group_activity_post_full($post) {
 	$html .= '<div class="cpc-activity-text">'.cpc_formatted_content($visible_text, true).'</div>';
 	
 	$html .= '<div class="cpc-activity-meta">';
-	$html .= '<small>'.human_time_diff(strtotime($post->post_date_gmt), current_time('timestamp', true)).' '.__('ago', CPC2_TEXT_DOMAIN).'</small>';
+	$html .= '<small>'.human_time_diff(strtotime($post->post_date_gmt), current_time('timestamp', true)).' '.__('ago', 'cp-community').'</small>';
 	
 	// Edit/Delete buttons if user has permission
 	$group_id = get_post_meta($post->ID, 'cpc_activity_group_id', true);
@@ -799,11 +799,11 @@ function cpc_render_group_activity_post_full($post) {
 			$html .= '<span class="cpc-activity-actions">';
 			
 			if ($can_edit) {
-				$html .= ' | <a href="#" class="cpc-edit-activity" data-post-id="'.$post->ID.'">'.__('Bearbeiten', CPC2_TEXT_DOMAIN).'</a>';
+				$html .= ' | <a href="#" class="cpc-edit-activity" data-post-id="'.$post->ID.'">'.__('Bearbeiten', 'cp-community').'</a>';
 			}
 			
 			if ($can_delete) {
-				$html .= ' | <a href="#" class="cpc-delete-activity" data-post-id="'.$post->ID.'">'.__('Löschen', CPC2_TEXT_DOMAIN).'</a>';
+				$html .= ' | <a href="#" class="cpc-delete-activity" data-post-id="'.$post->ID.'">'.__('Löschen', 'cp-community').'</a>';
 			}
 			
 			$html .= '</span>';
@@ -838,10 +838,10 @@ function cpc_render_group_activity_post_full($post) {
 				if ($can_edit_reply || $can_delete_reply) {
 					$html .= '<span class="cpc-reply-actions">';
 					if ($can_edit_reply) {
-						$html .= ' | <a href="#" class="cpc-edit-reply" data-comment-id="'.$comment->comment_ID.'">'.__('Bearbeiten', CPC2_TEXT_DOMAIN).'</a>';
+						$html .= ' | <a href="#" class="cpc-edit-reply" data-comment-id="'.$comment->comment_ID.'">'.__('Bearbeiten', 'cp-community').'</a>';
 					}
 					if ($can_delete_reply) {
-						$html .= ' | <a href="#" class="cpc-delete-reply" data-comment-id="'.$comment->comment_ID.'">'.__('Löschen', CPC2_TEXT_DOMAIN).'</a>';
+						$html .= ' | <a href="#" class="cpc-delete-reply" data-comment-id="'.$comment->comment_ID.'">'.__('Löschen', 'cp-community').'</a>';
 					}
 					$html .= '</span>';
 				}
@@ -853,11 +853,11 @@ function cpc_render_group_activity_post_full($post) {
 		
 		// Reply form (collapsible)
 		$html .= '<div class="cpc-activity-reply-form" style="display:none;">';
-		$html .= '<textarea placeholder="'.__('Schreibe eine Antwort...', CPC2_TEXT_DOMAIN).'" class="cpc-reply-content" data-post-id="'.$post->ID.'"></textarea>';
-		$html .= '<button type="button" class="cpc-btn cpc-btn-small cpc-post-reply" data-post-id="'.$post->ID.'">'.__('Antworten', CPC2_TEXT_DOMAIN).'</button>';
+		$html .= '<textarea placeholder="'.__('Schreibe eine Antwort...', 'cp-community').'" class="cpc-reply-content" data-post-id="'.$post->ID.'"></textarea>';
+		$html .= '<button type="button" class="cpc-btn cpc-btn-small cpc-post-reply" data-post-id="'.$post->ID.'">'.__('Antworten', 'cp-community').'</button>';
 		$html .= '</div>';
 		
-		$html .= '<span class="cpc-reply-toggle" data-post-id="'.$post->ID.'">'.__('Antwort hinzufügen', CPC2_TEXT_DOMAIN).'</span>';
+		$html .= '<span class="cpc-reply-toggle" data-post-id="'.$post->ID.'">'.__('Antwort hinzufügen', 'cp-community').'</span>';
 		
 		$html .= '</div>'; // .cpc-activity-replies
 	endif;
@@ -884,7 +884,7 @@ function cpc_render_group_activity_post($post) {
 	$html .= '<div class="cpc-group-activity-post">';
 	$html .= '<strong>'.get_the_author_meta('display_name', $post->post_author).'</strong>';
 	$html .= '<p>'.$post->post_content.'</p>';
-	$html .= '<small>'.human_time_diff($post->post_date_gmt, current_time('mysql', true)).' '.__('Uhr', CPC2_TEXT_DOMAIN).'</small>';
+	$html .= '<small>'.human_time_diff($post->post_date_gmt, current_time('mysql', true)).' '.__('Uhr', 'cp-community').'</small>';
 	$html .= '</div>';
 	
 	return $html;
@@ -898,10 +898,10 @@ function cpc_render_group_activity_form($group_id) {
 		// Fallback: Simple form without Activity Plus
 		$html = '';
 		$html .= '<div class="cpc-group-activity-form">';
-		$html .= '<h4>'.__('Aktivität posten', CPC2_TEXT_DOMAIN).'</h4>';
+		$html .= '<h4>'.__('Aktivität posten', 'cp-community').'</h4>';
 		$html .= '<form class="cpc-group-post-activity-form" data-group-id="'.$group_id.'">';
-		$html .= '<textarea name="activity_content" placeholder="'.__('Was machst du gerade?', CPC2_TEXT_DOMAIN).'"></textarea>';
-		$html .= '<button type="submit" class="cpc-btn cpc-btn-primary">'.__('Posten', CPC2_TEXT_DOMAIN).'</button>';
+		$html .= '<textarea name="activity_content" placeholder="'.__('Was machst du gerade?', 'cp-community').'"></textarea>';
+		$html .= '<button type="submit" class="cpc-btn cpc-btn-primary">'.__('Posten', 'cp-community').'</button>';
 		$html .= '</form>';
 		$html .= '</div>';
 		return $html;
@@ -916,26 +916,26 @@ function cpc_render_group_activity_form($group_id) {
 	
 	$cloud_notice = '';
 	if ($cloud_summary['limit_bytes'] > 0 && $cloud_summary['remaining_bytes'] < 5242880) {
-		$cloud_notice = __('Weniger als 5 MB verbleibend - bitte lade nur wenige/kleinere Dateien hoch.', CPC2_TEXT_DOMAIN);
+		$cloud_notice = __('Weniger als 5 MB verbleibend - bitte lade nur wenige/kleinere Dateien hoch.', 'cp-community');
 	} else if ($cloud_summary['limit_bytes'] > 0 && $cloud_summary['remaining_bytes'] <= 0) {
-		$cloud_notice = __('Speicherlimit erreicht - Uploads nicht verfügbar.', CPC2_TEXT_DOMAIN);
+		$cloud_notice = __('Speicherlimit erreicht - Uploads nicht verfügbar.', 'cp-community');
 	}
 	
 	$html = '';
 	$html .= '<div class="cpc-group-activity-form">';
-	$html .= '<h4>'.__('Aktivität posten', CPC2_TEXT_DOMAIN).'</h4>';
+	$html .= '<h4>'.__('Aktivität posten', 'cp-community').'</h4>';
 	
 	$html .= '<form class="cpc-group-post-activity-form" data-group-id="'.$group_id.'" enctype="multipart/form-data">';
-	$html .= '<textarea name="activity_content" placeholder="'.__('Was machst du gerade?', CPC2_TEXT_DOMAIN).'"></textarea>';
+	$html .= '<textarea name="activity_content" placeholder="'.__('Was machst du gerade?', 'cp-community').'"></textarea>';
 	
 	// Activity Plus UI
 	$html .= '<input type="hidden" name="cpc_activity_plus_nonce" value="'.wp_create_nonce('cpc_activity_plus_nonce').'" />';
 	$html .= '<div id="cpc_activity_plus" class="cpc_activity_plus '.$theme_class.' '.$alignment_class.'">';
 		$html .= '<div class="cpc_activity_plus_cloud_info">';
-			$html .= '<strong>'.__('Gruppen-Speicher', CPC2_TEXT_DOMAIN).':</strong> ';
-			$html .= esc_html($cloud_summary['used_human']).' '.__('genutzt von', CPC2_TEXT_DOMAIN).' '.esc_html($cloud_summary['limit_human']);
+			$html .= '<strong>'.__('Gruppen-Speicher', 'cp-community').':</strong> ';
+			$html .= esc_html($cloud_summary['used_human']).' '.__('genutzt von', 'cp-community').' '.esc_html($cloud_summary['limit_human']);
 			if ($cloud_summary['limit_bytes'] > 0) {
-				$html .= ' ('.esc_html($cloud_summary['remaining_human']).' '.__('frei', CPC2_TEXT_DOMAIN).')';
+				$html .= ' ('.esc_html($cloud_summary['remaining_human']).' '.__('frei', 'cp-community').')';
 			}
 		$html .= '</div>';
 		if ($cloud_notice) {
@@ -943,13 +943,13 @@ function cpc_render_group_activity_form($group_id) {
 		}
 		$html .= '<div class="cpc_activity_plus_toolbar">';
 			if ($settings['allow_images']) {
-				$html .= '<button type="button" class="cpc_button cpc_activity_plus_toggle cpc_activity_plus_toggle_images" data-target="cpc_activity_plus_images_wrap"><span>'.__('Bild', CPC2_TEXT_DOMAIN).'</span></button>';
+				$html .= '<button type="button" class="cpc_button cpc_activity_plus_toggle cpc_activity_plus_toggle_images" data-target="cpc_activity_plus_images_wrap"><span>'.__('Bild', 'cp-community').'</span></button>';
 			}
 			if ($settings['allow_links']) {
-				$html .= '<button type="button" class="cpc_button cpc_activity_plus_toggle cpc_activity_plus_toggle_links" data-target="cpc_activity_plus_link_wrap"><span>'.__('Link', CPC2_TEXT_DOMAIN).'</span></button>';
+				$html .= '<button type="button" class="cpc_button cpc_activity_plus_toggle cpc_activity_plus_toggle_links" data-target="cpc_activity_plus_link_wrap"><span>'.__('Link', 'cp-community').'</span></button>';
 			}
 			if ($settings['allow_video']) {
-				$html .= '<button type="button" class="cpc_button cpc_activity_plus_toggle cpc_activity_plus_toggle_videos" data-target="cpc_activity_plus_video_wrap"><span>'.__('Video', CPC2_TEXT_DOMAIN).'</span></button>';
+				$html .= '<button type="button" class="cpc_button cpc_activity_plus_toggle cpc_activity_plus_toggle_videos" data-target="cpc_activity_plus_video_wrap"><span>'.__('Video', 'cp-community').'</span></button>';
 			}
 		$html .= '</div>';
 
@@ -958,25 +958,25 @@ function cpc_render_group_activity_form($group_id) {
 				$html .= '<div style="margin-bottom:8px">';
 					$html .= '<input type="file" id="cpc_activity_plus_images" name="cpc_activity_plus_images[]" accept="image/*" multiple />';
 				$html .= '</div>';
-				$html .= '<textarea name="cpc_activity_plus_remote_images" id="cpc_activity_plus_remote_images" placeholder="'.esc_attr__('Bild-URLs (eine pro Zeile)', CPC2_TEXT_DOMAIN).'" rows="3"></textarea>';
+				$html .= '<textarea name="cpc_activity_plus_remote_images" id="cpc_activity_plus_remote_images" placeholder="'.esc_attr__('Bild-URLs (eine pro Zeile)', 'cp-community').'" rows="3"></textarea>';
 			$html .= '</div>';
 		}
 
 		if ($settings['allow_links']) {
 			$html .= '<div id="cpc_activity_plus_link_wrap" class="cpc_activity_plus_wrap" style="display:none">';
-				$html .= '<input type="url" name="cpc_activity_plus_link_url" id="cpc_activity_plus_link_url" placeholder="'.esc_attr__('Link-URL', CPC2_TEXT_DOMAIN).'" />';
+				$html .= '<input type="url" name="cpc_activity_plus_link_url" id="cpc_activity_plus_link_url" placeholder="'.esc_attr__('Link-URL', 'cp-community').'" />';
 				$html .= '<div id="cpc_activity_plus_link_preview"></div>';
 			$html .= '</div>';
 		}
 
 		if ($settings['allow_video']) {
 			$html .= '<div id="cpc_activity_plus_video_wrap" class="cpc_activity_plus_wrap" style="display:none">';
-				$html .= '<input type="url" name="cpc_activity_plus_video_url" id="cpc_activity_plus_video_url" placeholder="'.esc_attr__('Video-URL (YouTube, Vimeo, ...)', CPC2_TEXT_DOMAIN).'" />';
+				$html .= '<input type="url" name="cpc_activity_plus_video_url" id="cpc_activity_plus_video_url" placeholder="'.esc_attr__('Video-URL (YouTube, Vimeo, ...)', 'cp-community').'" />';
 			$html .= '</div>';
 		}
 	$html .= '</div>';
 	
-	$html .= '<button type="submit" class="cpc-btn cpc-btn-primary">'.__('Posten', CPC2_TEXT_DOMAIN).'</button>';
+	$html .= '<button type="submit" class="cpc-btn cpc-btn-primary">'.__('Posten', 'cp-community').'</button>';
 	$html .= '</form>';
 	$html .= '</div>';
 	
@@ -989,14 +989,14 @@ function cpc_render_group_activity_form($group_id) {
 function cpc_render_group_tab_chat($group_id, $atts = array()) {
 	// Check if group has chat enabled
 	if (!cpc_group_has_chat($group_id)) {
-		return '<p>'.__('Chat ist für diese Gruppe nicht aktiviert.', CPC2_TEXT_DOMAIN).'</p>';
+		return '<p>'.__('Chat ist für diese Gruppe nicht aktiviert.', 'cp-community').'</p>';
 	}
 	
 	// Check PS-Chat availability (uses plugin status instead of function_exists guard)
 	if (function_exists('cpc_pschat_is_available')) {
 		$pschat = cpc_pschat_is_available();
 		if (empty($pschat['active'])) {
-			return '<p>'.__('PS-Chat Plugin ist nicht aktiviert.', CPC2_TEXT_DOMAIN).'</p>';
+			return '<p>'.__('PS-Chat Plugin ist nicht aktiviert.', 'cp-community').'</p>';
 		}
 	}
 	
@@ -1008,7 +1008,7 @@ function cpc_render_group_tab_chat($group_id, $atts = array()) {
 		$shortcode = cpc_generate_group_chat_shortcode($group_id);
 		$html .= do_shortcode($shortcode);
 	} else {
-		$html .= '<p>'.__('Chat-Konfigurationsfehler.', CPC2_TEXT_DOMAIN).'</p>';
+		$html .= '<p>'.__('Chat-Konfigurationsfehler.', 'cp-community').'</p>';
 	}
 	
 	$html .= '</div>'; // .cpc-group-chat-tab

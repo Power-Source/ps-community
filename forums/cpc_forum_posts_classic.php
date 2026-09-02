@@ -32,7 +32,7 @@ if ($style == 'classic'):
                 // set to following as default (ie. original post creator)
                 $author = cpc_display_name(array('user_id'=>$forum_post['post_author'], 'link'=>1));
                 $author_id = $forum_post['post_author'];
-                $created_original_post = sprintf($date_format, human_time_diff(strtotime($forum_post[$base_date]), current_time('timestamp', 1)), CPC2_TEXT_DOMAIN);
+                $created_original_post = sprintf($date_format, human_time_diff(strtotime($forum_post[$base_date]), current_time('timestamp', 1)), 'cp-community');
                 $comment_date = false;  // set in case nothing to show
                 
                 // now we need to check for new replies and comments and update the above if need be
@@ -81,7 +81,7 @@ if ($style == 'classic'):
                                     // echo 'first reply author set to '.$author.'<br>';                                    
                                     $author_id = $comment_author;
                                     $comment_date = $base_date == 'post_date_gmt' ? $comment->comment_date_gmt : $comment->comment_date;
-                                    $created = sprintf($date_format, human_time_diff(strtotime($comment_date), current_time('timestamp', 1)), CPC2_TEXT_DOMAIN);
+                                    $created = sprintf($date_format, human_time_diff(strtotime($comment_date), current_time('timestamp', 1)), 'cp-community');
                                     $checked_date = $comment_date;
 									$read = get_comment_meta( $comment->comment_ID, 'cpc_forum_reply_read', true );
 									$new_topic_reply = ( !$read || (!in_array($current_user->user_login, $read) && !in_array($current_user->ID, $read)) );
@@ -109,7 +109,7 @@ if ($style == 'classic'):
                                             $author_id = $subcomment_author;
                                             // echo 'set to '.$author.'<br />';
                                             $comment_date = $subcomment_date;
-                                            $created = sprintf($date_format, human_time_diff(strtotime($subcomment_date), current_time('timestamp', 1)), CPC2_TEXT_DOMAIN);
+                                            $created = sprintf($date_format, human_time_diff(strtotime($subcomment_date), current_time('timestamp', 1)), 'cp-community');
                                             $checked_date = $subcomment_date; // to check against next loop
                                         	$read = get_comment_meta( $subcomment->comment_ID, 'cpc_forum_comment_read', true );
                                             $new_reply_comment = ( !$read || (!in_array($current_user->user_login, $read) && !in_array($current_user->ID, $read)) );
@@ -134,7 +134,7 @@ if ($style == 'classic'):
 				else:
 					$author = cpc_display_name(array('user_id'=>$forum_post['post_author'], 'link'=>1));
                     $author_id = $forum_post['post_author'];
-					$created = sprintf($date_format, human_time_diff(strtotime($forum_post[$base_date]), current_time('timestamp', 1)), CPC2_TEXT_DOMAIN);
+					$created = sprintf($date_format, human_time_diff(strtotime($forum_post[$base_date]), current_time('timestamp', 1)), 'cp-community');
 				endif;
 
                 // if last activity is current user, can't be new
@@ -254,7 +254,7 @@ if ($style == 'classic'):
                                             // This is most recent reply, so store (and use if no later comments)
                                             $content = $reply->comment_content;
                                             $author = $reply->user_id;
-                                            $comment_date = sprintf($date_format, human_time_diff(strtotime($reply->comment_date_gmt), current_time('timestamp', 1)), CPC2_TEXT_DOMAIN);
+                                            $comment_date = sprintf($date_format, human_time_diff(strtotime($reply->comment_date_gmt), current_time('timestamp', 1)), 'cp-community');
                                             $original_date = $reply->comment_date_gmt;
                                             $action = $replied;                                           
                                         endif;
@@ -269,7 +269,7 @@ if ($style == 'classic'):
                                                 if ($comment->comment_date_gmt > $original_date):                                                   
                                                     $original_date = $comment->comment_date_gmt;
                                                     $content = $comment->comment_content;
-                                                    $comment_date = sprintf($date_format, human_time_diff(strtotime($comment->comment_date_gmt), current_time('timestamp', 1)), CPC2_TEXT_DOMAIN);
+                                                    $comment_date = sprintf($date_format, human_time_diff(strtotime($comment->comment_date_gmt), current_time('timestamp', 1)), 'cp-community');
                                                     $author = $comment->user_id;
                                                     $action = $commented;
                                                 endif;

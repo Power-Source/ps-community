@@ -357,19 +357,6 @@ jQuery(document).ready(function() {
 		
 		jQuery(".cpc_forum_post_comment_form_submit").on('click', function (event) {
 
-            /*
-            alert('start');
-            jQuery.post(
-                cpc_forum_ajax.ajaxurl,
-                {
-                    action : 'cpc_forum_add_subcomment'
-                },
-                function(response) {
-                    alert('done');
-                }   
-            );
-            */
-            
 			event.preventDefault();
 			var id = jQuery(this).attr('rel');
 

@@ -23,18 +23,18 @@ function cpc_projects_enqueue_assets() {
     wp_localize_script('cpc-projects-js', 'cpc_projects_ajax', array(
         'ajaxurl' => admin_url('admin-ajax.php'),
         'nonce' => wp_create_nonce('cpc_projects_ajax_nonce'),
-        'confirmDeleteTask' => __('Task wirklich loeschen?', CPC2_TEXT_DOMAIN),
-        'confirmDeleteAttachment' => __('Datei wirklich loeschen?', CPC2_TEXT_DOMAIN),
-        'confirmDeleteProject' => __('Projekt und alle Tasks wirklich dauerhaft loeschen?', CPC2_TEXT_DOMAIN),
-        'confirmDeleteComment' => __('Kommentar wirklich loeschen?', CPC2_TEXT_DOMAIN),
-        'addTaskError' => __('Task konnte nicht erstellt werden.', CPC2_TEXT_DOMAIN),
-        'updateTaskError' => __('Task konnte nicht aktualisiert werden.', CPC2_TEXT_DOMAIN),
-        'addCommentError' => __('Kommentar konnte nicht gespeichert werden.', CPC2_TEXT_DOMAIN),
-        'deleteAttachmentError' => __('Datei konnte nicht geloescht werden.', CPC2_TEXT_DOMAIN),
-        'updateProjectError' => __('Projekt konnte nicht aktualisiert werden.', CPC2_TEXT_DOMAIN),
-        'deleteProjectError' => __('Projekt konnte nicht geloescht werden.', CPC2_TEXT_DOMAIN),
-        'assigneesPlaceholder' => __('Zuweisung waehlen', CPC2_TEXT_DOMAIN),
-        'loadTaskError' => __('Tasks konnten nicht geladen werden.', CPC2_TEXT_DOMAIN),
+        'confirmDeleteTask' => __('Task wirklich loeschen?', 'cp-community'),
+        'confirmDeleteAttachment' => __('Datei wirklich loeschen?', 'cp-community'),
+        'confirmDeleteProject' => __('Projekt und alle Tasks wirklich dauerhaft loeschen?', 'cp-community'),
+        'confirmDeleteComment' => __('Kommentar wirklich loeschen?', 'cp-community'),
+        'addTaskError' => __('Task konnte nicht erstellt werden.', 'cp-community'),
+        'updateTaskError' => __('Task konnte nicht aktualisiert werden.', 'cp-community'),
+        'addCommentError' => __('Kommentar konnte nicht gespeichert werden.', 'cp-community'),
+        'deleteAttachmentError' => __('Datei konnte nicht geloescht werden.', 'cp-community'),
+        'updateProjectError' => __('Projekt konnte nicht aktualisiert werden.', 'cp-community'),
+        'deleteProjectError' => __('Projekt konnte nicht geloescht werden.', 'cp-community'),
+        'assigneesPlaceholder' => __('Zuweisung waehlen', 'cp-community'),
+        'loadTaskError' => __('Tasks konnten nicht geladen werden.', 'cp-community'),
     ));
 }
 add_action('wp_enqueue_scripts', 'cpc_projects_enqueue_assets', 20);
@@ -60,7 +60,7 @@ function cpc_projects_render_single_project_content($content) {
 
     $project_id = get_the_ID();
     if (!$project_id || !cpc_projects_user_can_view_project($project_id)) {
-        return '<p>'.esc_html__('Keine Berechtigung.', CPC2_TEXT_DOMAIN).'</p>';
+        return '<p>'.esc_html__('Keine Berechtigung.', 'cp-community').'</p>';
     }
 
     $project = get_post($project_id);

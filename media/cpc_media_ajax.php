@@ -21,12 +21,12 @@ add_action('wp_ajax_cpc_media_reorder_items', 'cpc_media_ajax_reorder_items');
 
 function cpc_media_ajax_verify() {
     if (!is_user_logged_in()) {
-        wp_send_json_error(array('message' => __('Nicht angemeldet.', CPC2_TEXT_DOMAIN)), 403);
+        wp_send_json_error(array('message' => __('Nicht angemeldet.', 'cp-community')), 403);
     }
 
     $nonce = isset($_POST['nonce']) ? sanitize_text_field(wp_unslash($_POST['nonce'])) : '';
     if (!wp_verify_nonce($nonce, 'cpc_media_ajax_nonce')) {
-        wp_send_json_error(array('message' => __('Ungueltige Anfrage.', CPC2_TEXT_DOMAIN)), 403);
+        wp_send_json_error(array('message' => __('Ungueltige Anfrage.', 'cp-community')), 403);
     }
 }
 
@@ -37,11 +37,11 @@ function cpc_media_ajax_upload() {
     $user_id = get_current_user_id();
 
     if (!$gallery_id || !cpc_media_user_can_upload_to_gallery($gallery_id, $user_id)) {
-        wp_send_json_error(array('message' => __('Keine Berechtigung.', CPC2_TEXT_DOMAIN)), 403);
+        wp_send_json_error(array('message' => __('Keine Berechtigung.', 'cp-community')), 403);
     }
 
     if (empty($_FILES['files'])) {
-        wp_send_json_error(array('message' => __('Keine Dateien uebergeben.', CPC2_TEXT_DOMAIN)), 400);
+        wp_send_json_error(array('message' => __('Keine Dateien uebergeben.', 'cp-community')), 400);
     }
 
     $files = $_FILES['files'];
@@ -111,7 +111,7 @@ function cpc_media_ajax_upload() {
     }
 
     wp_send_json_success(array(
-        'message' => $failed > 0 ? __('Upload teilweise abgeschlossen.', CPC2_TEXT_DOMAIN) : __('Upload abgeschlossen.', CPC2_TEXT_DOMAIN),
+        'message' => $failed > 0 ? __('Upload teilweise abgeschlossen.', 'cp-community') : __('Upload abgeschlossen.', 'cp-community'),
         'uploaded' => $success,
         'failed' => $failed,
         'items_html' => $uploaded_items,
@@ -126,7 +126,7 @@ function cpc_media_ajax_update_gallery() {
     $user_id = get_current_user_id();
 
     if (!$gallery_id || !cpc_media_user_can_manage_gallery($gallery_id, $user_id)) {
-        wp_send_json_error(array('message' => __('Keine Berechtigung.', CPC2_TEXT_DOMAIN)), 403);
+        wp_send_json_error(array('message' => __('Keine Berechtigung.', 'cp-community')), 403);
     }
 
     $ok = cpc_media_update_gallery($gallery_id, array(
@@ -137,12 +137,12 @@ function cpc_media_ajax_update_gallery() {
     ));
 
     if (!$ok) {
-        wp_send_json_error(array('message' => __('Galerie konnte nicht gespeichert werden.', CPC2_TEXT_DOMAIN)), 500);
+        wp_send_json_error(array('message' => __('Galerie konnte nicht gespeichert werden.', 'cp-community')), 500);
     }
 
     $gallery = get_post($gallery_id);
     wp_send_json_success(array(
-        'message' => __('Galerie gespeichert.', CPC2_TEXT_DOMAIN),
+        'message' => __('Galerie gespeichert.', 'cp-community'),
         'title' => $gallery ? $gallery->post_title : '',
         'description' => $gallery ? $gallery->post_content : '',
         'status' => cpc_media_get_gallery_status($gallery_id),
@@ -157,14 +157,14 @@ function cpc_media_ajax_delete_gallery() {
     $user_id = get_current_user_id();
 
     if (!$gallery_id || !cpc_media_user_can_manage_gallery($gallery_id, $user_id)) {
-        wp_send_json_error(array('message' => __('Keine Berechtigung.', CPC2_TEXT_DOMAIN)), 403);
+        wp_send_json_error(array('message' => __('Keine Berechtigung.', 'cp-community')), 403);
     }
 
     if (!cpc_media_delete_gallery($gallery_id, true)) {
-        wp_send_json_error(array('message' => __('Galerie konnte nicht geloescht werden.', CPC2_TEXT_DOMAIN)), 500);
+        wp_send_json_error(array('message' => __('Galerie konnte nicht geloescht werden.', 'cp-community')), 500);
     }
 
-    wp_send_json_success(array('message' => __('Galerie geloescht.', CPC2_TEXT_DOMAIN)));
+    wp_send_json_success(array('message' => __('Galerie geloescht.', 'cp-community')));
 }
 
 function cpc_media_ajax_update_media() {
@@ -174,7 +174,7 @@ function cpc_media_ajax_update_media() {
     $user_id = get_current_user_id();
 
     if (!$media_id || !cpc_media_user_can_manage_media($media_id, $user_id)) {
-        wp_send_json_error(array('message' => __('Keine Berechtigung.', CPC2_TEXT_DOMAIN)), 403);
+        wp_send_json_error(array('message' => __('Keine Berechtigung.', 'cp-community')), 403);
     }
 
     $ok = cpc_media_update_item($media_id, array(
@@ -183,12 +183,12 @@ function cpc_media_ajax_update_media() {
     ));
 
     if (!$ok) {
-        wp_send_json_error(array('message' => __('Medium konnte nicht gespeichert werden.', CPC2_TEXT_DOMAIN)), 500);
+        wp_send_json_error(array('message' => __('Medium konnte nicht gespeichert werden.', 'cp-community')), 500);
     }
 
     $media = get_post($media_id);
     wp_send_json_success(array(
-        'message' => __('Medium gespeichert.', CPC2_TEXT_DOMAIN),
+        'message' => __('Medium gespeichert.', 'cp-community'),
         'title' => $media ? $media->post_title : '',
         'description' => $media ? $media->post_content : '',
     ));
@@ -201,16 +201,16 @@ function cpc_media_ajax_delete_media() {
     $user_id = get_current_user_id();
 
     if (!$media_id || !cpc_media_user_can_manage_media($media_id, $user_id)) {
-        wp_send_json_error(array('message' => __('Keine Berechtigung.', CPC2_TEXT_DOMAIN)), 403);
+        wp_send_json_error(array('message' => __('Keine Berechtigung.', 'cp-community')), 403);
     }
 
     $gallery_id = (int)get_post_meta($media_id, 'cpc_media_gallery_id', true);
     if (!cpc_media_delete_item($media_id, true)) {
-        wp_send_json_error(array('message' => __('Medium konnte nicht geloescht werden.', CPC2_TEXT_DOMAIN)), 500);
+        wp_send_json_error(array('message' => __('Medium konnte nicht geloescht werden.', 'cp-community')), 500);
     }
 
     wp_send_json_success(array(
-        'message' => __('Medium geloescht.', CPC2_TEXT_DOMAIN),
+        'message' => __('Medium geloescht.', 'cp-community'),
         'gallery_count' => $gallery_id ? cpc_media_get_gallery_media_count($gallery_id) : 0,
     ));
 }
@@ -225,17 +225,17 @@ function cpc_media_ajax_fetch_gallery_media() {
     $user_id = get_current_user_id();
 
     if (!$gallery_id) {
-        wp_send_json_error(array('message' => __('Galerie nicht gefunden.', CPC2_TEXT_DOMAIN)), 400);
+        wp_send_json_error(array('message' => __('Galerie nicht gefunden.', 'cp-community')), 400);
     }
 
     $gallery = get_post($gallery_id);
     if (!$gallery || $gallery->post_type !== 'cpc_gallery') {
-        wp_send_json_error(array('message' => __('Galerie nicht gefunden.', CPC2_TEXT_DOMAIN)), 404);
+        wp_send_json_error(array('message' => __('Galerie nicht gefunden.', 'cp-community')), 404);
     }
 
     // Permission check
     if (!cpc_media_user_can_view_gallery($gallery_id, $user_id)) {
-        wp_send_json_error(array('message' => __('Keine Berechtigung.', CPC2_TEXT_DOMAIN)), 403);
+        wp_send_json_error(array('message' => __('Keine Berechtigung.', 'cp-community')), 403);
     }
 
     $media_ids = get_posts(array(
@@ -292,17 +292,17 @@ function cpc_media_ajax_fetch_media() {
     $user_id = get_current_user_id();
 
     if (!$media_id) {
-        wp_send_json_error(array('message' => __('Medium nicht gefunden.', CPC2_TEXT_DOMAIN)), 400);
+        wp_send_json_error(array('message' => __('Medium nicht gefunden.', 'cp-community')), 400);
     }
 
     $media = get_post($media_id);
     if (!$media || $media->post_type !== 'cpc_media') {
-        wp_send_json_error(array('message' => __('Medium nicht gefunden.', CPC2_TEXT_DOMAIN)), 404);
+        wp_send_json_error(array('message' => __('Medium nicht gefunden.', 'cp-community')), 404);
     }
 
     $gallery_id = (int)get_post_meta($media_id, 'cpc_media_gallery_id', true);
     if (!$gallery_id || !cpc_media_user_can_view_gallery($gallery_id, $user_id)) {
-        wp_send_json_error(array('message' => __('Keine Berechtigung.', CPC2_TEXT_DOMAIN)), 403);
+        wp_send_json_error(array('message' => __('Keine Berechtigung.', 'cp-community')), 403);
     }
 
     $lightbox_html = cpc_media_render_lightbox_content($media);
@@ -329,13 +329,13 @@ function cpc_media_ajax_set_gallery_cover() {
     $user_id = get_current_user_id();
 
     if (!$gallery_id || !cpc_media_user_can_manage_gallery($gallery_id, $user_id)) {
-        wp_send_json_error(array('message' => __('Keine Berechtigung.', CPC2_TEXT_DOMAIN)), 403);
+        wp_send_json_error(array('message' => __('Keine Berechtigung.', 'cp-community')), 403);
     }
 
     // Verify media belongs to gallery
     $media = get_post($media_id);
     if (!$media || (int)get_post_meta($media_id, 'cpc_media_gallery_id', true) !== $gallery_id) {
-        wp_send_json_error(array('message' => __('Medium nicht in dieser Galerie.', CPC2_TEXT_DOMAIN)), 400);
+        wp_send_json_error(array('message' => __('Medium nicht in dieser Galerie.', 'cp-community')), 400);
     }
 
     cpc_media_set_gallery_cover($gallery_id, $media_id);
@@ -343,7 +343,7 @@ function cpc_media_ajax_set_gallery_cover() {
 
     $cover_url = cpc_media_get_gallery_cover_url($gallery_id);
     wp_send_json_success(array(
-        'message' => __('Cover georessourcet.', CPC2_TEXT_DOMAIN),
+        'message' => __('Cover georessourcet.', 'cp-community'),
         'cover_url' => $cover_url,
         'media_id' => $media_id,
     ));
@@ -359,7 +359,7 @@ function cpc_media_ajax_get_cover_selector() {
     $user_id = get_current_user_id();
 
     if (!$gallery_id || !cpc_media_user_can_manage_gallery($gallery_id, $user_id)) {
-        wp_send_json_error(array('message' => __('Keine Berechtigung.', CPC2_TEXT_DOMAIN)), 403);
+        wp_send_json_error(array('message' => __('Keine Berechtigung.', 'cp-community')), 403);
     }
 
     $current_cover_id = (int)get_post_meta($gallery_id, 'cpc_media_gallery_cover_id', true);
@@ -399,11 +399,11 @@ function cpc_media_ajax_reorder_items() {
     $user_id = get_current_user_id();
 
     if (!$gallery_id || !cpc_media_user_can_manage_gallery($gallery_id, $user_id)) {
-        wp_send_json_error(array('message' => __('Keine Berechtigung.', CPC2_TEXT_DOMAIN)), 403);
+        wp_send_json_error(array('message' => __('Keine Berechtigung.', 'cp-community')), 403);
     }
 
     if (empty($order)) {
-        wp_send_json_error(array('message' => __('Keine Reihenfolge angegeben.', CPC2_TEXT_DOMAIN)), 400);
+        wp_send_json_error(array('message' => __('Keine Reihenfolge angegeben.', 'cp-community')), 400);
     }
 
     foreach ($order as $position => $media_id) {
@@ -416,6 +416,6 @@ function cpc_media_ajax_reorder_items() {
     do_action('cpc_media_gallery_items_reordered', $gallery_id, $order);
 
     wp_send_json_success(array(
-        'message' => __('Reihenfolge gespeichert.', CPC2_TEXT_DOMAIN),
+        'message' => __('Reihenfolge gespeichert.', 'cp-community'),
     ));
 }

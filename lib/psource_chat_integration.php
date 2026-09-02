@@ -383,53 +383,53 @@ function cpc_integrations_page() {
 	?>
 	
 	<div class="wrap">
-		<h1><?php _e('Integrationen', CPC2_TEXT_DOMAIN); ?></h1>
+		<h1><?php _e('Integrationen', 'cp-community'); ?></h1>
 		
-		<p><?php _e('Verwalte die Integration von PSOURCE Plugins mit PS Community.', CPC2_TEXT_DOMAIN); ?></p>
+		<p><?php _e('Verwalte die Integration von PSOURCE Plugins mit PS Community.', 'cp-community'); ?></p>
 
 		<!-- Events Integration Section -->
 		<div class="cpc-integration-box" style="border: 1px solid #ddd; padding: 20px; margin-top: 20px; background-color: #f9f9f9; border-radius: 5px;">
-			<h2><?php _e('Events Integration', CPC2_TEXT_DOMAIN); ?></h2>
-			<p><?php _e('Das Events-Modul in PS Community erweitert PS Events und zeigt Frontend-Funktionen im Profil-Tab.', CPC2_TEXT_DOMAIN); ?></p>
+			<h2><?php _e('Events Integration', 'cp-community'); ?></h2>
+			<p><?php _e('Das Events-Modul in PS Community erweitert PS Events und zeigt Frontend-Funktionen im Profil-Tab.', 'cp-community'); ?></p>
 			<div style="padding:10px 12px; border:1px solid #dcdcde; border-left:4px solid #2271b1; background:#fff; margin-bottom:16px;">
-				<p style="margin:0;"><strong><?php _e('Status:', CPC2_TEXT_DOMAIN); ?></strong> <?php echo (function_exists('cpc_events_external_plugin_active') && cpc_events_external_plugin_active()) ? esc_html__('PS Events aktiv', CPC2_TEXT_DOMAIN) : esc_html__('PS Events nicht aktiv', CPC2_TEXT_DOMAIN); ?></p>
+				<p style="margin:0;"><strong><?php _e('Status:', 'cp-community'); ?></strong> <?php echo (function_exists('cpc_events_external_plugin_active') && cpc_events_external_plugin_active()) ? esc_html__('PS Events aktiv', 'cp-community') : esc_html__('PS Events nicht aktiv', 'cp-community'); ?></p>
 			</div>
-			<p class="description"><?php _e('Das Core-Modul "Events" ist erst aktivierbar, wenn das Plugin PS Events (events-and-bookings) aktiv ist.', CPC2_TEXT_DOMAIN); ?></p>
+			<p class="description"><?php _e('Das Core-Modul "Events" ist erst aktivierbar, wenn das Plugin PS Events (events-and-bookings) aktiv ist.', 'cp-community'); ?></p>
 		</div>
 
 		<!-- PS-Chat Integration Section -->
 		<div class="cpc-integration-box" style="border: 1px solid #ddd; padding: 20px; margin-top: 20px; background-color: #f9f9f9; border-radius: 5px;">
-			<h2><?php _e('PS-Chat Integration', CPC2_TEXT_DOMAIN); ?></h2>
+			<h2><?php _e('PS-Chat Integration', 'cp-community'); ?></h2>
 			
 			<?php if ($pschat_status['installed'] && $pschat_status['active']): ?>
 				<div style="margin:0 0 20px 0; padding:10px 12px; border:1px solid #b7dfc3; border-left:4px solid #46b450; background:#fff;">
 					<p>
-						<strong><?php _e('Status:', CPC2_TEXT_DOMAIN); ?></strong>
-						<span style="color: #155724;">✓ <?php _e('Aktiviert', CPC2_TEXT_DOMAIN); ?></span>
+						<strong><?php _e('Status:', 'cp-community'); ?></strong>
+						<span style="color: #155724;">✓ <?php _e('Aktiviert', 'cp-community'); ?></span>
 					</p>
 					<p style="margin: 5px 0 0 0;">
-						<strong><?php _e('Plugin:', CPC2_TEXT_DOMAIN); ?></strong>
+						<strong><?php _e('Plugin:', 'cp-community'); ?></strong>
 						<?php echo esc_html($pschat_status['name']); ?> v<?php echo esc_html($pschat_status['version']); ?>
 					</p>
 				</div>
 				
-				<p><?php _e('PS-Chat ist erfolgreich mit PS Community integriert.', CPC2_TEXT_DOMAIN); ?></p>
+				<p><?php _e('PS-Chat ist erfolgreich mit PS Community integriert.', 'cp-community'); ?></p>
 				
 				<p style="background: #f0f0f0; padding: 10px; border-left: 4px solid #0073aa;">
-					<strong><?php _e('Hinweis:', CPC2_TEXT_DOMAIN); ?></strong><br />
-					<?php _e('Die Einstellungen für Gruppen-Chats findest du unter Einstellungen → Gruppen (Tab "Gruppen").', CPC2_TEXT_DOMAIN); ?>
+					<strong><?php _e('Hinweis:', 'cp-community'); ?></strong><br />
+					<?php _e('Die Einstellungen für Gruppen-Chats findest du unter Einstellungen → Gruppen (Tab "Gruppen").', 'cp-community'); ?>
 				</p>
 				
 			<?php elseif ($pschat_status['installed'] && !$pschat_status['active']): ?>
 				<div style="margin:0 0 20px 0; padding:10px 12px; border:1px solid #f2d7b0; border-left:4px solid #ffb900; background:#fff;">
 					<p>
-						<strong><?php _e('Status:', CPC2_TEXT_DOMAIN); ?></strong>
-						<span style="color: #856404;">⚠ <?php _e('Installiert aber deaktiviert', CPC2_TEXT_DOMAIN); ?></span>
+						<strong><?php _e('Status:', 'cp-community'); ?></strong>
+						<span style="color: #856404;">⚠ <?php _e('Installiert aber deaktiviert', 'cp-community'); ?></span>
 					</p>
 				</div>
 				
 				<p>
-					<?php _e('PS-Chat ist installiert, aber nicht aktiviert. Um Gruppen-Chats nutzen zu können, musst du das Plugin aktivieren.', CPC2_TEXT_DOMAIN); ?>
+					<?php _e('PS-Chat ist installiert, aber nicht aktiviert. Um Gruppen-Chats nutzen zu können, musst du das Plugin aktivieren.', 'cp-community'); ?>
 				</p>
 				
 				<p>
@@ -437,25 +437,25 @@ function cpc_integrations_page() {
 						admin_url('plugins.php?action=activate&plugin=ps-chat/psource-chat.php'),
 						'activate-plugin_ps-chat/psource-chat.php'
 					)); ?>" class="button button-primary">
-						<?php _e('PS-Chat aktivieren', CPC2_TEXT_DOMAIN); ?>
+						<?php _e('PS-Chat aktivieren', 'cp-community'); ?>
 					</a>
 				</p>
 				
 			<?php else: ?>
 				<div style="margin:0 0 20px 0; padding:10px 12px; border:1px solid #b8daff; border-left:4px solid #00a0d2; background:#fff;">
 					<p>
-						<strong><?php _e('Status:', CPC2_TEXT_DOMAIN); ?></strong>
-						<span style="color: #0c5460;">ℹ <?php _e('Nicht installiert', CPC2_TEXT_DOMAIN); ?></span>
+						<strong><?php _e('Status:', 'cp-community'); ?></strong>
+						<span style="color: #0c5460;">ℹ <?php _e('Nicht installiert', 'cp-community'); ?></span>
 					</p>
 				</div>
 				
 				<p>
-					<?php _e('PS-Chat ist nicht installiert. Um Gruppen-Chats zu aktivieren, musst du zuerst das PS-Chat Plugin installieren.', CPC2_TEXT_DOMAIN); ?>
+					<?php _e('PS-Chat ist nicht installiert. Um Gruppen-Chats zu aktivieren, musst du zuerst das PS-Chat Plugin installieren.', 'cp-community'); ?>
 				</p>
 				
 				<p>
 					<a href="https://psource.eimen.net//ps-chat/releases/latest" target="_blank" class="button">
-						<?php _e('PS-Chat herunterladen', CPC2_TEXT_DOMAIN); ?>
+						<?php _e('PS-Chat herunterladen', 'cp-community'); ?>
 					</a>
 				</p>
 			<?php endif; ?>

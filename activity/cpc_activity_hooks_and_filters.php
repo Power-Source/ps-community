@@ -78,7 +78,7 @@ function cpc_activity_post_add_alerts($the_post, $the_files, $new_id) {
 
 						array_push($sent, $target_id);
 
-						$title = get_bloginfo('name').': '.__('Neuer Aktivitätsbeitrag', CPC2_TEXT_DOMAIN);
+						$title = get_bloginfo('name').': '.__('Neuer Aktivitätsbeitrag', 'cp-community');
 						$content = '';
 
 						$content = apply_filters( 'cpc_alert_before', $content );
@@ -87,7 +87,7 @@ function cpc_activity_post_add_alerts($the_post, $the_files, $new_id) {
 						$content .= '<h1>'.$recipient->display_name.'</h1>';
 
 						$author = get_user_by('id', $the_post['cpc_activity_post_author']);
-						$msg = sprintf(__('Du hast einen neuen Beitrag zu Deiner Aktivität von %s.', CPC2_TEXT_DOMAIN), $author->display_name);
+						$msg = sprintf(__('Du hast einen neuen Beitrag zu Deiner Aktivität von %s.', 'cp-community'), $author->display_name);
 						$content .= '<p>'.$msg.'</p>';
 						$content .= '<p><em>'.$the_post['cpc_activity_post'].'</em></p>';
 						
@@ -124,7 +124,7 @@ function cpc_activity_post_add_alerts($the_post, $the_files, $new_id) {
 
 						if ($status == 'publish'):
 							update_post_meta( $new_alert_id, 'cpc_alert_failed_datetime', current_time('mysql', 1) );
-							update_post_meta( $new_alert_id, 'cpc_alert_note', __('Ausgewählt, keine Aktivitätsbenachrichtigungen per E-Mail (Beitrag) zu erhalten #'.get_user_meta($target_id, 'cpc_activity_subscribe', true).'#', CPC2_TEXT_DOMAIN) );
+							update_post_meta( $new_alert_id, 'cpc_alert_note', __('Ausgewählt, keine Aktivitätsbenachrichtigungen per E-Mail (Beitrag) zu erhalten #'.get_user_meta($target_id, 'cpc_activity_subscribe', true).'#', 'cp-community') );
 						endif;
 
 						do_action( 'cpc_alert_add_hook', $recipient->ID, $new_alert_id, $url, $msg );
@@ -201,9 +201,9 @@ function cpc_activity_comment_add_alerts($the_post, $new_id) {
 							array_push($sent, $value);
 
 							if ($key == 'author'):
-								$subject = __('Neuer Kommentar zu Deinem Beitrag', CPC2_TEXT_DOMAIN);
+								$subject = __('Neuer Kommentar zu Deinem Beitrag', 'cp-community');
 							else:
-								$subject = __('Neuer Kommentar', CPC2_TEXT_DOMAIN);
+								$subject = __('Neuer Kommentar', 'cp-community');
 							endif;
 							$subject = get_bloginfo('name').': '.$subject;
 
@@ -215,7 +215,7 @@ function cpc_activity_comment_add_alerts($the_post, $new_id) {
 							$content .= '<h1>'.$target->display_name.'</h1>';
 
 							$author = get_user_by('login', $the_comment->comment_author);
-							$msg = sprintf(__('Ein neuer Kommentar von %s.', CPC2_TEXT_DOMAIN), $author->display_name);
+							$msg = sprintf(__('Ein neuer Kommentar von %s.', 'cp-community'), $author->display_name);
 							$content .= '<p>'.$msg.'</p>';
 							$content .= '<p><em>'.$the_comment->comment_content.'</em></p>';
     
@@ -224,7 +224,7 @@ function cpc_activity_comment_add_alerts($the_post, $new_id) {
 							$url = $permalink.cpc_query_mark($permalink).$parameters;
 							$content .= '<p><a href="'.$url.'">'.$url.'</a></p>';
 
-							$content .= '<p><strong>'.__('Ursprünglicher Beitrag', CPC2_TEXT_DOMAIN).'</strong></p>';
+							$content .= '<p><strong>'.__('Ursprünglicher Beitrag', 'cp-community').'</strong></p>';
 							$content .= '<p>'.$original_post->post_title.'</p>';
 
 							$content = apply_filters( 'cpc_alert_after', $content );
@@ -249,7 +249,7 @@ function cpc_activity_comment_add_alerts($the_post, $new_id) {
 
 							if ($status == 'publish'):
 								update_post_meta( $new_alert_id, 'cpc_alert_failed_datetime', current_time('mysql', 1) );
-								if (isset($target_id)) update_post_meta( $new_alert_id, 'cpc_alert_note', __('Ausgewählt, keine Aktivitätsbenachrichtigungen per E-Mail zu erhalten (Kommentar) #'.get_user_meta($target_id, 'cpc_activity_subscribe', true).'#', CPC2_TEXT_DOMAIN) );
+								if (isset($target_id)) update_post_meta( $new_alert_id, 'cpc_alert_note', __('Ausgewählt, keine Aktivitätsbenachrichtigungen per E-Mail zu erhalten (Kommentar) #'.get_user_meta($target_id, 'cpc_activity_subscribe', true).'#', 'cp-community') );
 							endif;
 
 							do_action( 'cpc_alert_add_hook', $target->ID, $new_alert_id, $url, $msg );

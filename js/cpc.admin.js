@@ -174,7 +174,7 @@ jQuery(document).ready(function() {
 
         } else {
                                                                        
-            alert('Oops - select one of the shortcodes and try again!');
+            alert(cpc_ajax.selectShortcodeError);
             
         }
         
@@ -284,7 +284,7 @@ jQuery(document).ready(function() {
 
         } else {
                                                                        
-            alert('Oops - select one of the shortcodes and try again!');
+            alert(cpc_ajax.selectShortcodeError);
             
         }
         

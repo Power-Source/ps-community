@@ -2,17 +2,17 @@
 
 function cpc_custom_post_project() {
     $labels = array(
-        'name' => __('Projekte', CPC2_TEXT_DOMAIN),
-        'singular_name' => __('Projekt', CPC2_TEXT_DOMAIN),
-        'add_new' => __('Neu hinzufuegen', CPC2_TEXT_DOMAIN),
-        'add_new_item' => __('Neues Projekt hinzufuegen', CPC2_TEXT_DOMAIN),
-        'edit_item' => __('Projekt bearbeiten', CPC2_TEXT_DOMAIN),
-        'new_item' => __('Neues Projekt', CPC2_TEXT_DOMAIN),
-        'view_item' => __('Projekt anzeigen', CPC2_TEXT_DOMAIN),
-        'search_items' => __('Projekte durchsuchen', CPC2_TEXT_DOMAIN),
-        'not_found' => __('Keine Projekte gefunden', CPC2_TEXT_DOMAIN),
-        'not_found_in_trash' => __('Keine Projekte im Papierkorb gefunden', CPC2_TEXT_DOMAIN),
-        'menu_name' => __('Projekte', CPC2_TEXT_DOMAIN),
+        'name' => __('Projekte', 'cp-community'),
+        'singular_name' => __('Projekt', 'cp-community'),
+        'add_new' => __('Neu hinzufuegen', 'cp-community'),
+        'add_new_item' => __('Neues Projekt hinzufuegen', 'cp-community'),
+        'edit_item' => __('Projekt bearbeiten', 'cp-community'),
+        'new_item' => __('Neues Projekt', 'cp-community'),
+        'view_item' => __('Projekt anzeigen', 'cp-community'),
+        'search_items' => __('Projekte durchsuchen', 'cp-community'),
+        'not_found' => __('Keine Projekte gefunden', 'cp-community'),
+        'not_found_in_trash' => __('Keine Projekte im Papierkorb gefunden', 'cp-community'),
+        'menu_name' => __('Projekte', 'cp-community'),
     );
 
     $args = array(

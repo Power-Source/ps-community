@@ -147,7 +147,7 @@ function cpc_friends_unblock() {
 
 function cpc_privacy_register_friendship_exporter($exporters) {
     $exporters['cpc-friendships-blocked-users'] = array(
-        'exporter_friendly_name' => __('PS Community blockierte Benutzer', CPC2_TEXT_DOMAIN),
+        'exporter_friendly_name' => __('PS Community blockierte Benutzer', 'cp-community'),
         'callback' => 'cpc_privacy_friendship_exporter_callback',
     );
     return $exporters;
@@ -173,11 +173,11 @@ function cpc_privacy_friendship_exporter_callback($email_address, $page = 1) {
     if (!empty($blocked_text)) {
         $data[] = array(
             'group_id' => 'cpc_friendships',
-            'group_label' => __('PS Community Freundschaften', CPC2_TEXT_DOMAIN),
+            'group_label' => __('PS Community Freundschaften', 'cp-community'),
             'item_id' => 'cpc_blocked_users',
             'data' => array(
                 array(
-                    'name' => __('Blockierte Benutzer', CPC2_TEXT_DOMAIN),
+                    'name' => __('Blockierte Benutzer', 'cp-community'),
                     'value' => implode(', ', $blocked_text),
                 ),
             ),
@@ -192,7 +192,7 @@ function cpc_privacy_friendship_exporter_callback($email_address, $page = 1) {
 
 function cpc_privacy_register_friendship_eraser($erasers) {
     $erasers['cpc-friendships-blocked-users'] = array(
-        'eraser_friendly_name' => __('PS Community blockierte Benutzer', CPC2_TEXT_DOMAIN),
+        'eraser_friendly_name' => __('PS Community blockierte Benutzer', 'cp-community'),
         'callback' => 'cpc_privacy_friendship_eraser_callback',
     );
     return $erasers;
@@ -295,7 +295,7 @@ function cpc_friends_add() {
                 }
 
 				// Add alert
-				$subject = __('Neue Freundschaftsanfrage', CPC2_TEXT_DOMAIN);
+				$subject = __('Neue Freundschaftsanfrage', 'cp-community');
 				$subject = get_bloginfo('name').': '.$subject;
 
 				$content = '';
@@ -304,7 +304,7 @@ function cpc_friends_add() {
 		
 				$content .= '<h1>'.$user->display_name.'</h1>';
 
-				$msg = sprintf(__('Freundschaftsanfrage von %s.', CPC2_TEXT_DOMAIN), $current_user->display_name);
+				$msg = sprintf(__('Freundschaftsanfrage von %s.', 'cp-community'), $current_user->display_name);
 				$content .= '<p>'.$msg.'</p>';
 
 				$url = get_permalink(get_option('cpccom_profile_page'));
@@ -407,7 +407,7 @@ function cpc_friends_accept() {
 		wp_update_post( $my_post );
 
 		// Add alert
-		$subject = __('Freundschaftsanfrage angenommen', CPC2_TEXT_DOMAIN);
+		$subject = __('Freundschaftsanfrage angenommen', 'cp-community');
 		$subject = get_bloginfo('name').': '.$subject;
 
 		$content = '';
@@ -423,7 +423,7 @@ function cpc_friends_accept() {
 		endif;
 		$content .= '<h1>'.$sent->display_name.'</h1>';
 
-		$msg = sprintf(__('Freundschaftsanfrage von %s angenommen.', CPC2_TEXT_DOMAIN), $accepted->display_name);
+		$msg = sprintf(__('Freundschaftsanfrage von %s angenommen.', 'cp-community'), $accepted->display_name);
 		$content .= '<p>'.$msg.'</p>';
 
 		$permalink = get_permalink(get_option('cpccom_profile_page'));

@@ -35,20 +35,7 @@
     }
 
     function getLightboxI18n() {
-        var defaults = {
-            lightboxTitle: 'Medienansicht',
-            close: 'Schliessen',
-            previous: 'Vorheriges',
-            next: 'Naechstes',
-            itemOf: 'Element %1$d von %2$d',
-            itemOfWithTitle: '%1$s - Element %2$d von %3$d'
-        };
-
-        if (!window.cpc_media_ajax || !window.cpc_media_ajax.i18n) {
-            return defaults;
-        }
-
-        return $.extend({}, defaults, window.cpc_media_ajax.i18n);
+        return window.cpc_media_ajax.i18n;
     }
 
     function formatIndexed(template, values) {
@@ -892,7 +879,7 @@
         if (html) {
             cpcVanillaLightbox.content.innerHTML = html;
         } else {
-            cpcVanillaLightbox.content.innerHTML = '<div class="cpc_media_lightbox_loading">Lade Medium...</div>';
+            cpcVanillaLightbox.content.innerHTML = '<div class="cpc_media_lightbox_loading">' + cpc_media_ajax.i18n.loading + '</div>';
             var mediaId = item.data && item.data.media_id ? parseInt(item.data.media_id, 10) : 0;
             if (mediaId) {
                 if (!cpcVanillaLightbox.loading[mediaId]) {
@@ -904,7 +891,7 @@
                     }
 
                     if (cpcVanillaLightbox.isOpen && cpcVanillaLightbox.index === index) {
-                        cpcVanillaLightbox.content.innerHTML = item.src || '<div class="cpc_media_lightbox_loading">Medium konnte nicht geladen werden.</div>';
+                        cpcVanillaLightbox.content.innerHTML = item.src || '<div class="cpc_media_lightbox_loading">' + cpc_media_ajax.i18n.loadError + '</div>';
                         runPdfFallback(cpcVanillaLightbox.content);
                     }
 
@@ -1079,13 +1066,14 @@
         }).done(function(resp) {
             resp = normalizeAjaxResponse(resp);
             if (!resp || !resp.success) {
-                alert('Error deleting item');
+                alert(cpc_media_ajax.deleteError);
                 return;
             }
             // Close lightbox and refresh gallery
             closeVanillaLightbox();
         }).fail(function(xhr) {
             console.error('Delete failed:', xhr);
+            alert(cpc_media_ajax.deleteError);
         });
     });
 

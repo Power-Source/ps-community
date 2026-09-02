@@ -15,17 +15,17 @@ function cpc_docs_get_slug() {
 
 function cpc_docs_get_directory_title() {
     $title = trim((string)get_option('cpc_docs_directory_title', 'Dokumente-Verzeichnis'));
-    return $title !== '' ? $title : __('Dokumente-Verzeichnis', CPC2_TEXT_DOMAIN);
+    return $title !== '' ? $title : __('Dokumente-Verzeichnis', 'cp-community');
 }
 
 function cpc_docs_get_user_tab_name() {
     $label = trim((string)get_option('cpc_docs_user_tab_name', 'Dokumente'));
-    return $label !== '' ? $label : __('Dokumente', CPC2_TEXT_DOMAIN);
+    return $label !== '' ? $label : __('Dokumente', 'cp-community');
 }
 
 function cpc_docs_get_group_tab_name() {
     $label = trim((string)get_option('cpc_docs_group_tab_name', 'Dokumente'));
-    return $label !== '' ? $label : __('Dokumente', CPC2_TEXT_DOMAIN);
+    return $label !== '' ? $label : __('Dokumente', 'cp-community');
 }
 
 function cpc_docs_get_directory_excerpt_length() {
@@ -123,17 +123,17 @@ function cpc_docs_get_status($doc_id) {
 function cpc_docs_get_status_options($component = 'members') {
     if ($component === 'groups') {
         return array(
-            'public' => __('Oeffentlich', CPC2_TEXT_DOMAIN),
-            'members' => __('Nur Gruppenmitglieder', CPC2_TEXT_DOMAIN),
-            'admins' => __('Nur Gruppen-Admins', CPC2_TEXT_DOMAIN),
-            'private' => __('Privat', CPC2_TEXT_DOMAIN),
+            'public' => __('Oeffentlich', 'cp-community'),
+            'members' => __('Nur Gruppenmitglieder', 'cp-community'),
+            'admins' => __('Nur Gruppen-Admins', 'cp-community'),
+            'private' => __('Privat', 'cp-community'),
         );
     }
 
     return array(
-        'public' => __('Oeffentlich', CPC2_TEXT_DOMAIN),
-        'loggedin' => __('Angemeldet', CPC2_TEXT_DOMAIN),
-        'private' => __('Privat', CPC2_TEXT_DOMAIN),
+        'public' => __('Oeffentlich', 'cp-community'),
+        'loggedin' => __('Angemeldet', 'cp-community'),
+        'private' => __('Privat', 'cp-community'),
     );
 }
 
@@ -165,15 +165,15 @@ function cpc_docs_get_permission_defaults($component = 'members') {
 
 function cpc_docs_get_permission_options($component = 'members') {
     $base = array(
-        'anyone' => __('Jeder', CPC2_TEXT_DOMAIN),
-        'loggedin' => __('Angemeldete', CPC2_TEXT_DOMAIN),
-        'author' => __('Nur Autor', CPC2_TEXT_DOMAIN),
+        'anyone' => __('Jeder', 'cp-community'),
+        'loggedin' => __('Angemeldete', 'cp-community'),
+        'author' => __('Nur Autor', 'cp-community'),
     );
 
     if ($component === 'groups') {
         return $base + array(
-            'group_members' => __('Gruppenmitglieder', CPC2_TEXT_DOMAIN),
-            'group_adminmod' => __('Gruppen-Admins/Mods', CPC2_TEXT_DOMAIN),
+            'group_members' => __('Gruppenmitglieder', 'cp-community'),
+            'group_adminmod' => __('Gruppen-Admins/Mods', 'cp-community'),
         );
     }
 
@@ -1103,7 +1103,7 @@ function cpc_docs_handle_frontend_requests() {
         $folder_url = get_permalink($doc_id);
         $folder_title = wp_strip_all_tags($title);
         $activity_text = sprintf(
-            __('hat den Ordner <a href="%1$s">%2$s</a> erstellt', CPC2_TEXT_DOMAIN),
+            __('hat den Ordner <a href="%1$s">%2$s</a> erstellt', 'cp-community'),
             esc_url($folder_url),
             esc_html($folder_title)
         );
@@ -1136,7 +1136,7 @@ function cpc_docs_handle_frontend_requests() {
         $folder_url = get_permalink($folder_id);
         $folder_title = wp_strip_all_tags($new_title);
         $activity_text = sprintf(
-            __('hat den Ordner <a href="%1$s">%2$s</a> umbenannt', CPC2_TEXT_DOMAIN),
+            __('hat den Ordner <a href="%1$s">%2$s</a> umbenannt', 'cp-community'),
             esc_url($folder_url),
             esc_html($folder_title)
         );
@@ -1174,9 +1174,9 @@ function cpc_docs_handle_frontend_requests() {
             }
         }
 
-        $folder_title = $folder ? wp_strip_all_tags($folder->post_title) : __('Ordner', CPC2_TEXT_DOMAIN);
+        $folder_title = $folder ? wp_strip_all_tags($folder->post_title) : __('Ordner', 'cp-community');
         $activity_text = sprintf(
-            __('hat den Ordner "%s" geloescht', CPC2_TEXT_DOMAIN),
+            __('hat den Ordner "%s" geloescht', 'cp-community'),
             esc_html($folder_title)
         );
         cpc_docs_insert_group_activity($folder_id, $activity_text, get_current_user_id());
@@ -1240,7 +1240,7 @@ function cpc_docs_handle_frontend_requests() {
         $doc_url = get_permalink($doc_id);
         $doc_title = wp_strip_all_tags($title);
         $activity_text = sprintf(
-            __('hat das Dokument <a href="%1$s">%2$s</a> erstellt', CPC2_TEXT_DOMAIN),
+            __('hat das Dokument <a href="%1$s">%2$s</a> erstellt', 'cp-community'),
             esc_url($doc_url),
             esc_html($doc_title)
         );
@@ -1313,7 +1313,7 @@ function cpc_docs_handle_frontend_requests() {
         $doc_url = get_permalink($doc_id);
         $doc_title = wp_strip_all_tags($title);
         $activity_text = sprintf(
-            __('hat das Dokument <a href="%1$s">%2$s</a> aktualisiert', CPC2_TEXT_DOMAIN),
+            __('hat das Dokument <a href="%1$s">%2$s</a> aktualisiert', 'cp-community'),
             esc_url($doc_url),
             esc_html($doc_title)
         );
@@ -1490,26 +1490,26 @@ function cpc_docs_load_folder_contents_ajax() {
             echo '<td class="attachment-clip-cell">'.($has_attachments ? '<span class="dashicons dashicons-paperclip"></span>' : '').'</td>';
             echo '<td class="title-cell folder-row-name">';
             echo '<span class="cpc_docs_folder_title toggle-folder-link"><span class="dashicons dashicons-category"></span><a href="#">'.esc_html($doc->post_title).'</a></span>';
-            echo '<div class="cpc_docs_folder_meta">'.sprintf(esc_html__('%d Unterdokumente', CPC2_TEXT_DOMAIN), (int)$child_count).'</div>';
+            echo '<div class="cpc_docs_folder_meta">'.sprintf(esc_html__('%d Unterdokumente', 'cp-community'), (int)$child_count).'</div>';
             if (function_exists('cpc_docs_render_access_badges')) {
                 echo cpc_docs_render_access_badges($doc->ID);
             }
             echo '<div class="row-actions">';
-            echo '<a href="'.esc_url(get_permalink($doc)).'">'.esc_html__('Ansehen', CPC2_TEXT_DOMAIN).'</a>';
+            echo '<a href="'.esc_url(get_permalink($doc)).'">'.esc_html__('Ansehen', 'cp-community').'</a>';
             if ($can_edit) {
-                echo ' | <a href="'.esc_url(cpc_docs_get_edit_link($doc->ID)).'">'.esc_html__('Bearbeiten', CPC2_TEXT_DOMAIN).'</a>';
+                echo ' | <a href="'.esc_url(cpc_docs_get_edit_link($doc->ID)).'">'.esc_html__('Bearbeiten', 'cp-community').'</a>';
             }
             if ($can_history) {
-                echo ' | <a href="'.esc_url(cpc_docs_get_history_link($doc->ID)).'">'.esc_html__('Verlauf', CPC2_TEXT_DOMAIN).'</a>';
+                echo ' | <a href="'.esc_url(cpc_docs_get_history_link($doc->ID)).'">'.esc_html__('Verlauf', 'cp-community').'</a>';
             }
             if ($can_manage) {
-                echo ' | <a href="#cpc_docs_folder_manage_panel" class="cpc_docs_rename_folder_link" data-folder-id="'.(int)$doc->ID.'" data-folder-title="'.esc_attr($doc->post_title).'">'.esc_html__('Umbenennen', CPC2_TEXT_DOMAIN).'</a>';
+                echo ' | <a href="#cpc_docs_folder_manage_panel" class="cpc_docs_rename_folder_link" data-folder-id="'.(int)$doc->ID.'" data-folder-title="'.esc_attr($doc->post_title).'">'.esc_html__('Umbenennen', 'cp-community').'</a>';
                 echo ' | <form method="post" class="cpc_docs_inline_form">';
                 echo '<input type="hidden" name="cpc_docs_action" value="folder_delete" />';
                 echo '<input type="hidden" name="cpc_docs_folder_id" value="'.(int)$doc->ID.'" />';
                 echo '<input type="hidden" name="cpc_docs_nonce" value="'.esc_attr(wp_create_nonce('cpc_docs_frontend_action')).'" />';
                 echo '<input type="hidden" name="cpc_docs_redirect" value="'.esc_url($current_url).'" />';
-                echo '<button type="submit" class="cpc_docs_inline_button" onclick="return confirm(\''.esc_js(__('Ordner wirklich loeschen? Unterordner werden in den Parent verschoben.', CPC2_TEXT_DOMAIN)).'\');">'.esc_html__('Loeschen', CPC2_TEXT_DOMAIN).'</button>';
+                echo '<button type="submit" class="cpc_docs_inline_button" onclick="return confirm(\''.esc_js(__('Ordner wirklich loeschen? Unterordner werden in den Parent verschoben.', 'cp-community')).'\');">'.esc_html__('Loeschen', 'cp-community').'</button>';
                 echo '</form>';
             }
             echo '</div>';
@@ -1531,12 +1531,12 @@ function cpc_docs_load_folder_contents_ajax() {
                 echo cpc_docs_render_access_badges($doc->ID);
             }
             echo '<div class="row-actions">';
-            echo '<a href="'.esc_url(get_permalink($doc)).'">'.esc_html__('Ansehen', CPC2_TEXT_DOMAIN).'</a>';
+            echo '<a href="'.esc_url(get_permalink($doc)).'">'.esc_html__('Ansehen', 'cp-community').'</a>';
             if ($can_edit) {
-                echo ' | <a href="'.esc_url(cpc_docs_get_edit_link($doc->ID)).'">'.esc_html__('Bearbeiten', CPC2_TEXT_DOMAIN).'</a>';
+                echo ' | <a href="'.esc_url(cpc_docs_get_edit_link($doc->ID)).'">'.esc_html__('Bearbeiten', 'cp-community').'</a>';
             }
             if ($can_history) {
-                echo ' | <a href="'.esc_url(cpc_docs_get_history_link($doc->ID)).'">'.esc_html__('Verlauf', CPC2_TEXT_DOMAIN).'</a>';
+                echo ' | <a href="'.esc_url(cpc_docs_get_history_link($doc->ID)).'">'.esc_html__('Verlauf', 'cp-community').'</a>';
             }
             echo '</div>';
             echo '</td>';
@@ -1549,7 +1549,7 @@ function cpc_docs_load_folder_contents_ajax() {
     }
 
     if ($rendered === 0) {
-        echo '<tr class="no-docs-row"><td class="attachment-clip-cell"></td><td class="title-cell">'.esc_html__('Keine Dokumente gefunden.', CPC2_TEXT_DOMAIN).'</td><td class="author-cell"></td><td class="edited-date-cell"></td></tr>';
+        echo '<tr class="no-docs-row"><td class="attachment-clip-cell"></td><td class="title-cell">'.esc_html__('Keine Dokumente gefunden.', 'cp-community').'</td><td class="author-cell"></td><td class="edited-date-cell"></td></tr>';
     }
 
     $html = ob_get_clean();
@@ -1559,19 +1559,19 @@ function cpc_docs_load_folder_contents_ajax() {
 
 function cpc_docs_notice_message($code) {
     $map = array(
-        'created' => __('Dokument wurde erstellt.', CPC2_TEXT_DOMAIN),
-        'updated' => __('Dokument wurde aktualisiert.', CPC2_TEXT_DOMAIN),
-        'deleted' => __('Dokument wurde geloescht.', CPC2_TEXT_DOMAIN),
-        'folder_created' => __('Ordner wurde erstellt.', CPC2_TEXT_DOMAIN),
-        'folder_updated' => __('Ordner wurde aktualisiert.', CPC2_TEXT_DOMAIN),
-        'folder_deleted' => __('Ordner wurde geloescht.', CPC2_TEXT_DOMAIN),
-        'attachment_deleted' => __('Attachment wurde geloescht.', CPC2_TEXT_DOMAIN),
-        'locked' => __('Dokument ist aktuell durch einen anderen Benutzer gesperrt.', CPC2_TEXT_DOMAIN),
-        'unlocked' => __('Bearbeitungssperre wurde aufgehoben.', CPC2_TEXT_DOMAIN),
-        'denied' => __('Keine Berechtigung.', CPC2_TEXT_DOMAIN),
-        'invalid' => __('Ungueltige Anfrage.', CPC2_TEXT_DOMAIN),
-        'failed' => __('Aktion fehlgeschlagen.', CPC2_TEXT_DOMAIN),
-        'imported' => __('BuddyPress Docs wurden importiert.', CPC2_TEXT_DOMAIN),
+        'created' => __('Dokument wurde erstellt.', 'cp-community'),
+        'updated' => __('Dokument wurde aktualisiert.', 'cp-community'),
+        'deleted' => __('Dokument wurde geloescht.', 'cp-community'),
+        'folder_created' => __('Ordner wurde erstellt.', 'cp-community'),
+        'folder_updated' => __('Ordner wurde aktualisiert.', 'cp-community'),
+        'folder_deleted' => __('Ordner wurde geloescht.', 'cp-community'),
+        'attachment_deleted' => __('Attachment wurde geloescht.', 'cp-community'),
+        'locked' => __('Dokument ist aktuell durch einen anderen Benutzer gesperrt.', 'cp-community'),
+        'unlocked' => __('Bearbeitungssperre wurde aufgehoben.', 'cp-community'),
+        'denied' => __('Keine Berechtigung.', 'cp-community'),
+        'invalid' => __('Ungueltige Anfrage.', 'cp-community'),
+        'failed' => __('Aktion fehlgeschlagen.', 'cp-community'),
+        'imported' => __('BuddyPress Docs wurden importiert.', 'cp-community'),
     );
 
     return isset($map[$code]) ? $map[$code] : '';
@@ -1614,8 +1614,8 @@ function cpc_docs_preprocess_comment($commentdata) {
 
     if (!cpc_docs_user_can_post_comments($post_id)) {
         wp_die(
-            esc_html__('Keine Berechtigung zum Kommentieren dieses Dokuments.', CPC2_TEXT_DOMAIN),
-            esc_html__('Keine Berechtigung', CPC2_TEXT_DOMAIN),
+            esc_html__('Keine Berechtigung zum Kommentieren dieses Dokuments.', 'cp-community'),
+            esc_html__('Keine Berechtigung', 'cp-community'),
             array('response' => 403)
         );
     }

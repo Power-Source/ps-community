@@ -2,19 +2,19 @@
 
 function cpc_custom_post_gallery() {
     $labels = array(
-        'name' => __('Galerien', CPC2_TEXT_DOMAIN),
-        'singular_name' => __('Galerie', CPC2_TEXT_DOMAIN),
-        'add_new' => __('Neue hinzufügen', CPC2_TEXT_DOMAIN),
-        'add_new_item' => __('Neue Galerie hinzufügen', CPC2_TEXT_DOMAIN),
-        'edit_item' => __('Galerie bearbeiten', CPC2_TEXT_DOMAIN),
-        'new_item' => __('Neue Galerie', CPC2_TEXT_DOMAIN),
-        'all_items' => __('Alle Galerien', CPC2_TEXT_DOMAIN),
-        'view_item' => __('Galerie anzeigen', CPC2_TEXT_DOMAIN),
-        'search_items' => __('Galerien durchsuchen', CPC2_TEXT_DOMAIN),
-        'not_found' => __('Keine Galerie gefunden', CPC2_TEXT_DOMAIN),
-        'not_found_in_trash' => __('Keine Galerie im Papierkorb gefunden', CPC2_TEXT_DOMAIN),
-        'parent_item_colon' => __('Übergeordnete Galerie:', CPC2_TEXT_DOMAIN),
-        'menu_name' => __('Galerien', CPC2_TEXT_DOMAIN),
+        'name' => __('Galerien', 'cp-community'),
+        'singular_name' => __('Galerie', 'cp-community'),
+        'add_new' => __('Neue hinzufügen', 'cp-community'),
+        'add_new_item' => __('Neue Galerie hinzufügen', 'cp-community'),
+        'edit_item' => __('Galerie bearbeiten', 'cp-community'),
+        'new_item' => __('Neue Galerie', 'cp-community'),
+        'all_items' => __('Alle Galerien', 'cp-community'),
+        'view_item' => __('Galerie anzeigen', 'cp-community'),
+        'search_items' => __('Galerien durchsuchen', 'cp-community'),
+        'not_found' => __('Keine Galerie gefunden', 'cp-community'),
+        'not_found_in_trash' => __('Keine Galerie im Papierkorb gefunden', 'cp-community'),
+        'parent_item_colon' => __('Übergeordnete Galerie:', 'cp-community'),
+        'menu_name' => __('Galerien', 'cp-community'),
     );
 
     $args = array(
@@ -41,16 +41,16 @@ function cpc_updated_gallery_messages($messages) {
 
     $messages['cpc_gallery'] = array(
         0 => '',
-        1 => __('Galerie aktualisiert.', CPC2_TEXT_DOMAIN),
-        2 => __('Benutzerdefiniertes Feld aktualisiert.', CPC2_TEXT_DOMAIN),
-        3 => __('Benutzerdefiniertes Feld gelöscht.', CPC2_TEXT_DOMAIN),
-        4 => __('Galerie aktualisiert.', CPC2_TEXT_DOMAIN),
-        5 => isset($_GET['revision']) ? sprintf(__('Galerie wiederhergestellt von Revision vom %s', CPC2_TEXT_DOMAIN), wp_post_revision_title((int)$_GET['revision'], false)) : false,
-        6 => __('Galerie veröffentlicht.', CPC2_TEXT_DOMAIN),
-        7 => __('Galerie gespeichert.', CPC2_TEXT_DOMAIN),
-        8 => __('Galerie eingereicht.', CPC2_TEXT_DOMAIN),
-        9 => sprintf(__('Galerie geplant für: <strong>%1$s</strong>.', CPC2_TEXT_DOMAIN), date_i18n(__('M j, Y @ G:i', CPC2_TEXT_DOMAIN), strtotime($post->post_date))),
-        10 => __('Galerieentwurf aktualisiert.', CPC2_TEXT_DOMAIN),
+        1 => __('Galerie aktualisiert.', 'cp-community'),
+        2 => __('Benutzerdefiniertes Feld aktualisiert.', 'cp-community'),
+        3 => __('Benutzerdefiniertes Feld gelöscht.', 'cp-community'),
+        4 => __('Galerie aktualisiert.', 'cp-community'),
+        5 => isset($_GET['revision']) ? sprintf(__('Galerie wiederhergestellt von Revision vom %s', 'cp-community'), wp_post_revision_title((int)$_GET['revision'], false)) : false,
+        6 => __('Galerie veröffentlicht.', 'cp-community'),
+        7 => __('Galerie gespeichert.', 'cp-community'),
+        8 => __('Galerie eingereicht.', 'cp-community'),
+        9 => sprintf(__('Galerie geplant für: <strong>%1$s</strong>.', 'cp-community'), date_i18n(__('M j, Y @ G:i', 'cp-community'), strtotime($post->post_date))),
+        10 => __('Galerieentwurf aktualisiert.', 'cp-community'),
     );
 
     return $messages;
@@ -61,7 +61,7 @@ add_action('add_meta_boxes', 'cpc_gallery_info_box');
 function cpc_gallery_info_box() {
     add_meta_box(
         'cpc_gallery_info_box',
-        __('Galeriedetails', CPC2_TEXT_DOMAIN),
+        __('Galeriedetails', 'cp-community'),
         'cpc_gallery_info_box_content',
         'cpc_gallery',
         'side',
@@ -78,25 +78,25 @@ function cpc_gallery_info_box_content($post) {
     $type = cpc_media_get_gallery_type($post->ID);
     $media_count = cpc_media_get_gallery_media_count($post->ID);
 
-    echo '<p><strong>'.__('Kontext', CPC2_TEXT_DOMAIN).'</strong><br />';
+    echo '<p><strong>'.__('Kontext', 'cp-community').'</strong><br />';
     echo esc_html($component).' #'.(int)$component_id.'</p>';
 
-    echo '<p><strong>'.__('Status', CPC2_TEXT_DOMAIN).'</strong><br />';
+    echo '<p><strong>'.__('Status', 'cp-community').'</strong><br />';
     echo '<select name="cpc_gallery_status" style="width:100%">';
     foreach (cpc_media_get_gallery_status_options($component) as $value => $label) {
         echo '<option value="'.esc_attr($value).'"'.selected($status, $value, false).'>'.esc_html($label).'</option>';
     }
     echo '</select></p>';
 
-    echo '<p><strong>'.__('Typ', CPC2_TEXT_DOMAIN).'</strong><br />';
+    echo '<p><strong>'.__('Typ', 'cp-community').'</strong><br />';
     echo '<select name="cpc_gallery_type" style="width:100%">';
-    echo '<option value="photo"'.selected($type, 'photo', false).'>'.__('Bilder', CPC2_TEXT_DOMAIN).'</option>';
-    echo '<option value="video"'.selected($type, 'video', false).'>'.__('Videos', CPC2_TEXT_DOMAIN).'</option>';
-    echo '<option value="audio"'.selected($type, 'audio', false).'>'.__('Audio', CPC2_TEXT_DOMAIN).'</option>';
-    echo '<option value="doc"'.selected($type, 'doc', false).'>'.__('Dokumente', CPC2_TEXT_DOMAIN).'</option>';
+    echo '<option value="photo"'.selected($type, 'photo', false).'>'.__('Bilder', 'cp-community').'</option>';
+    echo '<option value="video"'.selected($type, 'video', false).'>'.__('Videos', 'cp-community').'</option>';
+    echo '<option value="audio"'.selected($type, 'audio', false).'>'.__('Audio', 'cp-community').'</option>';
+    echo '<option value="doc"'.selected($type, 'doc', false).'>'.__('Dokumente', 'cp-community').'</option>';
     echo '</select></p>';
 
-    echo '<p><strong>'.__('Mediendateien', CPC2_TEXT_DOMAIN).'</strong><br />'.(int)$media_count.'</p>';
+    echo '<p><strong>'.__('Mediendateien', 'cp-community').'</strong><br />'.(int)$media_count.'</p>';
 }
 
 add_action('save_post', 'cpc_gallery_info_box_save');

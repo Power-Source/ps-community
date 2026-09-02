@@ -8,23 +8,23 @@
 
 function cpc_custom_post_friendship() {
 	$labels = array(
-		'name'               => __( 'Freundschaften', CPC2_TEXT_DOMAIN ),
-		'singular_name'      => __( 'Freundschaft', CPC2_TEXT_DOMAIN ),
-		'add_new'            => __( 'Neue hinzufügen', CPC2_TEXT_DOMAIN ),
-		'add_new_item'       => __( 'Neue Freundschaft hinzufügen', CPC2_TEXT_DOMAIN ),
-		'edit_item'          => __( 'Freundschaft bearbeiten', CPC2_TEXT_DOMAIN ),
-		'new_item'           => __( 'Neue Freundschaft', CPC2_TEXT_DOMAIN ),
-		'all_items'          => __( 'Freundschaften', CPC2_TEXT_DOMAIN ),
-		'view_item'          => __( 'Freundschaft ansehen', CPC2_TEXT_DOMAIN ),
-		'search_items'       => __( 'Suche nach Freundschaften', CPC2_TEXT_DOMAIN ),
-		'not_found'          => __( 'Keine Freundschaften gefunden', CPC2_TEXT_DOMAIN ),
-		'not_found_in_trash' => __( 'Im Papierkorb wurden keine Freundschaften gefunden', CPC2_TEXT_DOMAIN ), 
+		'name'               => __( 'Freundschaften', 'cp-community' ),
+		'singular_name'      => __( 'Freundschaft', 'cp-community' ),
+		'add_new'            => __( 'Neue hinzufügen', 'cp-community' ),
+		'add_new_item'       => __( 'Neue Freundschaft hinzufügen', 'cp-community' ),
+		'edit_item'          => __( 'Freundschaft bearbeiten', 'cp-community' ),
+		'new_item'           => __( 'Neue Freundschaft', 'cp-community' ),
+		'all_items'          => __( 'Freundschaften', 'cp-community' ),
+		'view_item'          => __( 'Freundschaft ansehen', 'cp-community' ),
+		'search_items'       => __( 'Suche nach Freundschaften', 'cp-community' ),
+		'not_found'          => __( 'Keine Freundschaften gefunden', 'cp-community' ),
+		'not_found_in_trash' => __( 'Im Papierkorb wurden keine Freundschaften gefunden', 'cp-community' ), 
 		'parent_item_colon'  => '',
-		'menu_name'          => __( 'Freundschaften', CPC2_TEXT_DOMAIN ),
+		'menu_name'          => __( 'Freundschaften', 'cp-community' ),
 	);
 	$args = array(
 		'labels'        		=> $labels,
-		'description'   		=> __('Enthält die spezifischen Daten unserer Freundschaften', CPC2_TEXT_DOMAIN ),
+		'description'   		=> __('Enthält die spezifischen Daten unserer Freundschaften', 'cp-community' ),
 		'public'        		=> true,
         'capabilities' => array(
             'publish_posts' => 'manage_options',
@@ -53,16 +53,16 @@ function cpc_updated_friendship_messages( $messages ) {
 	global $post, $post_ID;
 	$messages['cpc_friendship'] = array(
 		0 => '', 
-		1 => __('Freundschaft aktualisiert.'),
-		2 => __('Benutzerdefiniertes Feld aktualisiert.'),
-		3 => __('Benutzerdefiniertes Feld gelöscht.'),
-		4 => __('Freundschaft aktualisiert.'),
-		5 => isset($_GET['revision']) ? sprintf( __('Die Freundschaft wurde in der Revision von %s wiederhergestellt'), wp_post_revision_title( (int) $_GET['revision'], false ) ) : false,
-		6 => __('Freundschaften veröffentlicht.'),
-		7 => __('Freundschaft gerettet.'),
-		8 => __('Freundschaft eingereicht.'),
-		9 => sprintf( __('Freundschaft geplant für: <strong>%1$s</strong>.'), date_i18n( __( 'M j, Y @ G:i' ), strtotime( $post->post_date ) ) ),
-		10 => __('Freundschaftsentwurf aktualisiert.'),
+		1 => __('Freundschaft aktualisiert.', 'cp-community'),
+		2 => __('Benutzerdefiniertes Feld aktualisiert.', 'cp-community'),
+		3 => __('Benutzerdefiniertes Feld gelöscht.', 'cp-community'),
+		4 => __('Freundschaft aktualisiert.', 'cp-community'),
+		5 => isset($_GET['revision']) ? sprintf( __('Die Freundschaft wurde in der Revision von %s wiederhergestellt', 'cp-community'), wp_post_revision_title( (int) $_GET['revision'], false ) ) : false,
+		6 => __('Freundschaften veröffentlicht.', 'cp-community'),
+		7 => __('Freundschaft gerettet.', 'cp-community'),
+		8 => __('Freundschaft eingereicht.', 'cp-community'),
+		9 => sprintf( __('Freundschaft geplant für: <strong>%1$s</strong>.', 'cp-community'), date_i18n( __( 'M j, Y @ G:i' ), strtotime( $post->post_date ) ) ),
+		10 => __('Freundschaftsentwurf aktualisiert.', 'cp-community'),
 	);
 	return $messages;
 }
@@ -75,7 +75,7 @@ add_action( 'add_meta_boxes', 'friendship_info_box' );
 function friendship_info_box() {
     add_meta_box( 
         'friendship_info_box',
-        __('Erstelle eine Freundschaft', CPC2_TEXT_DOMAIN ),
+        __('Erstelle eine Freundschaft', 'cp-community' ),
         'friendship_info_box_content',
         'cpc_friendship',
         'normal',
@@ -87,17 +87,17 @@ function friendship_info_box_content( $post ) {
 	global $wpdb;
 	wp_nonce_field( 'friendship_info_box_content', 'friendship_info_box_content_nonce' );
 
-	echo '<div style="margin-top:10px;font-weight:bold">'.__('Benutzer 1', CPC2_TEXT_DOMAIN).'</div>';
+	echo '<div style="margin-top:10px;font-weight:bold">'.__('Benutzer 1', 'cp-community').'</div>';
 	$member = get_user_by( 'id', get_post_meta( $post->ID, 'cpc_member1', true ) );
 	$member_text = ($member) ? $member->user_login : '';
-	echo '<input type="text" id="cpc_member1" style="width:300px" name="cpc_member1" placeholder="'.__('Ersten Benutzer auswählen...', CPC2_TEXT_DOMAIN).'" value="'.$member_text.'" />';
+	echo '<input type="text" id="cpc_member1" style="width:300px" name="cpc_member1" placeholder="'.__('Ersten Benutzer auswählen...', 'cp-community').'" value="'.$member_text.'" />';
 
-	echo '<div style="margin-top:10px;font-style:italic;">'.__('ist befreundet mit...', CPC2_TEXT_DOMAIN).'</div>';
+	echo '<div style="margin-top:10px;font-style:italic;">'.__('ist befreundet mit...', 'cp-community').'</div>';
 
-	echo '<div style="margin-top:10px;font-weight:bold">'.__('Benutzer 2', CPC2_TEXT_DOMAIN).'</div>';
+	echo '<div style="margin-top:10px;font-weight:bold">'.__('Benutzer 2', 'cp-community').'</div>';
 	$member = get_user_by( 'id', get_post_meta( $post->ID, 'cpc_member2', true ) );
 	$member_text = ($member) ? $member->user_login : '';
-	echo '<input type="text" id="cpc_member2" style="width:300px" name="cpc_member2" placeholder="'.__('Zweiten Benutzer auswählen...', CPC2_TEXT_DOMAIN).'" value="'.$member_text.'" />';
+	echo '<input type="text" id="cpc_member2" style="width:300px" name="cpc_member2" placeholder="'.__('Zweiten Benutzer auswählen...', 'cp-community').'" value="'.$member_text.'" />';
 
 }
 
@@ -141,7 +141,7 @@ function friendship_info_box_save( $post_id ) {
 
 			// Already exists, delete newly created friendship
 			wp_delete_post( $post_id, true );
-			die(__('Friendship already exists.', CPC2_TEXT_DOMAIN));
+			die(__('Friendship already exists.', 'cp-community'));
 
 		}
 
@@ -176,7 +176,7 @@ function friendship_columns_content($column_name, $post_ID) {
     	if ($user) {
     		echo $user->display_name.' ('.$post->cpc_member1.')';
     	} else {
-    		echo __('Benutzer nicht gefunden', CPC2_TEXT_DOMAIN);
+    		echo __('Benutzer nicht gefunden', 'cp-community');
     	}
     }
     if ($column_name == 'col_friendship_member2') {
@@ -185,15 +185,15 @@ function friendship_columns_content($column_name, $post_ID) {
     	if ($user) {
     		echo $user->display_name.' ('.$post->cpc_member2.')';
     	} else {
-    		echo __('Benutzer nicht gefunden', CPC2_TEXT_DOMAIN);
+    		echo __('Benutzer nicht gefunden', 'cp-community');
     	}
     }
     if ($column_name == 'col_friendship_status') {
     	$post = get_post($post_ID); 
     	if ($post->post_status == 'publish'):
-    		echo __('Freunde', CPC2_TEXT_DOMAIN);
+    		echo __('Freunde', 'cp-community');
     	else:
-    		echo __('Ausstehend', CPC2_TEXT_DOMAIN);
+    		echo __('Ausstehend', 'cp-community');
     	endif;
     }
     if ($column_name == 'cpc_friendship_since') {
@@ -212,23 +212,23 @@ function friendship_columns_content($column_name, $post_ID) {
 
 function cpc_custom_post_favourite_friendship() {
 	$labels = array(
-		'name'               => __( 'Lieblingsfreundschaften', CPC2_TEXT_DOMAIN ),
-		'singular_name'      => __( 'Lieblingsfreundschaft', CPC2_TEXT_DOMAIN ),
-		'add_new'            => __( 'Neue hinzufügen', CPC2_TEXT_DOMAIN ),
-		'add_new_item'       => __( 'Neuen Favoriten hinzufügen', CPC2_TEXT_DOMAIN ),
-		'edit_item'          => __( 'Bearbeite Deine Lieblingsfreundschaft', CPC2_TEXT_DOMAIN ),
-		'new_item'           => __( 'Neue Lieblingsfreundschaft', CPC2_TEXT_DOMAIN ),
-		'all_items'          => __( 'Lieblingsfreundschaften', CPC2_TEXT_DOMAIN ),
-		'view_item'          => __( 'Lieblingsfreundschaft anzeigen', CPC2_TEXT_DOMAIN ),
-		'search_items'       => __( 'Suche nach Lieblingsfreundschaften', CPC2_TEXT_DOMAIN ),
-		'not_found'          => __( 'Keine Lieblingsfreundschaften gefunden', CPC2_TEXT_DOMAIN ),
-		'not_found_in_trash' => __( 'Im Papierkorb wurden keine Lieblingsfreundschaften gefunden', CPC2_TEXT_DOMAIN ), 
+		'name'               => __( 'Lieblingsfreundschaften', 'cp-community' ),
+		'singular_name'      => __( 'Lieblingsfreundschaft', 'cp-community' ),
+		'add_new'            => __( 'Neue hinzufügen', 'cp-community' ),
+		'add_new_item'       => __( 'Neuen Favoriten hinzufügen', 'cp-community' ),
+		'edit_item'          => __( 'Bearbeite Deine Lieblingsfreundschaft', 'cp-community' ),
+		'new_item'           => __( 'Neue Lieblingsfreundschaft', 'cp-community' ),
+		'all_items'          => __( 'Lieblingsfreundschaften', 'cp-community' ),
+		'view_item'          => __( 'Lieblingsfreundschaft anzeigen', 'cp-community' ),
+		'search_items'       => __( 'Suche nach Lieblingsfreundschaften', 'cp-community' ),
+		'not_found'          => __( 'Keine Lieblingsfreundschaften gefunden', 'cp-community' ),
+		'not_found_in_trash' => __( 'Im Papierkorb wurden keine Lieblingsfreundschaften gefunden', 'cp-community' ), 
 		'parent_item_colon'  => '',
-		'menu_name'          => __( 'Lieblingsfreundschaften', CPC2_TEXT_DOMAIN ),
+		'menu_name'          => __( 'Lieblingsfreundschaften', 'cp-community' ),
 	);
 	$args = array(
 		'labels'        		=> $labels,
-		'description'   		=> __('Enthält die spezifischen Daten unserer Lieblingsfreundschaften', CPC2_TEXT_DOMAIN ),
+		'description'   		=> __('Enthält die spezifischen Daten unserer Lieblingsfreundschaften', 'cp-community' ),
 		'public'        		=> true,
         'capabilities' => array(
             'publish_posts' => 'manage_options',
@@ -257,16 +257,16 @@ function cpc_updated_favourite_friendship_messages( $messages ) {
 	global $post, $post_ID;
 	$messages['cpc_favourite_friend'] = array(
 		0 => '', 
-		1 => __('Lieblingsfreundschaft aktualisiert.', CPC2_TEXT_DOMAIN),
-		2 => __('Benutzerdefiniertes Feld aktualisiert.', CPC2_TEXT_DOMAIN),
-		3 => __('Benutzerdefiniertes Feld gelöscht.', CPC2_TEXT_DOMAIN),
-		4 => __('Lieblingsfreundschaft aktualisiert.', CPC2_TEXT_DOMAIN),
-		5 => isset($_GET['revision']) ? sprintf( __('Lieblingsfreundschaft wurde in der Revision von %s wiederhergestellt', CPC2_TEXT_DOMAIN), wp_post_revision_title( (int) $_GET['revision'], false ) ) : false,
-		6 => __('Lieblingsfreundschaften veröffentlicht.', CPC2_TEXT_DOMAIN),
-		7 => __('Lieblingsfreundschaft gespeichert.', CPC2_TEXT_DOMAIN),
-		8 => __('Freundschaft eingereicht.', CPC2_TEXT_DOMAIN),
-		9 => sprintf( __('Lieblingsfreundschaft geplant für: <strong>%1$s</strong>.', CPC2_TEXT_DOMAIN), date_i18n( __( 'M j, Y @ G:i' ), strtotime( $post->post_date ) ) ),
-		10 => __('Lieblings-Freundschaftsentwurf aktualisiert.', CPC2_TEXT_DOMAIN),
+		1 => __('Lieblingsfreundschaft aktualisiert.', 'cp-community'),
+		2 => __('Benutzerdefiniertes Feld aktualisiert.', 'cp-community'),
+		3 => __('Benutzerdefiniertes Feld gelöscht.', 'cp-community'),
+		4 => __('Lieblingsfreundschaft aktualisiert.', 'cp-community'),
+		5 => isset($_GET['revision']) ? sprintf( __('Lieblingsfreundschaft wurde in der Revision von %s wiederhergestellt', 'cp-community'), wp_post_revision_title( (int) $_GET['revision'], false ) ) : false,
+		6 => __('Lieblingsfreundschaften veröffentlicht.', 'cp-community'),
+		7 => __('Lieblingsfreundschaft gespeichert.', 'cp-community'),
+		8 => __('Freundschaft eingereicht.', 'cp-community'),
+		9 => sprintf( __('Lieblingsfreundschaft geplant für: <strong>%1$s</strong>.', 'cp-community'), date_i18n( __( 'M j, Y @ G:i' ), strtotime( $post->post_date ) ) ),
+		10 => __('Lieblings-Freundschaftsentwurf aktualisiert.', 'cp-community'),
 	);
 	return $messages;
 }
@@ -279,7 +279,7 @@ add_action( 'add_meta_boxes', 'favourite_friendship_info_box' );
 function favourite_friendship_info_box() {
     add_meta_box( 
         'favourite_friendship_info_box',
-        __( 'Lieblingsfreund', CPC2_TEXT_DOMAIN ),
+        __( 'Lieblingsfreund', 'cp-community' ),
         'favourite_friendship_info_box_content',
         'cpc_favourite_friend',
         'normal',
@@ -291,17 +291,17 @@ function favourite_friendship_info_box_content( $post ) {
 	global $wpdb;
 	wp_nonce_field( 'favourite_friendship_info_box_content', 'favourite_friendship_info_box_content_nonce' );
 
-	echo '<div style="margin-top:10px;font-weight:bold">'.__('Benutzer 1', CPC2_TEXT_DOMAIN).'</div>';
+	echo '<div style="margin-top:10px;font-weight:bold">'.__('Benutzer 1', 'cp-community').'</div>';
 	$member = get_user_by( 'id', get_post_meta( $post->ID, 'cpc_favourite_member1', true ) );
 	$member_text = ($member) ? $member->user_login : '';
-	echo '<input type="text" id="cpc_favourite_member1" style="width:300px" name="cpc_favourite_member1" placeholder="'.__('Nutzer wählen...', CPC2_TEXT_DOMAIN).'" value="'.$member_text.'" />';
+	echo '<input type="text" id="cpc_favourite_member1" style="width:300px" name="cpc_favourite_member1" placeholder="'.__('Nutzer wählen...', 'cp-community').'" value="'.$member_text.'" />';
 
-	echo '<div style="margin-top:10px;font-style:italic;">'.__('hat einen Lieblingsfreund...', CPC2_TEXT_DOMAIN).'</div>';
+	echo '<div style="margin-top:10px;font-style:italic;">'.__('hat einen Lieblingsfreund...', 'cp-community').'</div>';
 
-	echo '<div style="margin-top:10px;font-weight:bold">'.__('Benutzer 2', CPC2_TEXT_DOMAIN).'</div>';
+	echo '<div style="margin-top:10px;font-weight:bold">'.__('Benutzer 2', 'cp-community').'</div>';
 	$member = get_user_by( 'id', get_post_meta( $post->ID, 'cpc_favourite_member2', true ) );
 	$member_text = ($member) ? $member->user_login : '';
-	echo '<input type="text" id="cpc_favourite_member2" style="width:300px" name="cpc_favourite_member2" placeholder="'.__('Lieblingsbenutzer auswählen...', CPC2_TEXT_DOMAIN).'" value="'.$member_text.'" />';
+	echo '<input type="text" id="cpc_favourite_member2" style="width:300px" name="cpc_favourite_member2" placeholder="'.__('Lieblingsbenutzer auswählen...', 'cp-community').'" value="'.$member_text.'" />';
 
 }
 
@@ -345,7 +345,7 @@ function favourite_friendship_info_box_save( $post_id ) {
 
 			// Already exists, delete newly created friendship
 			wp_delete_post( $post_id, true );
-			die(__('Lieblingsfreundschaft existiert bereits.', CPC2_TEXT_DOMAIN));
+			die(__('Lieblingsfreundschaft existiert bereits.', 'cp-community'));
 
 		}
 
@@ -363,10 +363,10 @@ add_action('manage_posts_custom_column', 'favourite_friendship_columns_content',
 function favourite_friendship_columns_head($defaults) {
     global $post;
 	if ($post && $post->post_type == 'cpc_favourite_friend') {
-		$defaults['col_favourite_friendship_member1'] = __('Benutzeranzeigename', CPC2_TEXT_DOMAIN);
-    	$defaults['col_favourite_friendship_member2'] = __('Bevorzugter Anzeigename', CPC2_TEXT_DOMAIN);
-    	$defaults['col_favourite_friendship_status'] = __('Status', CPC2_TEXT_DOMAIN);
-    	$defaults['cpc_favourite_friendship_since'] = __('Favorit seit', CPC2_TEXT_DOMAIN);
+		$defaults['col_favourite_friendship_member1'] = __('Benutzeranzeigename', 'cp-community');
+    	$defaults['col_favourite_friendship_member2'] = __('Bevorzugter Anzeigename', 'cp-community');
+    	$defaults['col_favourite_friendship_status'] = __('Status', 'cp-community');
+    	$defaults['cpc_favourite_friendship_since'] = __('Favorit seit', 'cp-community');
     	unset($defaults['date']);
     }
     return $defaults;
@@ -380,7 +380,7 @@ function favourite_friendship_columns_content($column_name, $post_ID) {
     	if ($user) {
     		echo $user->display_name.' ('.$post->cpc_favourite_member1.')';
     	} else {
-    		echo __('Benutzer nicht gefunden', CPC2_TEXT_DOMAIN);
+    		echo __('Benutzer nicht gefunden', 'cp-community');
     	}
     }
     if ($column_name == 'col_favourite_friendship_member2') {
@@ -389,15 +389,15 @@ function favourite_friendship_columns_content($column_name, $post_ID) {
     	if ($user) {
     		echo $user->display_name.' ('.$post->cpc_favourite_member2.')';
     	} else {
-    		echo __('Benutzer nicht gefunden', CPC2_TEXT_DOMAIN);
+    		echo __('Benutzer nicht gefunden', 'cp-community');
     	}
     }
     if ($column_name == 'col_favourite_friendship_status') {
     	$post = get_post($post_ID); 
     	if ($post->post_status == 'publish'):
-    		echo __('Favourite', CPC2_TEXT_DOMAIN);
+    		echo __('Favourite', 'cp-community');
     	else:
-    		echo __('Ausstehend', CPC2_TEXT_DOMAIN);
+    		echo __('Ausstehend', 'cp-community');
     	endif;
     }
     if ($column_name == 'cpc_favourite_friendship_since') {

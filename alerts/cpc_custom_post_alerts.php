@@ -7,19 +7,19 @@
 
 function cpc_custom_post_alerts() {
 	$labels = array(
-		'name'               => __( 'Benachrichtigungen', CPC2_TEXT_DOMAIN ),
-		'singular_name'      => __( 'Benachrichtigungen', CPC2_TEXT_DOMAIN ),
-		'add_new'            => __( 'Neue hinzufügen', CPC2_TEXT_DOMAIN ),
-		'add_new_item'       => __( 'Neue Benachrichtigung hinzufügen', CPC2_TEXT_DOMAIN ),
-		'edit_item'          => __( 'Benachrichtigung bearbeiten', CPC2_TEXT_DOMAIN ),
-		'new_item'           => __( 'Neue Benachrichtigung', CPC2_TEXT_DOMAIN ),
-		'all_items'          => __( 'Benachrichtigungen', CPC2_TEXT_DOMAIN ),
-		'view_item'          => __( 'Benachrichtigung anzeigen', CPC2_TEXT_DOMAIN ),
-		'search_items'       => __( 'Suche Benachrichtigungen', CPC2_TEXT_DOMAIN ),
-		'not_found'          => __( 'Keine Benachrichtigungen gefunden', CPC2_TEXT_DOMAIN ),
-		'not_found_in_trash' => __( 'Im Papierkorb wurden keine Benachrichtigungen gefunden', CPC2_TEXT_DOMAIN ), 
+		'name'               => __( 'Benachrichtigungen', 'cp-community' ),
+		'singular_name'      => __( 'Benachrichtigungen', 'cp-community' ),
+		'add_new'            => __( 'Neue hinzufügen', 'cp-community' ),
+		'add_new_item'       => __( 'Neue Benachrichtigung hinzufügen', 'cp-community' ),
+		'edit_item'          => __( 'Benachrichtigung bearbeiten', 'cp-community' ),
+		'new_item'           => __( 'Neue Benachrichtigung', 'cp-community' ),
+		'all_items'          => __( 'Benachrichtigungen', 'cp-community' ),
+		'view_item'          => __( 'Benachrichtigung anzeigen', 'cp-community' ),
+		'search_items'       => __( 'Suche Benachrichtigungen', 'cp-community' ),
+		'not_found'          => __( 'Keine Benachrichtigungen gefunden', 'cp-community' ),
+		'not_found_in_trash' => __( 'Im Papierkorb wurden keine Benachrichtigungen gefunden', 'cp-community' ), 
 		'parent_item_colon'  => '',
-		'menu_name'          => __('Benachrichtigungen', CPC2_TEXT_DOMAIN),
+		'menu_name'          => __('Benachrichtigungen', 'cp-community'),
 	);
 	$args = array(
 		'labels'        		=> $labels,
@@ -52,16 +52,16 @@ function cpc_updated_alerts_messages( $messages ) {
 	global $post, $post_ID;
 	$messages['cpc_alerts'] = array(
 		0 => '', 
-		1 => __('Alert updated.', CPC2_TEXT_DOMAIN),
-		2 => __('Custom field updated.', CPC2_TEXT_DOMAIN),
-		3 => __('Custom field deleted.', CPC2_TEXT_DOMAIN),
-		4 => __('Alert updated.', CPC2_TEXT_DOMAIN),
-		5 => isset($_GET['revision']) ? sprintf( __('Alerts restored to revision from %s'), wp_post_revision_title( (int) $_GET['revision'], false ) ) : false,
-		6 => __('Alert published.', CPC2_TEXT_DOMAIN),
-		7 => __('Alert saved.', CPC2_TEXT_DOMAIN),
-		8 => __('Alert submitted.', CPC2_TEXT_DOMAIN),
-		9 => sprintf( __('Alert scheduled for: <strong>%1$s</strong>.'), date_i18n( __( 'M j, Y @ G:i' ), strtotime( $post->post_date ) ) ),
-		10 => __('Alerts draft updated.', CPC2_TEXT_DOMAIN),
+		1 => __('Alert updated.', 'cp-community'),
+		2 => __('Custom field updated.', 'cp-community'),
+		3 => __('Custom field deleted.', 'cp-community'),
+		4 => __('Alert updated.', 'cp-community'),
+		5 => isset($_GET['revision']) ? sprintf( __('Alerts restored to revision from %s', 'cp-community'), wp_post_revision_title( (int) $_GET['revision'], false ) ) : false,
+		6 => __('Alert published.', 'cp-community'),
+		7 => __('Alert saved.', 'cp-community'),
+		8 => __('Alert submitted.', 'cp-community'),
+		9 => sprintf( __('Alert scheduled for: <strong>%1$s</strong>.', 'cp-community'), date_i18n( __( 'M j, Y @ G:i' ), strtotime( $post->post_date ) ) ),
+		10 => __('Alerts draft updated.', 'cp-community'),
 	);
 	return $messages;
 }
@@ -75,7 +75,7 @@ add_action( 'add_meta_boxes', 'alerts_info_box' );
 function alerts_info_box() {
     add_meta_box( 
         'alerts_info_box',
-        __( 'Alert Details', CPC2_TEXT_DOMAIN ),
+        __( 'Alert Details', 'cp-community' ),
         'alerts_info_box_content',
         'cpc_alerts',
         'side',
@@ -88,31 +88,31 @@ function alerts_info_box_content( $post ) {
 	wp_nonce_field( 'alerts_info_box_content', 'alerts_info_box_content_nonce' );
 
 	if ($sent_datetime = get_post_meta( $post->ID, 'cpc_alert_sent_datetime', true ) ):
-		echo '<div style="margin-top:10px;font-weight:bold">'.__('Sent date and time', CPC2_TEXT_DOMAIN).'</div>';
+		echo '<div style="margin-top:10px;font-weight:bold">'.__('Sent date and time', 'cp-community').'</div>';
 		echo $sent_datetime;
 	endif;
 
 	if ($failed_datetime = get_post_meta( $post->ID, 'cpc_alert_failed_datetime', true ) ):
-		echo '<div style="margin-top:10px;font-weight:bold">'.__('Failed to send date and time', CPC2_TEXT_DOMAIN).'</div>';
+		echo '<div style="margin-top:10px;font-weight:bold">'.__('Failed to send date and time', 'cp-community').'</div>';
 		echo $failed_datetime.'<br />';
 		echo get_post_meta( $post->ID, 'cpc_alert_note', true );	    		
 	endif;
 
-	echo '<div style="margin-top:10px;font-weight:bold">'.__('Recipient', CPC2_TEXT_DOMAIN).'</div>';
-	echo '<input type="text" id="cpc_alert_recipient" style="width:100%" name="cpc_alert_recipient" placeholder="'.__('User login', CPC2_TEXT_DOMAIN).'" value="'.get_post_meta( $post->ID, 'cpc_alert_recipient', true ).'" />';
+	echo '<div style="margin-top:10px;font-weight:bold">'.__('Recipient', 'cp-community').'</div>';
+	echo '<input type="text" id="cpc_alert_recipient" style="width:100%" name="cpc_alert_recipient" placeholder="'.__('User login', 'cp-community').'" value="'.get_post_meta( $post->ID, 'cpc_alert_recipient', true ).'" />';
 	$user = get_user_by('login', get_post_meta( $post->ID, 'cpc_alert_recipient', true ));
 	if ($user):
 		echo '<br />'.$user->display_name;
 		echo '<br />'.$user->user_email;
 	endif;
 
-	echo '<div style="margin-top:10px;font-weight:bold">'.__('Page slug', CPC2_TEXT_DOMAIN).'</div>';
-	echo '<input type="text" id="cpc_alert_target" name="cpc_alert_target" placeholder="'.__('Page slug', CPC2_TEXT_DOMAIN).'" value="'.get_post_meta( $post->ID, 'cpc_alert_target', true ).'" />';
+	echo '<div style="margin-top:10px;font-weight:bold">'.__('Page slug', 'cp-community').'</div>';
+	echo '<input type="text" id="cpc_alert_target" name="cpc_alert_target" placeholder="'.__('Page slug', 'cp-community').'" value="'.get_post_meta( $post->ID, 'cpc_alert_target', true ).'" />';
 
-	echo '<div style="margin-top:10px;font-weight:bold">'.__('Parameters', CPC2_TEXT_DOMAIN).'</div>';
-	echo '<input type="text" id="cpc_alert_parameters" name="cpc_alert_parameters" placeholder="'.__('Querystring parameters', CPC2_TEXT_DOMAIN).'" value="'.get_post_meta( $post->ID, 'cpc_alert_parameters', true ).'" />';
+	echo '<div style="margin-top:10px;font-weight:bold">'.__('Parameters', 'cp-community').'</div>';
+	echo '<input type="text" id="cpc_alert_parameters" name="cpc_alert_parameters" placeholder="'.__('Querystring parameters', 'cp-community').'" value="'.get_post_meta( $post->ID, 'cpc_alert_parameters', true ).'" />';
 
-	echo '<div style="margin-top:10px;font-weight:bold">'.__('URL', CPC2_TEXT_DOMAIN).'</div>';
+	echo '<div style="margin-top:10px;font-weight:bold">'.__('URL', 'cp-community').'</div>';
 	echo '<input type="text" id="cpc_alert_url" name="cpc_alert_url" value="'.get_post_meta( $post->ID, 'cpc_alert_url', true ).'" />';
 }
 
@@ -179,7 +179,7 @@ function alerts_columns_content($column_name, $post_ID) {
 		    		echo '<div style="color: #f00">'.$failed_date.'</div>';
 		    		echo get_post_meta( $post_ID, 'cpc_alert_note', true );
 		    	else:
-		    		echo __('waiting...', CPC2_TEXT_DOMAIN);
+		    		echo __('waiting...', 'cp-community');
 		    	endif;
 	    	endif;
 	    endif;
@@ -189,7 +189,7 @@ function alerts_columns_content($column_name, $post_ID) {
 		if ($user):
 			echo $user->user_login;
 		else:
-			echo '<div style="color: #f00">'.sprintf(__('No recipient, <a href="%s">clean up subscriptions</a>?', CPC2_TEXT_DOMAIN), admin_url( 'edit.php?post_type=cpc_alerts&cpc_cleanup=1' )).'</div>';
+			echo '<div style="color: #f00">'.sprintf(__('No recipient, <a href="%s">clean up subscriptions</a>?', 'cp-community'), admin_url( 'edit.php?post_type=cpc_alerts&cpc_cleanup=1' )).'</div>';
 		endif;
     }
     if ($column_name == 'col_recipient_email') {
@@ -219,7 +219,7 @@ function cpc_alerts_clear_sent( $views )
 					$wpdb->query($sql);
 
 					echo '<div class="updated"><p>';
-					echo __('Sent alerts removed (please wait, refreshing page...).', CPC2_TEXT_DOMAIN);
+					echo __('Sent alerts removed (please wait, refreshing page...).', 'cp-community');
 					echo '</p></div>';
 
 				endif;
@@ -228,7 +228,7 @@ function cpc_alerts_clear_sent( $views )
 					$wpdb->query($sql);
 
 					echo '<div class="updated"><p>';
-					echo __('Pending alerts removed (please wait, refreshing page...).', CPC2_TEXT_DOMAIN);
+					echo __('Pending alerts removed (please wait, refreshing page...).', 'cp-community');
 					echo '</p></div>';
 
 				endif;
@@ -237,7 +237,7 @@ function cpc_alerts_clear_sent( $views )
 					$wpdb->query($sql);
 
 					echo '<div class="updated"><p>';
-					echo __('All alerts removed (please wait, refreshing page...).', CPC2_TEXT_DOMAIN);
+					echo __('All alerts removed (please wait, refreshing page...).', 'cp-community');
 					echo '</p></div>';
 
 				endif;
@@ -251,11 +251,11 @@ function cpc_alerts_clear_sent( $views )
 		endif;
 
 		$nonce = wp_create_nonce( 'cpc_alerts_clear' );
-	    $views['cpc-alerts-clear-sent'] = '<a onclick="return confirm(\''.__('Are you sure, this cannot be undone?', CPC2_TEXT_DOMAIN).'\')" id="cpc_alerts_clear_sent" href="edit.php?post_type=cpc_alerts&cpc_action=cpc_alerts_clear_sent&_wpnonce='.$nonce.'">'.__('Remove all sent alerts', CPC2_TEXT_DOMAIN).'</a>';
-	    $views['cpc-alerts-pending-sent'] = '<a onclick="return confirm(\''.__('Are you sure, this cannot be undone?', CPC2_TEXT_DOMAIN).'\')" id="cpc_alerts_clear_sent" href="edit.php?post_type=cpc_alerts&cpc_action=cpc_alerts_clear_pending&_wpnonce='.$nonce.'">'.__('Remove all pending alerts', CPC2_TEXT_DOMAIN).'</a>';
-        if (get_option('cpc_alert_resend')) $views['cpc-alerts-pending-sent'] .= ' ('.__('re-send enabled', CPC2_TEXT_DOMAIN).')';
-    	$views['cpc-alerts-clear-all'] = '<a onclick="return confirm(\''.__('Are you sure, this cannot be undone?', CPC2_TEXT_DOMAIN).'\')" id="cpc_alerts_clear_sent" href="edit.php?post_type=cpc_alerts&cpc_action=cpc_alerts_clear_all&_wpnonce='.$nonce.'">'.__('Remove all alerts', CPC2_TEXT_DOMAIN).'</a>';   	
-    	$views['cpc-server-time'] = __('Server time', CPC2_TEXT_DOMAIN).': '.current_time('mysql', 1);
+	    $views['cpc-alerts-clear-sent'] = '<a onclick="return confirm(\''.__('Are you sure, this cannot be undone?', 'cp-community').'\')" id="cpc_alerts_clear_sent" href="edit.php?post_type=cpc_alerts&cpc_action=cpc_alerts_clear_sent&_wpnonce='.$nonce.'">'.__('Remove all sent alerts', 'cp-community').'</a>';
+	    $views['cpc-alerts-pending-sent'] = '<a onclick="return confirm(\''.__('Are you sure, this cannot be undone?', 'cp-community').'\')" id="cpc_alerts_clear_sent" href="edit.php?post_type=cpc_alerts&cpc_action=cpc_alerts_clear_pending&_wpnonce='.$nonce.'">'.__('Remove all pending alerts', 'cp-community').'</a>';
+        if (get_option('cpc_alert_resend')) $views['cpc-alerts-pending-sent'] .= ' ('.__('re-send enabled', 'cp-community').')';
+    	$views['cpc-alerts-clear-all'] = '<a onclick="return confirm(\''.__('Are you sure, this cannot be undone?', 'cp-community').'\')" id="cpc_alerts_clear_sent" href="edit.php?post_type=cpc_alerts&cpc_action=cpc_alerts_clear_all&_wpnonce='.$nonce.'">'.__('Remove all alerts', 'cp-community').'</a>';   	
+    	$views['cpc-server-time'] = __('Server time', 'cp-community').': '.current_time('mysql', 1);
 
     	return $views;
 

@@ -6,7 +6,7 @@ function cpc_admin_shortcodes_add_usermeta($items) {
 	
 	$item = array();
 	$item['div'] = 'cpc_admin_shortcodes_add_usermeta_dialog'; // DIV to show in dialog
-	$item['label'] = __('Benutzer / Avatar', CPC2_TEXT_DOMAIN); // Shows on the menu
+	$item['label'] = __('Benutzer / Avatar', 'cp-community'); // Shows on the menu
 	$items['cpc_usermeta'] = $item; // Unique ID
 
 	return $items;
@@ -20,121 +20,121 @@ function cpc_admin_shortcodes_add_usermeta_dialog() {
 
 		// List of shortcodes
     	echo '<p><select id="cpc_admin_shortcodes_select_usermeta">';
-    		echo '<option value="display_name">'.__('Anzeigenamen des Benutzers anzeigen', CPC2_TEXT_DOMAIN).'</option>';    		
-    		echo '<option value="avatar">'.__('Benutzeravatar anzeigen', CPC2_TEXT_DOMAIN).'</option>';    		
-    		echo '<option value="usermeta">'.__('Benutzerinformationen anzeigen (Meta)', CPC2_TEXT_DOMAIN).'</option>';    		
-    		echo '<option value="usermeta_change">'.__('Benutzerprofil bearbeiten', CPC2_TEXT_DOMAIN).'</option>';    		
+    		echo '<option value="display_name">'.__('Anzeigenamen des Benutzers anzeigen', 'cp-community').'</option>';    		
+    		echo '<option value="avatar">'.__('Benutzeravatar anzeigen', 'cp-community').'</option>';    		
+    		echo '<option value="usermeta">'.__('Benutzerinformationen anzeigen (Meta)', 'cp-community').'</option>';    		
+    		echo '<option value="usermeta_change">'.__('Benutzerprofil bearbeiten', 'cp-community').'</option>';    		
     	echo '</select></p>';
 
     	// [cpc-display-name]
     	echo '<div id="cpc_admin_shortcodes_usermeta_display_name" class="cpc_admin_shortcodes_dialog_div">';
 
-    		echo '<p>'.__('Als Hyperlink fungieren?', CPC2_TEXT_DOMAIN).'<br />';
+    		echo '<p>'.__('Als Hyperlink fungieren?', 'cp-community').'<br />';
     		echo '<select id="cpc_display_name_link">';
-    			echo '<option value="1">'.__('Ja', CPC2_TEXT_DOMAIN).'</option>';
-    			echo '<option value="0">'.__('Nein', CPC2_TEXT_DOMAIN).'</option>';
+    			echo '<option value="1">'.__('Ja', 'cp-community').'</option>';
+    			echo '<option value="0">'.__('Nein', 'cp-community').'</option>';
     		echo '</select></p>';
 
-    		echo '<p>'.__('HTML vor Shortcode', CPC2_TEXT_DOMAIN).'<br />';
+    		echo '<p>'.__('HTML vor Shortcode', 'cp-community').'<br />';
     		echo '<input type="text" id="cpc_display_name_before" style="width:100%" /></p>';
 
-    		echo '<p>'.__('HTML nach Shortcode', CPC2_TEXT_DOMAIN).'<br />';
+    		echo '<p>'.__('HTML nach Shortcode', 'cp-community').'<br />';
     		echo '<input type="text" id="cpc_display_name_after" style="width:100%" /></p>';
 
-   			echo '<p><input id="insert_cpc_display_name" type="button" class="button-primary" value="'.__('Shortcode einfügen', CPC2_TEXT_DOMAIN).'"></p>';
+   			echo '<p><input id="insert_cpc_display_name" type="button" class="button-primary" value="'.__('Shortcode einfügen', 'cp-community').'"></p>';
 
    		echo '</div>';
 
     	// [cpc-avatar]
     	echo '<div id="cpc_admin_shortcodes_usermeta_avatar" class="cpc_admin_shortcodes_dialog_div" style="display:none">';
 
-    		echo '<p>'.__('Größe des Avatars in Pixel', CPC2_TEXT_DOMAIN).'<br />';
+    		echo '<p>'.__('Größe des Avatars in Pixel', 'cp-community').'<br />';
     		echo '<input type="text" id="cpc_avatar_size" /></p>';
 
-    		echo '<p>'.__('Link zum Ändern des Avatars anzeigen?', CPC2_TEXT_DOMAIN).'<br />';
+    		echo '<p>'.__('Link zum Ändern des Avatars anzeigen?', 'cp-community').'<br />';
     		echo '<select id="cpc_avatar_change_link">';
-    			echo '<option value="1">'.__('Ja', CPC2_TEXT_DOMAIN).'</option>';
-    			echo '<option value="0">'.__('Nein', CPC2_TEXT_DOMAIN).'</option>';
+    			echo '<option value="1">'.__('Ja', 'cp-community').'</option>';
+    			echo '<option value="0">'.__('Nein', 'cp-community').'</option>';
     		echo '</select></p>';
 
-    		echo '<p>'.__('HTML vor Shortcode', CPC2_TEXT_DOMAIN).'<br />';
+    		echo '<p>'.__('HTML vor Shortcode', 'cp-community').'<br />';
     		echo '<input type="text" id="cpc_avatar_before" style="width:100%" /></p>';
 
-    		echo '<p>'.__('HTML nach Shortcode', CPC2_TEXT_DOMAIN).'<br />';
+    		echo '<p>'.__('HTML nach Shortcode', 'cp-community').'<br />';
     		echo '<input type="text" id="cpc_avatar_after" style="width:100%" /></p>';
 
-   			echo '<p><input id="insert_cpc_avatar" type="button" class="button-primary" value="'.__('Shortcode einfügen', CPC2_TEXT_DOMAIN).'"></p>';
+   			echo '<p><input id="insert_cpc_avatar" type="button" class="button-primary" value="'.__('Shortcode einfügen', 'cp-community').'"></p>';
 
    		echo '</div>';   
 
     	// [cpc-usermeta]
     	echo '<div id="cpc_admin_shortcodes_usermeta_usermeta" class="cpc_admin_shortcodes_dialog_div" style="display:none">';
 
-    		echo '<p>'.__('Benutzer-Metafeld', CPC2_TEXT_DOMAIN).'<br />';
+    		echo '<p>'.__('Benutzer-Metafeld', 'cp-community').'<br />';
     		echo '<select id="cpc_usermeta_meta">';
-    			echo '<option value="cpccom_home">'.__('Stadt/Gemeinde', CPC2_TEXT_DOMAIN).'</option>';
-    			echo '<option value="cpccom_country">'.__('Land', CPC2_TEXT_DOMAIN).'</option>';
+    			echo '<option value="cpccom_home">'.__('Stadt/Gemeinde', 'cp-community').'</option>';
+    			echo '<option value="cpccom_country">'.__('Land', 'cp-community').'</option>';
     		echo '</select></p>';
 
-    		echo '<p>'.__('Beschriftung zur Anzeige', CPC2_TEXT_DOMAIN).'<br />';
+    		echo '<p>'.__('Beschriftung zur Anzeige', 'cp-community').'<br />';
     		echo '<input type="text" id="cpc_usermeta_label" /></p>';
 
-    		echo '<p>'.__('Größe der Google-Karte in Pixel (z. B. 250.250)', CPC2_TEXT_DOMAIN).'<br />';
+    		echo '<p>'.__('Größe der Google-Karte in Pixel (z. B. 250.250)', 'cp-community').'<br />';
     		echo '<input type="text" id="cpc_usermeta_size" /></p>';
 
-    		echo '<p>'.__('Zoomstufe der Google-Karte', CPC2_TEXT_DOMAIN).'<br />';
+    		echo '<p>'.__('Zoomstufe der Google-Karte', 'cp-community').'<br />';
     		echo '<input type="text" id="cpc_usermeta_zoom" /></p>';
 
-    		echo '<p>'.__('HTML vor Shortcode', CPC2_TEXT_DOMAIN).'<br />';
+    		echo '<p>'.__('HTML vor Shortcode', 'cp-community').'<br />';
     		echo '<input type="text" id="cpc_usermeta_before" style="width:100%" /></p>';
 
-    		echo '<p>'.__('HTML nach Shortcode', CPC2_TEXT_DOMAIN).'<br />';
+    		echo '<p>'.__('HTML nach Shortcode', 'cp-community').'<br />';
     		echo '<input type="text" id="cpc_usermeta_after" style="width:100%" /></p>';
 
-   			echo '<p><input id="insert_cpc_usermeta" type="button" class="button-primary" value="'.__('Shortcode einfügen', CPC2_TEXT_DOMAIN).'"></p>';
+   			echo '<p><input id="insert_cpc_usermeta" type="button" class="button-primary" value="'.__('Shortcode einfügen', 'cp-community').'"></p>';
 
    		echo '</div>';   
 
     	// [cpc-usermeta-change]
     	echo '<div id="cpc_admin_shortcodes_usermeta_usermeta_change" class="cpc_admin_shortcodes_dialog_div" style="display:none">';
 
-    		echo '<p>'.__('Beschriftung für Schaltfläche', CPC2_TEXT_DOMAIN).'<br />';
+    		echo '<p>'.__('Beschriftung für Schaltfläche', 'cp-community').'<br />';
     		echo '<input type="text" id="cpc_usermeta_change_label" /></p>';
 
-    		echo '<p>'.__('Beschriftung für den Anzeigenamen', CPC2_TEXT_DOMAIN).'<br />';
+    		echo '<p>'.__('Beschriftung für den Anzeigenamen', 'cp-community').'<br />';
     		echo '<input type="text" id="cpc_usermeta_change_displayname" /></p>';
 
-    		echo '<p>'.__('Beschriftung für E-Mail-Adresse', CPC2_TEXT_DOMAIN).'<br />';
+    		echo '<p>'.__('Beschriftung für E-Mail-Adresse', 'cp-community').'<br />';
     		echo '<input type="text" id="cpc_usermeta_change_email" /></p>';
 
-    		echo '<p>'.__('Beschriftung für Stadt/Gemeinde', CPC2_TEXT_DOMAIN).'<br />';
+    		echo '<p>'.__('Beschriftung für Stadt/Gemeinde', 'cp-community').'<br />';
     		echo '<input type="text" id="cpc_usermeta_change_town" /></p>';
 
-    		echo '<p>'.__('Beschriftung für Land', CPC2_TEXT_DOMAIN).'<br />';
+    		echo '<p>'.__('Beschriftung für Land', 'cp-community').'<br />';
     		echo '<input type="text" id="cpc_usermeta_change_country" /></p>';
 
-    		echo '<p>'.__('Beschriftung für Passwort', CPC2_TEXT_DOMAIN).'<br />';
+    		echo '<p>'.__('Beschriftung für Passwort', 'cp-community').'<br />';
     		echo '<input type="text" id="cpc_usermeta_change_password" /></p>';
 
-    		echo '<p>'.__('Beschriftung zum erneuten Eingeben des Passworts', CPC2_TEXT_DOMAIN).'<br />';
+    		echo '<p>'.__('Beschriftung zum erneuten Eingeben des Passworts', 'cp-community').'<br />';
     		echo '<input type="text" id="cpc_usermeta_change_password2" /></p>';
 
-    		echo '<p>'.__('Beschriftung zum Anmelden nach Passwortänderung', CPC2_TEXT_DOMAIN).'<br />';
+    		echo '<p>'.__('Beschriftung zum Anmelden nach Passwortänderung', 'cp-community').'<br />';
     		echo '<input type="text" id="cpc_usermeta_change_password_msg" /></p>';
 
-    		echo '<p>'.__('CSS-Klasse für Beschriftungen', CPC2_TEXT_DOMAIN).'<br />';
+    		echo '<p>'.__('CSS-Klasse für Beschriftungen', 'cp-community').'<br />';
     		echo '<input type="text" id="cpc_usermeta_change_meta_class" /></p>';
 
-    		echo '<p>'.__('CSS-Klasse für Schaltfläche', CPC2_TEXT_DOMAIN).'<br />';
+    		echo '<p>'.__('CSS-Klasse für Schaltfläche', 'cp-community').'<br />';
     		echo '<input type="text" id="cpc_usermeta_change_class" /></p>';
 
-    		echo '<p>'.__('HTML vor Shortcode', CPC2_TEXT_DOMAIN).'<br />';
+    		echo '<p>'.__('HTML vor Shortcode', 'cp-community').'<br />';
     		echo '<input type="text" id="cpc_usermeta_change_before" style="width:100%" /></p>';
 
-    		echo '<p>'.__('HTML nach Shortcode', CPC2_TEXT_DOMAIN).'<br />';
+    		echo '<p>'.__('HTML nach Shortcode', 'cp-community').'<br />';
     		echo '<input type="text" id="cpc_usermeta_change_after" style="width:100%" /></p>';
 
-   			echo '<p><input id="insert_cpc_usermeta_change" type="button" class="button-primary" value="'.__('Shortcode einfügen', CPC2_TEXT_DOMAIN).'"></p>';
+   			echo '<p><input id="insert_cpc_usermeta_change" type="button" class="button-primary" value="'.__('Shortcode einfügen', 'cp-community').'"></p>';
 
    		echo '</div>';  
 

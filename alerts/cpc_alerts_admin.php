@@ -8,14 +8,14 @@ function cpc_alerts_per_user() {
         	
 	  	echo '<div id="icon-themes" class="icon32"><br /></div>';
 
-	  	echo '<h2>'.__('Benachrichtigungen pro Benutzer', CPC2_TEXT_DOMAIN).'</h2>';
+	  	echo '<h2>'.__('Benachrichtigungen pro Benutzer', 'cp-community').'</h2>';
     
         $recipient = isset($_GET['recipient']) ? $_GET['recipient'] : '';
 
 		echo '<form action="/wp-admin/edit.php" method="GET">';
             echo '<input type="hidden" name="page" value="cpc_alerts_per_user" />';
             echo '<input type="text" name="recipient" placeholder="Email address" value="' . $recipient . '" />';
-            echo '<br /><input type="submit" class="button-primary" value="'.__('Suchen', CPC2_TEXT_DOMAIN).'" />';
+            echo '<br /><input type="submit" class="button-primary" value="'.__('Suchen', 'cp-community').'" />';
         echo '</form>';
     
         $user = get_user_by('email', $recipient);
@@ -105,7 +105,7 @@ function cpc_activity_subs_usermeta_extend($tabs, $atts, $user_id) {
 	// Shortcode parameters
     $values = cpc_get_shortcode_options('cpc_usermeta_change');
 	extract( shortcode_atts( array(
-        'activity_subs_subscribe' => cpc_get_shortcode_value($values, 'cpc_usermeta_change-activity_subs_subscribe', __('Erhalte  E-Mail-Benachrichtigungen für Aktivitäten', CPC2_TEXT_DOMAIN)),
+        'activity_subs_subscribe' => cpc_get_shortcode_value($values, 'cpc_usermeta_change-activity_subs_subscribe', __('Erhalte  E-Mail-Benachrichtigungen für Aktivitäten', 'cp-community')),
         'meta_class' => 'cpc_usermeta_change_label',
 	), $atts, 'cpc_usermeta_change' ) );
     
@@ -204,46 +204,46 @@ function cpc_admin_getting_started_alerts() {
 
 	// Show menu item	
     $css = isset($_POST['cpc_expand']) && $_POST['cpc_expand'] == 'cpc_admin_getting_started_alerts' ? 'cpc_admin_getting_started_menu_item_remove_icon ' : '';    
-  	echo '<div class="'.$css.'cpc_admin_getting_started_menu_item" rel="cpc_admin_getting_started_alerts" id="cpc_admin_getting_started_alerts_div">'.__('Benachrichtigungen', CPC2_TEXT_DOMAIN).'</div>';
+  	echo '<div class="'.$css.'cpc_admin_getting_started_menu_item" rel="cpc_admin_getting_started_alerts" id="cpc_admin_getting_started_alerts_div">'.__('Benachrichtigungen', 'cp-community').'</div>';
 
   	// Show setup/help content
   	$display = isset($_POST['cpc_expand']) && $_POST['cpc_expand'] == 'cpc_admin_getting_started_alerts' ? 'block' : 'none';
   	echo '<div class="cpc_admin_getting_started_content" id="cpc_admin_getting_started_alerts" style="display:'.$display.';">';
 	?>
 
-	<?php echo __('PS Community-Benachrichtigungen verwenden die interne ClassicPress-Funktion wp_mail().', CPC2_TEXT_DOMAIN).' '; ?>
-	<?php echo __('Wenn Du abhängig von Deinem Host ein hohes Volumen hast, solltest Du die Verwendung eines externen Mailservers in Betracht ziehen.', CPC2_TEXT_DOMAIN).' '; ?>
-	<?php echo sprintf(__('Es stehen mehrere ClassicPress-Plugins zur Verfügung, die dies unterstützen, z. B. <a href="%s">Postman SMTP Mailer/Email Log</a>.', CPC2_TEXT_DOMAIN), "https://wordpress.org/plugins/postman-smtp/"); ?>
+	<?php echo __('PS Community-Benachrichtigungen verwenden die interne ClassicPress-Funktion wp_mail().', 'cp-community').' '; ?>
+	<?php echo __('Wenn Du abhängig von Deinem Host ein hohes Volumen hast, solltest Du die Verwendung eines externen Mailservers in Betracht ziehen.', 'cp-community').' '; ?>
+	<?php echo sprintf(__('Es stehen mehrere ClassicPress-Plugins zur Verfügung, die dies unterstützen, z. B. <a href="%s">Postman SMTP Mailer/Email Log</a>.', 'cp-community'), "https://wordpress.org/plugins/postman-smtp/"); ?>
 
-    <?php echo '<p>'.sprintf(__('Um Deinen Zeitplan im ClassicPress-Cron-Zeitplan anzuzeigen, empfehlen wir das Plugin <a href="%s">WP Crontrol</a>.', CPC2_TEXT_DOMAIN), 'https://wordpress.org/plugins/wp-crontrol/').'</p>'; ?>
+    <?php echo '<p>'.sprintf(__('Um Deinen Zeitplan im ClassicPress-Cron-Zeitplan anzuzeigen, empfehlen wir das Plugin <a href="%s">WP Crontrol</a>.', 'cp-community'), 'https://wordpress.org/plugins/wp-crontrol/').'</p>'; ?>
 
 
 		<table class="form-table">
 
 		<tr valign="top"> 
 		<td scope="row">
-			<label for="cpc_disable_alerts"><?php echo __('Deaktiviere Benachrichtigungen', CPC2_TEXT_DOMAIN); ?></label>
+			<label for="cpc_disable_alerts"><?php echo __('Deaktiviere Benachrichtigungen', 'cp-community'); ?></label>
 		</td>
 		<td>
 			<input type="checkbox" name="cpc_disable_alerts" <?php if (get_option('cpc_disable_alerts')) echo 'CHECKED '; ?> />
 			<span class="description">
-				<?php echo __('Verhindert den Versand von Benachrichtigungen per E-Mail.', CPC2_TEXT_DOMAIN); ?>
+				<?php echo __('Verhindert den Versand von Benachrichtigungen per E-Mail.', 'cp-community'); ?>
 			</span></td> 
 		</tr> 	
 
 		<tr valign="top"> 
 		<td scope="row">
-			<label for="cpc_alerts_cron_schedule"><?php echo __('Häufigkeit von E-Mail-Benachrichtigungen', CPC2_TEXT_DOMAIN); ?></label>
+			<label for="cpc_alerts_cron_schedule"><?php echo __('Häufigkeit von E-Mail-Benachrichtigungen', 'cp-community'); ?></label>
 		</td>
 		<td>
 			<div style="padding-left:55px">
 			<input type="text" style="margin-left:-55px;width:50px" name="cpc_alerts_cron_schedule" value="<?php echo get_option('cpc_alerts_cron_schedule'); ?>" />
 			<span class="description">
 				<?php 
-				echo __('Die Häufigkeit in Sekunden, mit der Benachrichtigungen per E-Mail gesendet werden, ist standardmäßig 3600 (alle 1 Stunde).', CPC2_TEXT_DOMAIN).'<br />';
-				echo __('Denke daran, dass geplante ClassicPress-Aufgaben durch Besuche auf Deiner Webseite ausgelöst werden.', CPC2_TEXT_DOMAIN).'<br />';
-				echo '<strong>'.__('Führe dies nicht zu häufig durch, da sich sonst die Serverleistung erheblich verschlechtern kann.', CPC2_TEXT_DOMAIN).'</strong><br />';
-				echo __('Wenn Du diese Seite speicherst, wird der nächste Zyklus ausgelöst.', CPC2_TEXT_DOMAIN).'<br />';
+				echo __('Die Häufigkeit in Sekunden, mit der Benachrichtigungen per E-Mail gesendet werden, ist standardmäßig 3600 (alle 1 Stunde).', 'cp-community').'<br />';
+				echo __('Denke daran, dass geplante ClassicPress-Aufgaben durch Besuche auf Deiner Webseite ausgelöst werden.', 'cp-community').'<br />';
+				echo '<strong>'.__('Führe dies nicht zu häufig durch, da sich sonst die Serverleistung erheblich verschlechtern kann.', 'cp-community').'</strong><br />';
+				echo __('Wenn Du diese Seite speicherst, wird der nächste Zyklus ausgelöst.', 'cp-community').'<br />';
 				?>
 			</span>
 			</div>
@@ -252,14 +252,14 @@ function cpc_admin_getting_started_alerts() {
 
 		<tr valign="top"> 
 		<td scope="row">
-			<label for="cpc_alerts_cron_max"><?php echo __('E-Mails zum Versenden', CPC2_TEXT_DOMAIN); ?></label>
+			<label for="cpc_alerts_cron_max"><?php echo __('E-Mails zum Versenden', 'cp-community'); ?></label>
 		</td>
 		<td>
 			<div style="padding-left:55px">
 			<input type="text" style="margin-left:-55px;width:50px" name="cpc_alerts_cron_max" value="<?php echo get_option('cpc_alerts_cron_max'); ?>" />
 			<span class="description">
-				<?php echo __('Maximale Anzahl zu versendender E-Mails pro geplantem Zyklus (so niedrig wie möglich halten).', CPC2_TEXT_DOMAIN).'<br />'; ?>
-                <?php echo __('Das Verhältnis dieser Zahl zur oben genannten Frequenz sollte nicht weniger als 5:1 betragen. Beispiel: Häufigkeit von 125 Sekunden, Versenden von 25 E-Mails.', CPC2_TEXT_DOMAIN); ?>
+				<?php echo __('Maximale Anzahl zu versendender E-Mails pro geplantem Zyklus (so niedrig wie möglich halten).', 'cp-community').'<br />'; ?>
+                <?php echo __('Das Verhältnis dieser Zahl zur oben genannten Frequenz sollte nicht weniger als 5:1 betragen. Beispiel: Häufigkeit von 125 Sekunden, Versenden von 25 E-Mails.', 'cp-community'); ?>
 			</span>
             </div>
             </td> 
@@ -267,89 +267,89 @@ function cpc_admin_getting_started_alerts() {
 
 		<tr valign="top"> 
 		<td scope="row">
-			<label for="cpc_alerts_summary_email"><?php echo __('Zusammenfassende E-Mail', CPC2_TEXT_DOMAIN); ?></label>
+			<label for="cpc_alerts_summary_email"><?php echo __('Zusammenfassende E-Mail', 'cp-community'); ?></label>
 		</td>
 		<td>
 			<input type="text" name="cpc_alerts_summary_email" value="<?php echo get_option('cpc_alerts_summary_email'); ?>" />
 			<span class="description">
-				<?php echo __('Optionale E-Mail-Adresse, um eine Zusammenfassung der gesendeten geplanten Benachrichtigungen zu erhalten.', CPC2_TEXT_DOMAIN); ?>
+				<?php echo __('Optionale E-Mail-Adresse, um eine Zusammenfassung der gesendeten geplanten Benachrichtigungen zu erhalten.', 'cp-community'); ?>
 			</span></td> 
 		</tr> 	
 
 		<tr valign="top"> 
 		<td scope="row">
-			<label for="cpc_alerts_cron_email"><?php echo __('Cron-Bericht', CPC2_TEXT_DOMAIN); ?></label>
+			<label for="cpc_alerts_cron_email"><?php echo __('Cron-Bericht', 'cp-community'); ?></label>
 		</td>
 		<td>
 			<input type="text" name="cpc_alerts_cron_email" value="<?php echo get_option('cpc_alerts_cron_email'); ?>" />
 			<span class="description">
-				<?php echo __('Optionale E-Mail, um einen detaillierten Bericht über die CPC-Cron-Aktivität zu erhalten.', CPC2_TEXT_DOMAIN); ?>
+				<?php echo __('Optionale E-Mail, um einen detaillierten Bericht über die CPC-Cron-Aktivität zu erhalten.', 'cp-community'); ?>
 			</span></td> 
 		</tr> 	
 
 		<tr valign="top"> 
 		<td scope="row">
-			<label for="cpc_alerts_from_name"><?php echo __('Von Name', CPC2_TEXT_DOMAIN); ?></label>
+			<label for="cpc_alerts_from_name"><?php echo __('Von Name', 'cp-community'); ?></label>
 		</td>
 		<td>
 			<input type="text" name="cpc_alerts_from_name" value="<?php echo get_option('cpc_alerts_from_name'); ?>" />
 			<span class="description">
-				<?php echo __('Namensbenachrichtigungen werden von gesendet.', CPC2_TEXT_DOMAIN); ?>
+				<?php echo __('Namensbenachrichtigungen werden von gesendet.', 'cp-community'); ?>
 			</span></td> 
 		</tr> 	
 
 		<tr valign="top"> 
 		<td scope="row">
-			<label for="cpc_alerts_from_email"><?php echo __('Von E-Mail', CPC2_TEXT_DOMAIN); ?></label>
+			<label for="cpc_alerts_from_email"><?php echo __('Von E-Mail', 'cp-community'); ?></label>
 		</td>
 		<td>
 			<input type="text" name="cpc_alerts_from_email" value="<?php echo get_option('cpc_alerts_from_email'); ?>" />
 			<span class="description">
-				<?php echo __('Benachrichtigungen werden von E-Mail-Adresse gesendet.', CPC2_TEXT_DOMAIN); ?>
+				<?php echo __('Benachrichtigungen werden von E-Mail-Adresse gesendet.', 'cp-community'); ?>
 			</span></td> 
 		</tr> 	
 
 		<tr valign="top"> 
 		<td scope="row">
-			<label for="cpc_alerts_check"><?php echo __('Test-Email', CPC2_TEXT_DOMAIN); ?></label>
+			<label for="cpc_alerts_check"><?php echo __('Test-Email', 'cp-community'); ?></label>
 		</td>
 		<td>
 			<input type="checkbox" name="cpc_alerts_check" />
 			<span class="description">
-				<?php echo sprintf(__('Aktiviere diese Option, um mit ClassicPress direkt eine Test-E-Mail an %s zu senden.', CPC2_TEXT_DOMAIN), get_bloginfo('admin_email')); ?>
+				<?php echo sprintf(__('Aktiviere diese Option, um mit ClassicPress direkt eine Test-E-Mail an %s zu senden.', 'cp-community'), get_bloginfo('admin_email')); ?>
 			</span></td> 
 		</tr> 	
 
 		<tr valign="top"> 
 		<td scope="row">
-			<label for="cpc_alert_delete"><?php echo __('Aufbewahrung von Benachrichtigungsmeldungen', CPC2_TEXT_DOMAIN); ?></label>
+			<label for="cpc_alert_delete"><?php echo __('Aufbewahrung von Benachrichtigungsmeldungen', 'cp-community'); ?></label>
 		</td>
 		<td>
 			<input type="checkbox" name="cpc_alert_delete" <?php if (get_option('cpc_alert_delete')) echo 'CHECKED '; ?> />
 			<span class="description">
-				<?php echo sprintf(__('Erfolgreich gesendete <a href="%s">Benachrichtigungen</a> sofort löschen (wird von der gesamten Webseite entfernt).', CPC2_TEXT_DOMAIN), admin_url( 'edit.php?post_type=cpc_alerts' )); ?>
+				<?php echo sprintf(__('Erfolgreich gesendete <a href="%s">Benachrichtigungen</a> sofort löschen (wird von der gesamten Webseite entfernt).', 'cp-community'), admin_url( 'edit.php?post_type=cpc_alerts' )); ?>
 			</span></td> 
 		</tr> 	
 
 		<tr valign="top"> 
 		<td scope="row">
-			<label for="cpc_alert_resend"><?php echo __('Fehlgeschlagene Benachrichtigungen', CPC2_TEXT_DOMAIN); ?></label>
+			<label for="cpc_alert_resend"><?php echo __('Fehlgeschlagene Benachrichtigungen', 'cp-community'); ?></label>
 		</td>
 		<td>
 			<input type="checkbox" name="cpc_alert_resend" <?php if (get_option('cpc_alert_resend')) echo 'CHECKED '; ?> />
 			<span class="description">
-				<?php echo sprintf(__('Sende fehlgeschlagene Benachrichtigungen erneut (da die Zahl fehlgeschlagener Benachrichtigungen zunimmt, solltest Du <a href="%s">erwägen, sie zu entfernen</a>). Gilt nicht für geschlossene Konten.', CPC2_TEXT_DOMAIN), admin_url( 'edit.php?post_type=cpc_alerts' )); ?>
+				<?php echo sprintf(__('Sende fehlgeschlagene Benachrichtigungen erneut (da die Zahl fehlgeschlagener Benachrichtigungen zunimmt, solltest Du <a href="%s">erwägen, sie zu entfernen</a>). Gilt nicht für geschlossene Konten.', 'cp-community'), admin_url( 'edit.php?post_type=cpc_alerts' )); ?>
 			</span></td> 
 		</tr> 	
 
 		<tr valign="top"> 
 		<td scope="row">
-			<label for="cpc_add_alert_check"><?php echo __('Testbenachrichtigung', CPC2_TEXT_DOMAIN); ?></label>
+			<label for="cpc_add_alert_check"><?php echo __('Testbenachrichtigung', 'cp-community'); ?></label>
 		</td>
 		<td>
 			<input type="checkbox" name="cpc_add_alert_check" />
 			<span class="description">
-				<?php echo sprintf(__('Aktiviere diese Option, um sich selbst eine PS Community-<a href="%s">Benachrichtigung</a> hinzuzufügen.', CPC2_TEXT_DOMAIN), admin_url( 'edit.php?post_type=cpc_alerts' )); ?>
+				<?php echo sprintf(__('Aktiviere diese Option, um sich selbst eine PS Community-<a href="%s">Benachrichtigung</a> hinzuzufügen.', 'cp-community'), admin_url( 'edit.php?post_type=cpc_alerts' )); ?>
 			</span></td> 
 		</tr> 	
 
@@ -428,13 +428,13 @@ function cpc_alerts_admin_options_save ($the_post) {
 		$name = ($value = get_option('cpc_alerts_from_name')) ? $value : get_bloginfo('name');
 		$email = ($value = get_option('cpc_alerts_from_email')) ? $value : get_bloginfo('admin_email');
 		$headers = 'From: '.$name.' <'.$email.'>' . "\r\n";
-		$content = __('Wahoo! It worked!', CPC2_TEXT_DOMAIN);
+		$content = __('Wahoo! It worked!', 'cp-community');
 		$filtered_content = apply_filters('cpc_alerts_scheduled_job_content_filter', $content, 0);		
 		add_filter( 'wp_mail_content_type', 'cpc_set_html_content_type' );
-		if (wp_mail (get_bloginfo('admin_email'), __('Test-E-Mail', CPC2_TEXT_DOMAIN), $filtered_content)):
-			echo '<div class="updated"><p>'.sprintf(__('Test-E-Mail an %s gesendet.', CPC2_TEXT_DOMAIN), get_bloginfo('admin_email')).'</p></div>';
+		if (wp_mail (get_bloginfo('admin_email'), __('Test-E-Mail', 'cp-community'), $filtered_content)):
+			echo '<div class="updated"><p>'.sprintf(__('Test-E-Mail an %s gesendet.', 'cp-community'), get_bloginfo('admin_email')).'</p></div>';
 		else:
-			echo '<div class="error"><p>'.sprintf(__('Die Test-E-Mail konnte nicht an %s gesendet werden.', CPC2_TEXT_DOMAIN), get_bloginfo('admin_email')).'</p></div>';
+			echo '<div class="error"><p>'.sprintf(__('Die Test-E-Mail konnte nicht an %s gesendet werden.', 'cp-community'), get_bloginfo('admin_email')).'</p></div>';
 		endif;
 	endif;
 
@@ -443,10 +443,10 @@ function cpc_alerts_admin_options_save ($the_post) {
 		$name = ($value = get_option('cpc_alerts_from_name')) ? $value : get_bloginfo('name');
 		$email = ($value = get_option('cpc_alerts_from_email')) ? $value : get_bloginfo('admin_email');
 		$headers = 'From: '.$name.' <'.$email.'>' . "\r\n";
-		$content = __('Testbenachrichtigung', CPC2_TEXT_DOMAIN);
-        $subject = __('Testbenachrichtigung', CPC2_TEXT_DOMAIN);
+		$content = __('Testbenachrichtigung', 'cp-community');
+        $subject = __('Testbenachrichtigung', 'cp-community');
         cpc_com_insert_alert('test_alert', $subject, $content, $current_user->ID, $current_user->ID, '', '', $content, 'pending', 'Test alert.');
-		echo '<div class="updated"><p>'.__('Testbenachrichtigung hinzugefügt.', CPC2_TEXT_DOMAIN).'</p></div>';
+		echo '<div class="updated"><p>'.__('Testbenachrichtigung hinzugefügt.', 'cp-community').'</p></div>';
 	endif;
 
 	// Clear existing schedule
@@ -496,10 +496,10 @@ function cpc_alerts_scheduled_job() {
         
         /* Send email saying started, if enabled */
         if ($value = get_option('cpc_alerts_summary_email')) {
-            //wp_mail($value, __('Running Cron Job ref:'.$time, CPC2_TEXT_DOMAIN), date('l jS \of F Y h:i:s A'), $headers);
+            //wp_mail($value, __('Running Cron Job ref:'.$time, 'cp-community'), date('l jS \of F Y h:i:s A'), $headers);
         }
         if ($send_report) {
-            //wp_mail($send_report, __('Running Cron Job ref:'.$time, CPC2_TEXT_DOMAIN), date('l jS \of F Y h:i:s A'), $headers);
+            //wp_mail($send_report, __('Running Cron Job ref:'.$time, 'cp-community'), date('l jS \of F Y h:i:s A'), $headers);
         }
 
 
@@ -519,11 +519,11 @@ function cpc_alerts_scheduled_job() {
         );
 
         // Inform admin
-        $admin_content = sprintf(__('Geplante Benachrichtigungen wurden um %s gestartet.', CPC2_TEXT_DOMAIN), current_time('mysql', 1)).'<br /><br />';
+        $admin_content = sprintf(__('Geplante Benachrichtigungen wurden um %s gestartet.', 'cp-community'), current_time('mysql', 1)).'<br /><br />';
         if ($send_report):
-            $admin_content .= sprintf(__('Separater detaillierter Cron-Bericht wird an %s gesendet.', CPC2_TEXT_DOMAIN), $send_report).'<br /><br />';
+            $admin_content .= sprintf(__('Separater detaillierter Cron-Bericht wird an %s gesendet.', 'cp-community'), $send_report).'<br /><br />';
         else:
-            $admin_content .= __('KEIN separater detaillierter Cron-Bericht wird gesendet.', CPC2_TEXT_DOMAIN).'<br /><br />';
+            $admin_content .= __('KEIN separater detaillierter Cron-Bericht wird gesendet.', 'cp-community').'<br /><br />';
         endif;
 
         // Force HTML
@@ -531,11 +531,11 @@ function cpc_alerts_scheduled_job() {
 
         $pending_posts = get_posts( $args );
 
-        $admin_content .= sprintf(__('Ausstehende Benachrichtigungen zurückgegeben: %d.', CPC2_TEXT_DOMAIN), count($pending_posts)).'<br /><br />';
+        $admin_content .= sprintf(__('Ausstehende Benachrichtigungen zurückgegeben: %d.', 'cp-community'), count($pending_posts)).'<br /><br />';
 
         $c = 0;
 
-        if ($send_report) $report .= __('Ich fange an, sie zu durchlaufen.', CPC2_TEXT_DOMAIN).'<br />';
+        if ($send_report) $report .= __('Ich fange an, sie zu durchlaufen.', 'cp-community').'<br />';
 
         foreach ( $pending_posts as $pending ): 
             if ($c < $max) {
@@ -543,16 +543,16 @@ function cpc_alerts_scheduled_job() {
                 if (!get_option('cpc_disable_alerts')):
 
                     if ($send_report):
-                        $report .= '<br />'.sprintf(__('Benachrichtigung %d wird verarbeitet, ref:'.$time, CPC2_TEXT_DOMAIN), $pending->ID).'<br />';
+                        $report .= '<br />'.sprintf(__('Benachrichtigung %d wird verarbeitet, ref:'.$time, 'cp-community'), $pending->ID).'<br />';
                         $report .= '<h2>'.$pending->post_title.'</h2>';
                     endif;
 
                     /* Alert being processed, if enabled */
                     if ($value = get_option('cpc_alerts_summary_email')) {
-                        //wp_mail($value, sprintf(__('Processing alert %d, ref:'.$time, CPC2_TEXT_DOMAIN), $pending->ID), sprintf(__('Processing alert %d.', CPC2_TEXT_DOMAIN), $pending->ID), $headers);
+                        //wp_mail($value, sprintf(__('Processing alert %d, ref:'.$time, 'cp-community'), $pending->ID), sprintf(__('Processing alert %d.', 'cp-community'), $pending->ID), $headers);
                     }
                     if ($send_report) {
-                        //wp_mail($send_report, sprintf(__('Processing alert %d.', CPC2_TEXT_DOMAIN), $pending->ID), sprintf(__('Processing alert %d.', CPC2_TEXT_DOMAIN), $pending->ID), $headers);
+                        //wp_mail($send_report, sprintf(__('Processing alert %d.', 'cp-community'), $pending->ID), sprintf(__('Processing alert %d.', 'cp-community'), $pending->ID), $headers);
                     }
 
                     $try_again = get_option('cpc_alert_resend');
@@ -565,47 +565,47 @@ function cpc_alerts_scheduled_job() {
 
                             // not used! delete? $recipient = get_post_meta( $pending->ID, 'cpc_alert_recipient', true );
 
-                            if ($send_report) $report .= sprintf(__('Wird an %s gesendet, %s.', CPC2_TEXT_DOMAIN), $user->display_name, $user->user_email).'<br />';
+                            if ($send_report) $report .= sprintf(__('Wird an %s gesendet, %s.', 'cp-community'), $user->display_name, $user->user_email).'<br />';
 
                             $content = cpc_formatted_content($pending->post_content);
                             $subject = htmlspecialchars_decode($pending->post_title);
                             $filtered_content = apply_filters('cpc_alerts_scheduled_job_content_filter', $content, $pending->ID);
                             if (wp_mail($user->user_email, $subject, $filtered_content, $headers)) {
 
-                                if ($send_report) $report .= __('ClassicPress meldet, dass der Versand erfolgreich war.', CPC2_TEXT_DOMAIN).'<br />';
+                                if ($send_report) $report .= __('ClassicPress meldet, dass der Versand erfolgreich war.', 'cp-community').'<br />';
 
                                 $admin_content .= '<strong>'.$pending->post_title.'</strong><br />';
-                                $admin_content .= sprintf(__('Gesendet an: %s', CPC2_TEXT_DOMAIN), $user->user_email).'<br /><br />';
+                                $admin_content .= sprintf(__('Gesendet an: %s', 'cp-community'), $user->user_email).'<br /><br />';
                                 // Increase sent count
                                 $c++;
                                 // Update post
                                 update_post_meta( $pending->ID, 'cpc_alert_sent_datetime', current_time('mysql', 1) );
-                                if ($send_report) $report .= __('Benachrichtigung wurde als OK gesendet markiert.', CPC2_TEXT_DOMAIN).'<br />';
+                                if ($send_report) $report .= __('Benachrichtigung wurde als OK gesendet markiert.', 'cp-community').'<br />';
                                 // If set, delete alert sent immediately
                                 if (get_option('cpc_alert_delete')) {
                                     if (wp_delete_post( $pending->ID, true)) {
-                                        if ($send_report) $report .= __('Wie im Setup überprüft, wurde die Benachrichtigung automatisch gelöscht.', CPC2_TEXT_DOMAIN).'<br />';
+                                        if ($send_report) $report .= __('Wie im Setup überprüft, wurde die Benachrichtigung automatisch gelöscht.', 'cp-community').'<br />';
                                     } else {
-                                        if ($send_report) $report .= __('Wie im Setup überprüft, wurde die Benachrichtigung automatisch gelöscht – das Löschen ist jedoch fehlgeschlagen.', CPC2_TEXT_DOMAIN).'<br />';                                    
+                                        if ($send_report) $report .= __('Wie im Setup überprüft, wurde die Benachrichtigung automatisch gelöscht – das Löschen ist jedoch fehlgeschlagen.', 'cp-community').'<br />';                                    
                                     }
                                 }
                                 $try_again = false;
 
                             } else {
 
-                                if ($send_report) $report .= __('ClassicPress reports as FAILED to send.', CPC2_TEXT_DOMAIN).'<br />';
+                                if ($send_report) $report .= __('ClassicPress reports as FAILED to send.', 'cp-community').'<br />';
 
                                 update_post_meta( $pending->ID, 'cpc_alert_failed_datetime', current_time('mysql', 1) );
 
                                 $admin_content .= '<p style="color:red;font-weight:bold;">'.$pending->post_title.'</p>';
                                 if ($user->user_email):
-                                    $admin_content .= sprintf(__('Failed to send to: %s', CPC2_TEXT_DOMAIN), $user->user_email).'<br />';
+                                    $admin_content .= sprintf(__('Failed to send to: %s', 'cp-community'), $user->user_email).'<br />';
                                 else:
-                                    $admin_content .= __('Failed to send, name email.', CPC2_TEXT_DOMAIN).'<br />';
+                                    $admin_content .= __('Failed to send, name email.', 'cp-community').'<br />';
                                 endif;
 
                                 // Get reason why
-                                $msg = __('Mail function failed.', CPC2_TEXT_DOMAIN);
+                                $msg = __('Mail function failed.', 'cp-community');
                                 global $ts_mail_errors;
                                 global $phpmailer;
                                 $cpc_mail_errors = array();
@@ -613,11 +613,11 @@ function cpc_alerts_scheduled_job() {
                                     $msg .= '<br /><em>'.$phpmailer->ErrorInfo.' ('.$user->ID.'/'.$user_login.')</em>';
                                     $admin_content .= '<em>'.$phpmailer->ErrorInfo.'</em><br />';
                                 }
-                                if ($try_again) $msg .= ' <strong>'.__('Re-trying...', CPC2_TEXT_DOMAIN).'</strong>';
+                                if ($try_again) $msg .= ' <strong>'.__('Re-trying...', 'cp-community').'</strong>';
                                 $admin_content .= '<br />';
                                 update_post_meta( $pending->ID, 'cpc_alert_note', $msg );
 
-                                if ($send_report) $report .= __('Reason why:', CPC2_TEXT_DOMAIN).'<br />';                            
+                                if ($send_report) $report .= __('Reason why:', 'cp-community').'<br />';                            
                                 if ($send_report) $report .= '<em>'.$phpmailer->ErrorInfo.' ('.$user->ID.'/'.$user_login.')</em><br />';
 
                             }
@@ -625,28 +625,28 @@ function cpc_alerts_scheduled_job() {
                         else:
 
                             update_post_meta( $pending->ID, 'cpc_alert_failed_datetime', current_time('mysql', 1) );
-                            update_post_meta( $pending->ID, 'cpc_alert_note', __('Closed account', CPC2_TEXT_DOMAIN) );
+                            update_post_meta( $pending->ID, 'cpc_alert_note', __('Closed account', 'cp-community') );
                             $try_again = false; // Don't try again, as closed account
 
-                            $admin_content .= sprintf(__('Account %d closed.', CPC2_TEXT_DOMAIN), $user->ID).'<br />';
+                            $admin_content .= sprintf(__('Account %d closed.', 'cp-community'), $user->ID).'<br />';
 
                         endif;
 
                     else:
 
-                        $admin_content .= sprintf(__('Recipient for post %d: %s not found.', CPC2_TEXT_DOMAIN), $pending->ID, $user_login).'<br />';
+                        $admin_content .= sprintf(__('Recipient for post %d: %s not found.', 'cp-community'), $pending->ID, $user_login).'<br />';
 
                         update_post_meta( $pending->ID, 'cpc_alert_failed_datetime', current_time('mysql', 1) );
-                        $msg = sprintf(__('Recipient not found, with login of "%s" for alert %d.', CPC2_TEXT_DOMAIN), $user_login, $pending->ID);
+                        $msg = sprintf(__('Recipient not found, with login of "%s" for alert %d.', 'cp-community'), $user_login, $pending->ID);
                         global $wpdb;
                         $sql = "select meta_value from ".$wpdb->prefix."postmeta where post_ID = %d and meta_key = 'cpc_alert_recipient'";
                         $the_user = $wpdb->get_results($wpdb->prepare($sql, $pending->ID));
                         if ($the_user):
                             $msg .= ' ['.$the_user->meta_value.']';
                         else:
-                            $msg .= ' ['.__('no meta value', CPC2_TEXT_DOMAIN).']';
+                            $msg .= ' ['.__('no meta value', 'cp-community').']';
                         endif;
-                        if ($try_again) $msg .= ' <strong>'.__('Re-trying...', CPC2_TEXT_DOMAIN).'</strong>';
+                        if ($try_again) $msg .= ' <strong>'.__('Re-trying...', 'cp-community').'</strong>';
                         update_post_meta( $pending->ID, 'cpc_alert_note', $msg );
 
                     endif;
@@ -664,7 +664,7 @@ function cpc_alerts_scheduled_job() {
 
                     // Alerts disabled, say so
                     update_post_meta( $pending->ID, 'cpc_alert_failed_datetime', current_time('mysql', 1) );
-                    update_post_meta( $pending->ID, 'cpc_alert_note', __('Alerts disabled via setup', CPC2_TEXT_DOMAIN) );
+                    update_post_meta( $pending->ID, 'cpc_alert_note', __('Alerts disabled via setup', 'cp-community') );
 
                     // Set post to published, won't try and be sent again
                     $this_post = array(
@@ -673,14 +673,14 @@ function cpc_alerts_scheduled_job() {
                     );
                     wp_update_post( $this_post );    
 
-                    if ($send_report) $report .= __('Alerts disabled.', CPC2_TEXT_DOMAIN).'<br /><br />';
+                    if ($send_report) $report .= __('Alerts disabled.', 'cp-community').'<br /><br />';
 
 
                 endif;
 
             } else {
 
-                if ($send_report) $report .= __('Hit maximum number of alerts to send.', CPC2_TEXT_DOMAIN).'<br /><br />';
+                if ($send_report) $report .= __('Hit maximum number of alerts to send.', 'cp-community').'<br /><br />';
 
             }
 
@@ -688,22 +688,22 @@ function cpc_alerts_scheduled_job() {
 
         /* Send email saying started, if enabled */
         if ($value = get_option('cpc_alerts_summary_email')) {
-            //wp_mail($value, __('Ended Cron Job ref:'.$time, CPC2_TEXT_DOMAIN), date('l jS \of F Y h:i:s A'), $headers);
+            //wp_mail($value, __('Ended Cron Job ref:'.$time, 'cp-community'), date('l jS \of F Y h:i:s A'), $headers);
         }
         if ($send_report) {
-            //wp_mail($send_report, __('Ended Cron Job ref:'.$time, CPC2_TEXT_DOMAIN), date('l jS \of F Y h:i:s A'), $headers);
+            //wp_mail($send_report, __('Ended Cron Job ref:'.$time, 'cp-community'), date('l jS \of F Y h:i:s A'), $headers);
         }    
 
         // Inform admin
-        $admin_content .= sprintf(__('Maximum alerts to send: %d.', CPC2_TEXT_DOMAIN), $max).'<br />';
-        $admin_content .= sprintf(__('Alerts sent: %d.', CPC2_TEXT_DOMAIN), $c).'<br />';
+        $admin_content .= sprintf(__('Maximum alerts to send: %d.', 'cp-community'), $max).'<br />';
+        $admin_content .= sprintf(__('Alerts sent: %d.', 'cp-community'), $c).'<br />';
         if ($value = get_option('cpc_alerts_summary_email'))
-            wp_mail($value, __('Scheduled Alerts (ref: '.$time.')', CPC2_TEXT_DOMAIN), $admin_content, $headers);
+            wp_mail($value, __('Scheduled Alerts (ref: '.$time.')', 'cp-community'), $admin_content, $headers);
 
         // Cron report
-        if ($send_report) $report .= '<br />'.sprintf(__('Alerts sent: %d.', CPC2_TEXT_DOMAIN), $c).'<br />';
+        if ($send_report) $report .= '<br />'.sprintf(__('Alerts sent: %d.', 'cp-community'), $c).'<br />';
         if ($send_report) $report .= '<br />'.'Ending cron at '.date('l jS \of F Y h:i:s A').'<br /><br />';
-        if ($send_report) wp_mail($send_report, __('Cron report (ref: '.$time.')', CPC2_TEXT_DOMAIN), $report, $headers);
+        if ($send_report) wp_mail($send_report, __('Cron report (ref: '.$time.')', 'cp-community'), $report, $headers);
         
         /* clear the already running flag so starts again next time */
         delete_option('cpc_cron_flag');
@@ -712,12 +712,12 @@ function cpc_alerts_scheduled_job() {
         
         /* already running flag is set */
         
-        $admin_content .= sprintf(__('Cron already running from: %s.', CPC2_TEXT_DOMAIN), date("Y-m-d H:i:s",$cpc_cron_flag)).'<br />';
+        $admin_content .= sprintf(__('Cron already running from: %s.', 'cp-community'), date("Y-m-d H:i:s",$cpc_cron_flag)).'<br />';
         if ($value = get_option('cpc_alerts_summary_email')) {
-            wp_mail($value, __('Scheduled Alerts (ref: '.$time.')', CPC2_TEXT_DOMAIN), $admin_content, $headers);
+            wp_mail($value, __('Scheduled Alerts (ref: '.$time.')', 'cp-community'), $admin_content, $headers);
         }
-        if ($send_report) $report .= '<br />'.sprintf(__('Cron already running from: %s.', CPC2_TEXT_DOMAIN), date("Y-m-d H:i:s",$cpc_cron_flag)).'<br />';
-        if ($send_report) wp_mail($send_report, __('Cron report (ref: '.$time.')', CPC2_TEXT_DOMAIN), $report, $headers);
+        if ($send_report) $report .= '<br />'.sprintf(__('Cron already running from: %s.', 'cp-community'), date("Y-m-d H:i:s",$cpc_cron_flag)).'<br />';
+        if ($send_report) wp_mail($send_report, __('Cron report (ref: '.$time.')', 'cp-community'), $report, $headers);
         
     }
 
@@ -736,26 +736,26 @@ function cpc_show_cron_flag_status() {
     
         if ( (isset($_GET['cpc_cron_flag_reset']) ) || (isset($_POST['cpc_cron_flag_reset']) && $_POST['cpc_cron_flag_reset'] == "1") ) {
             echo '<div class="notice notice-warning">';
-                echo '<p>'.__('Cron process reset.', CPC2_TEXT_DOMAIN).'</p>';
+                echo '<p>'.__('Cron process reset.', 'cp-community').'</p>';
             echo '</div>';
             delete_option('cpc_cron_flag');
         }
         $cpc_cron_flag = get_option('cpc_cron_flag');
         if ($cpc_cron_flag) {
             echo '<div class="notice notice-warning">';
-                echo '<p>'.sprintf(__('PS Community Cron current processing. Started at %s.', CPC2_TEXT_DOMAIN), date("Y-m-d H:i:s",$cpc_cron_flag)).'</p>';
+                echo '<p>'.sprintf(__('PS Community Cron current processing. Started at %s.', 'cp-community'), date("Y-m-d H:i:s",$cpc_cron_flag)).'</p>';
                 $interval = time() - $cpc_cron_flag;
                 // only show reset button if stuck for over an hour
                 if ($interval > 3600) {
-                    echo '<form action="#" method="POST"><input type="submit" class="button-primary" value="'.__('Reset', CPC2_TEXT_DOMAIN).'" /><input type="hidden" name="cpc_cron_flag_reset" value="1" /></form><br />';
+                    echo '<form action="#" method="POST"><input type="submit" class="button-primary" value="'.__('Reset', 'cp-community').'" /><input type="hidden" name="cpc_cron_flag_reset" value="1" /></form><br />';
                 }
             echo '</div>';
         } else {
             echo '<div class="notice notice-success">';
-                echo '<p>'.__('PS Community Cron ready to process.', CPC2_TEXT_DOMAIN);
+                echo '<p>'.__('PS Community Cron ready to process.', 'cp-community');
                 $last_sent = get_option('cpc_cron_flag_last_sent');
                 if (true || $last_sent) {
-                    echo ' '.sprintf(__('Last processed: %s.', CPC2_TEXT_DOMAIN), date("Y-m-d H:i:s",$last_sent));
+                    echo ' '.sprintf(__('Last processed: %s.', 'cp-community'), date("Y-m-d H:i:s",$last_sent));
                 }
                 echo '</p>';
             echo '</div>';
@@ -776,20 +776,20 @@ function cpc_admin_getting_started_core_hook_alerts($the_post) {
 	?>
 	<tr class="form-field">
 		<th scope="row" valign="top">
-			<label for="cpc_core_options"><?php _e('Inhaltsbereinigung', CPC2_TEXT_DOMAIN); ?></label>
+			<label for="cpc_core_options"><?php _e('Inhaltsbereinigung', 'cp-community'); ?></label>
 		</th>
 		<td>
-			<input type="checkbox" style="width:10px" name="cpc_cleanup" /><span class="description"><?php _e('Führe dies aus, wenn Du Benutzer löschst (einmaliger Vorgang, Kontrollkästchen bleibt nicht aktiviert).', CPC2_TEXT_DOMAIN); ?></span>
+			<input type="checkbox" style="width:10px" name="cpc_cleanup" /><span class="description"><?php _e('Führe dies aus, wenn Du Benutzer löschst (einmaliger Vorgang, Kontrollkästchen bleibt nicht aktiviert).', 'cp-community'); ?></span>
 		</td>
 	</tr> 
 
 	<tr class="form-field">
         <th scope="row" valign="top">
-            <label for="activity_sync_avatars"><?php _e('Avatar-Meta neu synchronisieren', CPC2_TEXT_DOMAIN); ?></label>
+            <label for="activity_sync_avatars"><?php _e('Avatar-Meta neu synchronisieren', 'cp-community'); ?></label>
         </th>
         <td>
             <input name="activity_sync_avatars" id="activity_sync_avatars" type="checkbox" style="width:10px" />
-            <span class="description"><?php _e('Initiiert eine erneute Synchronisierung, einmaliger Vorgang, kann eine Weile dauern ... (einmaliger Vorgang, Kontrollkästchen bleibt nicht aktiviert).', CPC2_TEXT_DOMAIN); ?></span>
+            <span class="description"><?php _e('Initiiert eine erneute Synchronisierung, einmaliger Vorgang, kann eine Weile dauern ... (einmaliger Vorgang, Kontrollkästchen bleibt nicht aktiviert).', 'cp-community'); ?></span>
 
             <?php
             if (isset($_POST['activity_sync_avatars'])):
@@ -834,8 +834,8 @@ function cpc_admin_getting_started_core_hook_alerts($the_post) {
                         delete_user_meta( $id, 'cpc_com_avatar' );
                     endif;
                 endforeach;
-                echo '<div class="cpc_success" style="margin-top:20px">'.sprintf(__('%d Benutzer gefunden.', CPC2_TEXT_DOMAIN), $count).'<br />';
-                echo sprintf(__('%d Benutzer mit Avataren gefunden, alle anderen Benutzer haben keinen Avatar hochgeladen.', CPC2_TEXT_DOMAIN), $avatars_found).'</div>';
+                echo '<div class="cpc_success" style="margin-top:20px">'.sprintf(__('%d Benutzer gefunden.', 'cp-community'), $count).'<br />';
+                echo sprintf(__('%d Benutzer mit Avataren gefunden, alle anderen Benutzer haben keinen Avatar hochgeladen.', 'cp-community'), $avatars_found).'</div>';
             endif;
             ?>
 
@@ -844,11 +844,11 @@ function cpc_admin_getting_started_core_hook_alerts($the_post) {
 
 	<tr class="form-field">
         <th scope="row" valign="top">
-            <label for="activity_migrate_avatar_folders"><?php _e('Avatar-Ordner ins neue Schema migrieren', CPC2_TEXT_DOMAIN); ?></label>
+            <label for="activity_migrate_avatar_folders"><?php _e('Avatar-Ordner ins neue Schema migrieren', 'cp-community'); ?></label>
         </th>
         <td>
             <input name="activity_migrate_avatar_folders" id="activity_migrate_avatar_folders" type="checkbox" style="width:10px" />
-            <span class="description"><?php _e('Verschiebt bestehende Avatare aus alten numerischen Benutzerordnern in die neuen User-Cloud-Ordner und aktualisiert die Avatar-Metadaten (einmaliger Vorgang).', CPC2_TEXT_DOMAIN); ?></span>
+            <span class="description"><?php _e('Verschiebt bestehende Avatare aus alten numerischen Benutzerordnern in die neuen User-Cloud-Ordner und aktualisiert die Avatar-Metadaten (einmaliger Vorgang).', 'cp-community'); ?></span>
 
             <?php
             if (isset($_POST['activity_migrate_avatar_folders'])):
@@ -926,10 +926,10 @@ function cpc_admin_getting_started_core_hook_alerts($the_post) {
                 endforeach;
 
                 echo '<div class="cpc_success" style="margin-top:20px">';
-                echo sprintf(__('%d Benutzer geprüft.', CPC2_TEXT_DOMAIN), $count).'<br />';
-                echo sprintf(__('%d Benutzerordner migriert.', CPC2_TEXT_DOMAIN), $users_migrated).'<br />';
-                echo sprintf(__('%d Avatar-Dateien verschoben.', CPC2_TEXT_DOMAIN), $files_moved).'<br />';
-                echo sprintf(__('%d Avatar-Meta-Einträge aktualisiert.', CPC2_TEXT_DOMAIN), $avatar_meta_updated);
+                echo sprintf(__('%d Benutzer geprüft.', 'cp-community'), $count).'<br />';
+                echo sprintf(__('%d Benutzerordner migriert.', 'cp-community'), $users_migrated).'<br />';
+                echo sprintf(__('%d Avatar-Dateien verschoben.', 'cp-community'), $files_moved).'<br />';
+                echo sprintf(__('%d Avatar-Meta-Einträge aktualisiert.', 'cp-community'), $avatar_meta_updated);
                 echo '</div>';
             endif;
             ?>
@@ -939,15 +939,15 @@ function cpc_admin_getting_started_core_hook_alerts($the_post) {
 
 	<tr class="form-field">
 		<th scope="row" valign="top">
-			<label for="cpc_filter_recent_comments"><?php _e('Neueste Kommentare Widget.', CPC2_TEXT_DOMAIN); ?></label>
+			<label for="cpc_filter_recent_comments"><?php _e('Neueste Kommentare Widget.', 'cp-community'); ?></label>
 		</th>
 		<td>
-			<input type="checkbox" style="width:10px" name="cpc_filter_recent_comments" <?php if (get_option('cpc_filter_recent_comments')) echo 'CHECKED '; ?>/><span class="description"><?php _e('Füge Forum- und Aktivitätsantworten in das Widget "Letzte Kommentare" ein (Forumssicherheit wird nicht beachtet).', CPC2_TEXT_DOMAIN); ?></span>
+			<input type="checkbox" style="width:10px" name="cpc_filter_recent_comments" <?php if (get_option('cpc_filter_recent_comments')) echo 'CHECKED '; ?>/><span class="description"><?php _e('Füge Forum- und Aktivitätsantworten in das Widget "Letzte Kommentare" ein (Forumssicherheit wird nicht beachtet).', 'cp-community'); ?></span>
 		</td>
 	</tr> 
 	<tr class="form-field">
 		<th scope="row" valign="top">
-			<label for="cpc_force_https"><?php _e('HTTPS-Erkennung', CPC2_TEXT_DOMAIN); ?></label>
+			<label for="cpc_force_https"><?php _e('HTTPS-Erkennung', 'cp-community'); ?></label>
 		</th>
 		<td>
 	        <select name="cpc_force_https">
@@ -955,13 +955,13 @@ function cpc_admin_getting_started_core_hook_alerts($the_post) {
                 $force_https = get_option('cpc_force_https');
                 echo '<option value="0"';
                     if ($force_https != "http" && $force_https != "https") echo ' SELECTED';
-                    echo'>'.__('Standard', CPC2_TEXT_DOMAIN).'</option>';
+                    echo'>'.__('Standard', 'cp-community').'</option>';
                 echo '<option value="https"';
                     if ($force_https == "https") echo ' SELECTED';
-                    echo'>'.__('Erzwingen (https:)', CPC2_TEXT_DOMAIN).'</option>';
+                    echo'>'.__('Erzwingen (https:)', 'cp-community').'</option>';
                 echo '<option value="http"';
                     if ($force_https == "http") echo ' SELECTED';
-                    echo '>'.__('Ausschalten erzwingen (http:)', CPC2_TEXT_DOMAIN).'</option>';
+                    echo '>'.__('Ausschalten erzwingen (http:)', 'cp-community').'</option>';
              ?>						
             </select>
 		</td>
@@ -984,7 +984,7 @@ function cpc_admin_getting_started_core_save_hook_alerts($the_post) {
 			echo '<div class="'.$class.'" style="'.$style.'"><p>';
 
 				// Alerts with no recipient
-				echo '<strong>'.__('Benachrichtigungen werden überprüft...', CPC2_TEXT_DOMAIN).'</strong><br />';
+				echo '<strong>'.__('Benachrichtigungen werden überprüft...', 'cp-community').'</strong><br />';
 				$alerts = get_posts( array(
 					'post_type' => 'cpc_alerts',
 					'posts_per_page' => -1,
@@ -1001,13 +1001,13 @@ function cpc_admin_getting_started_core_save_hook_alerts($the_post) {
 							$u = get_user_by('login', $target);
 							if (!$u):
 								wp_delete_post($alert->ID, true);
-								echo sprintf(__('Benachrichtigung gelöscht (Benutzer-ID %d existiert nicht).', CPC2_TEXT_DOMAIN), $target).'<br />';
+								echo sprintf(__('Benachrichtigung gelöscht (Benutzer-ID %d existiert nicht).', 'cp-community'), $target).'<br />';
 								$sql = "DELETE FROM ".$wpdb->prefix."posts WHERE post_type='cpc_forum_subs' AND post_title = %s";
 								$wpdb->query($wpdb->prepare($sql, $target));
-								echo sprintf(__('Forum-Abonnements für %s gelöscht.', CPC2_TEXT_DOMAIN), $target).'<br />';
+								echo sprintf(__('Forum-Abonnements für %s gelöscht.', 'cp-community'), $target).'<br />';
 								$sql = "DELETE FROM ".$wpdb->prefix."posts WHERE post_type='cpc_subs' AND post_title = %s";
 								$wpdb->query($wpdb->prepare($sql, $target));
-								echo sprintf(__('Forum-Themenabonnements für %s gelöscht.', CPC2_TEXT_DOMAIN), $target).'<br />';
+								echo sprintf(__('Forum-Themenabonnements für %s gelöscht.', 'cp-community'), $target).'<br />';
 								$alerts_c++;
 							endif;
 						else:
@@ -1015,15 +1015,15 @@ function cpc_admin_getting_started_core_save_hook_alerts($the_post) {
 	                        $alerts_c++;
 						endif;
 					}
-					echo __('Geprüfte Benachrichtigungen:', CPC2_TEXT_DOMAIN).' '.$alerts_n.', ';
-					echo __('gelöscht:', CPC2_TEXT_DOMAIN).' '.$alerts_c.'<br />';
+					echo __('Geprüfte Benachrichtigungen:', 'cp-community').' '.$alerts_n.', ';
+					echo __('gelöscht:', 'cp-community').' '.$alerts_c.'<br />';
 
 				} else {
-					echo __('Geprüfte Benachrichtigungen:', CPC2_TEXT_DOMAIN).' 0<br />';
+					echo __('Geprüfte Benachrichtigungen:', 'cp-community').' 0<br />';
 	            }
 
 	            // Subscriptions where user no longer exists
-				echo '<br /><strong>'.__('Abonnements werden geprüft...', CPC2_TEXT_DOMAIN).'</strong><br />';	            
+				echo '<br /><strong>'.__('Abonnements werden geprüft...', 'cp-community').'</strong><br />';	            
 	            $sql = "SELECT DISTINCT post_title FROM wp_posts 
 	            		WHERE (post_type='cpc_subs' OR post_type = 'cpc_forum_subs')
 	            		AND post_title NOT IN (SELECT user_login FROM wp_users)";
@@ -1035,16 +1035,16 @@ function cpc_admin_getting_started_core_save_hook_alerts($the_post) {
 	            		$wpdb->query($wpdb->prepare($sql, $user_login));
 	            		$m++;
 	            	endforeach;
-	            	echo __('Abonnements gelöscht:', CPC2_TEXT_DOMAIN).' '.$m.'<br />';
+	            	echo __('Abonnements gelöscht:', 'cp-community').' '.$m.'<br />';
 	            else:
-					echo __('Keine ungültigen Abonnements.', CPC2_TEXT_DOMAIN);
+					echo __('Keine ungültigen Abonnements.', 'cp-community');
 	            endif;
 
 	        echo '</p>';
 
 	        if (isset($_GET['cpc_cleanup'])):
 	        	$url = admin_url( 'edit.php?post_type=cpc_alerts' );
-	    		echo '<button style="margin:10px 0 10px 0; width:75px;" onclick="javascript:window.location.assign(\''.$url.'\');return false;">'.__('OK', CPC2_TEXT_DOMAIN).'</button>';
+	    		echo '<button style="margin:10px 0 10px 0; width:75px;" onclick="javascript:window.location.assign(\''.$url.'\');return false;">'.__('OK', 'cp-community').'</button>';
 	        endif;
 
 	        echo '</div>';

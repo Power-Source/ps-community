@@ -2,17 +2,17 @@
 
 function cpc_custom_post_doc() {
     $labels = array(
-        'name' => __('Dokumente', CPC2_TEXT_DOMAIN),
-        'singular_name' => __('Dokument', CPC2_TEXT_DOMAIN),
-        'add_new' => __('Neu hinzufuegen', CPC2_TEXT_DOMAIN),
-        'add_new_item' => __('Neues Dokument hinzufuegen', CPC2_TEXT_DOMAIN),
-        'edit_item' => __('Dokument bearbeiten', CPC2_TEXT_DOMAIN),
-        'new_item' => __('Neues Dokument', CPC2_TEXT_DOMAIN),
-        'view_item' => __('Dokument anzeigen', CPC2_TEXT_DOMAIN),
-        'search_items' => __('Dokumente durchsuchen', CPC2_TEXT_DOMAIN),
-        'not_found' => __('Keine Dokumente gefunden', CPC2_TEXT_DOMAIN),
-        'not_found_in_trash' => __('Keine Dokumente im Papierkorb gefunden', CPC2_TEXT_DOMAIN),
-        'menu_name' => __('Dokumente', CPC2_TEXT_DOMAIN),
+        'name' => __('Dokumente', 'cp-community'),
+        'singular_name' => __('Dokument', 'cp-community'),
+        'add_new' => __('Neu hinzufuegen', 'cp-community'),
+        'add_new_item' => __('Neues Dokument hinzufuegen', 'cp-community'),
+        'edit_item' => __('Dokument bearbeiten', 'cp-community'),
+        'new_item' => __('Neues Dokument', 'cp-community'),
+        'view_item' => __('Dokument anzeigen', 'cp-community'),
+        'search_items' => __('Dokumente durchsuchen', 'cp-community'),
+        'not_found' => __('Keine Dokumente gefunden', 'cp-community'),
+        'not_found_in_trash' => __('Keine Dokumente im Papierkorb gefunden', 'cp-community'),
+        'menu_name' => __('Dokumente', 'cp-community'),
     );
 
     $args = array(
@@ -34,8 +34,8 @@ function cpc_custom_post_doc() {
     register_taxonomy('cpc_doc_tag', 'cpc_doc', array(
         'hierarchical' => false,
         'labels' => array(
-            'name' => __('Dokument-Tags', CPC2_TEXT_DOMAIN),
-            'singular_name' => __('Dokument-Tag', CPC2_TEXT_DOMAIN),
+            'name' => __('Dokument-Tags', 'cp-community'),
+            'singular_name' => __('Dokument-Tag', 'cp-community'),
         ),
         'show_ui' => true,
         'show_admin_column' => true,

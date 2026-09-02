@@ -68,14 +68,14 @@
 
 			$.post(cpc_groups_settings.ajaxurl, data)
 				.done(function(response) {
-					var message = (response && response.data && response.data.message) ? response.data.message : 'Chat settings could not be saved.';
+					var message = (response && response.data && response.data.message) ? response.data.message : cpc_groups_settings.i18n.chatSaveError;
 					showNotice(message, response && response.success ? 'success' : 'error');
 					if (response && response.success && enableChat) {
 						window.location.reload();
 					}
 				})
 				.fail(function() {
-					showNotice('Ein Fehler ist aufgetreten.', 'error');
+					showNotice(cpc_groups_settings.i18n.genericError, 'error');
 				})
 				.always(function() {
 					$submit.prop('disabled', false);
@@ -110,10 +110,10 @@
 				if (response && response.success) {
 					showNotice(response.data.message, 'success');
 				} else {
-					showNotice('Fehler: ' + (response && response.data ? response.data.message : 'Unbekannter Fehler'), 'error');
+					showNotice(cpc_groups_settings.i18n.errorPrefix + (response && response.data ? response.data.message : cpc_groups_settings.i18n.unknownError), 'error');
 				}
 			}).fail(function() {
-				showNotice('Ein Fehler ist aufgetreten.', 'error');
+				showNotice(cpc_groups_settings.i18n.genericError, 'error');
 			});
 		});
 
@@ -140,10 +140,10 @@
 				if (response && response.success) {
 					showNotice(response.data.message, 'success');
 				} else {
-					showNotice('Fehler: ' + (response && response.data ? response.data.message : 'Unbekannter Fehler'), 'error');
+					showNotice(cpc_groups_settings.i18n.errorPrefix + (response && response.data ? response.data.message : cpc_groups_settings.i18n.unknownError), 'error');
 				}
 			}).fail(function() {
-				showNotice('Ein Fehler ist aufgetreten.', 'error');
+				showNotice(cpc_groups_settings.i18n.genericError, 'error');
 			});
 		});
 
@@ -154,7 +154,7 @@
 			var groupId = $select.data('group-id');
 			var newRole = $select.val();
 
-			if (!confirm('Rolle für Mitglied wirklich ändern?')) {
+			if (!confirm(cpc_groups_settings.i18n.confirmChangeRole)) {
 				$select.val($select.data('previous-role'));
 				return;
 			}
@@ -174,11 +174,11 @@
 					showNotice(response.data.message, 'success');
 					$select.data('previous-role', newRole);
 				} else {
-					showNotice('Fehler: ' + (response && response.data ? response.data.message : 'Unbekannter Fehler'), 'error');
+					showNotice(cpc_groups_settings.i18n.errorPrefix + (response && response.data ? response.data.message : cpc_groups_settings.i18n.unknownError), 'error');
 					window.location.reload();
 				}
 			}).fail(function() {
-				showNotice('Ein Fehler ist aufgetreten.', 'error');
+				showNotice(cpc_groups_settings.i18n.genericError, 'error');
 				window.location.reload();
 			});
 		});
@@ -187,11 +187,11 @@
 		$(document).on('click', '.cpc-delete-group-btn', function(event) {
 			event.preventDefault();
 
-			if (!confirm('Willst du diese Gruppe wirklich löschen? Dies kann nicht rückgängig gemacht werden.')) {
+			if (!confirm(cpc_groups_settings.i18n.confirmDeleteGroup)) {
 				return;
 			}
 
-			if (!confirm('Bist du dir wirklich sicher?')) {
+			if (!confirm(cpc_groups_settings.i18n.confirmDeleteAgain)) {
 				return;
 			}
 
@@ -210,10 +210,10 @@
 					showNotice(response.data.message, 'success');
 					window.location.href = response.data.redirect;
 				} else {
-					showNotice('Fehler: ' + (response && response.data ? response.data.message : 'Unbekannter Fehler'), 'error');
+					showNotice(cpc_groups_settings.i18n.errorPrefix + (response && response.data ? response.data.message : cpc_groups_settings.i18n.unknownError), 'error');
 				}
 			}).fail(function() {
-				showNotice('Ein Fehler ist aufgetreten.', 'error');
+				showNotice(cpc_groups_settings.i18n.genericError, 'error');
 			});
 		});
 
@@ -241,10 +241,10 @@
 					showNotice(response.data.message, 'success');
 					$btn.closest('.cpc-membership-request').fadeOut();
 				} else {
-					showNotice('Fehler: ' + (response && response.data ? response.data.message : 'Unbekannter Fehler'), 'error');
+					showNotice(cpc_groups_settings.i18n.errorPrefix + (response && response.data ? response.data.message : cpc_groups_settings.i18n.unknownError), 'error');
 				}
 			}).fail(function() {
-				showNotice('Ein Fehler ist aufgetreten.', 'error');
+				showNotice(cpc_groups_settings.i18n.genericError, 'error');
 			});
 		});
 
@@ -252,7 +252,7 @@
 		$(document).on('click', '.cpc-reject-membership', function(event) {
 			event.preventDefault();
 
-			if (!confirm('Anfrage wirklich ablehnen?')) {
+			if (!confirm(cpc_groups_settings.i18n.confirmRejectRequest)) {
 				return;
 			}
 
@@ -274,10 +274,10 @@
 					showNotice(response.data.message, 'success');
 					$btn.closest('.cpc-membership-request').fadeOut();
 				} else {
-					showNotice('Fehler: ' + (response && response.data ? response.data.message : 'Unbekannter Fehler'), 'error');
+					showNotice(cpc_groups_settings.i18n.errorPrefix + (response && response.data ? response.data.message : cpc_groups_settings.i18n.unknownError), 'error');
 				}
 			}).fail(function() {
-				showNotice('Ein Fehler ist aufgetreten.', 'error');
+				showNotice(cpc_groups_settings.i18n.genericError, 'error');
 			});
 		});
 	});

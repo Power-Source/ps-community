@@ -3,18 +3,18 @@
 if (!function_exists('cpc_multisite_get_module_registry')) {
     function cpc_multisite_get_module_registry() {
         return array(
-            'core-profile' => __('Profil', CPC2_TEXT_DOMAIN),
-            'core-activity' => __('Aktivität', CPC2_TEXT_DOMAIN),
-            'core-avatar' => __('Avatar', CPC2_TEXT_DOMAIN),
-            'core-friendships' => __('Freundschaften', CPC2_TEXT_DOMAIN),
-            'core-alerts' => __('Benachrichtigungen', CPC2_TEXT_DOMAIN),
-            'core-forums' => __('Foren', CPC2_TEXT_DOMAIN),
-            'core-groups' => __('Gruppen', CPC2_TEXT_DOMAIN),
-            'core-members' => __('Mitgliederverzeichnis', CPC2_TEXT_DOMAIN),
-            'core-media' => __('Medien', CPC2_TEXT_DOMAIN),
-            'core-docs' => __('Dokumente', CPC2_TEXT_DOMAIN),
-            'core-projects' => __('Projekte', CPC2_TEXT_DOMAIN),
-            'core-invite' => __('Einladungen', CPC2_TEXT_DOMAIN),
+            'core-profile' => __('Profil', 'cp-community'),
+            'core-activity' => __('Aktivität', 'cp-community'),
+            'core-avatar' => __('Avatar', 'cp-community'),
+            'core-friendships' => __('Freundschaften', 'cp-community'),
+            'core-alerts' => __('Benachrichtigungen', 'cp-community'),
+            'core-forums' => __('Foren', 'cp-community'),
+            'core-groups' => __('Gruppen', 'cp-community'),
+            'core-members' => __('Mitgliederverzeichnis', 'cp-community'),
+            'core-media' => __('Medien', 'cp-community'),
+            'core-docs' => __('Dokumente', 'cp-community'),
+            'core-projects' => __('Projekte', 'cp-community'),
+            'core-invite' => __('Einladungen', 'cp-community'),
         );
     }
 
@@ -88,7 +88,7 @@ if (!function_exists('cpc_multisite_get_module_registry')) {
                 continue;
             }
 
-            $name = is_array($level_data) && !empty($level_data['name']) ? sanitize_text_field($level_data['name']) : sprintf(__('Level %d', CPC2_TEXT_DOMAIN), $level_id);
+            $name = is_array($level_data) && !empty($level_data['name']) ? sanitize_text_field($level_data['name']) : sprintf(__('Level %d', 'cp-community'), $level_id);
             $normalized[$level_id] = array(
                 'id' => $level_id,
                 'name' => $name,
@@ -183,14 +183,14 @@ if (!function_exists('cpc_multisite_get_module_registry')) {
     function cpc_multisite_get_bloghosting_level_label($level, $bloghosting_levels = array()) {
         $level = max(0, (int)$level);
         if ($level <= 0) {
-            return __('Kein Level', CPC2_TEXT_DOMAIN);
+            return __('Kein Level', 'cp-community');
         }
 
         if (isset($bloghosting_levels[$level]['name']) && $bloghosting_levels[$level]['name'] !== '') {
-            return sprintf(__('Level %1$d: %2$s', CPC2_TEXT_DOMAIN), $level, $bloghosting_levels[$level]['name']);
+            return sprintf(__('Level %1$d: %2$s', 'cp-community'), $level, $bloghosting_levels[$level]['name']);
         }
 
-        return sprintf(__('Level %d', CPC2_TEXT_DOMAIN), $level);
+        return sprintf(__('Level %d', 'cp-community'), $level);
     }
 
     function cpc_multisite_is_module_allowed_for_subsites($module) {
@@ -498,7 +498,7 @@ if (!function_exists('cpc_multisite_get_module_registry')) {
 
     function cpc_multisite_render_network_page() {
         if (!current_user_can('manage_network_options')) {
-            wp_die(__('Du hast keine Berechtigung für diese Seite.', CPC2_TEXT_DOMAIN));
+            wp_die(__('Du hast keine Berechtigung für diese Seite.', 'cp-community'));
         }
 
         $message = '';
@@ -568,12 +568,12 @@ if (!function_exists('cpc_multisite_get_module_registry')) {
                     'updated_at' => current_time('mysql'),
                 ));
                 if (!empty($migration['migrated'])) {
-                    $message = sprintf(__('Netzwerk-Einstellungen gespeichert. %d Cloud-Bereiche wurden migriert.', CPC2_TEXT_DOMAIN), (int)$migration['migrated']);
+                    $message = sprintf(__('Netzwerk-Einstellungen gespeichert. %d Cloud-Bereiche wurden migriert.', 'cp-community'), (int)$migration['migrated']);
                 } else {
-                    $message = __('Netzwerk-Einstellungen gespeichert. Für die Cloud-Migration gab es keine passenden Verzeichnisse.', CPC2_TEXT_DOMAIN);
+                    $message = __('Netzwerk-Einstellungen gespeichert. Für die Cloud-Migration gab es keine passenden Verzeichnisse.', 'cp-community');
                 }
             } else {
-                $message = __('Netzwerk-Einstellungen gespeichert.', CPC2_TEXT_DOMAIN);
+                $message = __('Netzwerk-Einstellungen gespeichert.', 'cp-community');
             }
         }
 
@@ -592,8 +592,8 @@ if (!function_exists('cpc_multisite_get_module_registry')) {
         $network_managed_modules = count($allowed_modules);
 
         echo '<div class="wrap">';
-        echo '<h1>'.esc_html__('PS Community Netzwerk', CPC2_TEXT_DOMAIN).'</h1>';
-        echo '<p>'.esc_html__('Hier steuerst Du, welche Module vom Netzwerk vorgegeben werden und ob die User-Cloud pro Netzwerk oder pro Site begrenzt wird.', CPC2_TEXT_DOMAIN).'</p>';
+        echo '<h1>'.esc_html__('PS Community Netzwerk', 'cp-community').'</h1>';
+        echo '<p>'.esc_html__('Hier steuerst Du, welche Module vom Netzwerk vorgegeben werden und ob die User-Cloud pro Netzwerk oder pro Site begrenzt wird.', 'cp-community').'</p>';
 
         if ($message) {
             echo '<div class="notice notice-success is-dismissible"><p>'.esc_html($message).'</p></div>';
@@ -603,35 +603,35 @@ if (!function_exists('cpc_multisite_get_module_registry')) {
         wp_nonce_field('cpc_multisite_save', 'cpc_multisite_nonce');
 
         echo '<div class="notice inline" style="margin:0 0 20px;padding:12px 16px;border-left:4px solid #2271b1;background:#fff;max-width:1000px;">';
-        echo '<strong>'.esc_html__('Aktueller Status', CPC2_TEXT_DOMAIN).'</strong><br />';
-        echo esc_html(sprintf(__('Für Subseiten erlaubte Module: %d von %d', CPC2_TEXT_DOMAIN), (int)$network_managed_modules, count(cpc_multisite_get_module_registry()))).'<br />';
+        echo '<strong>'.esc_html__('Aktueller Status', 'cp-community').'</strong><br />';
+        echo esc_html(sprintf(__('Für Subseiten erlaubte Module: %d von %d', 'cp-community'), (int)$network_managed_modules, count(cpc_multisite_get_module_registry()))).'<br />';
         if ($bloghosting_active && !empty($bloghosting_levels)) {
-            echo esc_html(sprintf(__('PS Bloghosting aktiv: %d Level erkannt', CPC2_TEXT_DOMAIN), count($bloghosting_levels))).'<br />';
+            echo esc_html(sprintf(__('PS Bloghosting aktiv: %d Level erkannt', 'cp-community'), count($bloghosting_levels))).'<br />';
         }
-        echo esc_html(sprintf(__('User-Cloud-Scope: %s', CPC2_TEXT_DOMAIN), $user_cloud_scope === 'network' ? __('netzwerkweit', CPC2_TEXT_DOMAIN) : __('site-lokal', CPC2_TEXT_DOMAIN))).'<br />';
-        echo esc_html(sprintf(__('User-Cloud-Limit pro Benutzer: %d MB', CPC2_TEXT_DOMAIN), (int)$user_cloud_limit_mb));
+        echo esc_html(sprintf(__('User-Cloud-Scope: %s', 'cp-community'), $user_cloud_scope === 'network' ? __('netzwerkweit', 'cp-community') : __('site-lokal', 'cp-community'))).'<br />';
+        echo esc_html(sprintf(__('User-Cloud-Limit pro Benutzer: %d MB', 'cp-community'), (int)$user_cloud_limit_mb));
         if (is_array($last_migration) && !empty($last_migration)) {
             echo '<br />'.esc_html(sprintf(
-                __('Letzte Migration: von %1$s nach %2$s, %3$d migriert, %4$d übersprungen, am %5$s', CPC2_TEXT_DOMAIN),
-                isset($last_migration['from']) && $last_migration['from'] === 'network' ? __('netzwerkweit', CPC2_TEXT_DOMAIN) : __('site-lokal', CPC2_TEXT_DOMAIN),
-                isset($last_migration['to']) && $last_migration['to'] === 'network' ? __('netzwerkweit', CPC2_TEXT_DOMAIN) : __('site-lokal', CPC2_TEXT_DOMAIN),
+                __('Letzte Migration: von %1$s nach %2$s, %3$d migriert, %4$d übersprungen, am %5$s', 'cp-community'),
+                isset($last_migration['from']) && $last_migration['from'] === 'network' ? __('netzwerkweit', 'cp-community') : __('site-lokal', 'cp-community'),
+                isset($last_migration['to']) && $last_migration['to'] === 'network' ? __('netzwerkweit', 'cp-community') : __('site-lokal', 'cp-community'),
                 isset($last_migration['migrated']) ? (int)$last_migration['migrated'] : 0,
                 isset($last_migration['skipped']) ? (int)$last_migration['skipped'] : 0,
-                isset($last_migration['updated_at']) ? $last_migration['updated_at'] : __('unbekannt', CPC2_TEXT_DOMAIN)
+                isset($last_migration['updated_at']) ? $last_migration['updated_at'] : __('unbekannt', 'cp-community')
             ));
         }
         echo '</div>';
 
-        echo '<h2>'.esc_html__('Module für Subsites', CPC2_TEXT_DOMAIN).'</h2>';
-        echo '<p>'.esc_html__('Diese Liste steuert nur Subsites. Der Mainblog ist davon nicht betroffen und darf alle Module nutzen.', CPC2_TEXT_DOMAIN).'</p>';
+        echo '<h2>'.esc_html__('Module für Subsites', 'cp-community').'</h2>';
+        echo '<p>'.esc_html__('Diese Liste steuert nur Subsites. Der Mainblog ist davon nicht betroffen und darf alle Module nutzen.', 'cp-community').'</p>';
         if ($bloghosting_active && !empty($bloghosting_levels)) {
-            echo '<p>'.esc_html__('Bei aktivem PS Bloghosting gilt die erste Spalte für Subsites ohne Level. Für jede erkannte Levelstufe kannst Du separat definieren, welche Module erlaubt sind.', CPC2_TEXT_DOMAIN).'</p>';
+            echo '<p>'.esc_html__('Bei aktivem PS Bloghosting gilt die erste Spalte für Subsites ohne Level. Für jede erkannte Levelstufe kannst Du separat definieren, welche Module erlaubt sind.', 'cp-community').'</p>';
         }
         echo '<table class="widefat striped" style="max-width:1000px">';
-        echo '<thead><tr><th>'.esc_html__('Modul', CPC2_TEXT_DOMAIN).'</th><th>'.esc_html__('Ohne Bloghosting-Level', CPC2_TEXT_DOMAIN).'</th>';
+        echo '<thead><tr><th>'.esc_html__('Modul', 'cp-community').'</th><th>'.esc_html__('Ohne Bloghosting-Level', 'cp-community').'</th>';
         if ($bloghosting_active && !empty($bloghosting_levels)) {
             foreach ($bloghosting_levels as $level_id => $level_data) {
-                echo '<th>'.esc_html(sprintf(__('Level %1$d: %2$s', CPC2_TEXT_DOMAIN), (int)$level_id, $level_data['name'])).'</th>';
+                echo '<th>'.esc_html(sprintf(__('Level %1$d: %2$s', 'cp-community'), (int)$level_id, $level_data['name'])).'</th>';
             }
         }
         echo '</tr></thead><tbody>';
@@ -641,11 +641,11 @@ if (!function_exists('cpc_multisite_get_module_registry')) {
 
             echo '<tr>';
             echo '<td><strong>'.esc_html($label).'</strong><br /><span class="description">'.esc_html($module).'</span></td>';
-            echo '<td><label><input type="checkbox" name="cpc_multisite_network_active['.esc_attr($module).']" value="1"'.checked($is_allowed, true, false).' /> '.esc_html__('Erlaubt', CPC2_TEXT_DOMAIN).'</label></td>';
+            echo '<td><label><input type="checkbox" name="cpc_multisite_network_active['.esc_attr($module).']" value="1"'.checked($is_allowed, true, false).' /> '.esc_html__('Erlaubt', 'cp-community').'</label></td>';
             if ($bloghosting_active && !empty($bloghosting_levels)) {
                 foreach ($bloghosting_levels as $level_id => $level_data) {
                     $level_allowed = isset($bloghosting_level_modules_map[$level_id]) && in_array($module, $bloghosting_level_modules_map[$level_id], true);
-                    echo '<td><label><input type="checkbox" name="cpc_multisite_level_active['.(int)$level_id.']['.esc_attr($module).']" value="1"'.checked($level_allowed, true, false).' /> '.esc_html__('Erlaubt', CPC2_TEXT_DOMAIN).'</label></td>';
+                    echo '<td><label><input type="checkbox" name="cpc_multisite_level_active['.(int)$level_id.']['.esc_attr($module).']" value="1"'.checked($level_allowed, true, false).' /> '.esc_html__('Erlaubt', 'cp-community').'</label></td>';
                 }
             }
             echo '</tr>';
@@ -653,8 +653,8 @@ if (!function_exists('cpc_multisite_get_module_registry')) {
 
         echo '</tbody></table>';
 
-        echo '<h2 style="margin-top:28px">'.esc_html__('Site-Vorschau nach Matrix', CPC2_TEXT_DOMAIN).'</h2>';
-        echo '<p>'.esc_html__('Zeigt je Site das erkannte PS-Bloghosting-Level und die daraus effektiven Modulrechte.', CPC2_TEXT_DOMAIN).'</p>';
+        echo '<h2 style="margin-top:28px">'.esc_html__('Site-Vorschau nach Matrix', 'cp-community').'</h2>';
+        echo '<p>'.esc_html__('Zeigt je Site das erkannte PS-Bloghosting-Level und die daraus effektiven Modulrechte.', 'cp-community').'</p>';
 
         $preview_limit = max(1, (int)apply_filters('cpc_multisite_preview_sites_limit', 30));
         $preview_sites = get_sites(array(
@@ -674,10 +674,10 @@ if (!function_exists('cpc_multisite_get_module_registry')) {
 
         echo '<table class="widefat striped" style="max-width:1200px">';
         echo '<thead><tr>';
-        echo '<th>'.esc_html__('Site', CPC2_TEXT_DOMAIN).'</th>';
-        echo '<th>'.esc_html__('Blog-ID', CPC2_TEXT_DOMAIN).'</th>';
-        echo '<th>'.esc_html__('Erkanntes Level', CPC2_TEXT_DOMAIN).'</th>';
-        echo '<th>'.esc_html__('Effektiv erlaubte Module', CPC2_TEXT_DOMAIN).'</th>';
+        echo '<th>'.esc_html__('Site', 'cp-community').'</th>';
+        echo '<th>'.esc_html__('Blog-ID', 'cp-community').'</th>';
+        echo '<th>'.esc_html__('Erkanntes Level', 'cp-community').'</th>';
+        echo '<th>'.esc_html__('Effektiv erlaubte Module', 'cp-community').'</th>';
         echo '</tr></thead><tbody>';
 
         if (!empty($preview_sites)) {
@@ -686,13 +686,13 @@ if (!function_exists('cpc_multisite_get_module_registry')) {
                 $site_blog_id = (int)$site->blog_id;
                 $site_name = get_blog_option($site_blog_id, 'blogname');
                 if (!is_string($site_name) || $site_name === '') {
-                    $site_name = sprintf(__('Site %d', CPC2_TEXT_DOMAIN), $site_blog_id);
+                    $site_name = sprintf(__('Site %d', 'cp-community'), $site_blog_id);
                 }
                 $site_url = get_home_url($site_blog_id, '/');
 
                 if (cpc_multisite_is_main_blog($site_blog_id)) {
-                    $level_label = __('Mainblog (immer alles erlaubt)', CPC2_TEXT_DOMAIN);
-                    $effective_modules_text = __('Alle Module', CPC2_TEXT_DOMAIN);
+                    $level_label = __('Mainblog (immer alles erlaubt)', 'cp-community');
+                    $effective_modules_text = __('Alle Module', 'cp-community');
                 } else {
                     $site_level = cpc_multisite_get_current_bloghosting_level($site_blog_id);
                     $level_label = cpc_multisite_get_bloghosting_level_label($site_level, $bloghosting_levels);
@@ -705,7 +705,7 @@ if (!function_exists('cpc_multisite_get_module_registry')) {
                         }
                     }
 
-                    $effective_modules_text = !empty($effective_labels) ? implode(', ', $effective_labels) : __('Keine', CPC2_TEXT_DOMAIN);
+                    $effective_modules_text = !empty($effective_labels) ? implode(', ', $effective_labels) : __('Keine', 'cp-community');
                 }
 
                 echo '<tr>';
@@ -716,60 +716,60 @@ if (!function_exists('cpc_multisite_get_module_registry')) {
                 echo '</tr>';
             }
         } else {
-            echo '<tr><td colspan="4">'.esc_html__('Keine Sites gefunden.', CPC2_TEXT_DOMAIN).'</td></tr>';
+            echo '<tr><td colspan="4">'.esc_html__('Keine Sites gefunden.', 'cp-community').'</td></tr>';
         }
 
         echo '</tbody></table>';
         if ($preview_total_sites > $preview_limit) {
-            echo '<p class="description">'.esc_html(sprintf(__('Es werden %1$d von %2$d Sites angezeigt. Das Limit kann über den Filter cpc_multisite_preview_sites_limit angepasst werden.', CPC2_TEXT_DOMAIN), $preview_limit, $preview_total_sites)).'</p>';
+            echo '<p class="description">'.esc_html(sprintf(__('Es werden %1$d von %2$d Sites angezeigt. Das Limit kann über den Filter cpc_multisite_preview_sites_limit angepasst werden.', 'cp-community'), $preview_limit, $preview_total_sites)).'</p>';
         }
 
-        echo '<h2 style="margin-top:28px">'.esc_html__('User-Cloud Speicher', CPC2_TEXT_DOMAIN).'</h2>';
+        echo '<h2 style="margin-top:28px">'.esc_html__('User-Cloud Speicher', 'cp-community').'</h2>';
         echo '<table class="form-table" style="max-width:1000px">';
         echo '<tr class="form-field">';
-        echo '<th scope="row"><label for="cpc_multisite_user_cloud_scope">'.esc_html__('Speicher-Scope', CPC2_TEXT_DOMAIN).'</label></th>';
+        echo '<th scope="row"><label for="cpc_multisite_user_cloud_scope">'.esc_html__('Speicher-Scope', 'cp-community').'</label></th>';
         echo '<td><select name="cpc_multisite_user_cloud_scope" id="cpc_multisite_user_cloud_scope">';
-        echo '<option value="network"'.selected($user_cloud_scope, 'network', false).'>'.esc_html__('Netzwerkweit pro Benutzer', CPC2_TEXT_DOMAIN).'</option>';
-        echo '<option value="site"'.selected($user_cloud_scope, 'site', false).'>'.esc_html__('Pro Site und Benutzer', CPC2_TEXT_DOMAIN).'</option>';
+        echo '<option value="network"'.selected($user_cloud_scope, 'network', false).'>'.esc_html__('Netzwerkweit pro Benutzer', 'cp-community').'</option>';
+        echo '<option value="site"'.selected($user_cloud_scope, 'site', false).'>'.esc_html__('Pro Site und Benutzer', 'cp-community').'</option>';
         echo '</select><br />';
-        echo '<span class="description">'.esc_html__('Gilt für Activity+ und Media, solange deren Speicher über die gemeinsame User-Cloud läuft.', CPC2_TEXT_DOMAIN).'</span></td>';
+        echo '<span class="description">'.esc_html__('Gilt für Activity+ und Media, solange deren Speicher über die gemeinsame User-Cloud läuft.', 'cp-community').'</span></td>';
         echo '</tr>';
         echo '<tr class="form-field">';
-        echo '<th scope="row"><label for="cpc_multisite_user_cloud_limit_mb">'.esc_html__('Limit pro Benutzer (MB)', CPC2_TEXT_DOMAIN).'</label></th>';
+        echo '<th scope="row"><label for="cpc_multisite_user_cloud_limit_mb">'.esc_html__('Limit pro Benutzer (MB)', 'cp-community').'</label></th>';
         echo '<td><input type="number" min="0" max="10240" step="1" style="width:90px" name="cpc_multisite_user_cloud_limit_mb" id="cpc_multisite_user_cloud_limit_mb" value="'.esc_attr($user_cloud_limit_mb).'" />';
-        echo '<span class="description" style="display:block">'.esc_html__('0 bedeutet unbegrenzt. Das ist das Netzwerk-Default für die User-Cloud.', CPC2_TEXT_DOMAIN).'</span></td>';
+        echo '<span class="description" style="display:block">'.esc_html__('0 bedeutet unbegrenzt. Das ist das Netzwerk-Default für die User-Cloud.', 'cp-community').'</span></td>';
         echo '</tr>';
         echo '</table>';
 
-        echo '<h2 style="margin-top:28px">'.esc_html__('Profil-Medien', CPC2_TEXT_DOMAIN).'</h2>';
+        echo '<h2 style="margin-top:28px">'.esc_html__('Profil-Medien', 'cp-community').'</h2>';
         echo '<table class="form-table" style="max-width:1000px">';
         echo '<tr class="form-field">';
-        echo '<th scope="row"><label for="cpc_multisite_profile_media_scope">'.esc_html__('Anzeige im Profil', CPC2_TEXT_DOMAIN).'</label></th>';
+        echo '<th scope="row"><label for="cpc_multisite_profile_media_scope">'.esc_html__('Anzeige im Profil', 'cp-community').'</label></th>';
         echo '<td><select name="cpc_multisite_profile_media_scope" id="cpc_multisite_profile_media_scope">';
-        echo '<option value="network"'.selected($profile_media_scope, 'network', false).'>'.esc_html__('Netzwerkweit in allen Profilen', CPC2_TEXT_DOMAIN).'</option>';
-        echo '<option value="main_site"'.selected($profile_media_scope, 'main_site', false).($profile_scope_forced ? ' disabled="disabled"' : '').'>'.esc_html__('Nur im Mainblog-Profil', CPC2_TEXT_DOMAIN).'</option>';
+        echo '<option value="network"'.selected($profile_media_scope, 'network', false).'>'.esc_html__('Netzwerkweit in allen Profilen', 'cp-community').'</option>';
+        echo '<option value="main_site"'.selected($profile_media_scope, 'main_site', false).($profile_scope_forced ? ' disabled="disabled"' : '').'>'.esc_html__('Nur im Mainblog-Profil', 'cp-community').'</option>';
         echo '</select><br />';
-        echo '<span class="description">'.esc_html__('Steuert nur die Sichtbarkeit des Medien-Tabs im Profil. Die Dateien selbst bleiben zentral verfügbar.', CPC2_TEXT_DOMAIN).'</span></td>';
+        echo '<span class="description">'.esc_html__('Steuert nur die Sichtbarkeit des Medien-Tabs im Profil. Die Dateien selbst bleiben zentral verfügbar.', 'cp-community').'</span></td>';
         if ($profile_scope_forced) {
-            echo '<span class="description" style="display:block">'.esc_html__('Hinweis: Bei Site-lokalem User-Cloud-Scope bleibt der Profil-Medien-Tab auf Subsites aktiv, damit lokale Uploads verwaltet und gelöscht werden können.', CPC2_TEXT_DOMAIN).'</span>';
+            echo '<span class="description" style="display:block">'.esc_html__('Hinweis: Bei Site-lokalem User-Cloud-Scope bleibt der Profil-Medien-Tab auf Subsites aktiv, damit lokale Uploads verwaltet und gelöscht werden können.', 'cp-community').'</span>';
         }
         echo '</tr>';
         echo '</table>';
 
-        echo '<h2 style="margin-top:28px">'.esc_html__('Avatar-Synchronisierung', CPC2_TEXT_DOMAIN).'</h2>';
+        echo '<h2 style="margin-top:28px">'.esc_html__('Avatar-Synchronisierung', 'cp-community').'</h2>';
         echo '<table class="form-table" style="max-width:1000px">';
         echo '<tr class="form-field">';
-        echo '<th scope="row"><label for="cpc_multisite_avatar_scope">'.esc_html__('Avatar-Scope', CPC2_TEXT_DOMAIN).'</label></th>';
+        echo '<th scope="row"><label for="cpc_multisite_avatar_scope">'.esc_html__('Avatar-Scope', 'cp-community').'</label></th>';
         echo '<td><select name="cpc_multisite_avatar_scope" id="cpc_multisite_avatar_scope">';
-        echo '<option value="inherit"'.selected($avatar_scope, 'inherit', false).'>'.esc_html__('User-Cloud folgen (empfohlen)', CPC2_TEXT_DOMAIN).'</option>';
-        echo '<option value="network"'.selected($avatar_scope, 'network', false).'>'.esc_html__('Immer netzwerkweit', CPC2_TEXT_DOMAIN).'</option>';
-        echo '<option value="site"'.selected($avatar_scope, 'site', false).'>'.esc_html__('Immer pro Site', CPC2_TEXT_DOMAIN).'</option>';
+        echo '<option value="inherit"'.selected($avatar_scope, 'inherit', false).'>'.esc_html__('User-Cloud folgen (empfohlen)', 'cp-community').'</option>';
+        echo '<option value="network"'.selected($avatar_scope, 'network', false).'>'.esc_html__('Immer netzwerkweit', 'cp-community').'</option>';
+        echo '<option value="site"'.selected($avatar_scope, 'site', false).'>'.esc_html__('Immer pro Site', 'cp-community').'</option>';
         echo '</select><br />';
-        echo '<span class="description">'.esc_html__('Gilt nur für Avatar-Dateipfade. Effektiv aktiv: ', CPC2_TEXT_DOMAIN).'<strong>'.esc_html($avatar_scope_effective === 'network' ? __('netzwerkweit', CPC2_TEXT_DOMAIN) : __('site-lokal', CPC2_TEXT_DOMAIN)).'</strong></span></td>';
+        echo '<span class="description">'.esc_html__('Gilt nur für Avatar-Dateipfade. Effektiv aktiv: ', 'cp-community').'<strong>'.esc_html($avatar_scope_effective === 'network' ? __('netzwerkweit', 'cp-community') : __('site-lokal', 'cp-community')).'</strong></span></td>';
         echo '</tr>';
         echo '</table>';
 
-        echo '<p><input type="submit" class="button button-primary" name="cpc_multisite_save" value="'.esc_attr__('Einstellungen speichern', CPC2_TEXT_DOMAIN).'" /></p>';
+        echo '<p><input type="submit" class="button button-primary" name="cpc_multisite_save" value="'.esc_attr__('Einstellungen speichern', 'cp-community').'" /></p>';
         echo '</form>';
         echo '</div>';
     }
@@ -780,8 +780,8 @@ if (!function_exists('cpc_multisite_get_module_registry')) {
         }
 
         add_menu_page(
-            __('PS Community Netzwerk', CPC2_TEXT_DOMAIN),
-            __('PS Community', CPC2_TEXT_DOMAIN),
+            __('PS Community Netzwerk', 'cp-community'),
+            __('PS Community', 'cp-community'),
             'manage_network_options',
             'cpc_multisite_network',
             'cpc_multisite_render_network_page',

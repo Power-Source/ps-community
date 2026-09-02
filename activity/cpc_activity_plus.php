@@ -135,7 +135,7 @@ function cpc_activity_plus_global_wall_page_id() {
 
 function cpc_activity_plus_global_wall_title() {
     $title = trim((string)get_option('cpc_activity_plus_global_wall_title', 'Aktivitätswall'));
-    return $title !== '' ? $title : __('Aktivitätswall', CPC2_TEXT_DOMAIN);
+    return $title !== '' ? $title : __('Aktivitätswall', 'cp-community');
 }
 
 function cpc_activity_plus_global_wall_per_page() {
@@ -425,9 +425,9 @@ function cpc_activity_plus_get_user_cloud_summary($user_id) {
         'used_bytes' => $used,
         'used_human' => size_format($used),
         'limit_bytes' => $limit,
-        'limit_human' => $limit > 0 ? size_format($limit) : __('Unbegrenzt', CPC2_TEXT_DOMAIN),
+        'limit_human' => $limit > 0 ? size_format($limit) : __('Unbegrenzt', 'cp-community'),
         'remaining_bytes' => $remaining,
-        'remaining_human' => $limit > 0 ? size_format($remaining) : __('Unbegrenzt', CPC2_TEXT_DOMAIN),
+        'remaining_human' => $limit > 0 ? size_format($remaining) : __('Unbegrenzt', 'cp-community'),
         'percent' => $percent,
     );
 
@@ -515,7 +515,7 @@ function cpc_activity_plus_process_uploaded_images($user_id, $files) {
     }
 
     if ($quota_exceeded) {
-        set_transient('cpc_activity_plus_cloud_notice_'.$user_id, __('Ein oder mehrere Bilder wurden nicht hochgeladen, weil dein Cloud-Speicherlimit erreicht ist.', CPC2_TEXT_DOMAIN), 120);
+        set_transient('cpc_activity_plus_cloud_notice_'.$user_id, __('Ein oder mehrere Bilder wurden nicht hochgeladen, weil dein Cloud-Speicherlimit erreicht ist.', 'cp-community'), 120);
     }
 
     return $urls;
@@ -566,10 +566,10 @@ function cpc_activity_plus_add_form_fields($form_html, $atts, $user_id, $this_us
     $form_html .= '<input type="hidden" name="cpc_activity_plus_nonce" value="'.wp_create_nonce('cpc_activity_plus_nonce').'" />';
     $form_html .= '<div id="cpc_activity_plus" class="cpc_activity_plus '.$theme_class.' '.$alignment_class.'">';
         $form_html .= '<div class="cpc_activity_plus_cloud_info">';
-            $form_html .= '<strong>'.__('Cloud-Speicher', CPC2_TEXT_DOMAIN).':</strong> ';
-            $form_html .= esc_html($cloud_summary['used_human']).' '.__('genutzt von', CPC2_TEXT_DOMAIN).' '.esc_html($cloud_summary['limit_human']);
+            $form_html .= '<strong>'.__('Cloud-Speicher', 'cp-community').':</strong> ';
+            $form_html .= esc_html($cloud_summary['used_human']).' '.__('genutzt von', 'cp-community').' '.esc_html($cloud_summary['limit_human']);
             if ($cloud_summary['limit_bytes'] > 0) {
-                $form_html .= ' ('.esc_html($cloud_summary['remaining_human']).' '.__('frei', CPC2_TEXT_DOMAIN).')';
+                $form_html .= ' ('.esc_html($cloud_summary['remaining_human']).' '.__('frei', 'cp-community').')';
             }
         $form_html .= '</div>';
         if ($cloud_notice) {
@@ -577,13 +577,13 @@ function cpc_activity_plus_add_form_fields($form_html, $atts, $user_id, $this_us
         }
         $form_html .= '<div class="cpc_activity_plus_toolbar">';
             if ($settings['allow_images']) {
-                $form_html .= '<button type="button" class="cpc_button cpc_activity_plus_toggle cpc_activity_plus_toggle_images" data-target="cpc_activity_plus_images_wrap"><span>'.__('Bild', CPC2_TEXT_DOMAIN).'</span></button>';
+                $form_html .= '<button type="button" class="cpc_button cpc_activity_plus_toggle cpc_activity_plus_toggle_images" data-target="cpc_activity_plus_images_wrap"><span>'.__('Bild', 'cp-community').'</span></button>';
             }
             if ($settings['allow_links']) {
-                $form_html .= '<button type="button" class="cpc_button cpc_activity_plus_toggle cpc_activity_plus_toggle_links" data-target="cpc_activity_plus_link_wrap"><span>'.__('Link', CPC2_TEXT_DOMAIN).'</span></button>';
+                $form_html .= '<button type="button" class="cpc_button cpc_activity_plus_toggle cpc_activity_plus_toggle_links" data-target="cpc_activity_plus_link_wrap"><span>'.__('Link', 'cp-community').'</span></button>';
             }
             if ($settings['allow_video']) {
-                $form_html .= '<button type="button" class="cpc_button cpc_activity_plus_toggle cpc_activity_plus_toggle_videos" data-target="cpc_activity_plus_video_wrap"><span>'.__('Video', CPC2_TEXT_DOMAIN).'</span></button>';
+                $form_html .= '<button type="button" class="cpc_button cpc_activity_plus_toggle cpc_activity_plus_toggle_videos" data-target="cpc_activity_plus_video_wrap"><span>'.__('Video', 'cp-community').'</span></button>';
             }
         $form_html .= '</div>';
 
@@ -592,20 +592,20 @@ function cpc_activity_plus_add_form_fields($form_html, $atts, $user_id, $this_us
                 $form_html .= '<div style="margin-bottom:8px">';
                     $form_html .= '<input type="file" id="cpc_activity_plus_images" name="cpc_activity_plus_images[]" accept="image/*" multiple />';
                 $form_html .= '</div>';
-                $form_html .= '<textarea name="cpc_activity_plus_remote_images" id="cpc_activity_plus_remote_images" placeholder="'.esc_attr__('Bild-URLs (eine pro Zeile)', CPC2_TEXT_DOMAIN).'" rows="3"></textarea>';
+                $form_html .= '<textarea name="cpc_activity_plus_remote_images" id="cpc_activity_plus_remote_images" placeholder="'.esc_attr__('Bild-URLs (eine pro Zeile)', 'cp-community').'" rows="3"></textarea>';
             $form_html .= '</div>';
         }
 
         if ($settings['allow_links']) {
             $form_html .= '<div id="cpc_activity_plus_link_wrap" class="cpc_activity_plus_wrap" style="display:none">';
-                $form_html .= '<input type="url" name="cpc_activity_plus_link_url" id="cpc_activity_plus_link_url" placeholder="'.esc_attr__('Link-URL', CPC2_TEXT_DOMAIN).'" />';
+                $form_html .= '<input type="url" name="cpc_activity_plus_link_url" id="cpc_activity_plus_link_url" placeholder="'.esc_attr__('Link-URL', 'cp-community').'" />';
                 $form_html .= '<div id="cpc_activity_plus_link_preview"></div>';
             $form_html .= '</div>';
         }
 
         if ($settings['allow_video']) {
             $form_html .= '<div id="cpc_activity_plus_video_wrap" class="cpc_activity_plus_wrap" style="display:none">';
-                $form_html .= '<input type="url" name="cpc_activity_plus_video_url" id="cpc_activity_plus_video_url" placeholder="'.esc_attr__('Video-URL (YouTube, Vimeo, ...)', CPC2_TEXT_DOMAIN).'" />';
+                $form_html .= '<input type="url" name="cpc_activity_plus_video_url" id="cpc_activity_plus_video_url" placeholder="'.esc_attr__('Video-URL (YouTube, Vimeo, ...)', 'cp-community').'" />';
             $form_html .= '</div>';
         }
     $form_html .= '</div>';
@@ -1104,9 +1104,9 @@ function cpc_activity_plus_get_group_cloud_summary($group_id) {
         'used_bytes' => $used,
         'used_human' => size_format($used),
         'limit_bytes' => $limit,
-        'limit_human' => $limit > 0 ? size_format($limit) : __('Unbegrenzt', CPC2_TEXT_DOMAIN),
+        'limit_human' => $limit > 0 ? size_format($limit) : __('Unbegrenzt', 'cp-community'),
         'remaining_bytes' => $remaining,
-        'remaining_human' => $limit > 0 ? size_format($remaining) : __('Unbegrenzt', CPC2_TEXT_DOMAIN),
+        'remaining_human' => $limit > 0 ? size_format($remaining) : __('Unbegrenzt', 'cp-community'),
         'percent' => $percent,
     );
 

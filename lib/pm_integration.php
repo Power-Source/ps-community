@@ -118,7 +118,7 @@ function cpc_pm_profile_slot_badge($content, $slot, $user_id, $viewer_id, $atts)
 	$badge_html = '<div class="cpc-pm-profile-badge">';
 		$badge_html .= '<a href="'.esc_url($profile_url).'" class="cpc-pm-badge-link">';
 			$badge_html .= '<span class="cpc-pm-icon">✉</span>';
-			$badge_html .= '<span class="cpc-pm-label">'.__('Nachrichten', CPC2_TEXT_DOMAIN).'</span>';
+			$badge_html .= '<span class="cpc-pm-label">'.__('Nachrichten', 'cp-community').'</span>';
 			if ($unread_count > 0) {
 				$badge_html .= '<span class="cpc-pm-unread-badge">'.$unread_count.'</span>';
 			}
@@ -148,7 +148,7 @@ function cpc_pm_add_profile_tab($tabs, $user_id, $viewer_id) {
 	
 	// Add messages tab
 	$tabs['messages'] = array(
-		'label' => __('Nachrichten', CPC2_TEXT_DOMAIN),
+		'label' => __('Nachrichten', 'cp-community'),
 		'icon' => 'email',
 		'priority' => 15, // After activity (10), before other tabs
 	);
@@ -169,12 +169,12 @@ function cpc_pm_render_tab_content($html, $active_tab, $user_id, $shortcode_atts
 	
 	// Only if PM integration is enabled
 	if (!cpc_pm_integration_enabled()) {
-		return '<div class="cpc-error">'.__('Private Nachrichten Integration ist nicht aktiviert.', CPC2_TEXT_DOMAIN).'</div>';
+		return '<div class="cpc-error">'.__('Private Nachrichten Integration ist nicht aktiviert.', 'cp-community').'</div>';
 	}
 	
 	// Only if user is viewing their own profile
 	if (get_current_user_id() != $user_id) {
-		return '<div class="cpc-error">'.__('Du kannst nur deine eigenen Nachrichten sehen.', CPC2_TEXT_DOMAIN).'</div>';
+		return '<div class="cpc-error">'.__('Du kannst nur deine eigenen Nachrichten sehen.', 'cp-community').'</div>';
 	}
 
 	$inbox_html = '';
@@ -204,7 +204,7 @@ function cpc_pm_render_tab_content($html, $active_tab, $user_id, $shortcode_atts
 		return $inbox_html;
 	}
 
-	return '<div class="cpc-error">'.__('Inbox konnte nicht gerendert werden (leere Ausgabe).', CPC2_TEXT_DOMAIN).'</div>';
+	return '<div class="cpc-error">'.__('Inbox konnte nicht gerendert werden (leere Ausgabe).', 'cp-community').'</div>';
 }
 
 /* Redirect standalone inbox page to profile tab */
@@ -325,7 +325,7 @@ function cpc_pm_integration_settings() {
 		update_option('cpc_pm_friends_only', isset($_POST['cpc_pm_friends_only']) ? 1 : 0);
 		
 		echo '<div class="notice notice-success is-dismissible"><p>';
-		echo __('PM-Integrations-Einstellungen gespeichert.', CPC2_TEXT_DOMAIN);
+		echo __('PM-Integrations-Einstellungen gespeichert.', 'cp-community');
 		echo '</p></div>';
 	}
 	
@@ -337,16 +337,16 @@ function cpc_pm_integration_settings() {
 	
 	?>
 	<div class="cpc-integration-box" style="border: 1px solid #ddd; padding: 20px; margin-top: 20px; background-color: #f9f9f9; border-radius: 5px;">
-		<h2><?php _e('PS PM-System Integration', CPC2_TEXT_DOMAIN); ?></h2>
+		<h2><?php _e('PS PM-System Integration', 'cp-community'); ?></h2>
 		
 		<?php if ($pm_status['installed'] && $pm_status['active']): ?>
 			<div class="notice notice-success inline" style="margin: 0 0 20px 0;">
 				<p>
-					<strong><?php _e('Status:', CPC2_TEXT_DOMAIN); ?></strong>
-					<span style="color: #155724;">✓ <?php _e('Aktiviert', CPC2_TEXT_DOMAIN); ?></span>
+					<strong><?php _e('Status:', 'cp-community'); ?></strong>
+					<span style="color: #155724;">✓ <?php _e('Aktiviert', 'cp-community'); ?></span>
 				</p>
 				<p style="margin: 5px 0 0 0;">
-					<strong><?php _e('Plugin:', CPC2_TEXT_DOMAIN); ?></strong>
+					<strong><?php _e('Plugin:', 'cp-community'); ?></strong>
 					<?php echo esc_html($pm_status['name']); ?> v<?php echo esc_html($pm_status['version']); ?>
 				</p>
 			</div>
@@ -358,7 +358,7 @@ function cpc_pm_integration_settings() {
 					<tr>
 						<th scope="row">
 							<label for="cpc_enable_pm_integration">
-								<?php _e('Integration aktivieren', CPC2_TEXT_DOMAIN); ?>
+								<?php _e('Integration aktivieren', 'cp-community'); ?>
 							</label>
 						</th>
 						<td>
@@ -368,10 +368,10 @@ function cpc_pm_integration_settings() {
 									   name="cpc_enable_pm_integration" 
 									   value="1" 
 									   <?php checked($integration_enabled, 1); ?> />
-								<?php _e('PM-System in Profilseiten integrieren', CPC2_TEXT_DOMAIN); ?>
+								<?php _e('PM-System in Profilseiten integrieren', 'cp-community'); ?>
 							</label>
 							<p class="description">
-								<?php _e('Fügt einen "Nachrichten"-Tab zu Profilseiten hinzu und zeigt ungelesene Nachrichten im Profil-Header an.', CPC2_TEXT_DOMAIN); ?>
+								<?php _e('Fügt einen "Nachrichten"-Tab zu Profilseiten hinzu und zeigt ungelesene Nachrichten im Profil-Header an.', 'cp-community'); ?>
 							</p>
 						</td>
 					</tr>
@@ -379,7 +379,7 @@ function cpc_pm_integration_settings() {
 					<tr>
 						<th scope="row">
 							<label for="cpc_pm_redirect_inbox">
-								<?php _e('Inbox-Seite umleiten', CPC2_TEXT_DOMAIN); ?>
+								<?php _e('Inbox-Seite umleiten', 'cp-community'); ?>
 							</label>
 						</th>
 						<td>
@@ -390,10 +390,10 @@ function cpc_pm_integration_settings() {
 									   value="1" 
 									   <?php checked($redirect_enabled, 1); ?>
 									   <?php disabled(!$integration_enabled); ?> />
-								<?php _e('Eigenständige Inbox-Seite zum Profil-Tab umleiten', CPC2_TEXT_DOMAIN); ?>
+								<?php _e('Eigenständige Inbox-Seite zum Profil-Tab umleiten', 'cp-community'); ?>
 							</label>
 							<p class="description">
-								<?php _e('Wenn aktiviert, wird die Seite mit [message_inbox] Shortcode automatisch zum Profil-Nachrichten-Tab umgeleitet.', CPC2_TEXT_DOMAIN); ?>
+								<?php _e('Wenn aktiviert, wird die Seite mit [message_inbox] Shortcode automatisch zum Profil-Nachrichten-Tab umgeleitet.', 'cp-community'); ?>
 							</p>
 						</td>
 					</tr>
@@ -401,7 +401,7 @@ function cpc_pm_integration_settings() {
 					<tr>
 						<th scope="row">
 							<label for="cpc_pm_friends_only">
-								<?php _e('Nur Freunde kontaktieren', CPC2_TEXT_DOMAIN); ?>
+								<?php _e('Nur Freunde kontaktieren', 'cp-community'); ?>
 							</label>
 						</th>
 						<td>
@@ -412,15 +412,15 @@ function cpc_pm_integration_settings() {
 									   value="1" 
 									   <?php checked($friends_only, 1); ?>
 									   <?php disabled(!$integration_enabled || !$friendships_available); ?> />
-								<?php _e('Kontaktliste auf Freunde beschränken', CPC2_TEXT_DOMAIN); ?>
+								<?php _e('Kontaktliste auf Freunde beschränken', 'cp-community'); ?>
 							</label>
 							<p class="description">
 								<?php 
 								if ($friendships_available) {
-									_e('Benutzer können nur Nachrichten an ihre Freunde senden (Friendships-Modul erforderlich).', CPC2_TEXT_DOMAIN);
+									_e('Benutzer können nur Nachrichten an ihre Freunde senden (Friendships-Modul erforderlich).', 'cp-community');
 								} else {
 									echo '<strong style="color: #856404;">';
-									_e('⚠ Friendships-Modul ist nicht aktiviert. Diese Option erfordert das Friendships-Modul.', CPC2_TEXT_DOMAIN);
+									_e('⚠ Friendships-Modul ist nicht aktiviert. Diese Option erfordert das Friendships-Modul.', 'cp-community');
 									echo '</strong>';
 								}
 								?>
@@ -431,22 +431,22 @@ function cpc_pm_integration_settings() {
 				
 				<p class="submit">
 					<button type="submit" name="cpc_pm_integration_save" class="button button-primary">
-						<?php _e('Einstellungen speichern', CPC2_TEXT_DOMAIN); ?>
+						<?php _e('Einstellungen speichern', 'cp-community'); ?>
 					</button>
 				</p>
 			</form>
 			
 			<?php if ($integration_enabled): ?>
 				<div style="background: #e7f5fe; padding: 15px; border-left: 4px solid #0073aa; margin-top: 20px;">
-					<h4 style="margin-top: 0;"><?php _e('Integration aktiv', CPC2_TEXT_DOMAIN); ?></h4>
+					<h4 style="margin-top: 0;"><?php _e('Integration aktiv', 'cp-community'); ?></h4>
 					<ul style="margin: 0;">
-						<li>✓ <?php _e('Nachrichten-Tab wird in Profilseiten angezeigt', CPC2_TEXT_DOMAIN); ?></li>
-						<li>✓ <?php _e('Ungelesene Nachrichten Badge im Profil-Header', CPC2_TEXT_DOMAIN); ?></li>
+						<li>✓ <?php _e('Nachrichten-Tab wird in Profilseiten angezeigt', 'cp-community'); ?></li>
+						<li>✓ <?php _e('Ungelesene Nachrichten Badge im Profil-Header', 'cp-community'); ?></li>
 						<?php if ($redirect_enabled): ?>
-							<li>✓ <?php _e('Inbox-Seite leitet zum Profil-Tab um', CPC2_TEXT_DOMAIN); ?></li>
+							<li>✓ <?php _e('Inbox-Seite leitet zum Profil-Tab um', 'cp-community'); ?></li>
 						<?php endif; ?>
 						<?php if ($friends_only && $friendships_available): ?>
-							<li>✓ <?php _e('Kontakte auf Freunde beschränkt', CPC2_TEXT_DOMAIN); ?></li>
+							<li>✓ <?php _e('Kontakte auf Freunde beschränkt', 'cp-community'); ?></li>
 						<?php endif; ?>
 					</ul>
 				</div>
@@ -455,13 +455,13 @@ function cpc_pm_integration_settings() {
 		<?php elseif ($pm_status['installed'] && !$pm_status['active']): ?>
 			<div class="notice notice-warning inline" style="margin: 0 0 20px 0;">
 				<p>
-					<strong><?php _e('Status:', CPC2_TEXT_DOMAIN); ?></strong>
-					<span style="color: #856404;">⚠ <?php _e('Installiert aber deaktiviert', CPC2_TEXT_DOMAIN); ?></span>
+					<strong><?php _e('Status:', 'cp-community'); ?></strong>
+					<span style="color: #856404;">⚠ <?php _e('Installiert aber deaktiviert', 'cp-community'); ?></span>
 				</p>
 			</div>
 			
 			<p>
-				<?php _e('PS PM-System ist installiert, aber nicht aktiviert. Um die Integration nutzen zu können, musst du das Plugin aktivieren.', CPC2_TEXT_DOMAIN); ?>
+				<?php _e('PS PM-System ist installiert, aber nicht aktiviert. Um die Integration nutzen zu können, musst du das Plugin aktivieren.', 'cp-community'); ?>
 			</p>
 			
 			<p>
@@ -469,25 +469,25 @@ function cpc_pm_integration_settings() {
 					admin_url('plugins.php?action=activate&plugin=' . $pm_status['file']),
 					'activate-plugin_' . $pm_status['file']
 				)); ?>" class="button button-primary">
-					<?php _e('PS PM-System aktivieren', CPC2_TEXT_DOMAIN); ?>
+					<?php _e('PS PM-System aktivieren', 'cp-community'); ?>
 				</a>
 			</p>
 			
 		<?php else: ?>
 			<div class="notice notice-info inline" style="margin: 0 0 20px 0;">
 				<p>
-					<strong><?php _e('Status:', CPC2_TEXT_DOMAIN); ?></strong>
-					<span style="color: #0c5460;">ℹ <?php _e('Nicht installiert', CPC2_TEXT_DOMAIN); ?></span>
+					<strong><?php _e('Status:', 'cp-community'); ?></strong>
+					<span style="color: #0c5460;">ℹ <?php _e('Nicht installiert', 'cp-community'); ?></span>
 				</p>
 			</div>
 			
 			<p>
-				<?php _e('PS PM-System ist nicht installiert. Um die Integration zu nutzen, musst du zuerst das Plugin installieren.', CPC2_TEXT_DOMAIN); ?>
+				<?php _e('PS PM-System ist nicht installiert. Um die Integration zu nutzen, musst du zuerst das Plugin installieren.', 'cp-community'); ?>
 			</p>
 			
 			<p>
 				<a href="https://psource.eimen.net//private-messaging/releases/latest" target="_blank" class="button">
-					<?php _e('PS PM-System herunterladen', CPC2_TEXT_DOMAIN); ?>
+					<?php _e('PS PM-System herunterladen', 'cp-community'); ?>
 				</a>
 			</p>
 		<?php endif; ?>

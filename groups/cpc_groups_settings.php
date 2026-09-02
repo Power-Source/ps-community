@@ -23,7 +23,7 @@ function cpc_groups_settings_section() {
 		}
 		
 		echo '<div class="notice notice-success"><p>';
-		echo esc_html__('Gruppen-Einstellungen gespeichert!', CPC2_TEXT_DOMAIN);
+		echo esc_html__('Gruppen-Einstellungen gespeichert!', 'cp-community');
 		echo '</p></div>';
 	}
 	
@@ -33,7 +33,7 @@ function cpc_groups_settings_section() {
 	
 	<div class="cpc-groups-settings-section" style="margin-bottom: 20px;">
 		<div class="cpc_admin_getting_started_menu_item">
-			<?php _e('Gruppen-Einstellungen', CPC2_TEXT_DOMAIN); ?>
+			<?php _e('Gruppen-Einstellungen', 'cp-community'); ?>
 		</div>
 		
 		<div class="cpc_admin_getting_started_content" style="display: block;">
@@ -45,7 +45,7 @@ function cpc_groups_settings_section() {
 					<tr>
 						<th scope="row">
 							<label for="cpc_enable_group_chats">
-								<?php _e('Gruppen-Chats', CPC2_TEXT_DOMAIN); ?>
+								<?php _e('Gruppen-Chats', 'cp-community'); ?>
 							</label>
 						</th>
 						<td>
@@ -53,15 +53,15 @@ function cpc_groups_settings_section() {
 								<p class="notice notice-warning" style="padding: 8px; margin: 0 0 10px 0;">
 									<?php 
 									if ($pschat_status['installed']) {
-										_e('PS-Chat ist installiert, aber nicht aktiviert. Aktiviere es zuerst.', CPC2_TEXT_DOMAIN);
+										_e('PS-Chat ist installiert, aber nicht aktiviert. Aktiviere es zuerst.', 'cp-community');
 									} else {
-										_e('PS-Chat ist nicht installiert. Installiere es, um Gruppen-Chats zu nutzen.', CPC2_TEXT_DOMAIN);
+										_e('PS-Chat ist nicht installiert. Installiere es, um Gruppen-Chats zu nutzen.', 'cp-community');
 									}
 									?>
 								</p>
 								<input type="checkbox" id="cpc_enable_group_chats" name="cpc_enable_group_chats" value="1" disabled />
 								<label for="cpc_enable_group_chats" style="display: inline; color: #999;">
-									<?php _e('Aktiviert wenn PS-Chat verfügbar ist', CPC2_TEXT_DOMAIN); ?>
+									<?php _e('Aktiviert wenn PS-Chat verfügbar ist', 'cp-community'); ?>
 								</label>
 							<?php else: ?>
 								<input type="checkbox" 
@@ -70,17 +70,17 @@ function cpc_groups_settings_section() {
 									   value="1" 
 									   <?php checked($group_chats_enabled); ?> />
 								<label for="cpc_enable_group_chats" style="display: inline;">
-									<?php _e('Erlaube Gruppen-Admins, einen Chat für ihre Gruppe zu erstellen', CPC2_TEXT_DOMAIN); ?>
+									<?php _e('Erlaube Gruppen-Admins, einen Chat für ihre Gruppe zu erstellen', 'cp-community'); ?>
 								</label>
 								<p class="description">
-									<?php _e('Wenn aktiviert, wird den Gruppen-Admins im Tab "Einstellungen" die Möglichkeit gegeben, einen Chat für ihre Gruppe einzurichten.', CPC2_TEXT_DOMAIN); ?>
+									<?php _e('Wenn aktiviert, wird den Gruppen-Admins im Tab "Einstellungen" die Möglichkeit gegeben, einen Chat für ihre Gruppe einzurichten.', 'cp-community'); ?>
 								</p>
 							<?php endif; ?>
 						</td>
 					</tr>
 				</table>
 				
-				<?php submit_button(__('Änderungen speichern', CPC2_TEXT_DOMAIN)); ?>
+				<?php submit_button(__('Änderungen speichern', 'cp-community')); ?>
 			</form>
 		</div>
 	</div>

@@ -2,18 +2,18 @@
 
 function cpc_custom_post_media() {
     $labels = array(
-        'name' => __('Galerie-Medien', CPC2_TEXT_DOMAIN),
-        'singular_name' => __('Galerie-Medium', CPC2_TEXT_DOMAIN),
-        'add_new' => __('Neues hinzufügen', CPC2_TEXT_DOMAIN),
-        'add_new_item' => __('Neues Medium hinzufügen', CPC2_TEXT_DOMAIN),
-        'edit_item' => __('Medium bearbeiten', CPC2_TEXT_DOMAIN),
-        'new_item' => __('Neues Medium', CPC2_TEXT_DOMAIN),
-        'all_items' => __('Alle Medien', CPC2_TEXT_DOMAIN),
-        'view_item' => __('Medium anzeigen', CPC2_TEXT_DOMAIN),
-        'search_items' => __('Medien durchsuchen', CPC2_TEXT_DOMAIN),
-        'not_found' => __('Kein Medium gefunden', CPC2_TEXT_DOMAIN),
-        'not_found_in_trash' => __('Kein Medium im Papierkorb gefunden', CPC2_TEXT_DOMAIN),
-        'menu_name' => __('Galerie-Medien', CPC2_TEXT_DOMAIN),
+        'name' => __('Galerie-Medien', 'cp-community'),
+        'singular_name' => __('Galerie-Medium', 'cp-community'),
+        'add_new' => __('Neues hinzufügen', 'cp-community'),
+        'add_new_item' => __('Neues Medium hinzufügen', 'cp-community'),
+        'edit_item' => __('Medium bearbeiten', 'cp-community'),
+        'new_item' => __('Neues Medium', 'cp-community'),
+        'all_items' => __('Alle Medien', 'cp-community'),
+        'view_item' => __('Medium anzeigen', 'cp-community'),
+        'search_items' => __('Medien durchsuchen', 'cp-community'),
+        'not_found' => __('Kein Medium gefunden', 'cp-community'),
+        'not_found_in_trash' => __('Kein Medium im Papierkorb gefunden', 'cp-community'),
+        'menu_name' => __('Galerie-Medien', 'cp-community'),
     );
 
     $args = array(
