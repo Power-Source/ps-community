@@ -134,6 +134,7 @@ Hinweis zum Rangsystem:
 * Internationalisierung: Plugin-Texte verwenden einheitlich die Textdomain `cp-community` und werden über den Standard-Pluginloader geladen
 * Internationalisierung: Sichtbare JavaScript-Texte werden über lokalisierte PHP-Objekte bereitgestellt
 * Übersetzungen: Frische Basisdatei `languages/cp-community.pot` hinzugefügt
+* Übersetzungen: Aktuelles `en_US`-PO-Template und reproduzierbare MO-Datei für englische Übersetzungen hinzugefügt
 * UX-Fix: Ein installiertes, aber deaktiviertes PS Jobboard kann wie PS-Chat und PS PM-System direkt auf der Integrationsseite aktiviert werden
 * UX-Fix: Statusmeldungen der PS-Jobboard-Integration werden konsistent innerhalb der Integrationskarte dargestellt
 * Integration: Die bestehende MarketPress-Bestellübersicht wird über `mp_order_status()` im eigenen Community-Profil angezeigt und bleibt immer im Kontext des aktuellen Blogs
