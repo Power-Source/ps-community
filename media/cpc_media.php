@@ -23,13 +23,17 @@ function cpc_media_enqueue_assets() {
     $pdfjs_worker_url = $pdfjs_enabled ? plugins_url('../assets/pdfjs/pdf.worker.min.js', __FILE__) : '';
     $pdfjs_lib_url = $pdfjs_enabled ? plugins_url('../assets/pdfjs/pdf.min.js', __FILE__) : '';
 
-    // PSource Sortable (native drag/drop - replacement for deprecated jQuery UI sortable)
-    wp_enqueue_style('psource-sortable-css', plugins_url('../assets/psource-ui/sortable/psource-sortable.css', __FILE__), array(), '1.0.0');
-    wp_enqueue_script('psource-sortable-js', plugins_url('../assets/psource-ui/sortable/psource-sortable.js', __FILE__), array(), '1.0.0');
+    wp_enqueue_script(
+        'cpc-sortable-js',
+        plugins_url('../assets/psource-ui/sortable/sortable.min.js', __FILE__),
+        array(),
+        '1.15.1',
+        true
+    );
 
     // CPC Media Assets
     wp_enqueue_style('cpc-media-css', plugins_url('cpc_media.css', __FILE__), array(), filemtime(__DIR__ . '/cpc_media.css'));
-    $media_script_deps = array('jquery', 'psource-sortable-js');
+    $media_script_deps = array('jquery', 'cpc-sortable-js');
     wp_enqueue_script('cpc-media-js', plugins_url('cpc_media.js', __FILE__), $media_script_deps, filemtime(__DIR__ . '/cpc_media.js'));
 
     wp_localize_script('cpc-media-js', 'cpc_media_ajax', array(
@@ -40,6 +44,9 @@ function cpc_media_enqueue_assets() {
         'uploading' => __('Dateien werden hochgeladen...', 'cp-community'),
         'uploadDone' => __('Upload abgeschlossen.', 'cp-community'),
         'uploadError' => __('Upload fehlgeschlagen.', 'cp-community'),
+        'reorderSaving' => __('Reihenfolge wird gespeichert...', 'cp-community'),
+        'reorderDone' => __('Reihenfolge gespeichert.', 'cp-community'),
+        'reorderError' => __('Reihenfolge konnte nicht gespeichert werden.', 'cp-community'),
         'deleteError' => __('Medium konnte nicht gelöscht werden.', 'cp-community'),
         'lightbox_enabled' => cpc_media_lightbox_enabled() ? 1 : 0,
         'reorder_enabled' => cpc_media_reorder_enabled() ? 1 : 0,

@@ -382,11 +382,14 @@
         }
         var $itemsWrap = $galleryBlock.find(selector).first();
         if (!$itemsWrap.length) {
-            $itemsWrap = $('<div class="cpc_gallery_items" data-gallery-id="' + galleryId + '"></div>').appendTo($galleryBlock.find('.cpc_media_gallery_content').first());
+            $galleryBlock.find('.cpc_gallery_items_empty').remove();
+            $itemsWrap = $('<div class="cpc_gallery_items cpc_gallery_items_grid cpc_media_sortable" data-gallery-id="' + galleryId + '"></div>').appendTo($galleryBlock.find('.cpc_media_gallery_content').first());
+            $('<p class="cpc_media_sort_status" aria-live="polite"></p>').insertAfter($itemsWrap);
         }
         $.each(itemsHtml, function(_, html) {
             $itemsWrap.append(html);
         });
+        initializeSortable();
     }
 
     function updateGalleryCount($galleryBlock, count) {
@@ -1292,50 +1295,93 @@
     });
 
     // Reorder functionality handler
-    function handleSortableUpdate(sortableInstance) {
-        var $container = $(sortableInstance.element);
-        var $gallery = $container.closest('.cpc_media_gallery_block');
-        var galleryId = $gallery.data('gallery-id');
-        var order = [];
+    function setSortStatus($container, message, isError) {
+        $container.next('.cpc_media_sort_status')
+            .text(message || '')
+            .toggleClass('is-error', !!isError);
+    }
 
-        $container.find('.cpc_gallery_item').each(function(idx) {
-            var mediaId = parseInt($(this).data('media-id'), 10);
-            if (mediaId) {
-                order.push(mediaId);
-            }
-        });
-
-        if (!galleryId || !order.length) {
+    function syncGalleryPreviewOrder($container, order) {
+        var $strip = $container.closest('.cpc_media_gallery_block').find('.cpc_media_gallery_preview_strip').first();
+        if (!$strip.length || !order || !order.length) {
             return;
         }
 
+        order.forEach(function(mediaId) {
+            var selector = '[data-media-id="' + parseInt(mediaId, 10) + '"]';
+            var $thumb = $strip.children('.cpc_media_gallery_preview_thumb' + selector);
+            var $template = $strip.children('.cpc_media_gallery_stage_template' + selector);
+            if ($thumb.length) {
+                $strip.append($thumb);
+            }
+            if ($template.length) {
+                $strip.append($template);
+            }
+        });
+    }
+
+    function handleSortableUpdate(sortableInstance, previousOrder) {
+        var $container = $(sortableInstance.el);
+        var $gallery = $container.closest('.cpc_media_gallery_block');
+        var galleryId = $gallery.data('gallery-id');
+        var order = sortableInstance.toArray().map(function(mediaId) {
+            return parseInt(mediaId, 10);
+        }).filter(Boolean);
+
+        if (!galleryId || !order.length) {
+            sortableInstance.sort(previousOrder);
+            return;
+        }
+
+        setSortStatus($container, cpc_media_ajax.reorderSaving, false);
         $.post(cpc_media_ajax.ajaxurl, {
             action: 'cpc_media_reorder_items',
+            nonce: cpc_media_ajax.nonce,
             gallery_id: galleryId,
             order: order
         }).done(function(resp) {
             resp = normalizeAjaxResponse(resp);
             if (resp && resp.success) {
-                // Save successful
+                syncGalleryPreviewOrder($container, resp.data && resp.data.order ? resp.data.order : order);
+                setSortStatus($container, cpc_media_ajax.reorderDone, false);
+            } else {
+                sortableInstance.sort(previousOrder);
+                syncGalleryPreviewOrder($container, previousOrder);
+                setSortStatus($container, cpc_media_ajax.reorderError, true);
             }
         }).fail(function(xhr) {
-            console.error('Reorder failed:', xhr);
+            sortableInstance.sort(previousOrder);
+            syncGalleryPreviewOrder($container, previousOrder);
+            setSortStatus($container, cpc_media_ajax.reorderError, true);
         });
     }
 
     function initializeSortable() {
-        // Initialize PSourceSortable if reorder is enabled and available
-        if (typeof window.psourceSortable === 'function' && cpc_media_ajax.reorder_enabled) {
+        if (typeof window.Sortable === 'function' && cpc_media_ajax.reorder_enabled) {
             document.querySelectorAll('.cpc_gallery_items.cpc_media_sortable').forEach(function(container) {
-                if (!container._psourceSortableInit) {
-                    container._psourceSortableInit = true;
-                    new PSourceSortable(container, {
-                        items: '.cpc_gallery_item',
+                if (!container._cpcSortable) {
+                    container._cpcSortable = window.Sortable.create(container, {
+                        animation: 160,
+                        draggable: '.cpc_gallery_item',
                         handle: '.cpc_gallery_item_drag_handle',
-                        placeholder: 'cpc_gallery_item_placeholder',
-                        tolerance: 'pointer',
-                        update: function() {
-                            handleSortableUpdate(this);
+                        dataIdAttr: 'data-media-id',
+                        ghostClass: 'cpc_gallery_item_sortable_ghost',
+                        chosenClass: 'cpc_gallery_item_sortable_chosen',
+                        dragClass: 'cpc_gallery_item_sortable_drag',
+                        fallbackOnBody: true,
+                        fallbackTolerance: 4,
+                        swapThreshold: 0.65,
+                        invertSwap: true,
+                        onStart: function() {
+                            this._cpcPreviousOrder = this.toArray();
+                            container.classList.add('is-sorting');
+                        },
+                        onEnd: function(event) {
+                            container.classList.remove('is-sorting');
+                            if (event.oldIndex !== event.newIndex) {
+                                syncGalleryPreviewOrder($(container), this.toArray());
+                                handleSortableUpdate(this, this._cpcPreviousOrder || []);
+                            }
                         }
                     });
                 }

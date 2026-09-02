@@ -410,7 +410,8 @@ function cpc_media_render_media_item_html($item) {
     
     // Reorder handle (if managing and enabled)
     if ($reorder_enabled) {
-        $html .= '<span class="cpc_gallery_item_drag_handle" title="'.esc_attr__('Ziehen zum Umordnen', 'cp-community').'">⋮⋮</span>';
+        $drag_label = __('Ziehen zum Umordnen', 'cp-community');
+        $html .= '<button type="button" class="cpc_gallery_item_drag_handle" title="'.esc_attr($drag_label).'" aria-label="'.esc_attr($drag_label).'"><span class="dashicons dashicons-move" aria-hidden="true"></span></button>';
     }
     
     $html .= '<div class="cpc_gallery_item_preview mpp-item-entry">';
@@ -473,9 +474,11 @@ function cpc_media_render_media_item_html($item) {
     $html .= '</div>';
 
     if ($can_manage) {
-        $html .= '<div class="cpc_gallery_item_actions" style="display:flex; gap:8px; flex-wrap:wrap; margin-top:8px;">';
-        $html .= '<button type="button" class="cpc_button cpc_media_btn_secondary cpc_media_edit_media_btn"><span class="dashicons dashicons-edit"></span> '.esc_html__('Bearbeiten', 'cp-community').'</button>';
-        $html .= '<button type="button" class="cpc_button cpc_media_btn_secondary cpc_media_btn_danger cpc_media_delete_media_btn"><span class="dashicons dashicons-trash"></span> '.esc_html__('Löschen', 'cp-community').'</button>';
+        $edit_label = __('Bearbeiten', 'cp-community');
+        $delete_label = __('Löschen', 'cp-community');
+        $html .= '<div class="cpc_gallery_item_actions">';
+        $html .= '<button type="button" class="cpc_button cpc_media_btn_secondary cpc_media_icon_button cpc_media_edit_media_btn" title="'.esc_attr($edit_label).'" aria-label="'.esc_attr($edit_label).'"><span class="dashicons dashicons-edit" aria-hidden="true"></span></button>';
+        $html .= '<button type="button" class="cpc_button cpc_media_btn_secondary cpc_media_btn_danger cpc_media_icon_button cpc_media_delete_media_btn" title="'.esc_attr($delete_label).'" aria-label="'.esc_attr($delete_label).'"><span class="dashicons dashicons-trash" aria-hidden="true"></span></button>';
         $html .= '</div>';
 
         $html .= '<form class="cpc_media_edit_media_form" style="display:none; margin-top:12px; padding:14px; background:#f9f9f9; border-radius:4px; border:1px solid #ddd;">';
@@ -541,6 +544,9 @@ function cpc_gallery_items($atts) {
         $html .= cpc_media_render_media_item_html($item);
     }
     $html .= '</div>';
+    if ($can_manage && cpc_media_reorder_enabled()) {
+        $html .= '<p class="cpc_media_sort_status" aria-live="polite"></p>';
+    }
 
     return $html;
 }

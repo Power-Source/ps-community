@@ -395,8 +395,10 @@ function cpc_media_ajax_get_cover_selector() {
  * Reorder media items in gallery
  */
 function cpc_media_ajax_reorder_items() {
+    cpc_media_ajax_verify();
+
     $gallery_id = isset($_POST['gallery_id']) ? (int)$_POST['gallery_id'] : 0;
-    $order = isset($_POST['order']) && is_array($_POST['order']) ? array_map('intval', wp_unslash($_POST['order'])) : array();
+    $order = isset($_POST['order']) && is_array($_POST['order']) ? array_values(array_unique(array_map('intval', wp_unslash($_POST['order'])))) : array();
     $user_id = get_current_user_id();
 
     if (!$gallery_id || !cpc_media_user_can_manage_gallery($gallery_id, $user_id)) {
@@ -408,6 +410,10 @@ function cpc_media_ajax_reorder_items() {
     }
 
     foreach ($order as $position => $media_id) {
+        if (get_post_type($media_id) !== 'cpc_media' || (int)get_post_meta($media_id, 'cpc_media_gallery_id', true) !== $gallery_id) {
+            wp_send_json_error(array('message' => __('Ungültige Medienauswahl.', 'cp-community')), 400);
+        }
+
         wp_update_post(array(
             'ID' => $media_id,
             'menu_order' => $position,
@@ -418,5 +424,6 @@ function cpc_media_ajax_reorder_items() {
 
     wp_send_json_success(array(
         'message' => __('Reihenfolge gespeichert.', 'cp-community'),
+        'order' => $order,
     ));
 }
