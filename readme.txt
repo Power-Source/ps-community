@@ -1,9 +1,10 @@
 ﻿=== PS Community ===
 Contributors: DerN3rd
 Tags: wp community, social network, social networking, social media, cp-community, wp community, community
-Requires at least: 4.9
+Requires at least: 5.0
+Requires CP: 1.4
 Tested up to: 7.1.0
-ClassicPress: 2.7.1
+ClassicPress: 2.7.2
 Stable tag: 1.2.1
 License URI: https://www.gnu.org/licenses/gpl-2.0.html
 

@@ -870,9 +870,9 @@ function cpc_forum_post($atts) {
 		extract( shortcode_atts( array(
 			'class' => cpc_get_shortcode_value($values, 'cpc_forum_post-class', ''), // layout look and feel, table|classic
 			'title_label' => cpc_get_shortcode_value($values, 'cpc_forum_post-title_label', __('Titel des Beitrags', 'cp-community')),
-			'post_to_label' => cpc_get_shortcode_value($values, 'cpc_forum_post-post_to_label', __('Post an', 'cp-community')),
-			'content_label' => cpc_get_shortcode_value($values, 'cpc_forum_post-content_label', __('Post', 'cp-community')),
-			'label' => cpc_get_shortcode_value($values, 'cpc_forum_post-label', __('Add Topic', 'cp-community')),
+			'post_to_label' => cpc_get_shortcode_value($values, 'cpc_forum_post-post_to_label', __('Veröffentlichen in', 'cp-community')),
+			'content_label' => cpc_get_shortcode_value($values, 'cpc_forum_post-content_label', __('Inhalt', 'cp-community')),
+			'label' => cpc_get_shortcode_value($values, 'cpc_forum_post-label', __('Beitrag hinzufügen', 'cp-community')),
 			'moderate_msg' => cpc_get_shortcode_value($values, 'cpc_forum_post-moderate_msg', __('Dein Beitrag erscheint, sobald er moderiert wurde.', 'cp-community')),
 			'locked_msg' => cpc_get_shortcode_value($values, 'cpc_forum_post-locked_msg', __('Dieses Forum ist gesperrt. Neue Beiträge und Antworten sind nicht erlaubt.', 'cp-community')),
 			'private_msg' => cpc_get_shortcode_value($values, 'cpc_forum_post-private_msg', ''),
