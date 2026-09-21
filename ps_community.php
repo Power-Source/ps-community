@@ -353,6 +353,7 @@ if (strpos(CPC_CORE_PLUGINS, 'core-forums') !== false):
     require_once('forums/cpc_custom_post_forum.php');
     require_once('forums/cpc_custom_taxonomy_forum.php');
     require_once('forums/cpc_forum_features.php');
+    require_once('forums/cpc_forum_profile.php');
     require_once('forums/cpc_forum_shortcodes.php');
     require_once('forums/ajax_forum.php');
     require_once('forums/taxonomy-metadata.php');

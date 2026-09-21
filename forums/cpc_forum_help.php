@@ -227,6 +227,18 @@ function cpc_admin_getting_started_forum() {
 		</tr>
 		<tr class="form-field">
 			<td scope="row" valign="top">
+				<label for="cpc_forum_profile_tab_enabled"><?php _e('Forum im Profil', 'cp-community'); ?></label>
+			</td>
+			<td>
+				<label><input type="checkbox" name="cpc_forum_profile_tab_enabled" value="1" <?php checked(cpc_forum_get_setting('profile_tab_enabled', 1), 1); ?> /> <?php _e('Forum-Tab in Mitgliederprofilen anzeigen', 'cp-community'); ?></label>
+				<p><label><?php _e('Tab-Name', 'cp-community'); ?> <input type="text" name="cpc_forum_profile_tab_label" value="<?php echo esc_attr(cpc_forum_get_setting('profile_tab_label', __('Forum', 'cp-community'))); ?>" class="regular-text" /></label></p>
+				<p><label><?php _e('Tab-Priorität', 'cp-community'); ?> <input type="number" name="cpc_forum_profile_tab_priority" value="<?php echo absint(cpc_forum_get_setting('profile_tab_priority', 28)); ?>" min="1" class="small-text" /></label></p>
+				<p><label><?php _e('Einträge je Bereich', 'cp-community'); ?> <input type="number" name="cpc_forum_profile_tab_items" value="<?php echo absint(cpc_forum_get_setting('profile_tab_items', 6)); ?>" min="3" max="20" class="small-text" /></label></p>
+				<p class="description"><?php _e('Der Tab zeigt Themen und letzte Antworten eines Mitglieds. Private Antworten und nicht sichtbare Foren bleiben für unberechtigte Betrachter verborgen.', 'cp-community'); ?></p>
+			</td>
+		</tr>
+		<tr class="form-field">
+			<td scope="row" valign="top">
 				<label><?php _e('Experten-Ränge', 'cp-community'); ?></label>
 			</td>
 			<td>
@@ -285,6 +297,10 @@ function cpc_admin_forum_save($the_post) {
 
 	update_option('cpc_forum_moderate_first_posts', isset($the_post['cpc_forum_moderate_first_posts']) ? 1 : 0);
 	update_option('cpc_forum_notifications_enabled', isset($the_post['cpc_forum_notifications_enabled']) ? 1 : 0);
+	update_option('cpc_forum_profile_tab_enabled', isset($the_post['cpc_forum_profile_tab_enabled']) ? 1 : 0);
+	update_option('cpc_forum_profile_tab_label', isset($the_post['cpc_forum_profile_tab_label']) ? sanitize_text_field(wp_unslash($the_post['cpc_forum_profile_tab_label'])) : __('Forum', 'cp-community'));
+	update_option('cpc_forum_profile_tab_priority', isset($the_post['cpc_forum_profile_tab_priority']) ? max(1, absint($the_post['cpc_forum_profile_tab_priority'])) : 28);
+	update_option('cpc_forum_profile_tab_items', isset($the_post['cpc_forum_profile_tab_items']) ? min(20, max(3, absint($the_post['cpc_forum_profile_tab_items']))) : 6);
 
 	$rank_defaults = array('newbie' => array('Einsteiger', 1), 'helper' => array('Helfer', 3), 'pro' => array('Profi', 10), 'master' => array('Meister', 25));
 	$last_threshold = 0;

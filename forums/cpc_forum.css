@@ -26,6 +26,92 @@
 	font-size: 0.8em;	
 }
 
+/* =========================== Profile forum tab */
+
+.cpc_forum_profile_tab {
+	max-width: 980px;
+}
+
+.cpc_forum_profile_header {
+	display: flex;
+	align-items: center;
+	justify-content: space-between;
+	gap: 16px;
+	margin-bottom: 20px;
+}
+
+.cpc_forum_profile_header h2 {
+	margin: 0;
+}
+
+.cpc_forum_profile_stats {
+	display: flex;
+	gap: 8px;
+	flex-wrap: wrap;
+}
+
+.cpc_forum_profile_stats span {
+	padding: 5px 9px;
+	background: #f3f5f6;
+	border-radius: 3px;
+	font-size: 0.85em;
+}
+
+.cpc_forum_profile_section {
+	margin: 0 0 24px;
+}
+
+.cpc_forum_profile_section h3 {
+	margin: 0 0 8px;
+}
+
+.cpc_forum_profile_list {
+	margin: 0;
+	padding: 0;
+	list-style: none;
+	border-top: 1px solid #e2e5e7;
+}
+
+.cpc_forum_profile_item {
+	padding: 11px 0;
+	border-bottom: 1px solid #e2e5e7;
+}
+
+.cpc_forum_profile_title {
+	font-weight: 600;
+}
+
+.cpc_forum_profile_meta {
+	display: flex;
+	gap: 8px;
+	flex-wrap: wrap;
+	margin-top: 3px;
+	color: #667078;
+	font-size: 0.85em;
+}
+
+.cpc_forum_profile_excerpt {
+	margin-top: 4px;
+	color: #505960;
+}
+
+.cpc_forum_profile_accepted {
+	color: #237a3b;
+	font-weight: 600;
+}
+
+.cpc_forum_profile_empty {
+	margin: 0;
+	color: #667078;
+}
+
+@media all and (max-width: 600px) {
+	.cpc_forum_profile_header {
+		align-items: flex-start;
+		flex-direction: column;
+	}
+}
+
 
 /* =========================== [cpc-forums] */
 
