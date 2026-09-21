@@ -311,10 +311,6 @@ function cpc_save_taxonomy_metadata_notice(){
     if( $screen->id !='edit-cpc_forum' )
         return;
 
-    if( strpos(cpc_curPageURL(), 'edit-tags.php?taxonomy=cpc_forum') !== false ) {
-    	echo '<script>window.location="'.admin_url('admin.php?page=cpccom_forum_setup').'";</script>';
-    }
-
 	echo '<style>#message { display: none; }</style>';
 
 	echo '<div class="cpc_success" style="margin-top:24px;">&larr; ';

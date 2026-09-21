@@ -11,8 +11,11 @@ function cpc_docs_enqueue_assets() {
         return;
     }
 
-    wp_enqueue_style('cpc-docs-css', plugins_url('cpc_docs.css', __FILE__), array(), '1.0.0');
-    wp_enqueue_script('cpc-docs-js', plugins_url('cpc_docs.js', __FILE__), array(), '1.0.0', true);
+    $style_path = __DIR__.'/cpc_docs.css';
+    $script_path = __DIR__.'/cpc_docs.js';
+
+    wp_enqueue_style('cpc-docs-css', plugins_url('cpc_docs.css', __FILE__), array(), filemtime($style_path));
+    wp_enqueue_script('cpc-docs-js', plugins_url('cpc_docs.js', __FILE__), array(), filemtime($script_path), true);
 }
 add_action('wp_enqueue_scripts', 'cpc_docs_enqueue_assets', 20);
 

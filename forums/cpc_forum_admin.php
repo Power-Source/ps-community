@@ -7,7 +7,7 @@ function cpccom_forum_setup() {
         	
 	  	echo '<div id="icon-themes" class="icon32"><br /></div>';
 
-	  	echo '<h2>'.__('Alle Foren', 'cp-community').'</h2>';
+		echo '<h2>'.__('Alle Foren', 'cp-community').' <a href="'.esc_url(admin_url('edit-tags.php?taxonomy=cpc_forum&post_type=cpc_forum_post')).'" class="page-title-action">'.__('Neues Forum hinzufuegen', 'cp-community').'</a></h2>';
 
 	  	if (isset($_GET['action']) && $_GET['action'] == 'cpc_forum_delete'):
 

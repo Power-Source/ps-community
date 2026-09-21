@@ -126,6 +126,12 @@
     box-sizing: border-box;
 }
 
+.cpc_docs_create_form_grid {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 8px;
+}
+
 .cpc_docs_create_editor_wrap .wp-editor-wrap,
 .cpc_docs_create_editor_wrap .wp-editor-container {
     width: 100%;
@@ -190,6 +196,10 @@
     }
 
     .cpc_docs_folder_manage_forms {
+        grid-template-columns: 1fr;
+    }
+
+    .cpc_docs_create_form_grid {
         grid-template-columns: 1fr;
     }
 }
