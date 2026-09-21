@@ -1610,8 +1610,12 @@ function cpc_docs_render_directory_create_section() {
 }
 
 function cpc_docs_directory_shortcode($atts) {
+    $values = cpc_get_shortcode_options('cpc_docs_directory');
     $atts = shortcode_atts(array(
-        'per_page' => cpc_docs_get_directory_items_per_page(),
+        'per_page' => cpc_get_shortcode_value($values, 'cpc_docs_directory-per_page', cpc_docs_get_directory_items_per_page()),
+        'styles' => true,
+        'before' => '',
+        'after' => '',
     ), $atts, 'cpc-docs-directory');
 
     $search = isset($_GET['cpc_docs_q']) ? sanitize_text_field(wp_unslash($_GET['cpc_docs_q'])) : '';
@@ -1652,6 +1656,10 @@ function cpc_docs_directory_shortcode($atts) {
     }
 
     $html .= '</div>';
+
+    if ($html && function_exists('cpc_wrap_shortcode_styles')) {
+        $html = apply_filters('cpc_wrap_shortcode_styles_filter', $html, 'cpc_docs_directory', $atts['before'], $atts['after'], $atts['styles'], $values);
+    }
 
     return $html;
 }

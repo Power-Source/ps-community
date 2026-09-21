@@ -962,8 +962,12 @@ function cpc_projects_render_group_tab_content($html, $group_id, $shortcode_atts
 }
 
 function cpc_projects_directory_shortcode($atts) {
+    $values = cpc_get_shortcode_options('cpc_projects_directory');
     $atts = shortcode_atts(array(
-        'per_page' => cpc_projects_get_directory_items_per_page(),
+        'per_page' => cpc_get_shortcode_value($values, 'cpc_projects_directory-per_page', cpc_projects_get_directory_items_per_page()),
+        'styles' => true,
+        'before' => '',
+        'after' => '',
     ), $atts, 'cpc-projects-directory');
 
     $page = isset($_GET['cpc_projects_page']) ? max(1, (int)$_GET['cpc_projects_page']) : 1;
@@ -988,6 +992,10 @@ function cpc_projects_directory_shortcode($atts) {
     }
 
     $html .= '</div>';
+
+    if ($html && function_exists('cpc_wrap_shortcode_styles')) {
+        $html = apply_filters('cpc_wrap_shortcode_styles_filter', $html, 'cpc_projects_directory', $atts['before'], $atts['after'], $atts['styles'], $values);
+    }
 
     return $html;
 }

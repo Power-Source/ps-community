@@ -3,7 +3,7 @@
 Plugin Name: PS Community
 Plugin URI: https://psource.eimen.net/psource/ps-community/
 Description: Füge Deiner ClassicPress-Webseite schnell und einfach ein soziales Netzwerk hinzu!
-Version: 1.2.1
+Version: 1.2.2
 Author: PSOURCE
 Author URI: https://psource.eimen.net/
 License: GPLv2 or later
@@ -352,6 +352,7 @@ endif;
 if (strpos(CPC_CORE_PLUGINS, 'core-forums') !== false):
     require_once('forums/cpc_custom_post_forum.php');
     require_once('forums/cpc_custom_taxonomy_forum.php');
+    require_once('forums/cpc_forum_features.php');
     require_once('forums/cpc_forum_shortcodes.php');
     require_once('forums/ajax_forum.php');
     require_once('forums/taxonomy-metadata.php');
@@ -403,6 +404,7 @@ endif;
 if (is_admin()):
 	require_once('cpc_admin.php');
 	require_once('cpc_setup_admin.php');
+    require_once('lib/cpc_shortcode_admin_registry.php');
     require_once('ajax_admin.php');
     if (strpos(CPC_CORE_PLUGINS, 'core-activity') !== false):
         require_once('activity/cpc_activity_plus_admin.php');
@@ -428,7 +430,7 @@ add_action( 'wp_footer', 'cpc_add_wait_modal_box' );
 function cpc_update_routine() {
 		
 	global $wpdb;
-    $new_version = '1.2.1';
+    $new_version = '1.2.2';
 //echo get_option('cp_community_ver').'<br />';
 //echo $new_version.'<br />';
 	$do_update = (is_blog_admin() && current_user_can('manage_options') && get_option('cp_community_ver') != $new_version);

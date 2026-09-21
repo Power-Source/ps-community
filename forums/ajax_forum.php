@@ -23,9 +23,18 @@ function cpc_forum_add_subcomment() {
 	global $wpdb,$current_user;
 
 	$the_comment = $_POST;
+	$post = get_post(absint($the_comment['post_id']));
+	$term = $post ? cpc_forum_get_post_term($post->ID) : false;
+	if (!$post || !$term || $post->comment_status !== 'open' || cpc_get_term_meta($term->term_id, 'cpc_forum_closed', true)) {
+		wp_send_json_error(array('message' => __('Dieses Thema ist geschlossen.', 'cp-community')));
+	}
 
     $the_content = esc_html($the_comment['comment']);
     $the_content = preg_replace('/\t/', '', $the_content);
+	$error = cpc_forum_submission_error($term->term_id, $current_user->ID, $the_content);
+	if ($error) {
+		wp_send_json_error(array('message' => $error));
+	}
     
 	$data = array(
 	    'comment_post_ID' => $the_comment['post_id'],
@@ -37,12 +46,14 @@ function cpc_forum_add_subcomment() {
 	    'user_id' => $current_user->ID,
 	    'comment_author_IP' => $_SERVER['REMOTE_ADDR'],
 	    'comment_agent' => $_SERVER['HTTP_USER_AGENT'],
-	    'comment_approved' => 1,
+	    'comment_approved' => cpc_forum_should_moderate($term->term_id, 'reply', $current_user->ID) ? 0 : 1,
 	);
 
 	$new_id = wp_new_comment($data); // sanitises
 
 	if ($new_id):
+
+		cpc_forum_record_submission($current_user->ID);
 
         // Check if parent is private, and copy if so
         $private = get_comment_meta( $the_comment['comment_id'], 'cpc_private_post', true );
@@ -81,6 +92,9 @@ function cpc_forum_add_subcomment() {
 
 		// Any further actions?
 		do_action( 'cpc_forum_comment_add_hook', $the_comment, $_FILES, $the_comment['post_id'], $new_id );
+		if (get_comment($new_id)->comment_approved == 0) {
+			cpc_forum_notify_moderators($term->term_id, __('Neue Antwort wartet auf Freigabe', 'cp-community'), __('Eine verschachtelte Antwort wartet auf Moderation.', 'cp-community'), $current_user->ID);
+		}
 
 		// HTML to show
 		$sub_comment_html = '<div class="cpc_forum_post_subcomment" style="display:none; padding-left: '.$the_comment['size'].'px;">';

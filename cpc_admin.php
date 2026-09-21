@@ -386,13 +386,11 @@ function cpccom_release_notes() {
 					<div style="font-size:1.6em; line-height:1.6em; color: #510051; font-weight: bold;">PS Community Plugin</div>
 					<a href="https://power-source.github.io/ps-community/" target="_blank">Verfügbar im PSOURCE GitHub-Repository</a><br />
 
-					<h2 style="font-style:italic; margin-top:20px;">Changelog Versionsnummer 1.2.1</h2>
-					<p><strong>Medien &amp; Lightbox:</strong> Galerien zeigen Bilder, Videos, Audio und PDFs in einer bedienbaren Vorschau; Lightboxen präsentieren Medien größer auf einer dunklen Bühne mit kompakten Metadaten.</p>
-                    <p><strong>Galerien &amp; Slideshow:</strong> Medien lassen sich mit lokalem SortableJS präzise umordnen. Bildgalerien unterstützen optionales Autoslide, wählbare Intervalle, eine stabile Bühnenhöhe und eine ressourcenschonende Offscreen-Pause.</p>
-                    <p><strong>Private Nachrichten:</strong> Postfach, Unterhaltung und Einstellungen funktionieren direkt im Profil ohne vollständigen Seitenreload. Anhänge können über die Community-Lightbox betrachtet und eigenen Galerien hinzugefügt werden.</p>
-                    <p><strong>Integrationen:</strong> Jobboard-Assets werden zuverlässig geladen, MarketPress-Bestellungen erscheinen im eigenen Profil und installierte Integrationsplugins können komfortabel aktiviert werden.</p>
-                    <p><strong>Projekte &amp; Aktivität:</strong> Projekte verwenden einen gemeinsamen, theme-resistenten Kartenrenderer; der Aktivitätsstream und sein Stileditor wurden um klare Standardstile und zusätzliche Optionen erweitert.</p>
-                    <p><strong>Internationalisierung:</strong> Die Textdomain wurde vereinheitlicht, JavaScript-Texte werden lokalisiert und aktuelle POT-, PO- und MO-Vorlagen stehen für Übersetzungen bereit.</p>
+					<h2 style="font-style:italic; margin-top:20px;">Changelog Versionsnummer 1.2.2</h2>
+					<p><strong>Forum-Moderation:</strong> Ausstehende Themen und Antworten werden in einer eigenen Warteschlange sicher freigegeben oder verworfen.</p>
+                    <p><strong>Forum-Regeln:</strong> Jedes Forum kann als Diskussion oder Frage-und-Antwort-Bereich laufen und eigene Moderatoren, Freigaben, Mindestlängen sowie Posting-Intervalle festlegen.</p>
+                    <p><strong>Benachrichtigungen:</strong> Themenstarter und Moderatoren erhalten steuerbare E-Mail-Hinweise; Mitglieder verwalten ihre Häufigkeit über den Shortcode <code>[cpc-forum-notifications]</code>.</p>
+                    <p><strong>Stabilität:</strong> Geschlossene Foren und Schutzregeln werden serverseitig geprüft. Die Forum-Anlegemaske und aktuelle Dokument-Assets funktionieren nach Deployments zuverlässig.</p>
 
                   
                 </td>

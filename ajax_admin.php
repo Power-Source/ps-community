@@ -89,7 +89,7 @@ function cpc_shortcode_options_save() {
         
             if (strpos($row[0], '-')):
 
-                $name = explode('-', $row[0]);
+                $name = explode('-', $row[0], 2);
 
                 $function = $name[0];
                 $option = $name[1];

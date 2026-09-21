@@ -2056,6 +2056,14 @@ function cpc_forum_toggle_accepted_answer($comment_id, $action, $current_user_id
 		);
 	}
 
+	$term = cpc_forum_get_post_term($post->ID);
+	if (!$term || !cpc_forum_is_qa_mode($term->term_id)) {
+		return array(
+			'ok' => false,
+			'message' => __('Dieses Forum verwendet keinen Frage-und-Antwort-Modus.', 'cp-community'),
+		);
+	}
+
 	$can_manage = ((int)$post->post_author === (int)$current_user_id) || $is_forum_admin || current_user_can('manage_options');
 	if (!$can_manage) {
 		return array(
@@ -2190,6 +2198,42 @@ function cpc_forum_unanswered($atts) {
 	return $html;
 }
 
+function cpc_forum_notifications_shortcode($atts = array()) {
+	if (!is_user_logged_in()) {
+		return '<p>'.esc_html__('Bitte melde Dich an, um Deine Forum-Benachrichtigungen zu verwalten.', 'cp-community').'</p>';
+	}
+
+	$values = cpc_get_shortcode_options('cpc_forum_notifications');
+	$atts = shortcode_atts(array(
+		'title' => cpc_get_shortcode_value($values, 'cpc_forum_notifications-title', __('Forum-Benachrichtigungen', 'cp-community')),
+		'save_label' => cpc_get_shortcode_value($values, 'cpc_forum_notifications-save_label', __('Speichern', 'cp-community')),
+		'before' => '',
+		'after' => '',
+		'styles' => true,
+	), $atts, 'cpc-forum-notifications');
+	$user_id = get_current_user_id();
+	if (!empty($_POST['cpc_forum_notification_frequency']) && isset($_POST['cpc_forum_notifications_nonce']) && wp_verify_nonce($_POST['cpc_forum_notifications_nonce'], 'cpc_forum_notifications')) {
+		$frequency = sanitize_key(wp_unslash($_POST['cpc_forum_notification_frequency']));
+		if (in_array($frequency, array('instant', 'daily', 'off'), true)) {
+			update_user_meta($user_id, 'cpc_forum_notification_frequency', $frequency);
+		}
+	}
+
+	$frequency = cpc_forum_user_notification_frequency($user_id);
+	$html = '<form class="cpc_forum_notifications" method="post">';
+	$html .= '<label for="cpc_forum_notification_frequency">'.esc_html($atts['title']).'</label>';
+	$html .= '<select id="cpc_forum_notification_frequency" name="cpc_forum_notification_frequency">';
+	$html .= '<option value="instant"'.selected($frequency, 'instant', false).'>'.esc_html__('Sofort per E-Mail', 'cp-community').'</option>';
+	$html .= '<option value="daily"'.selected($frequency, 'daily', false).'>'.esc_html__('Tägliche Zusammenfassung', 'cp-community').'</option>';
+	$html .= '<option value="off"'.selected($frequency, 'off', false).'>'.esc_html__('Keine E-Mails', 'cp-community').'</option>';
+	$html .= '</select>';
+	$html .= wp_nonce_field('cpc_forum_notifications', 'cpc_forum_notifications_nonce', true, false);
+	$html .= '<button type="submit" class="cpc_button">'.esc_html($atts['save_label']).'</button></form>';
+
+	return apply_filters('cpc_wrap_shortcode_styles_filter', $html, 'cpc_forum_notifications', $atts['before'], $atts['after'], $atts['styles'], $values);
+}
+add_shortcode('cpc-forum-notifications', 'cpc_forum_notifications_shortcode');
+
 function cpc_forum_experts($atts) {
 
 	cpc_forum_init();
@@ -2201,10 +2245,10 @@ function cpc_forum_experts($atts) {
 		'days' => cpc_get_shortcode_value($values, 'cpc_forum_experts-days', 30),
 		'max' => cpc_get_shortcode_value($values, 'cpc_forum_experts-max', 10),
 		'show_rank' => cpc_get_shortcode_value($values, 'cpc_forum_experts-show_rank', true),
-		'rank_newbie' => cpc_get_shortcode_value($values, 'cpc_forum_experts-rank_newbie', __('Rookie', 'cp-community')),
-		'rank_helper' => cpc_get_shortcode_value($values, 'cpc_forum_experts-rank_helper', __('Helper', 'cp-community')),
-		'rank_pro' => cpc_get_shortcode_value($values, 'cpc_forum_experts-rank_pro', __('Pro', 'cp-community')),
-		'rank_master' => cpc_get_shortcode_value($values, 'cpc_forum_experts-rank_master', __('Master', 'cp-community')),
+		'rank_newbie' => cpc_get_shortcode_value($values, 'cpc_forum_experts-rank_newbie', cpc_forum_get_setting('rank_newbie_label', __('Einsteiger', 'cp-community'))),
+		'rank_helper' => cpc_get_shortcode_value($values, 'cpc_forum_experts-rank_helper', cpc_forum_get_setting('rank_helper_label', __('Helfer', 'cp-community'))),
+		'rank_pro' => cpc_get_shortcode_value($values, 'cpc_forum_experts-rank_pro', cpc_forum_get_setting('rank_pro_label', __('Profi', 'cp-community'))),
+		'rank_master' => cpc_get_shortcode_value($values, 'cpc_forum_experts-rank_master', cpc_forum_get_setting('rank_master_label', __('Meister', 'cp-community'))),
 		'empty' => cpc_get_shortcode_value($values, 'cpc_forum_experts-empty', __('Noch keine Experten-Daten verfügbar.', 'cp-community')),
 		'before' => '',
 		'after' => '',
@@ -2256,13 +2300,13 @@ function cpc_forum_experts($atts) {
 
 			$rank_label = '';
 			if ($show_rank) {
-				if ($count >= 25) {
+				if ($count >= absint(cpc_forum_get_setting('rank_master_threshold', 25))) {
 					$rank_label = $rank_master;
-				} elseif ($count >= 10) {
+				} elseif ($count >= absint(cpc_forum_get_setting('rank_pro_threshold', 10))) {
 					$rank_label = $rank_pro;
-				} elseif ($count >= 3) {
+				} elseif ($count >= absint(cpc_forum_get_setting('rank_helper_threshold', 3))) {
 					$rank_label = $rank_helper;
-				} else {
+				} elseif ($count >= absint(cpc_forum_get_setting('rank_newbie_threshold', 1))) {
 					$rank_label = $rank_newbie;
 				}
 			}

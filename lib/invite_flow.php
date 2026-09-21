@@ -166,8 +166,12 @@ function cpc_invite_shortcode($atts) {
         return '<div class="cpc-invite-login">' . esc_html__('Bitte logge Dich ein, um Einladungen zu versenden.', 'cp-community') . '</div>';
     }
 
+    $values = cpc_get_shortcode_options('cpc_invite');
     $atts = shortcode_atts(array(
-        'redirect' => home_url('/'),
+        'redirect' => cpc_get_shortcode_value($values, 'cpc_invite-redirect', home_url('/')),
+        'styles' => true,
+        'before' => '',
+        'after' => '',
     ), $atts, 'cpc-invite');
 
     $status = isset($_GET['cpc_invite_status']) ? sanitize_key(wp_unslash($_GET['cpc_invite_status'])) : '';
@@ -194,6 +198,10 @@ function cpc_invite_shortcode($atts) {
     $html .= '<p><button type="submit" name="cpc_invite_submit" value="1">' . esc_html__('Einladung senden', 'cp-community') . '</button></p>';
     $html .= '</form>';
     $html .= '</div>';
+
+    if (function_exists('cpc_wrap_shortcode_styles')) {
+        $html = apply_filters('cpc_wrap_shortcode_styles_filter', $html, 'cpc_invite', $atts['before'], $atts['after'], $atts['styles'], $values);
+    }
 
     return $html;
 }

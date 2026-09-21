@@ -18,11 +18,22 @@ if ($action) {
 
 			$the_post = $_POST;
             $group_id = isset($the_post['cpc_group_id']) ? intval($the_post['cpc_group_id']) : 0;
-			$status = $the_post['cpc_forum_moderate'] == '1' ? 'pending' : 'publish';
+            $forum = get_term_by('slug', sanitize_title($the_post['cpc_forum_slug']), 'cpc_forum');
+            if (!$forum || cpc_get_term_meta($forum->term_id, 'cpc_forum_closed', true)) {
+                echo '0|reload|denied';
+                exit;
+            }
+
+			$status = cpc_forum_should_moderate($forum->term_id, 'topic', $current_user->ID) ? 'pending' : 'publish';
             
             $the_title = esc_html($the_post['cpc_forum_post_title']);
             $the_content = esc_html($the_post['cpc_forum_post_textarea']);
             $the_content = preg_replace('/\t/', '', $the_content); // remove tabs
+            $error = cpc_forum_submission_error($forum->term_id, $current_user->ID, $the_title.' '.$the_content);
+            if ($error) {
+                echo '0|reload|invalid|'.rawurlencode($error);
+                exit;
+            }
             $cpc_forum_slug_length = get_option('cpc_forum_slug_length') ? get_option('cpc_forum_slug_length') : 50;
             $post_name = strlen($the_title) < $cpc_forum_slug_length ? $post_name = $the_title : $post_name = substr($the_title, 0, $cpc_forum_slug_length);
             
@@ -42,6 +53,16 @@ if ($action) {
             if ($new_id):
 
                 wp_set_object_terms( $new_id, $the_post['cpc_forum_slug'], 'cpc_forum' );
+                cpc_forum_record_submission($current_user->ID);
+
+                if ($status === 'pending') {
+                    cpc_forum_notify_moderators(
+                        $forum->term_id,
+                        __('Neues Thema wartet auf Freigabe', 'cp-community'),
+                        sprintf(__('Das Thema "%s" wartet auf Moderation.', 'cp-community'), $the_title),
+                        $current_user->ID
+                    );
+                }
             
                 // Any further actions?
                 do_action( 'cpc_forum_post_add_hook', $_POST, $_FILES, $new_id );
@@ -91,10 +112,22 @@ if ($action) {
 		if ($action == 'cpc_forum_comment_add') {
 
 			$the_comment = $_POST;
-			$status = $the_comment['cpc_forum_moderate'] == '1' ? '0' : '1';
+            $forum = get_term_by('slug', sanitize_title($the_comment['cpc_forum_slug']), 'cpc_forum');
+            $topic = get_post((int)$the_comment['post_id']);
+            if (!$forum || !$topic || cpc_get_term_meta($forum->term_id, 'cpc_forum_closed', true) || $topic->comment_status !== 'open') {
+                echo 'denied';
+                exit;
+            }
+
+			$status = cpc_forum_should_moderate($forum->term_id, 'reply', $current_user->ID) ? '0' : '1';
 
             $the_content = esc_html($the_comment['cpc_forum_comment']);
             $the_content = preg_replace('/\t/', '', $the_content);
+            $error = cpc_forum_submission_error($forum->term_id, $current_user->ID, $the_content);
+            if ($error) {
+                echo 'invalid';
+                exit;
+            }
 
             if ($the_comment['cpc_forum_comment']):
                 $data = array(
@@ -110,6 +143,7 @@ if ($action) {
                     'comment_approved' => $status,
                 );
                 $new_id = wp_insert_comment($data);
+                cpc_forum_record_submission($current_user->ID);
             else:
                 $new_id = false;
             endif;
@@ -214,6 +248,22 @@ if ($action) {
 
             // Any further actions?
             do_action( 'cpc_forum_reply_add_hook', $the_comment, $_FILES, $the_comment['post_id'], $new_id );
+
+            if ($new_id && $status === '0') {
+                cpc_forum_notify_moderators(
+                    $forum->term_id,
+                    __('Neue Antwort wartet auf Freigabe', 'cp-community'),
+                    sprintf(__('Eine Antwort zu "%s" wartet auf Moderation.', 'cp-community'), get_the_title($topic)),
+                    $current_user->ID
+                );
+            } elseif ($new_id) {
+                cpc_forum_notify_topic_author(
+                    $topic->ID,
+                    __('Neue Antwort auf Dein Forenthema', 'cp-community'),
+                    sprintf(__('Es gibt eine neue Antwort auf "%s".', 'cp-community'), get_the_title($topic)),
+                    $current_user->ID
+                );
+            }
             
             echo $return_html;            
 

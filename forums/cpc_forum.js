@@ -168,7 +168,8 @@ jQuery(document).ready(function() {
 						if (all_filled) {
                             
                             /* First add the post */
-							jQuery(this).attr("disabled", true);
+							var submitButton = jQuery(this);
+							submitButton.attr("disabled", true);
 							jQuery("body").addClass("cpc_wait_loading");
 					        var iframe = jQuery('<iframe name="cpc_forum_postiframe" id="cpc_forum_postiframe" style="display:none;" />');
 					        jQuery("body").append(iframe);
@@ -192,6 +193,13 @@ jQuery(document).ready(function() {
 								var reload_loc = window.location.href; // reload current page
 								var post_id = iframeParts[0] || '';
 								var cpc_forum_moderate = iframeParts[2];
+								if (post_id === '0') {
+									var errorMessage = iframeParts[3] ? decodeURIComponent(iframeParts[3]) : 'Dein Beitrag konnte nicht veröffentlicht werden.';
+									alert(errorMessage);
+									submitButton.prop('disabled', false);
+									jQuery('body').removeClass('cpc_wait_loading');
+									return;
+								}
 								if ((iframeParts[1] || 'reload') !== 'reload') {
 									reload_loc = cpcDecodeEntities(iframeParts[1]); // to go straight to new post or url to redirect to
                                 }

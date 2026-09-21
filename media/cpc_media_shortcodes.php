@@ -1,15 +1,19 @@
 <?php
 
 function cpc_gallery_list($atts) {
+    $values = cpc_get_shortcode_options('cpc_gallery_list');
     $atts = shortcode_atts(array(
-        'user_id' => 0,
-        'component' => '',
-        'component_id' => 0,
-        'status' => '',
-        'type' => '',
-        'limit' => 20,
-        'show_count' => true,
-        'show_context' => true,
+        'user_id' => cpc_get_shortcode_value($values, 'cpc_gallery_list-user_id', 0),
+        'component' => cpc_get_shortcode_value($values, 'cpc_gallery_list-component', ''),
+        'component_id' => cpc_get_shortcode_value($values, 'cpc_gallery_list-component_id', 0),
+        'status' => cpc_get_shortcode_value($values, 'cpc_gallery_list-status', ''),
+        'type' => cpc_get_shortcode_value($values, 'cpc_gallery_list-type', ''),
+        'limit' => cpc_get_shortcode_value($values, 'cpc_gallery_list-limit', 20),
+        'show_count' => cpc_get_shortcode_value($values, 'cpc_gallery_list-show_count', true),
+        'show_context' => cpc_get_shortcode_value($values, 'cpc_gallery_list-show_context', true),
+        'styles' => true,
+        'before' => '',
+        'after' => '',
     ), $atts, 'cpc-gallery-list');
 
     $query_args = array(
@@ -82,6 +86,10 @@ function cpc_gallery_list($atts) {
         $html .= '</div>';
     }
     $html .= '</div>';
+
+    if (function_exists('cpc_wrap_shortcode_styles')) {
+        $html = apply_filters('cpc_wrap_shortcode_styles_filter', $html, 'cpc_gallery_list', $atts['before'], $atts['after'], $atts['styles'], $values);
+    }
 
     return $html;
 }
@@ -283,9 +291,13 @@ function cpc_media_render_directory_pagination($page, $has_more) {
 }
 
 function cpc_media_directory_shortcode($atts) {
+    $values = cpc_get_shortcode_options('cpc_media_directory');
     $atts = shortcode_atts(array(
-        'view' => 'galleries',
-        'per_page' => cpc_media_get_directory_items_per_page(),
+        'view' => cpc_get_shortcode_value($values, 'cpc_media_directory-view', 'galleries'),
+        'per_page' => cpc_get_shortcode_value($values, 'cpc_media_directory-per_page', cpc_media_get_directory_items_per_page()),
+        'styles' => true,
+        'before' => '',
+        'after' => '',
     ), $atts, 'cpc-media-directory');
 
     $view = isset($_GET['cpc_media_view']) ? sanitize_key(wp_unslash($_GET['cpc_media_view'])) : sanitize_key($atts['view']);
@@ -358,6 +370,10 @@ function cpc_media_directory_shortcode($atts) {
     }
 
     $html .= '</div>';
+
+    if (function_exists('cpc_wrap_shortcode_styles')) {
+        $html = apply_filters('cpc_wrap_shortcode_styles_filter', $html, 'cpc_media_directory', $atts['before'], $atts['after'], $atts['styles'], $values);
+    }
 
     return $html;
 }
@@ -504,9 +520,13 @@ function cpc_media_render_media_item_html($item) {
 }
 
 function cpc_gallery_items($atts) {
+    $values = cpc_get_shortcode_options('cpc_gallery_items');
     $atts = shortcode_atts(array(
-        'gallery_id' => 0,
-        'limit' => 24,
+        'gallery_id' => cpc_get_shortcode_value($values, 'cpc_gallery_items-gallery_id', 0),
+        'limit' => cpc_get_shortcode_value($values, 'cpc_gallery_items-limit', 24),
+        'styles' => true,
+        'before' => '',
+        'after' => '',
     ), $atts, 'cpc-gallery-items');
 
     $gallery_id = (int)$atts['gallery_id'];
@@ -546,6 +566,10 @@ function cpc_gallery_items($atts) {
     $html .= '</div>';
     if ($can_manage && cpc_media_reorder_enabled()) {
         $html .= '<p class="cpc_media_sort_status" aria-live="polite"></p>';
+    }
+
+    if (function_exists('cpc_wrap_shortcode_styles')) {
+        $html = apply_filters('cpc_wrap_shortcode_styles_filter', $html, 'cpc_gallery_items', $atts['before'], $atts['after'], $atts['styles'], $values);
     }
 
     return $html;

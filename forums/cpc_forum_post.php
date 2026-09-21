@@ -488,7 +488,7 @@ if (!isset($_GET['forum_action']) || ($_GET['forum_action'] != 'edit' && $_GET['
                                                         if (($user_can_edit_comment || $is_forum_admin) && $timeout-$age >= 0 && $enable_timeout) $comment_html .= '<br />('.sprintf(__('Sperre in %d Sekunden', 'cp-community'), ($timeout-$age)).')';
                                                         if (($user_can_edit_comment && $user_can_delete_comment) || $is_forum_admin) $comment_html .= ' | ';
                                                         if ($user_can_delete_comment || $is_forum_admin) $comment_html .= '<a href="'.$url.cpc_query_mark($url).'forum_action=delete&comment_id='.$comment->comment_ID.'">'.__('Löschen', 'cp-community').'</a>';
-                                                        if ((int)$comment->comment_parent === 0 && ((int)$post->post_author === (int)$current_user->ID || $is_forum_admin || current_user_can('manage_options'))):
+                                                        if (cpc_forum_is_qa_mode($post_term_term_id) && (int)$comment->comment_parent === 0 && ((int)$post->post_author === (int)$current_user->ID || $is_forum_admin || current_user_can('manage_options'))):
                                                             $url_answer = preg_replace("/[&?]forum_action=(accept_answer|unaccept_answer)&comment_id=[0-9]+/", "", $url);
                                                             $comment_html .= ' | ';
                                                             if ($is_accepted_answer):

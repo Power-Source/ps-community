@@ -122,6 +122,9 @@ function cpc_admin_getting_started_options() {
                                 echo cpc_show_shortcode($cpc_expand_tab, $cpc_expand_shortcode, 'forums', 'cpc_forum_sharethis_insert_tab', CPC_PREFIX.'-forum-sharethis');
                                 echo cpc_show_shortcode($cpc_expand_tab, $cpc_expand_shortcode, 'forums', 'cpc_forum_show_posts_tab', CPC_PREFIX.'-forum-show-posts');
                                 echo cpc_show_shortcode($cpc_expand_tab, $cpc_expand_shortcode, 'forums', 'cpc_forum_children_tab', CPC_PREFIX.'-forum-children');
+                                echo cpc_show_shortcode($cpc_expand_tab, $cpc_expand_shortcode, 'forums', 'cpc_forum_unanswered_tab', CPC_PREFIX.'-forum-unanswered');
+                                echo cpc_show_shortcode($cpc_expand_tab, $cpc_expand_shortcode, 'forums', 'cpc_forum_experts_tab', CPC_PREFIX.'-forum-experts');
+                                echo cpc_show_shortcode($cpc_expand_tab, $cpc_expand_shortcode, 'forums', 'cpc_forum_notifications_tab', CPC_PREFIX.'-forum-notifications');
                         
                                 // Groups
                                 echo cpc_show_shortcode($cpc_expand_tab, $cpc_expand_shortcode, 'groups', 'cpc_groups_list_tab', CPC_PREFIX.'-groups');
@@ -1982,6 +1985,59 @@ function cpc_admin_getting_started_options() {
                                 echo '</table>';  
                             echo '</div>';          
 
+                            // [cpc-forum-unanswered]
+                            $values = get_option('cpc_shortcode_options_'.'cpc_forum_unanswered') ? get_option('cpc_shortcode_options_'.'cpc_forum_unanswered') : array();
+                            echo cpc_show_options($cpc_expand_shortcode, 'cpc_forum_unanswered_tab');
+                                echo '<strong>'.__('Zweck:', 'cp-community').'</strong> '.__('Zeigt offene Fragen ohne akzeptierte Antwort.', 'cp-community').'<br />';
+                                echo '<strong>'.__('Wie benutzen:', 'cp-community').'</strong> '.__('Füge [cpc-forum-unanswered] zu einer Seite hinzu; mit slug="xxx" begrenzt Du die Liste auf ein Forum.', 'cp-community');
+                                echo '<p><strong>'.__('Optionen', 'cp-community').'</strong><br />';
+                                echo '<table cellpadding="0" cellspacing="0" class="cpc_shortcode_value_row">';
+                                    $days = cpc_get_shortcode_default($values, 'cpc_forum_unanswered-days', 30);
+                                    echo '<tr><td>'.__('Zeitraum', 'cp-community').'</td><td><input type="number" min="1" name="cpc_forum_unanswered-days" value="'.esc_attr($days).'" /> '.__('Tage', 'cp-community').'</td><td>(days="'.$days.'")</td></tr>';
+                                    $max = cpc_get_shortcode_default($values, 'cpc_forum_unanswered-max', 10);
+                                    echo '<tr><td>'.__('Maximale Einträge', 'cp-community').'</td><td><input type="number" min="1" name="cpc_forum_unanswered-max" value="'.esc_attr($max).'" /></td><td>(max="'.$max.'")</td></tr>';
+                                    $show_count = cpc_get_shortcode_default($values, 'cpc_forum_unanswered-show_count', true);
+                                    echo '<tr><td>'.__('Antwortanzahl anzeigen', 'cp-community').'</td><td><input type="checkbox" name="cpc_forum_unanswered-show_count"'.($show_count ? ' CHECKED' : '').' /></td><td>(show_count="'.($show_count ? '1' : '0').'")</td></tr>';
+                                    $empty = cpc_get_shortcode_default($values, 'cpc_forum_unanswered-empty', __('Keine unbeantworteten Themen gefunden.', 'cp-community'));
+                                    echo '<tr><td>'.__('Leerer-Listen-Text', 'cp-community').'</td><td><input type="text" name="cpc_forum_unanswered-empty" value="'.esc_attr($empty).'" /></td><td>(empty="'.esc_attr($empty).'")</td></tr>';
+                                    do_action('cpc_show_styling_options_hook', 'cpc_forum_unanswered', $values);
+                                echo '</table>';
+                            echo '</div>';
+
+                            // [cpc-forum-experts]
+                            $values = get_option('cpc_shortcode_options_'.'cpc_forum_experts') ? get_option('cpc_shortcode_options_'.'cpc_forum_experts') : array();
+                            echo cpc_show_options($cpc_expand_shortcode, 'cpc_forum_experts_tab');
+                                echo '<strong>'.__('Zweck:', 'cp-community').'</strong> '.__('Zeigt Mitglieder mit den meisten akzeptierten Antworten.', 'cp-community').'<br />';
+                                echo '<strong>'.__('Wie benutzen:', 'cp-community').'</strong> '.__('Füge [cpc-forum-experts] zu einer Seite hinzu; mit slug="xxx" begrenzt Du die Liste auf ein Forum.', 'cp-community');
+                                echo '<p><strong>'.__('Optionen', 'cp-community').'</strong><br />';
+                                echo '<table cellpadding="0" cellspacing="0" class="cpc_shortcode_value_row">';
+                                    $days = cpc_get_shortcode_default($values, 'cpc_forum_experts-days', 30);
+                                    echo '<tr><td>'.__('Zeitraum', 'cp-community').'</td><td><input type="number" min="1" name="cpc_forum_experts-days" value="'.esc_attr($days).'" /> '.__('Tage', 'cp-community').'</td><td>(days="'.$days.'")</td></tr>';
+                                    $max = cpc_get_shortcode_default($values, 'cpc_forum_experts-max', 10);
+                                    echo '<tr><td>'.__('Maximale Einträge', 'cp-community').'</td><td><input type="number" min="1" name="cpc_forum_experts-max" value="'.esc_attr($max).'" /></td><td>(max="'.$max.'")</td></tr>';
+                                    $show_rank = cpc_get_shortcode_default($values, 'cpc_forum_experts-show_rank', true);
+                                    echo '<tr><td>'.__('Rang anzeigen', 'cp-community').'</td><td><input type="checkbox" name="cpc_forum_experts-show_rank"'.($show_rank ? ' CHECKED' : '').' /></td><td>(show_rank="'.($show_rank ? '1' : '0').'")</td></tr>';
+                                    $empty = cpc_get_shortcode_default($values, 'cpc_forum_experts-empty', __('Noch keine Experten-Daten verfügbar.', 'cp-community'));
+                                    echo '<tr><td>'.__('Leerer-Listen-Text', 'cp-community').'</td><td><input type="text" name="cpc_forum_experts-empty" value="'.esc_attr($empty).'" /></td><td>(empty="'.esc_attr($empty).'")</td></tr>';
+                                    do_action('cpc_show_styling_options_hook', 'cpc_forum_experts', $values);
+                                echo '</table>';
+                            echo '</div>';
+
+                            // [cpc-forum-notifications]
+                            $values = get_option('cpc_shortcode_options_'.'cpc_forum_notifications') ? get_option('cpc_shortcode_options_'.'cpc_forum_notifications') : array();
+                            echo cpc_show_options($cpc_expand_shortcode, 'cpc_forum_notifications_tab');
+                                echo '<strong>'.__('Zweck:', 'cp-community').'</strong> '.__('Erlaubt Mitgliedern, ihre Forum-E-Mail-Benachrichtigungen zu steuern.', 'cp-community').'<br />';
+                                echo '<strong>'.__('Wie benutzen:', 'cp-community').'</strong> '.__('Füge [cpc-forum-notifications] auf einer geschützten Profil- oder Einstellungsseite ein.', 'cp-community');
+                                echo '<p><strong>'.__('Optionen', 'cp-community').'</strong><br />';
+                                echo '<table cellpadding="0" cellspacing="0" class="cpc_shortcode_value_row">';
+                                    $title = cpc_get_shortcode_default($values, 'cpc_forum_notifications-title', __('Forum-Benachrichtigungen', 'cp-community'));
+                                    echo '<tr><td>'.__('Beschriftung', 'cp-community').'</td><td><input type="text" name="cpc_forum_notifications-title" value="'.esc_attr($title).'" /></td><td>(title="'.esc_attr($title).'")</td></tr>';
+                                    $save_label = cpc_get_shortcode_default($values, 'cpc_forum_notifications-save_label', __('Speichern', 'cp-community'));
+                                    echo '<tr><td>'.__('Speichern-Label', 'cp-community').'</td><td><input type="text" name="cpc_forum_notifications-save_label" value="'.esc_attr($save_label).'" /></td><td>(save_label="'.esc_attr($save_label).'")</td></tr>';
+                                    do_action('cpc_show_styling_options_hook', 'cpc_forum_notifications', $values);
+                                echo '</table>';
+                            echo '</div>';
+
                             /* ----------------------- FRIENDS TAB ----------------------- */    
 
                             // [cpc-friends]
@@ -3136,6 +3192,9 @@ function cpc_admin_getting_started_styles() {
                                     // Forums
                                     echo cpc_show_style($cpc_expand_tab, $cpc_expand_shortcode, 'forums', 'cpc_forum_tab', CPC_PREFIX.'-forum');
                                     echo cpc_show_style($cpc_expand_tab, $cpc_expand_shortcode, 'forums', 'cpc_forums_tab', CPC_PREFIX.'-forums');
+                                    echo cpc_show_style($cpc_expand_tab, $cpc_expand_shortcode, 'forums', 'cpc_forum_unanswered_tab', CPC_PREFIX.'-forum-unanswered');
+                                    echo cpc_show_style($cpc_expand_tab, $cpc_expand_shortcode, 'forums', 'cpc_forum_experts_tab', CPC_PREFIX.'-forum-experts');
+                                    echo cpc_show_style($cpc_expand_tab, $cpc_expand_shortcode, 'forums', 'cpc_forum_notifications_tab', CPC_PREFIX.'-forum-notifications');
                                     // Groups
                                     echo cpc_show_style($cpc_expand_tab, $cpc_expand_shortcode, 'groups', 'cpc_groups_list_tab', CPC_PREFIX.'-groups');
                                     echo cpc_show_style($cpc_expand_tab, $cpc_expand_shortcode, 'groups', 'cpc_group_single_tab', CPC_PREFIX.'-group-single');
@@ -3146,7 +3205,7 @@ function cpc_admin_getting_started_styles() {
 
                                 echo '</div>';
                             echo '</div>';    
-                        
+
                         endif;
 
                         echo '<div id="cpc_admin_getting_started_options_right" style="display: none;">';
@@ -3176,6 +3235,43 @@ function cpc_admin_getting_started_styles() {
                             /* OTHERS */
 
                             do_action('cpc_styles_shortcode_options_hook', $cpc_expand_shortcode);        
+
+                            // [cpc-forum-unanswered]
+                            $function = 'cpc_forum_unanswered';
+                            $values = get_option('cpc_styles_'.$function) ? get_option('cpc_styles_'.$function) : array();
+                            echo cpc_show_options($cpc_expand_shortcode, 'cpc_forum_unanswered_tab');
+                                echo '<table class="widefat fixed" cellspacing="0">';
+                                    echo cpc_styles_header();
+                                    echo cpc_styles_show_values(__('Liste', 'cp-community'), 'cpc_forum_unanswered_list', '#333333', '', '', 'off', 'off', $function, $values);
+                                    echo cpc_styles_show_values(__('Eintrag', 'cp-community'), 'cpc_forum_unanswered_item', '#333333', '#ffffff', '', 'off', 'off', $function, $values);
+                                    echo cpc_styles_show_values(__('Antwortanzahl', 'cp-community'), 'cpc_forum_unanswered_count', '#666666', '', '', 'off', 'off', $function, $values);
+                                    echo cpc_styles_show_values(__('Leere Liste', 'cp-community'), 'cpc_forum_unanswered_empty', '#666666', '', '', 'off', 'off', $function, $values);
+                                echo '</table>';
+                            echo '</div>';
+
+                            // [cpc-forum-experts]
+                            $function = 'cpc_forum_experts';
+                            $values = get_option('cpc_styles_'.$function) ? get_option('cpc_styles_'.$function) : array();
+                            echo cpc_show_options($cpc_expand_shortcode, 'cpc_forum_experts_tab');
+                                echo '<table class="widefat fixed" cellspacing="0">';
+                                    echo cpc_styles_header();
+                                    echo cpc_styles_show_values(__('Liste', 'cp-community'), 'cpc_forum_experts_list', '#333333', '', '', 'off', 'off', $function, $values);
+                                    echo cpc_styles_show_values(__('Experte', 'cp-community'), 'cpc_forum_expert_item', '#333333', '#ffffff', '', 'off', 'off', $function, $values);
+                                    echo cpc_styles_show_values(__('Punktestand', 'cp-community'), 'cpc_forum_expert_score', '#666666', '', '', 'off', 'off', $function, $values);
+                                    echo cpc_styles_show_values(__('Rang', 'cp-community'), 'cpc_forum_expert_rank', '#0073aa', '', '', 'on', 'off', $function, $values);
+                                echo '</table>';
+                            echo '</div>';
+
+                            // [cpc-forum-notifications]
+                            $function = 'cpc_forum_notifications';
+                            $values = get_option('cpc_styles_'.$function) ? get_option('cpc_styles_'.$function) : array();
+                            echo cpc_show_options($cpc_expand_shortcode, 'cpc_forum_notifications_tab');
+                                echo '<table class="widefat fixed" cellspacing="0">';
+                                    echo cpc_styles_header();
+                                    echo cpc_styles_show_values(__('Formular', 'cp-community'), 'cpc_forum_notifications', '#333333', '', '', 'off', 'off', $function, $values);
+                                    echo cpc_styles_show_values(__('Auswahlfeld', 'cp-community'), 'cpc_forum_notification_frequency', '#333333', '#ffffff', '', 'off', 'off', $function, $values);
+                                echo '</table>';
+                            echo '</div>';
 
 
                             /* ----------------------- PROFILE TAB ----------------------- */

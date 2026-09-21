@@ -806,9 +806,9 @@ function cpc_activity_wall($atts) {
 
     $values = cpc_get_shortcode_options('cpc_activity_wall');
     extract(shortcode_atts(array(
-        'title' => isset($settings['title']) ? $settings['title'] : __('Aktivitätswall', 'cp-community'),
-        'page_size' => isset($settings['per_page']) ? $settings['per_page'] : 12,
-        'show_post_form' => 1,
+        'title' => cpc_get_shortcode_value($values, 'cpc_activity_wall-title', isset($settings['title']) ? $settings['title'] : __('Aktivitätswall', 'cp-community')),
+        'page_size' => cpc_get_shortcode_value($values, 'cpc_activity_wall-page_size', isset($settings['per_page']) ? $settings['per_page'] : 12),
+        'show_post_form' => cpc_get_shortcode_value($values, 'cpc_activity_wall-show_post_form', 1),
         'styles' => true,
         'before' => '',
         'after' => '',

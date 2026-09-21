@@ -157,6 +157,52 @@ function cpc_taxonomy_metadata_edit( $tag ) {
 
 	<tr class="form-field">
 		<th scope="row" valign="top">
+			<label for="cpc_forum_mode"><?php _e('Forum-Modus', 'cp-community'); ?></label>
+		</th>
+		<td>
+			<?php $mode = cpc_get_term_meta($tag->term_id, 'cpc_forum_mode', true); ?>
+			<select name="cpc_forum_mode" id="cpc_forum_mode">
+				<option value="discussion"<?php selected($mode, 'discussion'); ?>><?php _e('Diskussion', 'cp-community'); ?></option>
+				<option value="qa"<?php selected($mode, 'qa'); ?>><?php _e('Frage und Antwort', 'cp-community'); ?></option>
+			</select>
+			<span class="description"><?php _e('Im Frage-und-Antwort-Modus können Themenstarter und Moderatoren Antworten akzeptieren.', 'cp-community'); ?></span>
+		</td>
+	</tr>
+
+	<tr class="form-field">
+		<th scope="row" valign="top">
+			<label for="cpc_forum_moderators"><?php _e('Moderatoren', 'cp-community'); ?></label>
+		</th>
+		<td>
+			<input name="cpc_forum_moderators" id="cpc_forum_moderators" type="text" class="regular-text" value="<?php echo esc_attr(cpc_get_term_meta($tag->term_id, 'cpc_forum_moderators', true)); ?>" />
+			<span class="description"><?php _e('Benutzer-IDs, durch Kommas getrennt. Moderatoren dürfen Themen und Antworten verwalten.', 'cp-community'); ?></span>
+		</td>
+	</tr>
+
+	<tr class="form-field">
+		<th scope="row" valign="top">
+			<label><?php _e('Vorabmoderation', 'cp-community'); ?></label>
+		</th>
+		<td>
+			<label><input name="cpc_forum_moderate_topic" type="checkbox" value="1" <?php checked(cpc_get_term_meta($tag->term_id, 'cpc_forum_moderate_topic', true), 1); ?> /> <?php _e('Neue Themen freigeben', 'cp-community'); ?></label><br />
+			<label><input name="cpc_forum_moderate_reply" type="checkbox" value="1" <?php checked(cpc_get_term_meta($tag->term_id, 'cpc_forum_moderate_reply', true), 1); ?> /> <?php _e('Neue Antworten freigeben', 'cp-community'); ?></label>
+		</td>
+	</tr>
+
+	<tr class="form-field">
+		<th scope="row" valign="top">
+			<label for="cpc_forum_minimum_length"><?php _e('Beitragsschutz', 'cp-community'); ?></label>
+		</th>
+		<td>
+			<input name="cpc_forum_minimum_length" id="cpc_forum_minimum_length" type="number" min="0" class="small-text" value="<?php echo absint(cpc_get_term_meta($tag->term_id, 'cpc_forum_minimum_length', true)); ?>" />
+			<?php _e('Mindestzeichen', 'cp-community'); ?><br />
+			<input name="cpc_forum_flood_interval" id="cpc_forum_flood_interval" type="number" min="0" class="small-text" value="<?php echo absint(cpc_get_term_meta($tag->term_id, 'cpc_forum_flood_interval', true)); ?>" />
+			<?php _e('Sekunden Wartezeit zwischen Beiträgen (0 deaktiviert).', 'cp-community'); ?>
+		</td>
+	</tr>
+
+	<tr class="form-field">
+		<th scope="row" valign="top">
 			<label for="cpc_forum_order"><?php _e('Sortierung', 'cp-community'); ?></label>
 		</th>
 		<td>
@@ -283,6 +329,14 @@ function cpc_save_taxonomy_metadata( $term_id ) {
 	else:
 		cpc_update_term_meta( $term_id, 'cpc_forum_author', 0 );
 	endif;
+
+	$mode = isset($_POST['cpc_forum_mode']) && $_POST['cpc_forum_mode'] === 'qa' ? 'qa' : 'discussion';
+	cpc_update_term_meta($term_id, 'cpc_forum_mode', $mode);
+	cpc_update_term_meta($term_id, 'cpc_forum_moderators', isset($_POST['cpc_forum_moderators']) ? sanitize_text_field(wp_unslash($_POST['cpc_forum_moderators'])) : '');
+	cpc_update_term_meta($term_id, 'cpc_forum_moderate_topic', isset($_POST['cpc_forum_moderate_topic']) ? 1 : 0);
+	cpc_update_term_meta($term_id, 'cpc_forum_moderate_reply', isset($_POST['cpc_forum_moderate_reply']) ? 1 : 0);
+	cpc_update_term_meta($term_id, 'cpc_forum_minimum_length', isset($_POST['cpc_forum_minimum_length']) ? absint($_POST['cpc_forum_minimum_length']) : 0);
+	cpc_update_term_meta($term_id, 'cpc_forum_flood_interval', isset($_POST['cpc_forum_flood_interval']) ? absint($_POST['cpc_forum_flood_interval']) : 0);
 
 	if (isset($_POST['cpc_forum_email_all'])):
 		cpc_update_term_meta( $term_id, 'cpc_forum_email_all', $_POST['cpc_forum_email_all'] );

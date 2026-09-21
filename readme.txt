@@ -5,7 +5,7 @@ Requires at least: 5.0
 Requires CP: 1.4
 Tested up to: 7.1.0
 ClassicPress: 2.7.2
-Stable tag: 1.2.1
+Stable tag: 1.2.2
 License URI: https://www.gnu.org/licenses/gpl-2.0.html
 
 == Description ==
@@ -103,6 +103,7 @@ Neue Shortcodes:
 
 * `[cpc-forum-unanswered]` (zeigt Themen ohne akzeptierte Antwort)
 * `[cpc-forum-experts]` (zeigt Top-Nutzer nach akzeptierten Antworten)
+* `[cpc-forum-notifications]` (persönliche E-Mail-Benachrichtigungen verwalten)
 
 Wichtige Attribute für `[cpc-forum-unanswered]`:
 
@@ -119,9 +120,21 @@ Wichtige Attribute für `[cpc-forum-experts]`:
 
 Hinweis zum Rangsystem:
 
-* Die Expertenliste kann optional Ranglabels anzeigen (Rookie/Helper/Pro/Master), basierend auf Anzahl akzeptierter Antworten im Zeitraum.
+* Die Expertenliste kann optional Ranglabels anzeigen. Labels und Schwellenwerte werden unter **PS Community > Einstellungen > Forum** zentral verwaltet.
+* Für `[cpc-forum-unanswered]` und `[cpc-forum-experts]` stehen Zeitraum, Anzahl Einträge, Leertext und Style-Optionen unter **PS Community > Shortcodes > Forum** bereit.
 
 == ChangeLog ==
+
+= 1.2.2 =
+* Neu: Forum-Moderation mit eigener Warteschlange für ausstehende Themen und Antworten sowie Aktionen zum Freigeben oder Verwerfen
+* Neu: Forumbezogene Regeln für Diskussionen oder Frage-und-Antwort-Foren, Moderatoren, Vorabfreigabe, Mindestlänge und Flood-Schutz
+* Verbesserung: Akzeptierte Antworten stehen nur noch im aktivierten Frage-und-Antwort-Modus zur Verfügung
+* Neu: E-Mail-Benachrichtigungen für Themenstarter und Moderatoren sowie Shortcode `[cpc-forum-notifications]` für individuelle Benachrichtigungspräferenzen
+* Neu: Experten-Ränge und Schwellenwerte lassen sich zentral in den Forum-Einstellungen festlegen
+* Fix: Geschlossene Foren, Freigaberegeln, Mindestzeichen und Posting-Intervalle werden serverseitig auch bei verschachtelten Antworten durchgesetzt
+* UX-Fix: Abgewiesene Forumsthemen liefern im Frontend eine verständliche Rückmeldung statt eines stillen Reloads
+* UX-Fix: Die Forumsverwaltung enthält wieder einen sichtbaren Button zum Anlegen neuer Foren; die alte Weiterleitung zur Übersicht blockiert die Anlegemaske nicht mehr
+* Fix: Dokument-Assets werden cache-sicher ausgeliefert, damit Frontend-Änderungen nach Deployments zuverlässig geladen werden
 
 = 1.2.1 =
 * UX: Alle Lightboxen zeigen Medien größer auf einer dunklen Bühne und ordnen kompakte Metadaten einheitlich darunter an
