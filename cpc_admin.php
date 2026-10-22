@@ -362,7 +362,7 @@ function cpccom_release_notes() {
             	<?php echo __('Wenn Du einen Cache oder ein CDN (vielleicht wie CloudFlare) verwendest, empfehlen wir, nach dem Upgrade aller Plugins alle Deine Dateien zu löschen/löschen.', 'cp-community'); ?>
             </p>
 
-            <em><strong>DerN3rd, PS Community-Entwickler</strong></em></p>
+            <em><strong><?php esc_html_e( 'DerN3rd, PS Community developer', 'cp-community' ); ?></strong></em></p>
 
             <?php
             echo '<div style="font-size:1.4em; margin:20px 0 20px 0">'.sprintf(__('Versionshinweise für den aktuellen Build (%s)', 'cp-community'), get_option('cp_community_ver')).'...</div>';
@@ -383,36 +383,36 @@ function cpccom_release_notes() {
             <table><tr>
 				<td valign="top" class="cpc_release_notes" style="<?php echo $cup_of_tea_left; ?>width:45%;">
 
-					<div style="font-size:1.6em; line-height:1.6em; color: #510051; font-weight: bold;">PS Community Plugin</div>
-					<a href="https://power-source.github.io/ps-community/" target="_blank">Verfügbar im PSOURCE GitHub-Repository</a><br />
+					<div style="font-size:1.6em; line-height:1.6em; color: #510051; font-weight: bold;"><?php esc_html_e( 'PS Community Plugin', 'cp-community' ); ?></div>
+					<a href="https://power-source.github.io/ps-community/" target="_blank"><?php esc_html_e( 'Available from the PSOURCE GitHub repository', 'cp-community' ); ?></a><br />
 
-					<h2 style="font-style:italic; margin-top:20px;">Changelog Versionsnummer 1.2.2</h2>
-					<p><strong>Forum-Moderation:</strong> Ausstehende Themen und Antworten werden in einer eigenen Warteschlange sicher freigegeben oder verworfen.</p>
-                    <p><strong>Forum-Regeln:</strong> Jedes Forum kann als Diskussion oder Frage-und-Antwort-Bereich laufen und eigene Moderatoren, Freigaben, Mindestlängen sowie Posting-Intervalle festlegen.</p>
-                    <p><strong>Benachrichtigungen:</strong> Themenstarter und Moderatoren erhalten steuerbare E-Mail-Hinweise; Mitglieder verwalten ihre Häufigkeit über den Shortcode <code>[cpc-forum-notifications]</code>.</p>
-                    <p><strong>Stabilität:</strong> Geschlossene Foren und Schutzregeln werden serverseitig geprüft. Die Forum-Anlegemaske und aktuelle Dokument-Assets funktionieren nach Deployments zuverlässig.</p>
+					<h2 style="font-style:italic; margin-top:20px;"><?php esc_html_e( 'Changelog for version 1.2.2', 'cp-community' ); ?></h2>
+					<p><strong><?php esc_html_e( 'Forum moderation:', 'cp-community' ); ?></strong> <?php esc_html_e( 'Pending topics and replies can be safely approved or discarded in a dedicated queue.', 'cp-community' ); ?></p>
+                    <p><strong><?php esc_html_e( 'Forum rules:', 'cp-community' ); ?></strong> <?php esc_html_e( 'Each forum can run as a discussion or question-and-answer area and define its own moderators, approvals, minimum lengths, and posting intervals.', 'cp-community' ); ?></p>
+                    <p><strong><?php esc_html_e( 'Notifications:', 'cp-community' ); ?></strong> <?php esc_html_e( 'Topic starters and moderators receive configurable email notifications; members manage their frequency through the [cpc-forum-notifications] shortcode.', 'cp-community' ); ?></p>
+                    <p><strong><?php esc_html_e( 'Stability:', 'cp-community' ); ?></strong> <?php esc_html_e( 'Closed forums and protection rules are checked server-side. The forum creation form and current document assets work reliably after deployments.', 'cp-community' ); ?></p>
 
-                  
+
                 </td>
 				<td style="width:1%">&nbsp;</td>
 				<td valign="top" class="cpc_release_notes" style="<?php echo $cup_of_tea_right; ?>">
 
-                    <div style="font-size:1.6em; line-height:1.6em; color: #510051; font-weight: bold;">PS Community Entwicklung</div>
-					<a href="https://nerdservice.eimen.net/" target="_blank">Hilf mit, PS Community noch besser zu machen!</a><br />			
+                    <div style="font-size:1.6em; line-height:1.6em; color: #510051; font-weight: bold;"><?php esc_html_e( 'PS Community Development', 'cp-community' ); ?></div>
+					<a href="https://nerdservice.eimen.net/" target="_blank"><?php esc_html_e( 'Help make PS Community even better!', 'cp-community' ); ?></a><br />
 
-                    <h2 style="font-style:italic; margin-top:20px;">Ausblick & Entwicklung</h2>
+                    <h2 style="font-style:italic; margin-top:20px;"><?php esc_html_e( 'Outlook & development', 'cp-community' ); ?></h2>
 
-                    <h3>Was als Nächstes kommt</h3>
-                    <p>PS Community wird Schritt für Schritt moderner, robuster und angenehmer im Alltag. Unser Fokus liegt auf klarer UX, stabilen mobilen Abläufen und einer Codebasis, an der man gerne weiterarbeitet.</p>
-                    <p>Wenn Du Bugs, Ideen oder Verbesserungen hast, bring sie direkt ein – genau daraus entstehen die stärksten Releases.</p>
-                    <a href="https://github.com/Power-Source/ps-community/issues" target="_blank">Hier kannst Du Fehler melden und Ideen einreichen</a><br />
-                    <p>Wenn Du mitentwickeln oder einfach reinschauen willst:</p>
-                    <a href="https://github.com/Power-Source/ps-community" target="_blank">Zum Entwickler-Board auf GitHub</a><br />
+                    <h3><?php esc_html_e( 'What is next', 'cp-community' ); ?></h3>
+                    <p><?php esc_html_e( 'PS Community is becoming more modern, robust, and pleasant to use step by step. Our focus is on clear UX, reliable mobile workflows, and a codebase that is enjoyable to maintain.', 'cp-community' ); ?></p>
+                    <p><?php esc_html_e( 'If you have bugs, ideas, or improvements, share them directly - that is how the strongest releases are made.', 'cp-community' ); ?></p>
+                    <a href="https://github.com/Power-Source/ps-community/issues" target="_blank"><?php esc_html_e( 'Report bugs and submit ideas here', 'cp-community' ); ?></a><br />
+                    <p><?php esc_html_e( 'If you would like to contribute or simply take a look:', 'cp-community' ); ?></p>
+                    <a href="https://github.com/Power-Source/ps-community" target="_blank"><?php esc_html_e( 'Visit the developer board on GitHub', 'cp-community' ); ?></a><br />
 
                     <h3>PSOURCE MANAGER</h3>
-                    <p>Für Updates, neue Funktionen und zusätzliche Erweiterungen empfehlen wir Dir den PSOURCE MANAGER.</p>
-                    <a href="https://psource.eimen.net/shop/produkte/psource-manager/" target="_blank">PSOURCE MANAGER herunterladen</a><br />
-                    <p>Damit holst Du noch mehr aus Deiner Community heraus – zum Beispiel mit Live-Chat, privatem Nachrichtensystem, erweiterten Profilfunktionen und weiteren Add-ons.</p>
+                    <p><?php esc_html_e( 'For updates, new features, and additional extensions, we recommend PSOURCE MANAGER.', 'cp-community' ); ?></p>
+                    <a href="https://psource.eimen.net/shop/produkte/psource-manager/" target="_blank"><?php esc_html_e( 'Download PSOURCE MANAGER', 'cp-community' ); ?></a><br />
+                    <p><?php esc_html_e( 'It helps you get even more from your community - for example, live chat, private messaging, enhanced profile features, and additional add-ons.', 'cp-community' ); ?></p>
 					
 				</td>
 			</tr></table>

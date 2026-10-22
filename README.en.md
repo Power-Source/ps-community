@@ -76,6 +76,19 @@ Profiles, activity, avatars, friendships, notifications, forums, the member dire
 5. Visit **Settings → Permalinks** and verify the permalink structure once.
 6. Add more pages with the shortcodes listed below as needed.
 
+## Updating Translations
+
+Visible plugin text uses the `cp-community` text domain. After adding or changing
+translatable strings, regenerate the template and compile the English catalog:
+
+```sh
+wp i18n make-pot . languages/cp-community.pot --domain=cp-community --exclude=languages,tools --skip-audit
+python3 tools/compile-translations.py
+```
+
+The compilation script requires Python 3 with Babel available and writes the
+corresponding `.mo` file next to every `.po` catalog in `languages/`.
+
 ## Essential Shortcodes
 
 PS Community registers an extensive shortcode API. This selection covers the most common pages and workflows.

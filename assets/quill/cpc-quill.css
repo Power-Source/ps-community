@@ -1,0 +1,7 @@
+.cpc-quill-wrap {
+    margin-bottom: 16px;
+}
+
+.cpc-quill-editor .ql-editor {
+    min-height: var(--cpc-editor-height, 200px);
+}

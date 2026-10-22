@@ -74,21 +74,7 @@ function cpc_docs_render_create_form($component, $component_id) {
     $html .= '<input type="hidden" name="cpc_docs_redirect" value="'.esc_url(cpc_curPageURL()).'" />';
 
     $editor_id = 'cpc_docs_create_content_'.sanitize_key((string)$component).'_'.(int)$component_id;
-    $editor_html = '';
-    if (function_exists('wp_editor')) {
-        ob_start();
-        wp_editor('', $editor_id, array(
-            'textarea_name' => 'cpc_docs_content',
-            'media_buttons' => false,
-            'dfw' => false,
-            'textarea_rows' => 14,
-            'editor_height' => 420,
-            'editor_class' => 'cpc_docs_content_field cpc_docs_create_editor',
-        ));
-        $editor_html = ob_get_clean();
-    } else {
-        $editor_html = '<textarea name="cpc_docs_content" class="cpc_docs_content_field cpc_docs_create_editor" rows="12" placeholder="'.esc_attr__('Dokumentinhalt', 'cp-community').'" required></textarea>';
-    }
+    $editor_html = cpc_get_wp_editor('', $editor_id, '', 'cpc_docs_content', 'cpc_docs_content_field cpc_docs_create_editor', 420);
 
     $html .= '<div style="display:grid; gap:8px;">';
     $html .= '<input type="text" name="cpc_docs_title" placeholder="'.esc_attr__('Titel', 'cp-community').'" required />';
@@ -1022,20 +1008,7 @@ function cpc_docs_render_edit_form($doc, $args = array()) {
     $doc_is_folder = cpc_docs_is_folder($doc->ID);
     if (!$doc_is_folder) {
         $html .= '<p><label for="cpc_docs_content">'.esc_html__('Content', 'cp-community').'</label></p>';
-        if (function_exists('wp_editor')) {
-            ob_start();
-            wp_editor($doc->post_content, 'cpc_docs_content', array(
-                'textarea_name' => 'cpc_docs_content',
-                'media_buttons' => false,
-                'dfw' => false,
-                'textarea_rows' => 12,
-                'editor_height' => 380,
-                'editor_class' => 'cpc_docs_content_field',
-            ));
-            $html .= '<div class="cpc_docs_edit_editor_wrap">'.ob_get_clean().'</div>';
-        } else {
-            $html .= '<textarea id="cpc_docs_content" class="cpc_docs_content_field" name="cpc_docs_content" rows="12">'.esc_textarea($doc->post_content).'</textarea>';
-        }
+        $html .= '<div class="cpc_docs_edit_editor_wrap">' . cpc_get_wp_editor($doc->post_content, 'cpc_docs_content', '', 'cpc_docs_content', 'cpc_docs_content_field', 380) . '</div>';
     } else {
         $html .= '<p style="padding:12px; background:#f0f0f0; border-radius:4px; color:#666;">'.esc_html__('Dies ist ein Ordner ohne Inhalt.', 'cp-community').'</p>';
         $html .= '<input type="hidden" name="cpc_docs_content" value="" />';
@@ -1483,21 +1456,7 @@ function cpc_docs_render_directory_create_section() {
     $html .= '</div>';
 
     $editor_id = 'cpc_docs_create_content_directory';
-    $editor_html = '';
-    if (function_exists('wp_editor')) {
-        ob_start();
-        wp_editor('', $editor_id, array(
-            'textarea_name' => 'cpc_docs_content',
-            'media_buttons' => false,
-            'dfw' => false,
-            'textarea_rows' => 10,
-            'editor_height' => 300,
-            'editor_class' => 'cpc_docs_content_field cpc_docs_create_editor',
-        ));
-        $editor_html = ob_get_clean();
-    } else {
-        $editor_html = '<textarea name="cpc_docs_content" class="cpc_docs_content_field cpc_docs_create_editor" rows="10" placeholder="'.esc_attr__('Dokumentinhalt', 'cp-community').'" required style="width:100%; padding:8px; border:1px solid #ccc; border-radius:4px; font-family:monospace;"></textarea>';
-    }
+    $editor_html = cpc_get_wp_editor('', $editor_id, '', 'cpc_docs_content', 'cpc_docs_content_field cpc_docs_create_editor', 300);
     $html .= '<div class="cpc_docs_create_editor_wrap">'.$editor_html.'</div>';
 
     $html .= '<div style="display:grid; gap:12px; grid-template-columns:1fr 1fr;">';

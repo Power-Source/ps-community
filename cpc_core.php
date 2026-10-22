@@ -393,35 +393,26 @@ function cpc_get_user_id() {
 
 }
 
-// Returns instance of WP editor
-function cpc_get_wp_editor($content,$textarea,$css) {
-	
-    $cpc_com_toolbar_icons = ($value = get_option('cpc_com_toolbar_icons')) ? $value : "bold,italic,underline,link,unlink,bullist,numlist,forecolor,backcolor,blockquote";
-    $cpc_com_toolbar_css_file = plugins_url('forums/cpc_forum_toolbar.css', __FILE__); 
-    $cpc_com_toolbar_height = ($value = get_option('cpc_com_toolbar_height')) ? $value : 200;
+function cpc_get_wp_editor($content, $textarea, $css = '', $textarea_name = '', $classes = '', $height = 0) {
+	$asset_url = plugins_url('assets/quill/', __FILE__);
+	$asset_path = plugin_dir_path(__FILE__) . 'assets/quill/';
 
-    $settings = array(
-        'media_buttons' => false,
-        'wpautop' => false,
-        'editor_height' => $cpc_com_toolbar_height,
-        'quicktags' => current_user_can('manage_options') || get_option('cpc_com_toolbar_tabs') ? true : false,
-        'tinymce'=> array(
-            'toolbar1'=> $cpc_com_toolbar_icons,
-            'statusbar' => false,
-            'resize' => false,
-            'wp_autoresize_on' => true,
-            'content_css' => $cpc_com_toolbar_css_file
-        )
-    );
+	wp_enqueue_script('cpc-quill', $asset_url . 'quill.js', array(), '2.0.3', true);
+	wp_enqueue_script('cpc-quill-init', $asset_url . 'cpc-quill-init.js', array('cpc-quill'), filemtime($asset_path . 'cpc-quill-init.js'), true);
 
-    ob_start();
-	echo '<div style="'.$css.'">';
-	wp_editor($content, $textarea, $settings);
-	echo '</div>';
-	$editor_html_code = ob_get_contents();
-	ob_end_clean();
+	$textarea_name = $textarea_name ?: $textarea;
+	$height = $height ?: (($value = get_option('cpc_com_toolbar_height')) ? absint($value) : 200);
+	$class_names = trim('cpc-quill-source ' . $classes);
 
-	return $editor_html_code;
+	return sprintf(
+		'<div class="cpc-quill-wrap" style="%1$s"><textarea id="%2$s" name="%3$s" class="%4$s" data-editor-height="%5$d">%6$s</textarea></div>',
+		esc_attr($css),
+		esc_attr($textarea),
+		esc_attr($textarea_name),
+		esc_attr($class_names),
+		$height,
+		esc_textarea($content)
+	);
 }
 
 /**
@@ -1002,20 +993,6 @@ function cpc_styles($values, $function, $elements) {
     return $html;
     
 }
-
-function cpc_load_wp_editor_frontend() {
-    if (!is_admin()) {
-        if (function_exists('wp_enqueue_editor')) {
-            wp_enqueue_editor();
-        }
-        wp_enqueue_script('jquery');
-        wp_enqueue_script('editor');
-        wp_enqueue_script('quicktags');
-        wp_enqueue_script('tinymce');
-        wp_enqueue_style('editor-buttons');
-    }
-}
-add_action('wp_enqueue_scripts', 'cpc_load_wp_editor_frontend');
 
 // Wrapper for all returned HTML from shortodes, including optional admin styling
 add_filter( 'cpc_wrap_shortcode_styles_filter', 'cpc_wrap_shortcode_styles', 10, 8 );
