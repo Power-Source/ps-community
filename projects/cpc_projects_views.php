@@ -751,10 +751,10 @@ function cpc_projects_render_project_card($project, $args = array()) {
         $html .= '<p class="cpc_projects_card_excerpt">'.esc_html($excerpt).'</p>';
     }
     $html .= '<div class="cpc_projects_card_date">'.esc_html(get_the_date('', $project)).'</div>';
-    $html .= '<footer class="cpc_projects_card_footer">';
+    $html .= '<div class="cpc_projects_card_footer">';
     $html .= cpc_projects_render_project_owner_line($project);
     $html .= '<a class="cpc_projects_card_action" href="'.esc_url($project_url).'">'.esc_html__('Projekt oeffnen', 'cp-community').'</a>';
-    $html .= '</footer>';
+    $html .= '</div>';
     if (!empty($args['show_tasks'])) {
         $html .= cpc_projects_render_task_panel($project_id);
     }

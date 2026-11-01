@@ -2,9 +2,9 @@
 Contributors: DerN3rd
 Tags: wp community, social network, social networking, social media, cp-community, wp community, community
 Requires at least: 5.0
-Requires CP: 1.4
-Tested up to: 7.1.0
-ClassicPress: 2.7.2
+Requires CP: 2.7
+Tested up to: 7.1.4
+ClassicPress: 2.7.4
 Stable tag: 1.2.2
 License URI: https://www.gnu.org/licenses/gpl-2.0.html
 
@@ -124,6 +124,9 @@ Hinweis zum Rangsystem:
 * Für `[cpc-forum-unanswered]` und `[cpc-forum-experts]` stehen Zeitraum, Anzahl Einträge, Leertext und Style-Optionen unter **PS Community > Shortcodes > Forum** bereit.
 
 == ChangeLog ==
+
+= 1.2.3 =
+* Fix: Die Projektübersicht verwendet für Kartenfußzeilen keinen Theme-Footer-Container mehr, damit die CMS-Fußzeile nicht innerhalb der letzten Projektkarte angezeigt wird
 
 = 1.2.2 =
 * Neu: Forum-Moderation mit eigener Warteschlange für ausstehende Themen und Antworten sowie Aktionen zum Freigeben oder Verwerfen

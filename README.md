@@ -1,16 +1,17 @@
+<h1>PS Community</h1>
 
 **Deutsch** | [English](README.en.md)
 
-[![Version](https://img.shields.io/badge/Version-1.2.2-2271b1?style=flat-square)](readme.txt)
+[![Version](https://img.shields.io/badge/Version-1.2.3-2271b1?style=flat-square)](readme.txt)
 ![PHP](https://img.shields.io/badge/PHP-8.0%2B-777bb4?style=flat-square&logo=php&logoColor=white)
-![WordPress](https://img.shields.io/badge/WordPress-bis%207.1.0-21759b?style=flat-square&logo=wordpress&logoColor=white)
-![ClassicPress](https://img.shields.io/badge/ClassicPress-2.7.2-03768e?style=flat-square)
+![WordPress](https://img.shields.io/badge/WordPress-bis%207.1.4-21759b?style=flat-square&logo=wordpress&logoColor=white)
+![ClassicPress](https://img.shields.io/badge/ClassicPress-2.7.4-03768e?style=flat-square)
 [![Lizenz](https://img.shields.io/badge/Lizenz-GPL--2.0--or--later-2ea44f?style=flat-square)](https://www.gnu.org/licenses/gpl-2.0.html)
 
 <div align="center">
   <img src="css/images/cpc_logo.png" alt="PS Community" width="112" height="112">
 
-  <h1>PS Community</h1>
+  
   <p><strong>Deine Community. Deine Plattform. Deine Regeln.</strong></p>
   <p>Verwandle Deine ClassicPress-Website in ein vollständiges soziales Netzwerk: mit Profilen, Aktivitätsstream, Freundschaften, Gruppen, Foren, Medien, Dokumenten, Projekten und starken PSOURCE-Integrationen.</p>
   <p><a href="https://psource.eimen.net/psource/ps-community/">Projektseite</a> · <a href="https://psource.eimen.net/wiki/ps-community-dokumentation/">Dokumentation</a> · <a href="https://github.com/Power-Source/ps-community/issues">Fehler melden</a> · <a href="https://psource.eimen.net/">PSOURCE</a></p>
