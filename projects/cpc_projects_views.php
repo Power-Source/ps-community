@@ -201,6 +201,13 @@ function cpc_projects_render_single_project_html($project_id, $args = array()) {
         $html .= '<option value="members"' . selected($current_status, 'members', false) . '>' . esc_html__('Nur Mitglieder', 'cp-community') . '</option>';
         $html .= '<option value="private"' . selected($current_status, 'private', false) . '>' . esc_html__('Privat', 'cp-community') . '</option>';
         $html .= '</select>';
+        $html .= '<label>' . esc_html__('Erledigte Tasks automatisch loeschen', 'cp-community') . '</label>';
+        $html .= '<select name="completed_task_cleanup_days">';
+        $html .= '<option value="0"' . selected(cpc_projects_completed_task_cleanup_days($project_id), 0, false) . '>' . esc_html__('Nie', 'cp-community') . '</option>';
+        foreach (array(1, 7, 14, 30, 60, 90, 180, 365) as $days) {
+            $html .= '<option value="' . (int)$days . '"' . selected(cpc_projects_completed_task_cleanup_days($project_id), $days, false) . '>' . esc_html(sprintf(__('%d Tage nach Erledigung', 'cp-community'), $days)) . '</option>';
+        }
+        $html .= '</select>';
         $html .= '</div>';
         $html .= '<p><button type="submit" class="cpc_button">' . esc_html__('Projekt aktualisieren', 'cp-community') . '</button></p>';
         $html .= '</form>';
@@ -359,6 +366,7 @@ function cpc_projects_render_task_panel($project_id) {
     $html .= '</div>';
 
     if ($can_manage) {
+        $html .= '<button type="button" class="cpc_projects_delete_completed_tasks cpc_projects_inline_link">'.esc_html__('Erledigte Tasks loeschen', 'cp-community').'</button>';
         $html .= '<details class="cpc_projects_task_form_toggle" style="margin-bottom:12px;">';
         $html .= '<summary class="cpc_button cpc_projects_task_form_summary">'.esc_html__('+ Task hinzufuegen', 'cp-community').'</summary>';
         $html .= '<form class="cpc_projects_task_form" data-project-id="'.(int)$project_id.'" style="margin-top:12px;">';
@@ -417,14 +425,12 @@ function cpc_projects_render_task_panel($project_id) {
             $deadline_ts = !empty($task->deadline) ? (int)strtotime((string)$task->deadline) : 0;
             $is_overdue = ($deadline_ts > 0 && !$is_done && $deadline_ts < current_time('timestamp', 1)) ? '1' : '0';
             $html .= '<div id="cpc-project-task-'.(int)$task->id.'" class="'.esc_attr($item_class).'" data-task-id="'.(int)$task->id.'" data-task-status="'.esc_attr($is_done ? 'done' : 'open').'" data-task-title="'.esc_attr($task_title_attr).'" data-task-priority="'.(int)$task->priority.'" data-task-assigned="'.esc_attr($task_assigned_csv).'" data-task-overdue="'.esc_attr($is_overdue).'">';
-            $html .= '<label class="cpc_projects_task_toggle_wrap">';
             if ($can_manage) {
-                $html .= '<input class="cpc_projects_task_toggle" type="checkbox" '.checked($is_done, true, false).' data-task-id="'.(int)$task->id.'" />';
+                $html .= '<button type="button" class="cpc_projects_task_toggle cpc_projects_inline_link" data-task-id="'.(int)$task->id.'" data-next-status="'.esc_attr($is_done ? 'open' : 'done').'">'.esc_html($is_done ? __('Als offen markieren', 'cp-community') : __('Als erledigt markieren', 'cp-community')).'</button>';
             } else {
-                $html .= '<input type="checkbox" '.checked($is_done, true, false).' disabled />';
+                $html .= '<span class="cpc_projects_task_completion_state">'.esc_html($is_done ? __('Erledigt', 'cp-community') : __('Offen', 'cp-community')).'</span>';
             }
             $html .= '<span class="cpc_projects_task_title">'.esc_html($task->title).'</span>';
-            $html .= '</label>';
             $html .= '<span class="cpc_projects_task_priority priority-'.(int)$task->priority.'">'.esc_html(cpc_projects_render_task_priority_label($task->priority)).'</span>';
             $html .= '<span class="cpc_projects_task_status status-'.esc_attr($is_done ? 'done' : 'open').'">'.esc_html($is_done ? __('Erledigt', 'cp-community') : __('Offen', 'cp-community')).'</span>';
 

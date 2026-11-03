@@ -5,7 +5,7 @@ Requires at least: 5.0
 Requires CP: 2.7
 Tested up to: 7.1.4
 ClassicPress: 2.7.4
-Stable tag: 1.2.2
+Stable tag: 1.2.3
 License URI: https://www.gnu.org/licenses/gpl-2.0.html
 
 == Description ==
@@ -127,6 +127,11 @@ Hinweis zum Rangsystem:
 
 = 1.2.3 =
 * Fix: Die Projektübersicht verwendet für Kartenfußzeilen keinen Theme-Footer-Container mehr, damit die CMS-Fußzeile nicht innerhalb der letzten Projektkarte angezeigt wird
+* Verbesserung: Tasks lassen sich nur einmal pro Absendevorgang erstellen; parallele Klicks werden verhindert
+* Verbesserung: Das Erledigen einer Task erfolgt über eine beschriftete Schaltfläche statt über eine Checkbox
+* Verbesserung: Einzelne und alle erledigten Tasks verlangen vor dem Löschen eine Bestätigung
+* Neu: Erledigte Tasks können gesammelt gelöscht oder je Projekt nach einer einstellbaren Anzahl von Tagen automatisch per Cron bereinigt werden
+* Verbesserung: Task-Aktionen erzeugen den Aktivitäts-Tab nicht mehr bei jeder Anfrage neu und reagieren dadurch schneller
 
 = 1.2.2 =
 * Neu: Forum-Moderation mit eigener Warteschlange für ausstehende Themen und Antworten sowie Aktionen zum Freigeben oder Verwerfen

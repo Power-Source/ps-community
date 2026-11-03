@@ -19,11 +19,12 @@ function cpc_projects_enqueue_assets() {
     wp_enqueue_style('cpc-select2-css', plugins_url('../js/select2.css', __FILE__), array(), '4.0.13');
 
     wp_enqueue_style('cpc-projects-css', plugins_url('cpc_projects.css', __FILE__), array(), '1.1.0');
-    wp_enqueue_script('cpc-projects-js', plugins_url('cpc_projects.js', __FILE__), array('jquery', 'cpc-select2-js'), '1.0.0', true);
+    wp_enqueue_script('cpc-projects-js', plugins_url('cpc_projects.js', __FILE__), array('jquery', 'cpc-select2-js'), '1.1.0', true);
     wp_localize_script('cpc-projects-js', 'cpc_projects_ajax', array(
         'ajaxurl' => admin_url('admin-ajax.php'),
         'nonce' => wp_create_nonce('cpc_projects_ajax_nonce'),
         'confirmDeleteTask' => __('Task wirklich loeschen?', 'cp-community'),
+        'confirmDeleteCompletedTasks' => __('Alle erledigten Tasks wirklich dauerhaft loeschen?', 'cp-community'),
         'confirmDeleteAttachment' => __('Datei wirklich loeschen?', 'cp-community'),
         'confirmDeleteProject' => __('Projekt und alle Tasks wirklich dauerhaft loeschen?', 'cp-community'),
         'confirmDeleteComment' => __('Kommentar wirklich loeschen?', 'cp-community'),

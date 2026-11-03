@@ -4,6 +4,7 @@ add_action('wp_ajax_cpc_projects_get_tasks', 'cpc_projects_ajax_get_tasks');
 add_action('wp_ajax_cpc_projects_add_task', 'cpc_projects_ajax_add_task');
 add_action('wp_ajax_cpc_projects_toggle_task', 'cpc_projects_ajax_toggle_task');
 add_action('wp_ajax_cpc_projects_delete_task', 'cpc_projects_ajax_delete_task');
+add_action('wp_ajax_cpc_projects_delete_completed_tasks', 'cpc_projects_ajax_delete_completed_tasks');
 add_action('wp_ajax_cpc_projects_add_comment', 'cpc_projects_ajax_add_comment');
 add_action('wp_ajax_cpc_projects_update_task', 'cpc_projects_ajax_update_task');
 add_action('wp_ajax_cpc_projects_delete_comment_attachment', 'cpc_projects_ajax_delete_comment_attachment');
@@ -47,6 +48,7 @@ function cpc_projects_ajax_add_task() {
 	$priority = isset($_POST['priority']) ? (int)$_POST['priority'] : 1;
 	$deadline = isset($_POST['deadline']) ? sanitize_text_field(wp_unslash($_POST['deadline'])) : '';
 	$assigned_user_ids = isset($_POST['assigned_user_ids']) ? wp_unslash($_POST['assigned_user_ids']) : array();
+	$request_id = isset($_POST['request_id']) ? sanitize_key(wp_unslash($_POST['request_id'])) : '';
 
 	if (!$project_id || !cpc_projects_user_can_manage_project($project_id)) {
 		wp_send_json_error(array('message' => __('Keine Berechtigung.', 'cp-community')), 403);
@@ -56,9 +58,22 @@ function cpc_projects_ajax_add_task() {
 		wp_send_json_error(array('message' => __('Titel fehlt.', 'cp-community')), 400);
 	}
 
+	if ($request_id !== '') {
+		$existing_task_id = (int)get_transient('cpc_projects_task_request_'.md5(get_current_user_id().'|'.$project_id.'|'.$request_id));
+		if ($existing_task_id > 0) {
+			wp_send_json_success(array(
+				'task_id' => $existing_task_id,
+				'tasks_html' => cpc_projects_render_task_panel($project_id),
+			));
+		}
+	}
+
 	$task_id = cpc_projects_add_task($project_id, get_current_user_id(), $title, $description, $priority, $deadline, $assigned_user_ids);
 	if (!$task_id) {
 		wp_send_json_error(array('message' => __('Task konnte nicht erstellt werden.', 'cp-community')), 500);
+	}
+	if ($request_id !== '') {
+		set_transient('cpc_projects_task_request_'.md5(get_current_user_id().'|'.$project_id.'|'.$request_id), $task_id, MINUTE_IN_SECONDS * 10);
 	}
 
 	if (!empty($_FILES['task_attachments'])) {
@@ -73,7 +88,6 @@ function cpc_projects_ajax_add_task() {
 	wp_send_json_success(array(
 		'task_id' => $task_id,
 		'tasks_html' => cpc_projects_render_task_panel($project_id),
-		'activity_html' => cpc_projects_render_events_html($project_id, 60),
 	));
 }
 
@@ -119,7 +133,6 @@ function cpc_projects_ajax_update_task() {
 
 	wp_send_json_success(array(
 		'tasks_html' => cpc_projects_render_task_panel((int)$task->project_id),
-		'activity_html' => cpc_projects_render_events_html((int)$task->project_id, 60),
 	));
 }
 
@@ -152,7 +165,6 @@ function cpc_projects_ajax_toggle_task() {
 
 	wp_send_json_success(array(
 		'tasks_html' => cpc_projects_render_task_panel((int)$task->project_id),
-		'activity_html' => cpc_projects_render_events_html((int)$task->project_id, 60),
 	));
 }
 
@@ -176,7 +188,25 @@ function cpc_projects_ajax_delete_task() {
 
 	wp_send_json_success(array(
 		'tasks_html' => cpc_projects_render_task_panel((int)$task->project_id),
-		'activity_html' => cpc_projects_render_events_html((int)$task->project_id, 60),
+	));
+}
+
+function cpc_projects_ajax_delete_completed_tasks() {
+	cpc_projects_ajax_verify();
+
+	$project_id = isset($_POST['project_id']) ? (int)$_POST['project_id'] : 0;
+	if (!$project_id || !cpc_projects_user_can_manage_project($project_id)) {
+		wp_send_json_error(array('message' => __('Keine Berechtigung.', 'cp-community')), 403);
+	}
+
+	$deleted = cpc_projects_delete_completed_tasks($project_id);
+	if ($deleted === false) {
+		wp_send_json_error(array('message' => __('Erledigte Tasks konnten nicht geloescht werden.', 'cp-community')), 500);
+	}
+
+	wp_send_json_success(array(
+		'deleted' => $deleted,
+		'tasks_html' => cpc_projects_render_task_panel($project_id),
 	));
 }
 
@@ -211,7 +241,6 @@ function cpc_projects_ajax_add_comment() {
 		'comment_id' => (int)$comment_id,
 		'attachment_ids' => $attachment_ids,
 		'tasks_html' => cpc_projects_render_task_panel((int)$task->project_id),
-		'activity_html' => cpc_projects_render_events_html((int)$task->project_id, 60),
 	));
 }
 
@@ -234,7 +263,6 @@ function cpc_projects_ajax_delete_comment_attachment() {
 
 	wp_send_json_success(array(
 		'tasks_html' => cpc_projects_render_task_panel($project_id),
-		'activity_html' => cpc_projects_render_events_html($project_id, 60),
 	));
 }
 
@@ -279,7 +307,6 @@ function cpc_projects_ajax_delete_task_attachment_handler() {
 
 	wp_send_json_success(array(
 		'tasks_html' => cpc_projects_render_task_panel($project_id),
-		'activity_html' => cpc_projects_render_events_html($project_id, 60),
 	));
 }
 
@@ -338,6 +365,11 @@ function cpc_projects_ajax_update_project() {
 	}
 
 	update_post_meta($project_id, 'cpc_project_status', $status);
+	$cleanup_days = isset($_POST['completed_task_cleanup_days']) ? (int)$_POST['completed_task_cleanup_days'] : 0;
+	if (!in_array($cleanup_days, array(0, 1, 7, 14, 30, 60, 90, 180, 365), true)) {
+		$cleanup_days = 0;
+	}
+	update_post_meta($project_id, 'cpc_projects_completed_task_cleanup_days', $cleanup_days);
 
 	wp_send_json_success(array(
 		'message' => __('Projekt wurde aktualisiert.', 'cp-community'),

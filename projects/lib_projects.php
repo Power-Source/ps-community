@@ -37,6 +37,45 @@ function cpc_projects_task_default_deadline_time() {
     return $time;
 }
 
+function cpc_projects_completed_task_cleanup_days($project_id) {
+    $days = (int)get_post_meta((int)$project_id, 'cpc_projects_completed_task_cleanup_days', true);
+    return max(0, min(365, $days));
+}
+
+function cpc_projects_cleanup_completed_tasks() {
+    global $wpdb;
+
+    $table = cpc_projects_get_tasks_table_name();
+    $projects = get_posts(array(
+        'post_type' => 'cpc_project',
+        'post_status' => 'publish',
+        'posts_per_page' => -1,
+        'fields' => 'ids',
+    ));
+
+    foreach ($projects as $project_id) {
+        $days = cpc_projects_completed_task_cleanup_days($project_id);
+        if ($days <= 0) {
+            continue;
+        }
+
+        $cutoff = gmdate('Y-m-d H:i:s', current_time('timestamp', 1) - ($days * DAY_IN_SECONDS));
+        $wpdb->query($wpdb->prepare(
+            "DELETE FROM {$table} WHERE project_id = %d AND status = 'done' AND date_updated < %s",
+            $project_id,
+            $cutoff
+        ));
+    }
+}
+
+function cpc_projects_schedule_completed_task_cleanup() {
+    if (cpc_projects_is_enabled() && !wp_next_scheduled('cpc_projects_cleanup_completed_tasks')) {
+        wp_schedule_event(time() + HOUR_IN_SECONDS, 'hourly', 'cpc_projects_cleanup_completed_tasks');
+    }
+}
+add_action('init', 'cpc_projects_schedule_completed_task_cleanup');
+add_action('cpc_projects_cleanup_completed_tasks', 'cpc_projects_cleanup_completed_tasks');
+
 function cpc_projects_get_default_deadline_datetime() {
     $days = cpc_projects_task_default_deadline_days();
     $time = cpc_projects_task_default_deadline_time();
@@ -990,6 +1029,23 @@ function cpc_projects_delete_task($task_id) {
     $task_id = (int)$task_id;
     if ($task_id <= 0) {
         return false;
+    }
+
+    function cpc_projects_delete_completed_tasks($project_id) {
+        global $wpdb;
+
+        $project_id = (int)$project_id;
+        if ($project_id <= 0) {
+            return false;
+        }
+
+        $table = cpc_projects_get_tasks_table_name();
+        $deleted = $wpdb->delete($table, array(
+            'project_id' => $project_id,
+            'status' => 'done',
+        ), array('%d', '%s'));
+
+        return $deleted !== false ? (int)$deleted : false;
     }
 
     $table = cpc_projects_get_tasks_table_name();

@@ -3,7 +3,7 @@
 Plugin Name: PS Community
 Plugin URI: https://psource.eimen.net/psource/ps-community/
 Description: Füge Deiner ClassicPress-Webseite schnell und einfach ein soziales Netzwerk hinzu!
-Version: 1.2.2
+Version: 1.2.3
 Author: PSOURCE
 Author URI: https://psource.eimen.net/
 License: GPLv2 or later

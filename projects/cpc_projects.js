@@ -15,13 +15,6 @@
         }
     }
 
-    function replaceActivityPanel(projectId, activityHtml) {
-        var $section = $('.cpc_projects_single[data-project-id="' + projectId + '"] .cpc_projects_single_section[data-section="activity"]');
-        if ($section.length && typeof activityHtml === 'string') {
-            $section.html(activityHtml);
-        }
-    }
-
     function initAssigneeSelects($context) {
         var $root = ($context && $context.length) ? $context : $(document);
         var $selects = $root.find('.cpc_projects_task_assignees');
@@ -116,15 +109,26 @@
         }
 
         var $form = $(this);
+        if ($form.data('submitting')) {
+            return;
+        }
+
         var projectId = parseInt($form.data('project-id'), 10);
         if (!projectId) {
             return;
+        }
+
+        var requestId = $form.data('request-id');
+        if (!requestId) {
+            requestId = String(Date.now()) + '-' + Math.random().toString(36).slice(2);
+            $form.data('request-id', requestId);
         }
 
         var formData = new window.FormData();
         formData.append('action',     'cpc_projects_add_task');
         formData.append('nonce',      cpc_projects_ajax.nonce);
         formData.append('project_id', projectId);
+        formData.append('request_id', requestId);
         formData.append('title',      $.trim($form.find('[name="title"]').val()       || ''));
         formData.append('description',$.trim($form.find('[name="description"]').val() || ''));
         formData.append('priority',   parseInt($form.find('[name="priority"]').val(), 10) || 1);
@@ -142,6 +146,8 @@
             return;
         }
 
+        $form.data('submitting', true);
+        $form.find('.cpc_projects_add_task_btn').prop('disabled', true);
         $.ajax({
             url: cpc_projects_ajax.ajaxurl,
             method: 'POST',
@@ -154,41 +160,50 @@
                 return;
             }
             replaceTaskPanel(projectId, resp.data.tasks_html);
-            replaceActivityPanel(projectId, resp.data.activity_html || '');
+            $form.removeData('request-id');
         }).fail(function() {
             alert(cpc_projects_ajax.addTaskError);
+        }).always(function() {
+            $form.data('submitting', false);
+            $form.find('.cpc_projects_add_task_btn').prop('disabled', false);
         });
     });
 
-    $(document).on('change', '.cpc_projects_task_toggle', function() {
+    $(document).on('click', '.cpc_projects_task_toggle', function() {
         if (!hasAjaxConfig()) {
             return;
         }
 
-        var $checkbox = $(this);
-        var taskId = parseInt($checkbox.data('task-id'), 10);
+        var $button = $(this);
+        if ($button.prop('disabled')) {
+            return;
+        }
+
+        var taskId = parseInt($button.data('task-id'), 10);
         if (!taskId) {
             return;
         }
 
-        var $panel = $checkbox.closest('.cpc_projects_task_panel');
+        var $panel = $button.closest('.cpc_projects_task_panel');
         var projectId = parseInt($panel.data('project-id'), 10);
         if (!projectId) {
             return;
         }
 
+        $button.prop('disabled', true);
         $.post(cpc_projects_ajax.ajaxurl, {
             action: 'cpc_projects_toggle_task',
             nonce: cpc_projects_ajax.nonce,
             task_id: taskId,
-            status: $checkbox.is(':checked') ? 'done' : 'open'
+            status: $button.data('next-status') || 'done'
         }).done(function(resp) {
             if (!resp || !resp.success || !resp.data || !resp.data.tasks_html) {
                 return;
             }
 
             replaceTaskPanel(projectId, resp.data.tasks_html);
-            replaceActivityPanel(projectId, resp.data.activity_html || '');
+        }).always(function() {
+            $button.prop('disabled', false);
         });
     });
 
@@ -210,6 +225,11 @@
             return;
         }
 
+        if (!window.confirm(cpc_projects_ajax.confirmDeleteTask)) {
+            return;
+        }
+
+        $btn.prop('disabled', true);
         $.post(cpc_projects_ajax.ajaxurl, {
             action: 'cpc_projects_delete_task',
             nonce: cpc_projects_ajax.nonce,
@@ -220,7 +240,36 @@
             }
 
             replaceTaskPanel(projectId, resp.data.tasks_html);
-            replaceActivityPanel(projectId, resp.data.activity_html || '');
+        }).always(function() {
+            $btn.prop('disabled', false);
+        });
+    });
+
+    $(document).on('click', '.cpc_projects_delete_completed_tasks', function(e) {
+        e.preventDefault();
+        if (!hasAjaxConfig() || !window.confirm(cpc_projects_ajax.confirmDeleteCompletedTasks)) {
+            return;
+        }
+
+        var $button = $(this);
+        var $panel = $button.closest('.cpc_projects_task_panel');
+        var projectId = parseInt($panel.data('project-id'), 10);
+        if (!projectId || $button.prop('disabled')) {
+            return;
+        }
+
+        $button.prop('disabled', true);
+        $.post(cpc_projects_ajax.ajaxurl, {
+            action: 'cpc_projects_delete_completed_tasks',
+            nonce: cpc_projects_ajax.nonce,
+            project_id: projectId
+        }).done(function(resp) {
+            if (!resp || !resp.success || !resp.data || !resp.data.tasks_html) {
+                return;
+            }
+            replaceTaskPanel(projectId, resp.data.tasks_html);
+        }).always(function() {
+            $button.prop('disabled', false);
         });
     });
 
@@ -298,7 +347,6 @@
                 return;
             }
             replaceTaskPanel(projectId, resp.data.tasks_html);
-            replaceActivityPanel(projectId, resp.data.activity_html || '');
         }).fail(function() {
             alert(cpc_projects_ajax.updateTaskError);
         });
@@ -351,9 +399,8 @@
                 alert(cpc_projects_ajax.addCommentError);
                 return;
             }
-
             replaceTaskPanel(projectId, resp.data.tasks_html);
-            replaceActivityPanel(projectId, resp.data.activity_html || '');
+            replaceTaskPanel(projectId, resp.data.tasks_html);
         }).fail(function() {
             alert(cpc_projects_ajax.addCommentError);
         });
@@ -385,9 +432,8 @@
             if (!resp || !resp.success || !resp.data || !resp.data.tasks_html) {
                 return;
             }
-
             replaceTaskPanel(projectId, resp.data.tasks_html);
-            replaceActivityPanel(projectId, resp.data.activity_html || '');
+            replaceTaskPanel(projectId, resp.data.tasks_html);
         });
     });
 
@@ -411,7 +457,6 @@
                 return;
             }
             replaceTaskPanel(projectId, resp.data.tasks_html);
-            replaceActivityPanel(projectId, resp.data.activity_html || '');
         });
     });
 
@@ -433,7 +478,6 @@
         }).done(function(resp) {
             if (!resp || !resp.success || !resp.data || !resp.data.tasks_html) { return; }
             replaceTaskPanel(projectId, resp.data.tasks_html);
-            replaceActivityPanel(projectId, resp.data.activity_html || '');
         });
     });
 
@@ -535,7 +579,8 @@
             project_id:  projectId,
             title:       $.trim($form.find('[name="title"]').val()       || ''),
             description: $.trim($form.find('[name="description"]').val() || ''),
-            status:      $form.find('[name="status"]').val() || 'public'
+            status:      $form.find('[name="status"]').val() || 'public',
+            completed_task_cleanup_days: parseInt($form.find('[name="completed_task_cleanup_days"]').val(), 10) || 0
         }).done(function(resp) {
             if (!resp || !resp.success) {
                 alert(cpc_projects_ajax.updateProjectError);
