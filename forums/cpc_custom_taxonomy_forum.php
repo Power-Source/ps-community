@@ -1,5 +1,50 @@
 <?php
 
+function cpc_forum_page_shortcode($slug) {
+	return '['.CPC_PREFIX.'-forum-page slug="'.$slug.'"]';
+}
+
+function cpc_forum_create_page($term_id, $legacy_content = false) {
+	$term = get_term($term_id, 'cpc_forum');
+	if (!$term || is_wp_error($term)) {
+		return new WP_Error('cpc_forum_invalid', __('Das Forum wurde nicht gefunden.', 'cp-community'));
+	}
+	if (cpc_get_term_meta($term_id, 'cpc_forum_cat_page', true)) {
+		return new WP_Error('cpc_forum_page_assigned', __('Diesem Forum ist bereits eine Seite zugeordnet.', 'cp-community'));
+	}
+	if (get_page_by_path($term->slug, OBJECT, 'page')) {
+		return new WP_Error('cpc_forum_page_exists', __('Eine Seite mit diesem Slug existiert bereits. Bitte wähle sie aus oder ändere den Forum-Slug.', 'cp-community'));
+	}
+	if (wp_unique_post_slug($term->slug, 0, 'publish', 'page', 0) !== $term->slug) {
+		return new WP_Error('cpc_forum_page_slug', __('Der Forum-Slug ist für eine neue Seite nicht verfügbar. Bitte ändere den Forum-Slug.', 'cp-community'));
+	}
+
+	$content = cpc_forum_page_shortcode($term->slug);
+	if ($legacy_content) {
+		$content = '['.CPC_PREFIX.'-forum-post slug="'.$term->slug.'"]['.CPC_PREFIX.'-forum-backto slug="'.$term->slug.'"]['.CPC_PREFIX.'-forum slug="'.$term->slug.'"]';
+		$content .= '['.CPC_PREFIX.'-forum-reply slug="'.$term->slug.'"]['.CPC_PREFIX.'-forum-backto slug="'.$term->slug.'"]';
+	}
+	$page_id = wp_insert_post(array(
+		'post_content' => $content,
+		'post_name' => $term->slug,
+		'post_title' => $term->name,
+		'post_status' => 'publish',
+		'post_type' => 'page',
+		'ping_status' => 'closed',
+		'comment_status' => 'closed',
+	), true);
+	if (is_wp_error($page_id)) {
+		return $page_id;
+	}
+	if (!$page_id || get_post_field('post_name', $page_id) !== $term->slug) {
+		return new WP_Error('cpc_forum_page_slug', __('Die Seite konnte nicht mit dem Forum-Slug erstellt werden. Bitte prüfe die Seiteneinstellungen.', 'cp-community'));
+	}
+	if (!cpc_update_term_meta($term_id, 'cpc_forum_cat_page', $page_id)) {
+		return new WP_Error('cpc_forum_page_assignment', sprintf(__('Die Seite wurde erstellt, konnte aber nicht zugeordnet werden. Bitte wähle Seite %d manuell aus.', 'cp-community'), $page_id));
+	}
+	return $page_id;
+}
+
 // Following are so media library can be used for featured image
 add_action('admin_enqueue_scripts', function($hook) {
     if ($hook !== 'edit-tags.php?taxonomy=cpc_forum') return;
@@ -61,7 +106,7 @@ function cpc_taxonomy_metadata_add( $tag ) {
 
 	<div class="form-field">
 		<label for="cpc_forum_cat_page"><?php _e('ClassicPress-Seite', 'cp-community'); ?></label>
-		<select name="cpc_forum_cat_page" name="cpc_forum_cat_page">
+		<select name="cpc_forum_cat_page" id="cpc_forum_cat_page">
 		 <?php 
 		  echo '<option value="0">'.__('Seite auswählen...', 'cp-community').'</option>';
 		  $pages = get_pages(); 
@@ -73,9 +118,12 @@ function cpc_taxonomy_metadata_add( $tag ) {
 		  }
 		 ?>						
 		</select>
+		<?php if (current_user_can('publish_pages')) : ?>
+		<?php wp_nonce_field('cpc_forum_create_page', 'cpc_forum_create_page_nonce'); ?>
+		<p><label><input type="checkbox" name="cpc_forum_create_page" value="1" style="width:10px" /> <?php _e('Forumseite beim Erstellen automatisch anlegen und Shortcode einfügen', 'cp-community'); ?></label></p>
+		<?php endif; ?>
 		<div class="description"><?php echo sprintf(__('ClassicPress-Seite, auf der die Shortcodes dieses Forums verfügbar sind.<br />Weitere Informationen findest Du unter <a href="%s">Erste Schritte</a>.', 'cp-community'), 'admin.php?page=cpc_com'); ?></div>
-		<div class="description"><br /><strong><?php _e('Stelle sicher, dass Dein Forum-Slug mit Deinem Forum-Seiten-Slug übereinstimmt.', 'cp-community'); ?></strong><br />
-		<strong><?php _e('Deine Forumseite sollte keine übergeordnete Seite haben.', 'cp-community'); ?></strong></div>    
+		<div class="description"><?php _e('Der Forum-Slug muss mit dem Slug der Forumseite übereinstimmen. Die Forumseite kann auch eine Unterseite sein.', 'cp-community'); ?></div>
     </div> 
     <p><a href="admin.php?page=cpccom_forum_setup"><?php _e('Gehe zur Forumverwaltung', 'cp-community'); ?></a></p><br />
 
@@ -238,9 +286,9 @@ function cpc_taxonomy_metadata_edit( $tag ) {
 			<?php 
 		  	$forum_page = cpc_get_term_meta($tag->term_id, 'cpc_forum_cat_page', true);
 
-            echo '<select name="cpc_forum_cat_page">';
+            echo '<select name="cpc_forum_cat_page" id="cpc_forum_cat_page">';
 
-			  	if (!$forum_page) echo '<option value="0">'.__('Seite auswählen...', 'cp-community').'</option>';
+				echo '<option value="0">'.__('Seite auswählen...', 'cp-community').'</option>';
 			  	$pages = get_pages(); 
 			  	foreach ( $pages as $page ):
 			  		$option = '<option value="' . $page->ID . '"';
@@ -253,11 +301,17 @@ function cpc_taxonomy_metadata_edit( $tag ) {
 
 			echo '</select>';
 			 ?>						
+			<?php if (!$forum_page && current_user_can('publish_pages')) : ?>
+			<?php wp_nonce_field('cpc_forum_create_page', 'cpc_forum_create_page_nonce'); ?>
+			<button type="submit" class="button-secondary" name="cpc_forum_create_page" value="1"><?php _e('Seite erstellen', 'cp-community'); ?></button>
+			<?php endif; ?>
 			<br />
 			<span class="description"><?php _e('ClassicPress-Seite, auf der die Shortcodes dieses Forums verfügbar sind.', 'cp-community'); ?>
 			<?php if ($forum_page) { ?> [<a href="post.php?post=<?php echo $forum_page; ?>&action=edit"><?php _e('Bearbeiten', 'cp-community'); ?></a>]<?php } ?></span><br />
-			<div class="description"><br /><strong><?php _e('Stelle sicher, dass Dein Forum-Slug mit Deinem Forum-Seiten-Slug übereinstimmt.', 'cp-community'); ?></strong><br />
-			<strong><?php _e('Deine Forumseite sollte keine übergeordnete Seite haben.', 'cp-community'); ?></strong></div>
+			<p><label for="cpc_forum_shortcode"><?php _e('Shortcode für dieses Forum:', 'cp-community'); ?></label><br />
+			<input id="cpc_forum_shortcode" type="text" class="regular-text" readonly value="<?php echo esc_attr(cpc_forum_page_shortcode($tag->slug)); ?>" />
+			<span class="description"><?php _e('Nach einer Änderung des Forum-Slugs aktualisiert sich der Shortcode beim Speichern.', 'cp-community'); ?></span></p>
+			<div class="description"><?php _e('Der Forum-Slug muss mit dem Slug der Forumseite übereinstimmen. Die Forumseite kann auch eine Unterseite sein.', 'cp-community'); ?></div>
 		</td>
 	</tr> 
 
@@ -352,6 +406,21 @@ function cpc_save_taxonomy_metadata( $term_id ) {
 	// Any further options to save?
 	do_action('cpc_forum_taxonomy_metadata_edit_roles_save_hook', $term_id, $_POST);
 
+	if (isset($_POST['cpc_forum_create_page'])) {
+		if (!current_user_can('edit_term', $term_id) || !current_user_can('publish_pages') || !isset($_POST['cpc_forum_create_page_nonce']) || !wp_verify_nonce(wp_unslash($_POST['cpc_forum_create_page_nonce']), 'cpc_forum_create_page')) {
+			wp_die(esc_html__('Die Forumseite konnte nicht erstellt werden: Berechtigung oder Sicherheitsprüfung fehlgeschlagen.', 'cp-community'), '', array('back_link' => true));
+		}
+		$page_id = cpc_forum_create_page($term_id);
+		if (is_wp_error($page_id)) {
+			$message = sprintf(__('Das Forum wurde gespeichert, aber die Forumseite nicht zugeordnet: %s', 'cp-community'), $page_id->get_error_message());
+			if (wp_doing_ajax()) {
+				$response = new WP_Ajax_Response(array('what' => 'taxonomy', 'id' => new WP_Error('cpc_forum_page_error', $message)));
+				$response->send();
+			}
+			wp_die(esc_html($message), '', array('back_link' => true));
+		}
+	}
+
 	// Ready for re-writing
 	global $wp_rewrite;
    	$wp_rewrite->flush_rules();
@@ -371,7 +440,7 @@ function cpc_save_taxonomy_metadata_notice(){
 		echo sprintf('<a href="%s">', admin_url( 'admin.php?page=cpccom_forum_setup' )).__('Zurück zu Alle Foren verwalten.', 'cp-community').'</a>';
 	echo '</div>';
     
-    echo '<p style="font-weight:bold">'.__('Bitte denke daran, dass Dein Forums-Slug immer mit dem Slug der Seite übereinstimmen muss, auf der Dein Forum aktiv ist, und dass diese Forumsseite keine übergeordnete Seite haben sollte. Wenn Dein Forum-Slug beispielsweise General-Forum lautet, muss er sich auf einer Seite mit dem Slug general-forum befinden. Der Name des Forums kann beliebig sein.', 'cp-community').'</p>';
+    echo '<p style="font-weight:bold">'.__('Wähle für jedes Forum die Seite mit dem passenden Forum-Shortcode. Der Forum-Slug muss dem Seiten-Slug entsprechen; die Seite kann auch eine Unterseite sein.', 'cp-community').'</p>';
     
 
 }

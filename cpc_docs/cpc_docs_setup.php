@@ -26,7 +26,8 @@ function cpc_admin_getting_started_docs() {
         'option_none_value' => '0',
         'selected' => (int)cpc_docs_get_directory_page_id(),
     ));
-    echo '<span class="description">'.__('Optional: diese Seite zeigt automatisch das globale Docs-Verzeichnis mit Suche, Filter und Pagination.', 'cp-community').'</span>';
+    cpc_admin_render_create_page_button(cpc_docs_get_directory_page_id(), 'cpc_docs_directory_page');
+    echo '<span class="description">'.__('Optional: Diese Seite zeigt automatisch das globale Docs-Verzeichnis. Shortcode: [cpc-docs-directory]', 'cp-community').'</span>';
     echo '</td>';
     echo '</tr>';
 

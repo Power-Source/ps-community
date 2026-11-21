@@ -13,7 +13,10 @@ if ($pagination_posts): // only do if using pagination
         $current_page = 1;
     endif;
 
-    if ( cpc_using_permalinks() ):
+    $nested_page_url = cpc_forum_nested_page_url($term);
+    if ($nested_page_url):
+        $pagination_url = add_query_arg('fpage', '%d', $nested_page_url);
+    elseif ( cpc_using_permalinks() ):
         if (!is_multisite()):
             $pagination_url = get_bloginfo('url').'/'.$term->slug.'?fpage=%d';
         else:

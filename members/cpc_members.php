@@ -29,8 +29,8 @@ function cpc_admin_getting_started_members_core_option() {
         'option_none_value' => '0',
         'selected' => cpc_members_get_directory_page_id(),
     ));
-    echo '<br /><span class="description">'.__('Wähle eine bestehende Seite mit [cpc-members-directory] oder erstelle unten automatisch eine neue Seite mit eingefügtem Shortcode.', 'cp-community').'</span>';
-    echo '<br /><label><input type="checkbox" style="width:10px" name="cpc_members_directory_create_page" /> '.__('Mitglieder-Seite automatisch erstellen (inkl. [cpc-members-directory]).', 'cp-community').'</label>';
+    cpc_admin_render_create_page_button(cpc_members_get_directory_page_id(), 'cpc_members_directory_page');
+    echo '<br /><span class="description">'.__('Wähle eine bestehende Seite mit [cpc-members-directory] oder erstelle eine Seite mit diesem Shortcode.', 'cp-community').'</span>';
     echo '</td>';
     echo '</tr>';
 }
@@ -40,20 +40,6 @@ function cpc_admin_members_save($the_post) {
         update_option('cpc_members_directory_page', max(0, (int)$the_post['cpc_members_directory_page']));
     }
 
-    if (isset($the_post['cpc_members_directory_create_page']) && function_exists('cpc_admin_create_standard_page')) {
-        $new_page_id = cpc_admin_create_standard_page('cpc_members_directory_page', array(
-            'post_name' => sanitize_title(__('mitglieder', 'cp-community')),
-            'post_title' => __('Mitglieder', 'cp-community'),
-            'post_content' => '[cpc-members-directory]',
-            'post_status' => 'publish',
-            'post_type' => 'page',
-            'comment_status' => 'closed',
-        ), 'cpc-members-directory');
-
-        if (!is_wp_error($new_page_id) && $new_page_id) {
-            update_option('cpc_members_directory_page', (int)$new_page_id);
-        }
-    }
 }
 
 function cpc_members_get_directory_page_id() {

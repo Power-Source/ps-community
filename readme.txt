@@ -125,6 +125,10 @@ Hinweis zum Rangsystem:
 
 == ChangeLog ==
 
+= 1.2.4 =
+* Fix: Unterforen bleiben dem Hauptforum zugeordnet und ihre Seiten werden unter dem vollständigen Seitenpfad korrekt aufgerufen; Themenlinks und Seitennavigation berücksichtigen diesen Pfad
+* Verbesserung: Forum-Shortcodes werden in den Forumseinstellungen angezeigt; Forumseiten und Verzeichnisseiten lassen sich dort direkt mit dem passenden Shortcode erstellen
+
 = 1.2.3 =
 * Fix: Die Projektübersicht verwendet für Kartenfußzeilen keinen Theme-Footer-Container mehr, damit die CMS-Fußzeile nicht innerhalb der letzten Projektkarte angezeigt wird
 * Verbesserung: Tasks lassen sich nur einmal pro Absendevorgang erstellen; parallele Klicks werden verhindert

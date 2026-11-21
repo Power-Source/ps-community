@@ -119,25 +119,14 @@ function cpc_admin_quick_start_forum_save($the_post) {
 
 		else:
 
-			$post_content = '['.CPC_PREFIX.'-forum-post slug="'.$slug.'"]['.CPC_PREFIX.'-forum-backto slug="'.$slug.'"]['.CPC_PREFIX.'-forum slug="'.$slug.'"]';
- 			$post_content .= '['.CPC_PREFIX.'-forum-reply slug="'.$slug.'"]['.CPC_PREFIX.'-forum-backto slug="'.$slug.'"]';
-
-			// Forum Page
-			$post = array(
-			  'post_content'   => $post_content,
-			  'post_name'      => $slug,
-			  'post_title'     => $name,
-			  'post_status'    => 'publish',
-			  'post_type'      => 'page',
-			  'ping_status'    => 'closed',
-			  'comment_status' => 'closed',
-			);  
-
-			$new_id = wp_insert_post( $post );	
-
 			cpc_update_term_meta( $new_term['term_id'], 'cpc_forum_public', true );
-			cpc_update_term_meta( $new_term['term_id'], 'cpc_forum_cat_page', $new_id );
 			cpc_update_term_meta( $new_term['term_id'], 'cpc_forum_order', 1 );
+
+			$new_id = cpc_forum_create_page($new_term['term_id'], true);
+			if (is_wp_error($new_id)) {
+				echo '<div class="cpc_error">'.esc_html(sprintf(__('Das Forum wurde erstellt, aber die Forumseite nicht: %s', 'cp-community'), $new_id->get_error_message())).'</div>';
+				return;
+			}
 
 			echo '<div class="cpc_success">';
 				echo sprintf(__('Forumseite (%s) hinzugefügt. [<a href="%s">view</a>]', 'cp-community'), urldecode(get_permalink($new_id)), urldecode(get_permalink($new_id))).'<br /><br />';

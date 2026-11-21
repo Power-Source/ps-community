@@ -216,7 +216,10 @@ if (!isset($_GET['forum_action']) || ($_GET['forum_action'] != 'edit' && $_GET['
 						// work out URL for pagination
 						if ($pagination):
 		                    global $blog;
-		                    if ( cpc_using_permalinks() ):
+							$nested_page_url = cpc_forum_nested_page_url($term);
+							if ($nested_page_url):
+								$url = add_query_arg(array('topic' => $post_slug, 'fpage' => '%d'), $nested_page_url);
+		                    elseif ( cpc_using_permalinks() ):
 		                        if (!is_multisite()):
 									$url = get_bloginfo('url').'/'.$term->slug.'/'.$post_slug.'/?topic='.$_GET['topic'].'&page=%d';
 		                        else:

@@ -85,10 +85,14 @@ if ($action) {
                         );
                     } else {
                         $url = get_bloginfo('url').'/'.$the_post['cpc_forum_slug'].'/?topic='.$new_post->post_name;
+                        $nested_page_url = cpc_forum_nested_page_url($forum);
+                        if ($nested_page_url) $url = add_query_arg('topic', $new_post->post_name, $nested_page_url);
                     }
                 } else {
                     // IMMER Query-Variante bauen!
                     $url = get_bloginfo('url').'/'.$the_post['cpc_forum_slug'].'/?topic='.$new_post->post_name;
+                    $nested_page_url = cpc_forum_nested_page_url($forum);
+                    if ($nested_page_url) $url = add_query_arg('topic', $new_post->post_name, $nested_page_url);
                 }
 
                 // set meta for this post at the forum level
@@ -237,6 +241,9 @@ if ($action) {
 
                     }
 
+                    $new_term = get_term_by('slug', $the_comment['cpc_post_forum_slug'], 'cpc_forum');
+                    $nested_page_url = cpc_forum_nested_page_url($new_term);
+                    if ($nested_page_url) $url = add_query_arg('topic', $the_post->post_name, $nested_page_url);
                     $return_html = $url;
 
                     // Save post forum (term)

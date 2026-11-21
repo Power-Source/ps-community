@@ -378,6 +378,8 @@ function cpc_forum_show_posts($atts) {
 													endif;
 
 												endif;
+												$nested_page_url = cpc_forum_nested_page_url($term);
+												if ($nested_page_url) $url = add_query_arg('topic', $forum_post['post_name'], $nested_page_url);
     
 												$the_title = esc_attr($forum_post['post_title']);
 												$the_title = str_replace(

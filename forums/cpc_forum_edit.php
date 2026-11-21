@@ -498,6 +498,11 @@ function cpc_save_post($post_data, $files_data, $moved_to, $atts) {
 						}
 					}
 					$new_term = get_term_by('slug', $new_slug, 'cpc_forum');
+					$nested_page_url = cpc_forum_nested_page_url($new_term);
+					if ($nested_page_url) {
+						$forum_url = $nested_page_url;
+						$url = add_query_arg('topic', $the_post->post_name, $nested_page_url);
+					}
 					$return_html = '<div class="cpc_success">' . sprintf($moved_to, '<a href="' . $url . '">' . esc_attr($the_post->post_title) . '</a>', '<a href="' . $forum_url . '">' . esc_attr($new_term->name) . '</a>') . '</div>';
 
 					// Save post forum (term)
@@ -556,6 +561,8 @@ function cpc_save_comment($post_data, $files_data, $atts) {
 			wp_suspend_cache_invalidation(false);
 			$forum_slug = $the_post_terms->slug;
 			$url = get_bloginfo('url').'/'.$forum_slug.'/?topic='.$the_post->post_name;
+			$nested_page_url = cpc_forum_nested_page_url($the_post_terms);
+			if ($nested_page_url) $url = add_query_arg('topic', $the_post->post_name, $nested_page_url);
 			$url = add_query_arg('cpc_updated', time(), $url); // <-- HIER EINFÜGEN
 			wp_redirect($url);
 			exit;

@@ -147,6 +147,11 @@ function cpc_change_forum_link( $permalink, $post ) {
 		$post_terms = get_the_terms( $post->ID, 'cpc_forum' );
 		if( $post_terms && !is_wp_error( $post_terms ) ):
 		    foreach( $post_terms as $term ):
+				$nested_page_url = cpc_forum_nested_page_url($term);
+				if ($nested_page_url) {
+					$permalink = add_query_arg('topic', $post->post_name, $nested_page_url);
+					break;
+				}
 		    	if ( cpc_using_permalinks() ):	
 		        	$permalink = home_url( $term->slug.'/'.$post->post_name );	    	
 	    	    	break;

@@ -139,8 +139,10 @@ function cpc_admin_getting_started_activity_plus() {
                 'echo' => 0,
                 'selected' => $wall_page_id,
                 'show_option_none' => __('Keine/Deaktiviert', 'cp-community'),
+                'option_none_value' => '0',
             ));
-            echo '<label style="display:block;margin-top:8px"><input name="cpc_activity_plus_global_wall_create_page" type="checkbox" style="width:10px" /> '.__('Falls keine Seite gewählt ist, automatisch eine Wall-Seite erstellen', 'cp-community').'</label>';
+            cpc_admin_render_create_page_button($wall_page_id, 'cpc_activity_plus_global_wall_page');
+            echo '<span class="description">'.esc_html__('Shortcode: [cpc-activity-wall]', 'cp-community').'</span>';
         echo '</td>';
     echo '</tr>';
 

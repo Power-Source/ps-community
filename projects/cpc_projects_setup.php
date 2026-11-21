@@ -33,7 +33,9 @@ function cpc_admin_getting_started_projects() {
         'name' => 'cpc_projects_directory_page',
         'selected' => cpc_projects_get_directory_page_id(),
         'show_option_none' => __('Keine/Deaktiviert', 'cp-community'),
+        'option_none_value' => '0',
     ));
+    cpc_admin_render_create_page_button(cpc_projects_get_directory_page_id(), 'cpc_projects_directory_page');
     echo '<span class="description">'.__('Seite für die öffentliche Projekte-Übersicht mit Shortcode [cpc-projects-directory]', 'cp-community').'</span>';
     echo '</td>';
     echo '</tr>';

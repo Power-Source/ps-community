@@ -154,7 +154,10 @@ function cpc_admin_create_standard_page($option_name, $post, $required_shortcode
                 $update_post['post_status'] = 'publish';
             }
             if (count($update_post) > 1) {
-                wp_update_post($update_post);
+                $updated = wp_update_post($update_post, true);
+                if (is_wp_error($updated) || !$updated) {
+                    return is_wp_error($updated) ? $updated : new WP_Error('cpc_page_update_failed', __('Die vorhandene Seite konnte nicht aktualisiert werden.', 'cp-community'));
+                }
             }
             if ($option_name) {
                 update_option($option_name, $existing->ID);
@@ -164,12 +167,55 @@ function cpc_admin_create_standard_page($option_name, $post, $required_shortcode
     }
 
     $new_id = wp_insert_post($post, true);
-    if (!is_wp_error($new_id) && $option_name) {
+    if (!is_wp_error($new_id) && $new_id && $option_name) {
         update_option($option_name, $new_id);
     }
 
     return $new_id;
 
+}
+
+function cpc_admin_render_create_page_button($page_id, $key) {
+    if (!$page_id && current_user_can('publish_pages')) {
+        echo ' <button type="submit" name="cpccom_create_page" value="'.esc_attr($key).'" class="button-secondary">'.esc_html__('Seite erstellen', 'cp-community').'</button>';
+    }
+}
+
+add_action('cpc_admin_setup_form_save_hook', 'cpc_admin_create_directory_page', 99);
+function cpc_admin_create_directory_page($the_post) {
+    $key = isset($the_post['cpccom_create_page']) ? sanitize_key($the_post['cpccom_create_page']) : '';
+    $pages = array(
+        'cpc_projects_directory_page' => array(__('Projekte', 'cp-community'), 'projekte', 'cpc-projects-directory'),
+        'cpc_docs_directory_page' => array(__('Dokumente', 'cp-community'), 'dokumente', 'cpc-docs-directory'),
+        'cpc_media_directory_page' => array(__('Mediathek', 'cp-community'), 'mediathek', 'cpc-media-directory'),
+        'cpc_members_directory_page' => array(__('Mitglieder', 'cp-community'), 'mitglieder', 'cpc-members-directory'),
+        'cpc_activity_plus_global_wall_page' => array(__('Aktivitätswall', 'cp-community'), 'aktivitaetswall', 'cpc-activity-wall'),
+    );
+    if (!isset($pages[$key])) {
+        return;
+    }
+    if (!current_user_can('publish_pages') || !isset($the_post['cpc_create_page_nonce']) || !wp_verify_nonce(wp_unslash($the_post['cpc_create_page_nonce']), 'cpc_create_page')) {
+        wp_die(esc_html__('Die Seite konnte nicht erstellt werden: Berechtigung oder Sicherheitsprüfung fehlgeschlagen.', 'cp-community'));
+    }
+    if (!empty($the_post[$key])) {
+        echo '<div class="cpc_error">'.esc_html__('Bitte wähle keine bestehende Seite aus, wenn Du eine Seite erstellen möchtest.', 'cp-community').'</div>';
+        return;
+    }
+    $page = $pages[$key];
+    $page_id = cpc_admin_create_standard_page($key, array(
+        'post_title' => $page[0],
+        'post_name' => $page[1],
+        'post_content' => '['.$page[2].']',
+        'post_status' => 'publish',
+        'post_type' => 'page',
+        'ping_status' => 'closed',
+        'comment_status' => 'closed',
+    ), $page[2]);
+    if (is_wp_error($page_id) || !$page_id) {
+        echo '<div class="cpc_error">'.esc_html__('Die gewünschte Seite konnte nicht erstellt werden.', 'cp-community').'</div>';
+        return;
+    }
+    echo '<div class="cpc_success">'.esc_html__('Die Seite wurde erstellt oder eine passende vorhandene Seite zugeordnet.', 'cp-community').'</div>';
 }
 
 
@@ -508,6 +554,7 @@ function cpccom_setup() {
 		endif;		
 		echo '<form id="cpc_setup" action="'.admin_url( 'admin.php?page=cpc_com_setup' ).'" method="POST">';
 		echo '<input type="hidden" name="cpccom_update" value="yes" />';
+		wp_nonce_field('cpc_create_page', 'cpc_create_page_nonce');
 
 			// Getting Started/Help hook
 			do_action( 'cpc_admin_getting_started_hook' );

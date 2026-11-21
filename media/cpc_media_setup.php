@@ -70,7 +70,8 @@ function cpc_admin_getting_started_media() {
         'option_none_value' => '0',
         'selected' => (int)get_option('cpc_media_directory_page', 0),
     ));
-    echo '<span class="description">'.__('Optional: diese WordPress-Seite zeigt automatisch die globale Mediathek mit Galerie- und Medienverzeichnis.', 'cp-community').'</span></td>';
+    cpc_admin_render_create_page_button(get_option('cpc_media_directory_page', 0), 'cpc_media_directory_page');
+    echo '<span class="description">'.__('Optional: Diese Seite zeigt automatisch die globale Mediathek. Shortcode: [cpc-media-directory]', 'cp-community').'</span></td>';
     echo '</tr>';
 
     echo '<tr class="form-field">';

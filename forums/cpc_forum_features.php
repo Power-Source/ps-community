@@ -15,6 +15,18 @@ function cpc_forum_get_post_term($post_id) {
     return is_array($terms) && !empty($terms) ? reset($terms) : false;
 }
 
+function cpc_forum_nested_page_url($term) {
+    if (!$term || is_wp_error($term)) {
+        return false;
+    }
+    $page_id = (int)cpc_get_term_meta($term->term_id, 'cpc_forum_cat_page', true);
+    $page = $page_id ? get_post($page_id) : false;
+    if (!$page || $page->post_type !== 'page' || !$page->post_parent) {
+        return false;
+    }
+    return get_permalink($page);
+}
+
 function cpc_forum_get_moderator_ids($term_id) {
     $moderators = (string)cpc_get_term_meta((int)$term_id, 'cpc_forum_moderators', true);
     return array_filter(array_map('absint', preg_split('/[\s,]+/', $moderators)));

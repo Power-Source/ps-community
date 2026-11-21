@@ -178,6 +178,9 @@ if ($style == 'classic'):
                         endif;
                     endif;
 
+                    $nested_page_url = cpc_forum_nested_page_url($term);
+                    if ($nested_page_url) $url = add_query_arg('topic', $forum_post['post_name'], $nested_page_url);
+
                     $forum_title = esc_attr($forum_post['post_title']);
 
                     $forum_title = str_replace(array_keys(array('[' => '&#91;',']' => '&#93;','<' => '&lt;','>' => '&gt;',)), array_values(array('[' => '&#91;',']' => '&#93;','<' => '&lt;','>' => '&gt;',)), $forum_title);  

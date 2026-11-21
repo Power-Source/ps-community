@@ -25,6 +25,7 @@ add_action('admin_init', function() {
 add_filter( 'rewrite_rules_array','cpc_forum_insert_rewrite_rules' );
 add_action( 'wp_loaded','cpc_forum_flush_rewrite_rules' );
 add_filter( 'query_vars','cpc_forum_insert_query_vars' );
+add_filter( 'request', 'cpc_forum_resolve_child_page' );
 add_filter('rewrite_rules_array', 'cpc_profile_rewrite_rules');
 function cpc_profile_rewrite_rules($rules) {
     $new_rules = array(
@@ -120,6 +121,68 @@ function cpc_flush_rewrite_rules()
 // Uncomment the following line to force a re-write flush (debugging only)
 //add_action( 'init', 'cpc_flush_rewrite_rules');
 // Add PS Community re-write rules
+function cpc_forum_topic_rewrite_rules() {
+    if (strpos(CPC_CORE_PLUGINS, 'core-forums') === false) {
+        return array();
+    }
+
+    $terms = get_terms('cpc_forum', array('hide_empty' => false));
+    if (is_wp_error($terms)) {
+        error_log('PS Community: '.$terms->get_error_message());
+        return $terms;
+    }
+
+    $paths = array();
+    foreach ($terms as $term) {
+        $page_id = (int)cpc_get_term_meta($term->term_id, 'cpc_forum_cat_page', true);
+        $page = $page_id ? get_post($page_id) : false;
+        if (!$page || $page->post_type !== 'page') {
+            continue;
+        }
+        $page_path = get_page_uri($page);
+        if (!$page_path) {
+            continue;
+        }
+        $paths[$page_path] = $page_path;
+        if ($term->slug !== $page_path) {
+            $paths[$term->slug] = $page_path;
+        }
+    }
+    uksort($paths, function($a, $b) { return strlen($b) - strlen($a); });
+    $rules = array();
+    foreach ($paths as $path => $page_path) {
+        $rules[preg_quote($path, '#').'/([^/]+)(.*)'] = 'index.php?pagename='.$page_path.'&topic=$matches[1]&fpage=$matches[2]';
+    }
+    return $rules;
+}
+
+function cpc_forum_resolve_child_page($query_vars) {
+    global $wp;
+    if (empty($wp->matched_rule) || empty($wp->request)) {
+        return $query_vars;
+    }
+    $rules = cpc_forum_topic_rewrite_rules();
+    if (is_wp_error($rules) || !isset($rules[$wp->matched_rule])) {
+        return $query_vars;
+    }
+    $page = get_page_by_path($wp->request, OBJECT, 'page');
+    if (!$page || in_array($page->post_status, array('trash', 'auto-draft'), true)) {
+        return $query_vars;
+    }
+    $status = get_post_status_object($page->post_status);
+    if (!$status || (!$status->public && !$status->protected && !$status->private && $status->exclude_from_search)) {
+        return $query_vars;
+    }
+    $query_vars['pagename'] = get_page_uri($page);
+    if (!isset($_GET['topic']) && !isset($_POST['topic'])) {
+        unset($query_vars['topic']);
+    }
+    if (!isset($_GET['fpage']) && !isset($_POST['fpage'])) {
+        unset($query_vars['fpage']);
+    }
+    return $query_vars;
+}
+
 function cpc_forum_insert_rewrite_rules( $rules ) {
 	global $wp_rewrite;
     
@@ -143,19 +206,6 @@ function cpc_forum_insert_rewrite_rules( $rules ) {
 					$newrules[$profile_page_slug.'/([^/]+)/?'] = ltrim($blog_details->path,'/').'?pagename='.$profile_page_slug.'&user=$matches[1]';
 				endif;
 			endif;
-			// Forum slugs -------------------
-			if (strpos(CPC_CORE_PLUGINS, 'core-forums') !== false):
-                $terms = get_terms( "cpc_forum", array( ) );
-                if ( ! is_wp_error( $terms ) && count($terms) > 0 ):	
-                    foreach ( $terms as $term ):
-                        // Add re-write for Forum slug
-                        $post = get_post( cpc_get_term_meta($term->term_id, 'cpc_forum_cat_page', true) );
-                        if ($post):
-                            $newrules[$term->slug.'/([^/]+)(.*)'] = ltrim($blog_details->path,'/').'?pagename='.$post->post_name.'&topic=$matches[1]&fpage=$matches[2]';
-                        endif;
-                    endforeach;
-                endif;
-            endif;
 		endif;
 	} else {	
 		// Usernames ---------------------
@@ -165,18 +215,6 @@ function cpc_forum_insert_rewrite_rules( $rules ) {
 				$newrules[$profile_page_slug.'/([^/]+)/?'] = 'index.php?pagename='.$profile_page_slug.'&user=$matches[1]';
 			endif;
 		endif;
-		// Forum slugs -------------------
-        if (strpos(CPC_CORE_PLUGINS, 'core-forums') !== false):
-            $terms = get_terms( "cpc_forum", array( ) );
-            if ( ! is_wp_error( $terms ) && count($terms) > 0 ):	
-                foreach ( $terms as $term ):
-                    $post = get_post( cpc_get_term_meta($term->term_id, 'cpc_forum_cat_page', true) );
-                    if ($post):
-                        $newrules[$term->slug.'/([^/]+)(.*)'] = 'index.php?pagename='.$post->post_name.'&topic=$matches[1]&fpage=$matches[2]';
-                    endif;
-                endforeach;
-            endif;
-        endif;
 		// Group slugs -------------------
 		if (strpos(CPC_CORE_PLUGINS, 'core-groups') !== false && $page_id = get_option('cpccom_group_single_page')):
 			if ($group_page = get_post($page_id)):
@@ -185,7 +223,11 @@ function cpc_forum_insert_rewrite_rules( $rules ) {
 			endif;
 		endif;
 	}	
-	return $newrules + $rules;
+    $forum_rules = cpc_forum_topic_rewrite_rules();
+    if (is_wp_error($forum_rules)) {
+        $forum_rules = array();
+    }
+	return $newrules + $forum_rules + $rules;
 }
 // Flush re-write rules if need be
 function cpc_forum_flush_rewrite_rules(){
@@ -195,10 +237,23 @@ function cpc_forum_flush_rewrite_rules(){
 	// Protection
     if (strpos(CPC_CORE_PLUGINS, 'core-alerts') !== false)
 	   if ( ! isset( $rules['cpc_alerts/?'] ) ) $flush = true;		
-    if (strpos(CPC_CORE_PLUGINS, 'core-friendships') !== false)
-	   if ( ! isset( $rules['cpc_forum_post/?'] ) ) $flush = true;		
     if (strpos(CPC_CORE_PLUGINS, 'core-forums') !== false)
-	   if ( ! isset( $rules['cpc_friendship/?'] ) ) $flush = true;		
+	   if ( ! isset( $rules['cpc_forum_post/?'] ) ) $flush = true;
+    if (strpos(CPC_CORE_PLUGINS, 'core-friendships') !== false)
+	   if ( ! isset( $rules['cpc_friendship/?'] ) ) $flush = true;
+    $forum_rules = cpc_forum_topic_rewrite_rules();
+    if (!is_wp_error($forum_rules)) {
+        $forum_signature = md5(wp_json_encode($forum_rules));
+        if (get_option('cpc_forum_rewrite_signature') !== $forum_signature) {
+            $flush = true;
+        }
+        foreach ($forum_rules as $pattern => $target) {
+            if (!isset($rules[$pattern]) || $rules[$pattern] !== $target) {
+                $flush = true;
+                break;
+            }
+        }
+    }
 	if (is_multisite()) {
         
         $current_blog = get_current_blog_id();
@@ -211,19 +266,6 @@ function cpc_forum_flush_rewrite_rules(){
 			    if ( ! isset( $rules[$profile_page_slug.'/([^/]+)/?'] ) ) $flush = true;		
             }
 		endif;
-		// Forum slugs -------------------
-        if (strpos(CPC_CORE_PLUGINS, 'core-forums') !== false):
-            $terms = get_terms( "cpc_forum", array( ) );
-            if ( count($terms) > 0 ):	
-                foreach ( $terms as $term ):
-                    // Add re-write for Forum slug
-                    $post = get_post( cpc_get_term_meta($term->term_id, 'cpc_forum_cat_page', true) );
-                    if ($post):
-                        if ( ! isset( $rules[$term->slug.'/([^/]+)/?'] ) ) $flush = true;		
-                    endif;
-                endforeach;
-            endif;
-        endif;
 		// Group slugs -------------------
 		if (strpos(CPC_CORE_PLUGINS, 'core-groups') !== false && $page_id = get_option('cpccom_group_single_page')):
 			$group_page = get_post($page_id);
@@ -241,18 +283,6 @@ function cpc_forum_flush_rewrite_rules(){
 				if ( ! isset( $rules[$profile_page_slug.'/([^/]+)/?'] ) ) $flush = true;		
 			endif;
 		endif;
-		// Forum slugs -------------------
-        if (strpos(CPC_CORE_PLUGINS, 'core-forums') !== false):
-            $terms = get_terms( "cpc_forum", array( ) );
-            if ( count($terms) > 0 ):	
-                foreach ( $terms as $term ):
-                    $post = get_post( cpc_get_term_meta($term->term_id, 'cpc_forum_cat_page', true) );
-                    if ($post):
-                        if ( ! isset( $rules[$term->slug.'/([^/]+)/?'] ) ) $flush = true;		
-                    endif;
-                endforeach;
-            endif;
-        endif;
 		// Group slugs -------------------
 		if (strpos(CPC_CORE_PLUGINS, 'core-groups') !== false && $page_id = get_option('cpccom_group_single_page')):
 			$group_page = get_post($page_id);
@@ -266,6 +296,9 @@ function cpc_forum_flush_rewrite_rules(){
 	if ($flush) {
 		global $wp_rewrite;
 		$wp_rewrite->flush_rules();			
+        if (!is_wp_error($forum_rules)) {
+            update_option('cpc_forum_rewrite_signature', $forum_signature);
+        }
 	}
 }
 // Make re-write parameters available as query parameter
@@ -639,7 +672,8 @@ function cpc_seo_post_title($title) {
         $p = false;
         // ... is it a forum page?
         if (strpos(CPC_CORE_PLUGINS, 'core-forums') !== false && cpc_is_forum_page(get_the_ID())):
-            $p = get_page_by_path($parts[2],OBJECT,'cpc_forum_post');
+            $topic = get_query_var('topic');
+            $p = $topic ? get_page_by_path($topic,OBJECT,'cpc_forum_post') : false;
             if ($p):
                 $post_terms = get_the_terms( $p->ID, 'cpc_forum' );
                 if ($post_terms):
@@ -702,7 +736,12 @@ function cpc_cpceo_metadesc( $title ) {
     global $current_user;
     $parts = explode('/', $_SERVER["REQUEST_URI"]);
     if ($parts && isset($parts[2]) && $parts[2]):
-        $p = get_page_by_path($parts[2],OBJECT,'cpc_forum_post');
+        if (strpos(CPC_CORE_PLUGINS, 'core-forums') !== false && cpc_is_forum_page(get_the_ID())) {
+            $topic = get_query_var('topic');
+            $p = $topic ? get_page_by_path($topic,OBJECT,'cpc_forum_post') : false;
+        } else {
+            $p = get_page_by_path($parts[2],OBJECT,'cpc_forum_post');
+        }
         if( $p ):
             $post_terms = get_the_terms( $p->ID, 'cpc_forum' );
             if ($post_terms):
